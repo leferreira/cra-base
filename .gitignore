@@ -1,1 +1,8 @@
 /target/
+/.classpath
+/.project
+/.tern-project
+/.settings/
+/.gitignore
+/bin/
+/README.md
