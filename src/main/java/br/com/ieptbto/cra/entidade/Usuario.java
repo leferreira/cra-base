@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -22,13 +24,20 @@ import org.hibernate.envers.Audited;
 
 import br.com.ieptbto.cra.security.IAuthModel;
 
-@SuppressWarnings("serial")
+
+/**
+ * @author Thasso Araújo
+ *
+ */
 @Entity
 @Audited
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "TB_USUARIO")
 @org.hibernate.annotations.Table(appliesTo = "TB_USUARIO")
 public class Usuario extends AbstractEntidade<Usuario> implements IClusterable, IAuthModel {
 
+	/***/
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private String nome;
 	private String login;

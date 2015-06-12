@@ -4,7 +4,8 @@ public enum TipoInstituicaoCRA implements CraEnum {
 	
 	CRA("1","Central de Remessa de Arquivos"), 
 	CARTORIO("2","Cartório de Protesto"), 
-	INSTITUICAO_FINANCEIRA("3","Instituicão Financeira ou outros");
+	INSTITUICAO_FINANCEIRA("3","Instituicão Financeira"),
+	CONVENIO("4","Convênio");
 
 	private String constante;
 	private String label;
