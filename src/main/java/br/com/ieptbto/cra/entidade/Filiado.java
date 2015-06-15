@@ -27,17 +27,17 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
-	private String nomeCredor;
-	private String documentoCredor;
-	private String enderecoCredor;
-	private String cepCredor;
-	private String cidadeCredor;
-	private String ufCredor;
-	private String agenciaCodigoCredor;
-	
+	private String razaoSocial;
+	private String cnpjCpf;
+	private String endereco;
+	private String cep;
+	private String cidade;
+	private String uf;
+	private String codigoFiliado;
+	private Boolean ativo;
 	private Instituicao instituicaoConvenio;
 	private List<UsuarioFiliado> usuariosFiliados;
-	
+
 	@Id
 	@Column(name = "ID_FILIADO", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,82 +45,87 @@ public class Filiado extends AbstractEntidade<Filiado> {
 		return id;
 	}
 
-	@Column(name = "NOME_CREDOR")
-	public String getNomeCredor() {
-		return nomeCredor;
+	@Column(name = "RAZAO_SOCIAL", length = 45)
+	public String getRazaoSocial() {
+		return razaoSocial;
 	}
 
-	@Column(name = "DOCUMENTO_CREDOR")
-	public String getDocumentoCredor() {
-		return documentoCredor;
+	@Column(name = "CPF_CNPJ", length = 14, unique = true, nullable = false)
+	public String getCnpjCpf() {
+		return cnpjCpf;
 	}
 
-	@Column(name = "ENDERECO_CREDOR")
-	public String getEnderecoCredor() {
-		return enderecoCredor;
+	@Column(name = "ENDERECO", length = 45)
+	public String getEndereco() {
+		return endereco;
 	}
 
-	@Column(name = "CEP_CREDOR")
-	public String getCepCredor() {
-		return cepCredor;
+	@Column(name = "CEP", length = 8)
+	public String getCep() {
+		return cep;
 	}
 
-	@Column(name = "CIDADE_CREDOR")
-	public String getCidadeCredor() {
-		return cidadeCredor;
+	@Column(name = "CIDADE", length = 20)
+	public String getCidade() {
+		return cidade;
 	}
 
-	@Column(name = "UF_CREDOR")
-	public String getUfCredor() {
-		return ufCredor;
+	@Column(name = "UF", length = 2)
+	public String getUf() {
+		return uf;
 	}
 
-	@Column(name = "AGENCIA_CODIGO_CREDOR")
-	public String getAgenciaCodigoCredor() {
-		return agenciaCodigoCredor;
+	@Column(name = "CODIGO_FILIADO", length = 15)
+	public String getCodigoFiliado() {
+		return codigoFiliado;
 	}
 
 	@ManyToOne
-	@JoinColumn(name="INSTITUICAO_CONVENIO_ID")
+	@JoinColumn(name = "INSTITUICAO_ID")
 	public Instituicao getInstituicaoConvenio() {
 		return instituicaoConvenio;
 	}
-	
-	@OneToMany(mappedBy="filiado")
+
+	@OneToMany(mappedBy = "filiado")
 	public List<UsuarioFiliado> getUsuariosFiliados() {
 		return usuariosFiliados;
+	}
+
+	@Column(name = "ATIVO", nullable = false)
+	public Boolean isAtivo() {
+		return ativo;
 	}
 
 	public void setId(int id) {
 		this.id = id;
 	}
 
-	public void setNomeCredor(String nomeCredor) {
-		this.nomeCredor = nomeCredor;
+	public void setRazaoSocial(String razaoSocial) {
+		this.razaoSocial = razaoSocial;
 	}
 
-	public void setDocumentoCredor(String documentoCredor) {
-		this.documentoCredor = documentoCredor;
+	public void setCnpjCpf(String cnpjCpf) {
+		this.cnpjCpf = cnpjCpf;
 	}
 
-	public void setEnderecoCredor(String enderecoCredor) {
-		this.enderecoCredor = enderecoCredor;
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
 	}
 
-	public void setCepCredor(String cepCredor) {
-		this.cepCredor = cepCredor;
+	public void setCep(String cep) {
+		this.cep = cep;
 	}
 
-	public void setCidadeCredor(String cidadeCredor) {
-		this.cidadeCredor = cidadeCredor;
+	public void setCidade(String cidade) {
+		this.cidade = cidade;
 	}
 
-	public void setUfCredor(String ufCredor) {
-		this.ufCredor = ufCredor;
+	public void setUf(String uf) {
+		this.uf = uf;
 	}
 
-	public void setAgenciaCodigoCredor(String agenciaCodigoCredor) {
-		this.agenciaCodigoCredor = agenciaCodigoCredor;
+	public void setCodigoFiliado(String codigoFiliado) {
+		this.codigoFiliado = codigoFiliado;
 	}
 
 	public void setInstituicaoConvenio(Instituicao instituicaoConvenio) {
@@ -129,6 +134,10 @@ public class Filiado extends AbstractEntidade<Filiado> {
 
 	public void setUsuariosFiliados(List<UsuarioFiliado> usuariosFiliados) {
 		this.usuariosFiliados = usuariosFiliados;
+	}
+
+	public void setAtivo(Boolean ativo) {
+		this.ativo = ativo;
 	}
 
 	@Override

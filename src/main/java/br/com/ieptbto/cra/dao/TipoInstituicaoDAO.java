@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import br.com.ieptbto.cra.entidade.PermissaoEnvio;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.TipoInstituicao;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 
 @Repository
 public class TipoInstituicaoDAO extends AbstractBaseDAO {
@@ -26,7 +27,7 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 		try {
 			novo = save(tipoInstituicao);
 			permissao.setTipoInstituicao(tipoInstituicao);
-			for (TipoArquivo tipoArquivo: tiposPermitidos){
+			for (TipoArquivo tipoArquivo : tiposPermitidos) {
 				permissao.setTipoArquivo(tipoArquivo);
 				listaPermissoes.add(permissao);
 			}
@@ -44,7 +45,7 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 		try {
 			update(tipoInstituicao);
 			permissao.setTipoInstituicao(tipoInstituicao);
-			for (TipoArquivo tipoArquivo: tiposPermitidos){
+			for (TipoArquivo tipoArquivo : tiposPermitidos) {
 				permissao.setTipoArquivo(tipoArquivo);
 				update(permissao);
 			}
@@ -61,7 +62,7 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 		Transaction transaction = getBeginTransation();
 		try {
 			TipoInstituicao tipoInstituicao = new TipoInstituicao();
-			tipoInstituicao.setTipoInstituicao(tipo);
+			tipoInstituicao.setTipoInstituicao(TipoInstituicaoCRA.get(tipo));
 			save(tipoInstituicao);
 			transaction.commit();
 		} catch (Exception ex) {
@@ -81,7 +82,8 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<TipoInstituicao> listarTodos() {
 		Criteria criteria = getCriteria(TipoInstituicao.class);
-//		criteria.createAlias("arquivosEnvioPermitido", "arquivosEnvioPermitido");
+		// criteria.createAlias("arquivosEnvioPermitido",
+		// "arquivosEnvioPermitido");
 		criteria.addOrder(Order.asc("tipoInstituicao"));
 		return criteria.list();
 	}
@@ -94,7 +96,7 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 		criteria.addOrder(Order.asc("tipoInstituicao"));
 		return TipoInstituicao.class.cast(criteria.uniqueResult());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<PermissaoEnvio> permissoesPorTipoInstituicao(TipoInstituicao tipo) {
 		Criteria criteria = getCriteria(PermissaoEnvio.class);

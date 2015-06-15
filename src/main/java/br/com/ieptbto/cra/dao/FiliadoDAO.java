@@ -20,7 +20,7 @@ public class FiliadoDAO extends AbstractBaseDAO {
 	public Filiado salvar(Filiado filiado) {
 		Filiado novo = new Filiado();
 		Transaction transaction = getBeginTransation();
-		
+
 		try {
 			novo = save(filiado);
 			transaction.commit();
@@ -37,6 +37,4 @@ public class FiliadoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("instituicaoConvenio", instituicao));
 		return criteria.list();
 	}
-
-
 }

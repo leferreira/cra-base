@@ -19,7 +19,7 @@ import org.hibernate.envers.Audited;
  */
 @Entity
 @Audited
-@PrimaryKeyJoinColumn(name="id")
+@PrimaryKeyJoinColumn(name = "id")
 @Table(name = "TB_USUARIO_FILIADO")
 @org.hibernate.annotations.Table(appliesTo = "TB_USUARIO_FILIADO")
 public class UsuarioFiliado extends AbstractEntidade<UsuarioFiliado> {
@@ -29,27 +29,27 @@ public class UsuarioFiliado extends AbstractEntidade<UsuarioFiliado> {
 	private int id;
 	private Filiado filiado;
 	private Usuario usuario;
-	
+
 	@Override
 	@Id
-	@Column(name = "ID_USUARIO", columnDefinition = "serial")
+	@Column(name = "ID_USUARIO_FILIADO", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getId() {
 		return id;
 	}
 
 	@OneToOne
-	@JoinColumn(name="USUARIO_ID")
+	@JoinColumn(name = "USUARIO_ID")
 	public Usuario getUsuario() {
 		return usuario;
 	}
-	
+
 	@ManyToOne
-	@JoinColumn(name="FILIADO_ID")
+	@JoinColumn(name = "FILIADO_ID")
 	public Filiado getFiliado() {
 		return filiado;
 	}
-	
+
 	public void setFiliado(Filiado filiado) {
 		this.filiado = filiado;
 	}

@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -11,6 +13,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
+
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 
 @Entity
 @Audited
@@ -20,7 +24,7 @@ public class TipoInstituicao extends AbstractEntidade<TipoInstituicao> {
 
 	private static final long serialVersionUID = 1L;
 	private int id;
-	private String tipoInstituicao;
+	private TipoInstituicaoCRA tipoInstituicao;
 	private List<Instituicao> listaInstituicoes;
 	private List<PermissaoEnvio> arquivosEnvioPermitido;
 
@@ -32,7 +36,8 @@ public class TipoInstituicao extends AbstractEntidade<TipoInstituicao> {
 	}
 
 	@Column(name = "TIPO_INSTITUICAO", nullable = false)
-	public String getTipoInstituicao() {
+	@Enumerated(EnumType.STRING)
+	public TipoInstituicaoCRA getTipoInstituicao() {
 		return tipoInstituicao;
 	}
 
@@ -50,7 +55,7 @@ public class TipoInstituicao extends AbstractEntidade<TipoInstituicao> {
 		this.id = id;
 	}
 
-	public void setTipoInstituicao(String tipoInstituicao) {
+	public void setTipoInstituicao(TipoInstituicaoCRA tipoInstituicao) {
 		this.tipoInstituicao = tipoInstituicao;
 	}
 

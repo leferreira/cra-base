@@ -8,13 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.ieptbto.cra.dao.FiliadoDAO;
 import br.com.ieptbto.cra.dao.GrupoUsuarioDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.dao.TipoArquivoDAO;
 import br.com.ieptbto.cra.dao.TipoInstituicaoDAO;
 import br.com.ieptbto.cra.dao.UsuarioDAO;
+import br.com.ieptbto.cra.dao.UsuarioFiliadoDAO;
 import br.com.ieptbto.cra.entidade.GrupoUsuario;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.UsuarioFiliado;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.exception.Erro;
+import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.security.CraRoles;
 
 @Service
@@ -33,6 +39,10 @@ public class UsuarioMediator {
 	TipoArquivoDAO tipoArquivoDao;
 	@Autowired
 	MunicipioMediator municipioMediator;
+	@Autowired
+	UsuarioFiliadoDAO usuarioFiliadoDAO;
+	@Autowired
+	FiliadoDAO filiadoDAO;
 
 	public Usuario autenticar(String login, String senha) {
 		Usuario usuario = usuarioDao.buscarUsuarioPorLogin(login);
@@ -41,6 +51,45 @@ public class UsuarioMediator {
 				if (usuario.isStatus() == true) {
 					logger.info("O usuário <<" + usuario.getLogin() + ">> entrou na CRA.");
 					return usuario;
+				}
+			}
+		}
+		return null;
+	}
+
+	public Usuario autenticarConvenio(String login, String senha) {
+		Usuario usuario = usuarioDao.buscarUsuarioPorLogin(login);
+		if (usuario != null && usuario.isSenha(senha)) {
+			if (!TipoInstituicaoCRA.CONVENIO.equals(usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao())) {
+				new InfraException("Esse usuário não é de uma conveniada");
+				return null;
+			}
+			if (instituicaoDao.isInstituicaoAtiva(usuario.getInstituicao())) {
+				if (usuario.isStatus() == true) {
+					logger.info("O usuário <<" + usuario.getLogin() + ">> entrou na CRA.");
+					return usuario;
+				} else {
+					logger.error(Erro.USUARIO_INATIVO.getMensagemErro());
+					new InfraException(Erro.USUARIO_INATIVO.getMensagemErro());
+				}
+			} else {
+				logger.error(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
+				new InfraException(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
+			}
+		} else {
+			UsuarioFiliado filiado = usuarioFiliadoDAO.buscarUsuarioFiliadoPorLogin(login);
+			if (filiado != null && filiado.getUsuario().isSenha(senha)) {
+				if (filiado.getFiliado().isAtivo()) {
+					if (filiado.getUsuario().isStatus() == true) {
+						logger.info("O usuário <<" + filiado.getUsuario().getLogin() + ">> entrou na CRA.");
+						return filiado.getUsuario();
+					} else {
+						logger.error(Erro.USUARIO_INATIVO.getMensagemErro());
+						new InfraException(Erro.USUARIO_INATIVO.getMensagemErro());
+					}
+				} else {
+					logger.error(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
+					new InfraException(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
 				}
 			}
 		}
@@ -102,9 +151,9 @@ public class UsuarioMediator {
 		/*
 		 * Inserindo os Tipos da Instituição
 		 */
-		tipoInstituicaoDao.inserirTipoInstituicaoInicial("CRA");
-		tipoInstituicaoDao.inserirTipoInstituicaoInicial("Cartório");
-		tipoInstituicaoDao.inserirTipoInstituicaoInicial("Instituições Financeiras");
+		tipoInstituicaoDao.inserirTipoInstituicaoInicial("Central de Remessa de Arquivos");
+		tipoInstituicaoDao.inserirTipoInstituicaoInicial("Cartório de Protesto");
+		tipoInstituicaoDao.inserirTipoInstituicaoInicial("Instituicão Financeira");
 
 		/*
 		 * Inserindo os Tipos da Instituição
@@ -119,13 +168,13 @@ public class UsuarioMediator {
 		/*
 		 * Inserindo a instituição CRA
 		 */
-//		Municipio m = new Municipio();
-//		m.setNomeMunicipio("Palmas");
-//		m.setUf("TO");
-//		m.setCodigoIBGE(1721000);
-//		m.setSituacao(true);
-//		Municipio m = municipioMediator.buscarMunicipio("Palmas");
-//		instituicaoDao.inserirInstituicaoInicial(m);
+		// Municipio m = new Municipio();
+		// m.setNomeMunicipio("Palmas");
+		// m.setUf("TO");
+		// m.setCodigoIBGE(1721000);
+		// m.setSituacao(true);
+		// Municipio m = municipioMediator.buscarMunicipio("Palmas");
+		// instituicaoDao.inserirInstituicaoInicial(m);
 
 		/*
 		 * Inserindo os Grupos dos Usuário e as Permissões
@@ -151,7 +200,7 @@ public class UsuarioMediator {
 		/*
 		 * Inserindo o usuário de teste
 		 */
-//		usuarioDao.incluirUsuarioDeTeste();
+		// usuarioDao.incluirUsuarioDeTeste();
 	}
 
 	public List<Usuario> listarTodos() {
