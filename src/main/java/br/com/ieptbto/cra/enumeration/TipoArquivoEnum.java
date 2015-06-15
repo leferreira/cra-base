@@ -8,9 +8,12 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Entity
 public enum TipoArquivoEnum implements CraEnum {
 
-	REMESSA("B", "Remessa"), CONFIRMACAO("C", "Confirmação"), RETORNO("R", "Retorno"), CANCELAMENTO_DE_PROTESTO("CP",
-	        "Cancelamento de Protesto"), DEVOLUCAO_DE_PROTESTO("DP", "Devolução de Protesto"), AUTORIZACAO_DE_CANCELAMENTO("AC",
-	        "Autorização de Cancelamento");
+	REMESSA("B", "Remessa"), 
+	CONFIRMACAO("C", "Confirmação"), 
+	RETORNO("R", "Retorno"), 
+	CANCELAMENTO_DE_PROTESTO("CP","Cancelamento de Protesto"), 
+	DEVOLUCAO_DE_PROTESTO("DP", "Devolução de Protesto"), 
+	AUTORIZACAO_DE_CANCELAMENTO("AC","Autorização de Cancelamento");
 
 	public String constante;
 	public String label;

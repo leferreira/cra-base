@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.entidade;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -12,10 +11,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.hibernate.envers.Audited;
+import org.joda.time.LocalTime;
 
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 
@@ -35,8 +33,8 @@ public class TipoArquivo extends AbstractEntidade<TipoArquivo> {
 	private int id;
 	private TipoArquivoEnum tipoArquivo;
 	private List<PermissaoEnvio> arquivosEnvioPermitido;
-	private Date horaEnvioInicio;
-	private Date horaEnvioFim;
+	private LocalTime horaEnvioInicio;
+	private LocalTime horaEnvioFim;
 
 	@Id
 	@Column(name = "ID_TIPO_ARQUIVO", columnDefinition = "serial")
@@ -57,22 +55,20 @@ public class TipoArquivo extends AbstractEntidade<TipoArquivo> {
 	}
 
 	@Column(name = "HORA_ENVIO_FIM")
-	@Temporal(TemporalType.TIME)
-	public Date getHoraEnvioFim() {
+	public LocalTime getHoraEnvioFim() {
 		return horaEnvioFim;
 	}
 
 	@Column(name = "HORA_ENVIO_INICIO")
-	@Temporal(TemporalType.TIME)
-	public Date getHoraEnvioInicio() {
+	public LocalTime getHoraEnvioInicio() {
 		return horaEnvioInicio;
 	}
 
-	public void setHoraEnvioFim(Date horaEnvioFim) {
+	public void setHoraEnvioFim(LocalTime horaEnvioFim) {
 		this.horaEnvioFim = horaEnvioFim;
 	}
 
-	public void setHoraEnvioInicio(Date horaEnvioInicio) {
+	public void setHoraEnvioInicio(LocalTime horaEnvioInicio) {
 		this.horaEnvioInicio = horaEnvioInicio;
 	}
 

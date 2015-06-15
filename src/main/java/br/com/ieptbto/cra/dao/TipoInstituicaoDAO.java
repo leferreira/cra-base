@@ -81,6 +81,7 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<TipoInstituicao> listarTodos() {
 		Criteria criteria = getCriteria(TipoInstituicao.class);
+//		criteria.createAlias("arquivosEnvioPermitido", "arquivosEnvioPermitido");
 		criteria.addOrder(Order.asc("tipoInstituicao"));
 		return criteria.list();
 	}
@@ -97,9 +98,9 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<PermissaoEnvio> permissoesPorTipoInstituicao(TipoInstituicao tipo) {
 		Criteria criteria = getCriteria(PermissaoEnvio.class);
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.createAlias("tipoArquivo", "tipoArquivo");
 		criteria.add(Restrictions.eq("tipoInstituicao", tipo));
-
-		List<PermissaoEnvio> listaTipo = criteria.list();
-		return listaTipo;
+		return criteria.list();
 	}
 }

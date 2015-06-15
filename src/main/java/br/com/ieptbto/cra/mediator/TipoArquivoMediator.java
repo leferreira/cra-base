@@ -9,12 +9,20 @@ import br.com.ieptbto.cra.dao.TipoArquivoDAO;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 
+/**
+ * @author Thasso Araújo
+ *
+ */
 @Service
 public class TipoArquivoMediator {
 
 	@Autowired
 	TipoArquivoDAO tipoArquivoDao;
 	
+	public TipoArquivo alterarTipoArquivo(TipoArquivo tipoArquivo) {
+		return tipoArquivoDao.alterar(tipoArquivo);
+	}
+
 	public List<TipoArquivo> getTiposArquivos(){
 		return tipoArquivoDao.buscarTiposArquivo();
 	}
