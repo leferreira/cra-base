@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
@@ -62,6 +61,7 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 		Transaction transaction = getBeginTransation();
 		try {
 			TipoInstituicao tipoInstituicao = new TipoInstituicao();
+			tipoInstituicao.setId(Integer.parseInt(TipoInstituicaoCRA.get(tipo).getConstante()));
 			tipoInstituicao.setTipoInstituicao(TipoInstituicaoCRA.get(tipo));
 			save(tipoInstituicao);
 			transaction.commit();
@@ -74,7 +74,7 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<TipoInstituicao> buscarListaTipoInstituicao() {
 		Criteria criteria = getCriteria(TipoInstituicao.class);
-		criteria.add(Restrictions.ne("tipoInstituicao", "Cartório"));
+		criteria.add(Restrictions.ne("tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 		criteria.addOrder(Order.asc("tipoInstituicao"));
 		return criteria.list();
 	}
@@ -91,7 +91,8 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 	public TipoInstituicao buscarTipoInstituicao(String tipoInstituicao) {
 		Criteria criteria = getCriteria(TipoInstituicao.class);
 		if (StringUtils.isNotBlank(tipoInstituicao)) {
-			criteria.add(Restrictions.like("tipoInstituicao", tipoInstituicao, MatchMode.ANYWHERE));
+			criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+			criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.get(tipoInstituicao)));
 		}
 		criteria.addOrder(Order.asc("tipoInstituicao"));
 		return TipoInstituicao.class.cast(criteria.uniqueResult());

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -22,7 +23,6 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class InstituicaoDAO extends AbstractBaseDAO {
 
-	private static final int CARTORIO = 2;
 	@Autowired
 	TipoInstituicaoDAO tipoInstituicaoDAO;
 	@Autowired
@@ -124,8 +124,9 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<Instituicao> buscarListaInstituicao() {
 		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 		criteria.addOrder(Order.asc("id"));
-		criteria.add(Restrictions.ne("tipoInstituicao.id", 2));
 		return criteria.list();
 	}
 
@@ -137,8 +138,8 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<Instituicao> buscarListaInstituicaoAtivas() {
 		Criteria criteria = getCriteria(Instituicao.class);
-		criteria.addOrder(Order.asc("id"));
-		criteria.add(Restrictions.ne("tipoInstituicao.id", 2));
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 		criteria.add(Restrictions.eq("situacao", true));
 		return criteria.list();
 	}
@@ -164,8 +165,8 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	public List<Instituicao> buscarListaCartorio() {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.addOrder(Order.asc("id"));
-		criteria.createAlias("tipoInstituicao", "t");
-		criteria.add(Restrictions.eq("t.id", 2));
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 		return criteria.list();
 	}
 
@@ -178,8 +179,8 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	public List<Instituicao> getInstituicoesFinanceiras() {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.addOrder(Order.asc("nomeFantasia"));
-		criteria.createAlias("tipoInstituicao", "t");
-		criteria.add(Restrictions.eq("t.id", 3));
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA));
 		return criteria.list();
 	}
 
@@ -195,7 +196,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		criteria.createAlias("municipio", "municipio");
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
 		criteria.add(Restrictions.eq("municipio.codigoIBGE", codigoMunicipio));
-		criteria.add(Restrictions.eq("tipoInstituicao.id", CARTORIO));
+		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 		return Instituicao.class.cast(criteria.uniqueResult());
 	}
 

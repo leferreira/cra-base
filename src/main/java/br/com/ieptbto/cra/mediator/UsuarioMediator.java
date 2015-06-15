@@ -51,18 +51,23 @@ public class UsuarioMediator {
 				if (usuario.isStatus() == true) {
 					logger.info("O usuário <<" + usuario.getLogin() + ">> entrou na CRA.");
 					return usuario;
+				} else {
+					logger.error(Erro.USUARIO_INATIVO.getMensagemErro());
+					throw new InfraException(Erro.USUARIO_INATIVO.getMensagemErro());
 				}
+			} else {
+				logger.error(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
+				throw new InfraException(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
 			}
 		}
-		return null;
+		throw new InfraException("Login ou senha inválido(s) ou não ativo.");
 	}
 
 	public Usuario autenticarConvenio(String login, String senha) {
 		Usuario usuario = usuarioDao.buscarUsuarioPorLogin(login);
 		if (usuario != null && usuario.isSenha(senha)) {
 			if (!TipoInstituicaoCRA.CONVENIO.equals(usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao())) {
-				new InfraException("Esse usuário não é de uma conveniada");
-				return null;
+				throw new InfraException("Esse usuário não é de uma conveniada");
 			}
 			if (instituicaoDao.isInstituicaoAtiva(usuario.getInstituicao())) {
 				if (usuario.isStatus() == true) {
@@ -70,11 +75,11 @@ public class UsuarioMediator {
 					return usuario;
 				} else {
 					logger.error(Erro.USUARIO_INATIVO.getMensagemErro());
-					new InfraException(Erro.USUARIO_INATIVO.getMensagemErro());
+					throw new InfraException(Erro.USUARIO_INATIVO.getMensagemErro());
 				}
 			} else {
 				logger.error(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
-				new InfraException(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
+				throw new InfraException(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
 			}
 		} else {
 			UsuarioFiliado filiado = usuarioFiliadoDAO.buscarUsuarioFiliadoPorLogin(login);
@@ -85,15 +90,15 @@ public class UsuarioMediator {
 						return filiado.getUsuario();
 					} else {
 						logger.error(Erro.USUARIO_INATIVO.getMensagemErro());
-						new InfraException(Erro.USUARIO_INATIVO.getMensagemErro());
+						throw new InfraException(Erro.USUARIO_INATIVO.getMensagemErro());
 					}
 				} else {
 					logger.error(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
-					new InfraException(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
+					throw new InfraException(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
 				}
 			}
 		}
-		return null;
+		throw new InfraException("Login ou senha inválido(s) ou não ativo.");
 	}
 
 	public Usuario alterar(Usuario usuario) {
@@ -151,9 +156,10 @@ public class UsuarioMediator {
 		/*
 		 * Inserindo os Tipos da Instituição
 		 */
-		tipoInstituicaoDao.inserirTipoInstituicaoInicial("Central de Remessa de Arquivos");
-		tipoInstituicaoDao.inserirTipoInstituicaoInicial("Cartório de Protesto");
-		tipoInstituicaoDao.inserirTipoInstituicaoInicial("Instituicão Financeira");
+		tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.CARTORIO.getConstante());
+		tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.CRA.getConstante());
+		tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.CONVENIO.getConstante());
+		tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA.getConstante());
 
 		/*
 		 * Inserindo os Tipos da Instituição
