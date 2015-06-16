@@ -9,6 +9,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.UsuarioFiliado;
 
 /**
@@ -18,22 +19,44 @@ import br.com.ieptbto.cra.entidade.UsuarioFiliado;
 @Repository
 public class UsuarioFiliadoDAO extends AbstractBaseDAO {
 
-	public UsuarioFiliado salvar(UsuarioFiliado usuario) {
-		UsuarioFiliado novo = new UsuarioFiliado();
+	public UsuarioFiliado salvar(Usuario usuario, UsuarioFiliado usuarioFiliado) {
+		UsuarioFiliado novoFiliado = new UsuarioFiliado();
+		Usuario novoUsuario = new Usuario();
 		Transaction transaction = getBeginTransation();
 
 		try {
-			novo = save(usuario);
+			usuario.setSenha(Usuario.cryptPass(usuario.getSenha()));
+			novoUsuario = save(usuario);
+			usuarioFiliado.setUsuario(novoUsuario);
+			novoFiliado = save(usuarioFiliado);
+			
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
 		}
-		return novo;
+		return novoFiliado;
+	}
+	
+	public UsuarioFiliado alterar(Usuario usuario, UsuarioFiliado usuarioFiliado) {
+		UsuarioFiliado alterado = new UsuarioFiliado();
+		Transaction transaction = getBeginTransation();
+
+		try {
+			usuario.setSenha(Usuario.cryptPass(usuario.getSenha()));
+			update(usuario);
+			alterado = update(usuarioFiliado);
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			System.out.println(ex.getMessage());
+		}
+		return alterado;
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<UsuarioFiliado> listarUsuariosDoConvenio(Instituicao convenio) {
 		Criteria criteria = getCriteria(UsuarioFiliado.class);
+		criteria.createAlias("usuario", "usuario");
 		return criteria.list();
 	}
 
