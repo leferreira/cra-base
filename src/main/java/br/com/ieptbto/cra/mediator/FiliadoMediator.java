@@ -23,6 +23,10 @@ public class FiliadoMediator {
 		return filiadoDAO.salvar(filiado);
 	}
 	
+	public Filiado alterarFiliado(Filiado filiado) {
+		return filiadoDAO.alterar(filiado);
+	}
+
 	public List<Filiado> buscarListaFiliados(Instituicao instituicao) {
 		return filiadoDAO.buscarListaFiliadosPorConvenio(instituicao);
 	}

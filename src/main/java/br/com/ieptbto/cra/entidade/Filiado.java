@@ -31,7 +31,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	private String cnpjCpf;
 	private String endereco;
 	private String cep;
-	private String cidade;
+	private Municipio municipio;
 	private String uf;
 	private String codigoFiliado;
 	private Boolean ativo;
@@ -65,9 +65,10 @@ public class Filiado extends AbstractEntidade<Filiado> {
 		return cep;
 	}
 
-	@Column(name = "CIDADE", length = 20)
-	public String getCidade() {
-		return cidade;
+	@ManyToOne
+	@JoinColumn(name = "MUNICIPIO_ID")
+	public Municipio getMunicipio() {
+		return municipio;
 	}
 
 	@Column(name = "UF", length = 2)
@@ -116,8 +117,8 @@ public class Filiado extends AbstractEntidade<Filiado> {
 		this.cep = cep;
 	}
 
-	public void setCidade(String cidade) {
-		this.cidade = cidade;
+	public void setMunicipio(Municipio municipio) {
+		this.municipio = municipio;
 	}
 
 	public void setUf(String uf) {
@@ -139,7 +140,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	public void setAtivo(Boolean ativo) {
 		this.ativo = ativo;
 	}
-
+	
 	@Override
 	public int compareTo(Filiado entidade) {
 		// TODO Auto-generated method stub

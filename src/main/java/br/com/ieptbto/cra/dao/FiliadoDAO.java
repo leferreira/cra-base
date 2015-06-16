@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.exception.InfraException;
 
 /**
  * @author Thasso Araújo
@@ -18,16 +19,43 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 public class FiliadoDAO extends AbstractBaseDAO {
 
 	public Filiado salvar(Filiado filiado) {
-		Filiado novo = new Filiado();
+		Filiado novoFiliado = new Filiado();
 		Transaction transaction = getBeginTransation();
 
 		try {
-			novo = save(filiado);
+			novoFiliado = save(filiado);
+			novoFiliado.setCodigoFiliado(geradorCodigoCedenteFiliado(novoFiliado));
+			update(novoFiliado);
 			transaction.commit();
 		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
 			transaction.rollback();
+			throw new InfraException("Não foi possível cadastrar o novo filiado ! Entre em contato com a CRA !");
 		}
-		return novo;
+		return novoFiliado;
+	}
+
+	public Filiado alterar(Filiado filiado) {
+		Filiado novoFiliado = new Filiado();
+		Transaction transaction = getBeginTransation();
+		
+		try {
+			novoFiliado = update(filiado);
+			transaction.commit();
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+			transaction.rollback();
+			throw new InfraException("Não foi possível alterar o novo filiado ! Entre em contato com a CRA !");
+		}
+		return novoFiliado;
+	}
+
+	private String geradorCodigoCedenteFiliado(Filiado novoFiliado) {
+		String codigoCedente = novoFiliado.getId() + novoFiliado.getInstituicaoConvenio().getCodigoCompensacao();
+		while (codigoCedente.length() < 15){
+			codigoCedente += "0";
+		}
+		return codigoCedente;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -37,4 +65,5 @@ public class FiliadoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("instituicaoConvenio", instituicao));
 		return criteria.list();
 	}
+
 }
