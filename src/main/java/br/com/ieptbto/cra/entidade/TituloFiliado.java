@@ -2,7 +2,13 @@ package br.com.ieptbto.cra.entidade;
 
 import java.math.BigDecimal;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
@@ -22,71 +28,95 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private String numeroTitulo;
+	private LocalDate dataEmissao;
+	private LocalDate dataVencimento;
 	private BigDecimal valorTitulo;
 	private BigDecimal valorSaldoTitulo;
-	private LocalDate dataVencimento;
-	private LocalDate dataEmissao;
+	private Municipio pracaProtesto;
 	private String nomeDevedor;
+	private String tipoDocumentoDevedor;
 	private String documentoDevedor;
 	private String enderecoDevedor;
 	private String cidadeDevedor;
 	private String cepDevedor;
 	private String ufDevedor;
-	private Municipio pracaProtesto;
 	private Filiado filiado;
 
+	@Override
+	@Id
+	@Column(name = "ID_TITULO_FILIADO", columnDefinition = "serial")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getId() {
 		return id;
 	}
 
+	@Column(name = "NUMERO_TITULO", length=11 ,nullable=false)
 	public String getNumeroTitulo() {
 		return numeroTitulo;
 	}
 
+	@Column(name = "VALOR_TITULO", length=14, precision=2, nullable=false)
 	public BigDecimal getValorTitulo() {
 		return valorTitulo;
 	}
 
+	@Column(name = "VALOR_SALDO_TITULO", length=14, precision=2)
 	public BigDecimal getValorSaldoTitulo() {
 		return valorSaldoTitulo;
 	}
 
+	@Column(name = "DATA_VENCIMENTO", nullable=false)
 	public LocalDate getDataVencimento() {
 		return dataVencimento;
 	}
 
+	@Column(name = "DATA_EMISSAO", nullable=false)
 	public LocalDate getDataEmissao() {
 		return dataEmissao;
 	}
 
+	@Column(name = "NOME_DEVEDOR", length=45)
 	public String getNomeDevedor() {
 		return nomeDevedor;
 	}
 
+	@Column(name = "TIPO_DOCUMENTO_DEVEDOR", length=3)
+	public String getTipoDocumentoDevedor() {
+		return tipoDocumentoDevedor;
+	}
+	
+	@Column(name = "DOCUMENTO_DEVEDOR", length=14)
 	public String getDocumentoDevedor() {
 		return documentoDevedor;
 	}
 
+	@Column(name = "ENDERECO_DEVEDOR", length=45)
 	public String getEnderecoDevedor() {
 		return enderecoDevedor;
 	}
 
+	@Column(name = "CIDADE_DEVEDOR", length=20)
 	public String getCidadeDevedor() {
 		return cidadeDevedor;
 	}
 
+	@Column(name = "CEP_DEVEDOR", length=8)
 	public String getCepDevedor() {
 		return cepDevedor;
 	}
 
+	@Column(name = "UF_DEVEDOR", length=2)
 	public String getUfDevedor() {
 		return ufDevedor;
 	}
 
+	@Column(name = "MUNICIPIO_ID")
 	public Municipio getPracaProtesto() {
 		return pracaProtesto;
 	}
-
+	
+	@ManyToOne
+	@JoinColumn(name = "FILIADO_ID")
 	public Filiado getFiliado() {
 		return filiado;
 	}
@@ -121,6 +151,10 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 
 	public void setDocumentoDevedor(String documentoDevedor) {
 		this.documentoDevedor = documentoDevedor;
+	}
+	
+	public void setTipoDocumentoDevedor(String tipoDocumentoDevedor) {
+		this.tipoDocumentoDevedor = tipoDocumentoDevedor;
 	}
 
 	public void setEnderecoDevedor(String enderecoDevedor) {

@@ -156,10 +156,10 @@ public class UsuarioMediator {
 		/*
 		 * Inserindo os Tipos da Instituição
 		 */
-		tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.CARTORIO.getConstante());
 		tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.CRA.getConstante());
-		tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.CONVENIO.getConstante());
+		tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.CARTORIO.getConstante());
 		tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA.getConstante());
+		tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.CONVENIO.getConstante());
 
 		/*
 		 * Inserindo os Tipos da Instituição

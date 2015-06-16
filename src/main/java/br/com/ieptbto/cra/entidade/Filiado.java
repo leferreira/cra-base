@@ -37,6 +37,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	private Boolean ativo;
 	private Instituicao instituicaoConvenio;
 	private List<UsuarioFiliado> usuariosFiliados;
+	private List<TituloFiliado> titulosFiliado;
 
 	@Id
 	@Column(name = "ID_FILIADO", columnDefinition = "serial")
@@ -91,6 +92,11 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	public List<UsuarioFiliado> getUsuariosFiliados() {
 		return usuariosFiliados;
 	}
+	
+	@OneToMany(mappedBy = "filiado")
+	public List<TituloFiliado> getTitulosFiliado() {
+		return titulosFiliado;
+	}
 
 	@Column(name = "ATIVO", nullable = false)
 	public Boolean isAtivo() {
@@ -135,6 +141,10 @@ public class Filiado extends AbstractEntidade<Filiado> {
 
 	public void setUsuariosFiliados(List<UsuarioFiliado> usuariosFiliados) {
 		this.usuariosFiliados = usuariosFiliados;
+	}
+	
+	public void setTitulosFiliado(List<TituloFiliado> titulosFiliado) {
+		this.titulosFiliado = titulosFiliado;
 	}
 
 	public void setAtivo(Boolean ativo) {
