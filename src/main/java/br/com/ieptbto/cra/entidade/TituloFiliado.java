@@ -51,66 +51,66 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	@Id
 	@Column(name = "ID_TITULO_FILIADO", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public int getId(){ 
+	public int getId() {
 		return id;
 	}
 
-	@Column(name = "NUMERO_TITULO", length=11 ,nullable=false)
+	@Column(name = "NUMERO_TITULO", length = 11, nullable = false)
 	public String getNumeroTitulo() {
 		return numeroTitulo;
 	}
 
-	@Column(name = "VALOR_TITULO", length=14, nullable=false)
+	@Column(name = "VALOR_TITULO", nullable = false)
 	public BigDecimal getValorTitulo() {
 		return valorTitulo;
 	}
 
-	@Column(name = "VALOR_SALDO_TITULO", length=14)
+	@Column(name = "VALOR_SALDO_TITULO")
 	public BigDecimal getValorSaldoTitulo() {
 		return valorSaldoTitulo;
 	}
 
-	@Column(name = "DATA_VENCIMENTO", nullable=false)
+	@Column(name = "DATA_VENCIMENTO", nullable = false)
 	public LocalDate getDataVencimento() {
 		return dataVencimento;
 	}
 
-	@Column(name = "DATA_EMISSAO", nullable=false)
+	@Column(name = "DATA_EMISSAO", nullable = false)
 	public LocalDate getDataEmissao() {
 		return dataEmissao;
 	}
 
-	@Column(name = "NOME_DEVEDOR", length=45)
+	@Column(name = "NOME_DEVEDOR", length = 45)
 	public String getNomeDevedor() {
 		return nomeDevedor;
 	}
 
-	@Column(name = "TIPO_DOCUMENTO_DEVEDOR", length=3)
+	@Column(name = "TIPO_DOCUMENTO_DEVEDOR", length = 3)
 	public String getTipoDocumentoDevedor() {
 		return tipoDocumentoDevedor;
 	}
-	
-	@Column(name = "DOCUMENTO_DEVEDOR", length=14)
+
+	@Column(name = "DOCUMENTO_DEVEDOR", length = 14)
 	public String getDocumentoDevedor() {
 		return documentoDevedor;
 	}
 
-	@Column(name = "ENDERECO_DEVEDOR", length=45)
+	@Column(name = "ENDERECO_DEVEDOR", length = 45)
 	public String getEnderecoDevedor() {
 		return enderecoDevedor;
 	}
 
-	@Column(name = "CIDADE_DEVEDOR", length=20)
+	@Column(name = "CIDADE_DEVEDOR", length = 20)
 	public String getCidadeDevedor() {
 		return cidadeDevedor;
 	}
 
-	@Column(name = "CEP_DEVEDOR", length=8)
+	@Column(name = "CEP_DEVEDOR", length = 8)
 	public String getCepDevedor() {
 		return cepDevedor;
 	}
 
-	@Column(name = "UF_DEVEDOR", length=2)
+	@Column(name = "UF_DEVEDOR", length = 2)
 	public String getUfDevedor() {
 		return ufDevedor;
 	}
@@ -119,13 +119,13 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	public Municipio getPracaProtesto() {
 		return pracaProtesto;
 	}
-	
+
 	@ManyToOne
 	@JoinColumn(name = "FILIADO_ID")
 	public Filiado getFiliado() {
 		return filiado;
 	}
-	
+
 	@Column(name = "SITUACAO_TITULO_CONVENIO")
 	@Enumerated(EnumType.STRING)
 	public SituacaoTituloConvenio getSituacaoTituloConvenio() {
@@ -163,7 +163,7 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	public void setDocumentoDevedor(String documentoDevedor) {
 		this.documentoDevedor = documentoDevedor;
 	}
-	
+
 	public void setTipoDocumentoDevedor(String tipoDocumentoDevedor) {
 		this.tipoDocumentoDevedor = tipoDocumentoDevedor;
 	}
