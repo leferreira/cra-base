@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.UsuarioFiliadoDAO;
+import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.UsuarioFiliado;
@@ -30,5 +31,9 @@ public class UsuarioFiliadoMediator {
 	
 	public List<UsuarioFiliado> buscarUsuariosDoConvenio(Instituicao convenio) {
 		return usuarioFiliadoDAO.listarUsuariosDoConvenio(convenio);
+	}
+
+	public Filiado buscarEmpresaFiliadaDoUsuario(Usuario user) {
+		return usuarioFiliadoDAO.buscarEmpresaFiliadaDoUsuario(user);
 	}
 }

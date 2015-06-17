@@ -7,7 +7,8 @@ package br.com.ieptbto.cra.enumeration;
 public enum SituacaoTituloConvenio {
 
 	ENVIADO("Enviado"),
-	AGUARDANDO("Aguardando");
+	AGUARDANDO("Aguardando"),
+	REMOVIDO("Removido");
 	
 	private String situacao;
 	

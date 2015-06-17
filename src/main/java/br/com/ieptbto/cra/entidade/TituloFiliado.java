@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,6 +15,8 @@ import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
+
+import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
 
 /**
  * @author Thasso Araújo
@@ -41,12 +45,13 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	private String cepDevedor;
 	private String ufDevedor;
 	private Filiado filiado;
+	private SituacaoTituloConvenio situacaoTituloConvenio;
 
 	@Override
 	@Id
 	@Column(name = "ID_TITULO_FILIADO", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public int getId() {
+	public int getId(){ 
 		return id;
 	}
 
@@ -55,12 +60,12 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 		return numeroTitulo;
 	}
 
-	@Column(name = "VALOR_TITULO", length=14, precision=2, nullable=false)
+	@Column(name = "VALOR_TITULO", length=14, nullable=false)
 	public BigDecimal getValorTitulo() {
 		return valorTitulo;
 	}
 
-	@Column(name = "VALOR_SALDO_TITULO", length=14, precision=2)
+	@Column(name = "VALOR_SALDO_TITULO", length=14)
 	public BigDecimal getValorSaldoTitulo() {
 		return valorSaldoTitulo;
 	}
@@ -119,6 +124,12 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	@JoinColumn(name = "FILIADO_ID")
 	public Filiado getFiliado() {
 		return filiado;
+	}
+	
+	@Column(name = "SITUACAO_TITULO_CONVENIO")
+	@Enumerated(EnumType.STRING)
+	public SituacaoTituloConvenio getSituacaoTituloConvenio() {
+		return situacaoTituloConvenio;
 	}
 
 	public void setId(int id) {
@@ -181,9 +192,14 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 		this.filiado = filiado;
 	}
 
+	public void setSituacaoTituloConvenio(SituacaoTituloConvenio situacaoTituloConvenio) {
+		this.situacaoTituloConvenio = situacaoTituloConvenio;
+	}
+
 	@Override
 	public int compareTo(TituloFiliado entidade) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 }

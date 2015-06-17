@@ -8,6 +8,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
+import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.UsuarioFiliado;
@@ -33,6 +34,7 @@ public class UsuarioFiliadoDAO extends AbstractBaseDAO {
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
 		}
 		return novoFiliado;
 	}
@@ -66,5 +68,13 @@ public class UsuarioFiliadoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.like("usuario.login", login, MatchMode.EXACT));
 
 		return UsuarioFiliado.class.cast(criteria.uniqueResult());
+	}
+
+	public Filiado buscarEmpresaFiliadaDoUsuario(Usuario user) {
+		Criteria criteria = getCriteria(UsuarioFiliado.class);
+		criteria.createAlias("usuario", "usuario");
+		criteria.createAlias("filiado", "filiado");
+		criteria.add(Restrictions.eq("usuario", user));
+		return UsuarioFiliado.class.cast(criteria.uniqueResult()).getFiliado();
 	}
 }

@@ -50,8 +50,4 @@ public class TituloMediator {
 	public TituloRemessa carregarTitulo(TituloRemessa titulo){
 		return tituloDAO.carregarTitulo(titulo);
 	}
-
-	public List<TituloRemessa> titulosParaEnvioAoConvenio() {
-		return null;
-	}
 }

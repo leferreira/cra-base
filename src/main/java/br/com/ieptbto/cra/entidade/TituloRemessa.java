@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,7 +21,6 @@ import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.conversor.arquivo.TituloConversor;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
-import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 
 /**
@@ -76,7 +73,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	private String instrumentoProtesto;
 	private String complementoRegistro;
 	private String situacaoTitulo;
-	private SituacaoTituloConvenio situacaoTituloConvenio; 
+//	private SituacaoTituloConvenio situacaoTituloConvenio;
 
 	@Id
 	@Column(name = "ID_TITULO", columnDefinition = "serial")
@@ -251,11 +248,11 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		return complementoRegistro;
 	}
 
-	@Column(name = "SITUACAO_TITULO_CONVENIO", unique = true)
-	@Enumerated(EnumType.STRING)
-	public SituacaoTituloConvenio getSituacaoTituloConvenio() {
-		return situacaoTituloConvenio;
-	}
+//	@Column(name = "SITUACAO_TITULO_CONVENIO", unique = true)
+//	@Enumerated(EnumType.STRING)
+//	public SituacaoTituloConvenio getSituacaoTituloConvenio() {
+//		return situacaoTituloConvenio;
+//	}
 	
 	public void setId(int id) {
 		this.id = id;
@@ -408,9 +405,9 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		return compareToBuilder.toComparison();
 	}
 
-	public void setSituacaoTituloConvenio(SituacaoTituloConvenio situacaoTituloConvenio) {
-		this.situacaoTituloConvenio = situacaoTituloConvenio;
-	}
+//	public void setSituacaoTituloConvenio(SituacaoTituloConvenio situacaoTituloConvenio) {
+//		this.situacaoTituloConvenio = situacaoTituloConvenio;
+//	}
 
 	@Transient
 	public String getSituacaoTitulo() {
