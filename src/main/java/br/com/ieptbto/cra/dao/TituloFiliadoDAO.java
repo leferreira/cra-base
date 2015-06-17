@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -88,5 +89,20 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<TituloFiliado> buscarTitulosConvenios() {
+		Criteria criteria = getCriteria(TituloFiliado.class);
+		criteria.createAlias("filiado", "filiado");
+		criteria.createAlias("filiado.instituicaoConvenio", "instituicaoConvenio");
+		criteria.add(Restrictions.eq("situacaoTituloConvenio", SituacaoTituloConvenio.ENVIADO));
+		criteria.setProjection(Projections.groupProperty("filiado.instituicaoConvenio"));
+		criteria.addOrder(Order.asc("pracaProtesto"));
+		return criteria.list();
+	}
 
+	public int getNumeroDeTitulosPendentes() {
+		Criteria criteria = getCriteria(TituloFiliado.class);
+		criteria.add(Restrictions.eq("situacaoTituloConvenio", SituacaoTituloConvenio.ENVIADO));
+		return criteria.list().size();
+	}
 }
