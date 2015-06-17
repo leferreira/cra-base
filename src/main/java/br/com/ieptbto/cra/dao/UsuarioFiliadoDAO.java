@@ -9,7 +9,6 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Filiado;
-import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.UsuarioFiliado;
 
@@ -30,7 +29,7 @@ public class UsuarioFiliadoDAO extends AbstractBaseDAO {
 			novoUsuario = save(usuario);
 			usuarioFiliado.setUsuario(novoUsuario);
 			novoFiliado = save(usuarioFiliado);
-			
+
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
@@ -38,7 +37,7 @@ public class UsuarioFiliadoDAO extends AbstractBaseDAO {
 		}
 		return novoFiliado;
 	}
-	
+
 	public UsuarioFiliado alterar(Usuario usuario, UsuarioFiliado usuarioFiliado) {
 		UsuarioFiliado alterado = new UsuarioFiliado();
 		Transaction transaction = getBeginTransation();
@@ -56,9 +55,11 @@ public class UsuarioFiliadoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<UsuarioFiliado> listarUsuariosDoConvenio(Instituicao convenio) {
+	public List<UsuarioFiliado> listarUsuariosDoConvenio(Usuario usuario) {
 		Criteria criteria = getCriteria(UsuarioFiliado.class);
 		criteria.createAlias("usuario", "usuario");
+		criteria.add(Restrictions.eq("usuario.instituicao", usuario.getInstituicao()));
+
 		return criteria.list();
 	}
 

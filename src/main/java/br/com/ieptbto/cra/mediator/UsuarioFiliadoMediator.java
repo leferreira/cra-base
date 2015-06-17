@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.UsuarioFiliadoDAO;
 import br.com.ieptbto.cra.entidade.Filiado;
-import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.UsuarioFiliado;
 
@@ -20,17 +19,17 @@ public class UsuarioFiliadoMediator {
 
 	@Autowired
 	UsuarioFiliadoDAO usuarioFiliadoDAO;
-	
-	public UsuarioFiliado salvarUsuarioFiliado(Usuario user, UsuarioFiliado usuarioFiliado){
+
+	public UsuarioFiliado salvarUsuarioFiliado(Usuario user, UsuarioFiliado usuarioFiliado) {
 		return usuarioFiliadoDAO.salvar(user, usuarioFiliado);
 	}
-	
-	public UsuarioFiliado alterarUsuarioFiliado(Usuario user, UsuarioFiliado usuarioFiliado){
+
+	public UsuarioFiliado alterarUsuarioFiliado(Usuario user, UsuarioFiliado usuarioFiliado) {
 		return usuarioFiliadoDAO.alterar(user, usuarioFiliado);
 	}
-	
-	public List<UsuarioFiliado> buscarUsuariosDoConvenio(Instituicao convenio) {
-		return usuarioFiliadoDAO.listarUsuariosDoConvenio(convenio);
+
+	public List<UsuarioFiliado> buscarUsuariosDoConvenio(Usuario usuario) {
+		return usuarioFiliadoDAO.listarUsuariosDoConvenio(usuario);
 	}
 
 	public Filiado buscarEmpresaFiliadaDoUsuario(Usuario user) {
