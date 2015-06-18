@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,7 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.UsuarioFiliado;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
 
 /**
@@ -117,16 +119,59 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		return null;
 	}
 
-	public List<TituloFiliado> consultarTitulosConvenio(
-			Instituicao instituicao, TituloFiliado titulo,
-			String numeroProtocolo) {
-		// TODO Auto-generated method stub
-		return null;
+	@SuppressWarnings("unchecked")
+	public List<TituloFiliado> consultarTitulosConvenio(Instituicao instituicao, TituloFiliado titulo, String numeroProtocolo) {
+		Criteria criteriaTitulos = getCriteria(TituloFiliado.class);
+		criteriaTitulos.createAlias("filiado", "filiado");
+		criteriaTitulos.createAlias("filiado.instituicaoConvenio", "filiado.instituicaoConvenio");
+		criteriaTitulos.add(Restrictions.eq("filiado.instituicaoConvenio", instituicao));
+
+		if (titulo.getNumeroTitulo() != null)
+			criteriaTitulos.add(Restrictions.ilike("numeroTitulo", titulo.getNumeroTitulo(), MatchMode.EXACT));
+
+		if (titulo.getNomeDevedor() != null)
+			criteriaTitulos.add(Restrictions.ilike("nomeDevedor", titulo.getNomeDevedor(), MatchMode.ANYWHERE));
+
+		if (titulo.getDocumentoDevedor() != null)
+			criteriaTitulos.add(Restrictions.ilike("documentoDevedor", titulo.getDocumentoDevedor(), MatchMode.ANYWHERE));
+
+		if (titulo.getDataEmissao() != null)
+			criteriaTitulos.add(Restrictions.between("dataEmissao", titulo.getDataEmissao(), titulo.getDataEmissao()));
+
+		if (titulo.getPracaProtesto() != null)
+			criteriaTitulos.add(Restrictions.eq("pracaProtesto", titulo.getPracaProtesto()));
+		
+		criteriaTitulos.addOrder(Order.asc("nomeDevedor"));
+		return criteriaTitulos.list();
 	}
 
-	public List<TituloFiliado> consultarTitulosFiliado(Usuario usuarioFiliado,
-			TituloFiliado titulo, String numeroProtocolo) {
-		// TODO Auto-generated method stub
-		return null;
+	@SuppressWarnings("unchecked")
+	public List<TituloFiliado> consultarTitulosFiliado(Usuario usuarioFiliado,	TituloFiliado titulo, String numeroProtocolo) {
+		
+		Criteria criteria = getCriteria(UsuarioFiliado.class);
+		criteria.createAlias("filiado", "filiado");
+		criteria.add(Restrictions.eq("usuario", usuarioFiliado));
+		Filiado empresaFiliado  = UsuarioFiliado.class.cast(criteria.uniqueResult()).getFiliado();
+
+		Criteria criteriaTitulos = getCriteria(TituloFiliado.class);
+		criteriaTitulos.add(Restrictions.eq("filiado", empresaFiliado));
+
+		if (titulo.getNumeroTitulo() != null)
+			criteriaTitulos.add(Restrictions.ilike("numeroTitulo", titulo.getNumeroTitulo(), MatchMode.EXACT));
+
+		if (titulo.getNomeDevedor() != null)
+			criteriaTitulos.add(Restrictions.ilike("nomeDevedor", titulo.getNomeDevedor(), MatchMode.ANYWHERE));
+
+		if (titulo.getDocumentoDevedor() != null)
+			criteriaTitulos.add(Restrictions.ilike("documentoDevedor", titulo.getDocumentoDevedor(), MatchMode.ANYWHERE));
+
+		if (titulo.getDataEmissao() != null)
+			criteriaTitulos.add(Restrictions.between("dataEmissao", titulo.getDataEmissao(), titulo.getDataEmissao()));
+
+		if (titulo.getPracaProtesto() != null)
+			criteriaTitulos.add(Restrictions.eq("pracaProtesto", titulo.getPracaProtesto()));
+		
+		criteriaTitulos.addOrder(Order.asc("nomeDevedor"));
+		return criteriaTitulos.list();
 	}
 }

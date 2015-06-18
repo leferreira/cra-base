@@ -3,8 +3,14 @@ package br.com.ieptbto.cra.enumeration;
 import br.com.ieptbto.cra.exception.InfraException;
 
 public enum TipoEspecieTitulo implements CraEnum {
-	;
-
+	
+	CDA("CDA","Certidão Dívida Ativa"),
+	CH("CH","Cheque"),
+	DMI("DMI","Duplicata Venda Mercantil por Indicação"),
+	DSI("DSI","Duplicata de Prestação de Serviços"),
+	NP("NP","Nota Promissória"),
+	SJ("SJ","Sentença Judicial");
+	
 	private String constante;
 	private String label;
 

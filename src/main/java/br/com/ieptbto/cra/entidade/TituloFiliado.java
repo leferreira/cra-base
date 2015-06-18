@@ -148,7 +148,7 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 		return dataEnvioCRA;
 	}
 
-	@Column(name = "CPF_CNPJ_DEVEDOR", length = 11)
+	@Column(name = "CPF_CNPJ_DEVEDOR", length = 18)
 	public String getCpfCnpj() {
 		return CpfCnpj;
 	}
