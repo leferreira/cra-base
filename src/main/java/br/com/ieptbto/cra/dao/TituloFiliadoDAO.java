@@ -5,7 +5,6 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -23,7 +22,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 	public TituloFiliado salvar(TituloFiliado titulo) {
 		TituloFiliado novoTitulo = new TituloFiliado();
 		Transaction transaction = getBeginTransation();
-		
+
 		try {
 			novoTitulo = save(titulo);
 			transaction.commit();
@@ -31,14 +30,14 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
 		}
-		
+
 		return novoTitulo;
 	}
 
 	public TituloFiliado alterar(TituloFiliado titulo) {
 		TituloFiliado alterado = new TituloFiliado();
 		Transaction transaction = getBeginTransation();
-		
+
 		try {
 			alterado = update(titulo);
 			transaction.commit();
@@ -46,13 +45,13 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
 		}
-		
+
 		return alterado;
 	}
 
 	public void removerTituloFiliado(TituloFiliado titulo) {
 		Transaction transaction = getBeginTransation();
-		
+
 		try {
 			titulo.setSituacaoTituloConvenio(SituacaoTituloConvenio.REMOVIDO);
 			update(titulo);
@@ -75,10 +74,10 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 
 	public void enviarTitulosPendentes(List<TituloFiliado> listaTitulosFiliado) {
 		Transaction transaction = getBeginTransation();
-		
+
 		try {
-			
-			for (TituloFiliado titulo: listaTitulosFiliado) {
+
+			for (TituloFiliado titulo : listaTitulosFiliado) {
 				titulo.setSituacaoTituloConvenio(SituacaoTituloConvenio.ENVIADO);
 				update(titulo);
 			}
@@ -92,10 +91,14 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<TituloFiliado> buscarTitulosConvenios() {
 		Criteria criteria = getCriteria(TituloFiliado.class);
-		criteria.createAlias("filiado", "filiado");
-		criteria.createAlias("filiado.instituicaoConvenio", "instituicaoConvenio");
+		// criteria.createAlias("filiado", "filiado");
+		criteria.createAlias("pracaProtesto", "p");
+		// criteria.createAlias("filiado.instituicaoConvenio",
+		// "instituicaoConvenio");
+		// criteria.setProjection(Projections.distinct(Projections.property("pracaProtesto")));
+		// criteria.setProjection(Projections.projectionList().add(Projections.groupProperty("p.id")));
+
 		criteria.add(Restrictions.eq("situacaoTituloConvenio", SituacaoTituloConvenio.ENVIADO));
-		criteria.setProjection(Projections.groupProperty("filiado.instituicaoConvenio"));
 		criteria.addOrder(Order.asc("pracaProtesto"));
 		return criteria.list();
 	}

@@ -60,12 +60,12 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 		return numeroTitulo;
 	}
 
-	@Column(name = "VALOR_TITULO", nullable = false)
+	@Column(name = "VALOR_TITULO", precision = 19, scale = 2)
 	public BigDecimal getValorTitulo() {
 		return valorTitulo;
 	}
 
-	@Column(name = "VALOR_SALDO_TITULO")
+	@Column(name = "VALOR_SALDO_TITULO", precision = 19, scale = 2)
 	public BigDecimal getValorSaldoTitulo() {
 		return valorSaldoTitulo;
 	}
@@ -115,7 +115,8 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 		return ufDevedor;
 	}
 
-	@Column(name = "MUNICIPIO_ID")
+	@ManyToOne
+	@JoinColumn(name = "MUNICIPIO_ID")
 	public Municipio getPracaProtesto() {
 		return pracaProtesto;
 	}
