@@ -22,6 +22,7 @@ import org.joda.time.LocalDate;
 import br.com.ieptbto.cra.conversor.arquivo.TituloConversor;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
+import br.com.ieptbto.cra.enumeration.TipoRegistro;
 
 /**
  * 
@@ -73,7 +74,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	private String instrumentoProtesto;
 	private String complementoRegistro;
 	private String situacaoTitulo;
-//	private SituacaoTituloConvenio situacaoTituloConvenio;
+
+	// private SituacaoTituloConvenio situacaoTituloConvenio;
 
 	@Id
 	@Column(name = "ID_TITULO", columnDefinition = "serial")
@@ -248,12 +250,12 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		return complementoRegistro;
 	}
 
-//	@Column(name = "SITUACAO_TITULO_CONVENIO", unique = true)
-//	@Enumerated(EnumType.STRING)
-//	public SituacaoTituloConvenio getSituacaoTituloConvenio() {
-//		return situacaoTituloConvenio;
-//	}
-	
+	// @Column(name = "SITUACAO_TITULO_CONVENIO", unique = true)
+	// @Enumerated(EnumType.STRING)
+	// public SituacaoTituloConvenio getSituacaoTituloConvenio() {
+	// return situacaoTituloConvenio;
+	// }
+
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -405,9 +407,10 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		return compareToBuilder.toComparison();
 	}
 
-//	public void setSituacaoTituloConvenio(SituacaoTituloConvenio situacaoTituloConvenio) {
-//		this.situacaoTituloConvenio = situacaoTituloConvenio;
-//	}
+	// public void setSituacaoTituloConvenio(SituacaoTituloConvenio
+	// situacaoTituloConvenio) {
+	// this.situacaoTituloConvenio = situacaoTituloConvenio;
+	// }
 
 	@Transient
 	public String getSituacaoTitulo() {
@@ -424,5 +427,38 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	public static TituloRemessa parseTituloVO(TituloVO tituloVO) {
 		TituloRemessa titulo = new TituloConversor().converter(TituloRemessa.class, tituloVO);
 		return titulo;
+	}
+
+	public void parseTituloFiliado(TituloFiliado tituloFiliado) {
+		this.setAgenciaCodigoCedente(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + "/"
+		        + tituloFiliado.getFiliado().getCodigoFiliado());
+		this.setIdentificacaoRegistro(TipoRegistro.TITULO);
+		this.setCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
+		this.setNomeCedenteFavorecido(tituloFiliado.getFiliado().getRazaoSocial());
+		this.setNomeSacadorVendedor(tituloFiliado.getFiliado().getRazaoSocial());
+		this.setDocumentoSacador(tituloFiliado.getFiliado().getCnpjCpf());
+		this.setEnderecoSacadorVendedor(tituloFiliado.getFiliado().getEndereco());
+		this.setCepSacadorVendedor(tituloFiliado.getFiliado().getCep());
+		this.setUfSacadorVendedor(tituloFiliado.getFiliado().getUf());
+		this.setNossoNumero(tituloFiliado.getFiliado().getCodigoFiliado() + tituloFiliado.getId());
+		this.setEspecieTitulo(tituloFiliado.getEspecieTitulo().getConstante());
+		this.setNumeroTitulo(tituloFiliado.getNumeroTitulo());
+		this.setDataEmissaoTitulo(tituloFiliado.getDataEmissao());
+		this.setDataVencimentoTitulo(tituloFiliado.getDataVencimento());
+		this.setTipoMoeda("001");
+		this.setValorTitulo(tituloFiliado.getValorTitulo());
+		this.setSaldoTitulo(tituloFiliado.getValorSaldoTitulo());
+		this.setPracaProtesto(tituloFiliado.getPracaProtesto().getNomeMunicipio());
+		this.setNomeDevedor(tituloFiliado.getNomeDevedor());
+		this.setDocumentoDevedor(tituloFiliado.getDocumentoDevedor());
+		this.setEnderecoDevedor(tituloFiliado.getEnderecoDevedor());
+		this.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(tituloFiliado.getDocumentoDevedor()));
+		this.setNumeroIdentificacaoDevedor(tituloFiliado.getCpfCnpj());
+
+	}
+
+	private String verificarTipoIdentificacaoDevedor(String documentoDevedor2) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

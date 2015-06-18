@@ -43,7 +43,7 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 	private Integer qtdOriginaisRemessa;
 	private String agenciaCentralizadora;
 	private String versaoLayout;
-	private Integer codigoMunicipio;
+	private String codigoMunicipio;
 	private String complementoRegistro;
 	private String numeroSequencialRegistroArquivo;
 
@@ -116,7 +116,7 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 	}
 
 	@Column(name = "CODIGO_MUNICIPIO")
-	public Integer getCodigoMunicipio() {
+	public String getCodigoMunicipio() {
 		return codigoMunicipio;
 	}
 
@@ -182,7 +182,7 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 		this.versaoLayout = versaoLayout;
 	}
 
-	public void setCodigoMunicipio(Integer codigoMunicipio) {
+	public void setCodigoMunicipio(String codigoMunicipio) {
 		this.codigoMunicipio = codigoMunicipio;
 	}
 
@@ -204,7 +204,7 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 	public static CabecalhoRemessa parseCabecalhoVO(CabecalhoVO cabecalhoVO) {
 		CabecalhoRemessa cabecalho = new CabecalhoRemessa();
 		cabecalho.setAgenciaCentralizadora(cabecalhoVO.getAgenciaCentralizadora());
-		cabecalho.setCodigoMunicipio(Integer.parseInt(cabecalhoVO.getCodigoMunicipio()));
+		cabecalho.setCodigoMunicipio(cabecalhoVO.getCodigoMunicipio().trim());
 		cabecalho.setComplementoRegistro(cabecalhoVO.getComplementoRegistro());
 		cabecalho.setDataMovimento(DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, cabecalhoVO.getDataMovimento()));
 		cabecalho.setIdentificacaoRegistro(TipoRegistro.get(cabecalhoVO.getIdentificacaoRegistro()));

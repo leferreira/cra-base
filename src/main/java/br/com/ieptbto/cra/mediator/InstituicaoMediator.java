@@ -89,7 +89,7 @@ public class InstituicaoMediator {
 		return lista;
 	}
 
-	public Instituicao getInstituicaoPorCodigoIBGE(Integer codigoMunicipio) {
+	public Instituicao getInstituicaoPorCodigoIBGE(String codigoMunicipio) {
 		Instituicao instituicao = instituicaoDAO.getInstituicao(codigoMunicipio);
 		if (instituicao == null) {
 			throw new InfraException("Instituição não cadastrada com o código IBGE [" + codigoMunicipio + "]");
@@ -119,6 +119,12 @@ public class InstituicaoMediator {
 
 	public boolean isInstituicaoAtiva(Instituicao instituicao) {
 		return instituicaoDAO.isInstituicaoAtiva(instituicao);
+	}
+
+	public Instituicao buscarCRA() {
+		Instituicao instituicao = new Instituicao();
+		instituicao.setNomeFantasia("CRA");
+		return instituicaoDAO.buscarInstituicao(instituicao);
 	}
 
 }

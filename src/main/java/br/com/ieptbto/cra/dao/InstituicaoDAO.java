@@ -191,7 +191,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	}
 
 	@Transactional(readOnly = true)
-	public Instituicao getInstituicao(Integer codigoMunicipio) {
+	public Instituicao getInstituicao(String codigoMunicipio) {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.createAlias("municipio", "municipio");
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");

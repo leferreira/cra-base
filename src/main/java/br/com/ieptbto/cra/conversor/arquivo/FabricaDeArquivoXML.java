@@ -121,7 +121,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 	}
 
 	private Instituicao getInstituicaoDestino(String codigoMunicipio) {
-		return instituicaoMediator.getInstituicaoPorCodigoIBGE(Integer.parseInt(codigoMunicipio));
+		return instituicaoMediator.getInstituicaoPorCodigoIBGE(codigoMunicipio);
 	}
 
 	private Rodape getRodape(RodapeVO rodapeVO) {

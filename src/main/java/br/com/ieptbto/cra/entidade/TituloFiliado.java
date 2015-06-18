@@ -17,6 +17,7 @@ import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
+import br.com.ieptbto.cra.enumeration.TipoEspecieTitulo;
 
 /**
  * @author Thasso Araújo
@@ -46,6 +47,9 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	private String ufDevedor;
 	private Filiado filiado;
 	private SituacaoTituloConvenio situacaoTituloConvenio;
+	private LocalDate dataEnvioCRA;
+	private TipoEspecieTitulo especieTitulo;
+	private String CpfCnpj;
 
 	@Override
 	@Id
@@ -90,7 +94,7 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 		return tipoDocumentoDevedor;
 	}
 
-	@Column(name = "DOCUMENTO_DEVEDOR", length = 14)
+	@Column(name = "DOCUMENTO_DEVEDOR", length = 11)
 	public String getDocumentoDevedor() {
 		return documentoDevedor;
 	}
@@ -131,6 +135,30 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	@Enumerated(EnumType.STRING)
 	public SituacaoTituloConvenio getSituacaoTituloConvenio() {
 		return situacaoTituloConvenio;
+	}
+
+	@Column(name = "ESPECIE_TITULO")
+	@Enumerated(EnumType.STRING)
+	public TipoEspecieTitulo getEspecieTitulo() {
+		return especieTitulo;
+	}
+
+	@Column(name = "DATA_ENVIO_CRA")
+	public LocalDate getDataEnvioCRA() {
+		return dataEnvioCRA;
+	}
+
+	@Column(name = "CPF_CNPJ_DEVEDOR", length = 11)
+	public String getCpfCnpj() {
+		return CpfCnpj;
+	}
+
+	public void setCpfCnpj(String cpfCnpj) {
+		CpfCnpj = cpfCnpj;
+	}
+
+	public void setDataEnvioCRA(LocalDate dataEnvioCRA) {
+		this.dataEnvioCRA = dataEnvioCRA;
 	}
 
 	public void setId(int id) {
@@ -175,6 +203,10 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 
 	public void setCidadeDevedor(String cidadeDevedor) {
 		this.cidadeDevedor = cidadeDevedor;
+	}
+
+	public void setEspecieTitulo(TipoEspecieTitulo especieTitulo) {
+		this.especieTitulo = especieTitulo;
 	}
 
 	public void setCepDevedor(String cepDevedor) {

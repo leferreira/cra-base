@@ -290,7 +290,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public Retorno buscarTituloProtestado(String numeroProtocolo, Integer codigoIBGE) {
+	public Retorno buscarTituloProtestado(String numeroProtocolo, String codigoIBGE) {
 		Criteria criteria = getCriteria(Retorno.class);
 		criteria.createAlias("titulo", "titulo");
 		criteria.createAlias("cabecalho", "cabecalho");

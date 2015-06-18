@@ -18,34 +18,34 @@ import br.com.ieptbto.cra.entidade.Retorno;
  */
 @Service
 public class InstrumentoDeProtestoMediator {
-	
+
 	@Autowired
-	TituloDAO tituloDao; 
+	TituloDAO tituloDao;
 	@Autowired
 	InstrumentoProtestoDAO instrumentoDao;
 
-	public Retorno buscarTituloProtestado(String numeroProtocolo, Integer codigoIBGE) {
+	public Retorno buscarTituloProtestado(String numeroProtocolo, String codigoIBGE) {
 		return tituloDao.buscarTituloProtestado(numeroProtocolo, codigoIBGE);
 	}
 
 	public List<InstrumentoProtesto> processarInstrumentos(List<Retorno> listaRetorno) {
 		InstrumentoProtesto instrumentoSalvo = new InstrumentoProtesto();
 		List<InstrumentoProtesto> listaSlip = new ArrayList<InstrumentoProtesto>();
-		
-		for (Retorno retorno: listaRetorno){
+
+		for (Retorno retorno : listaRetorno) {
 			InstrumentoProtesto instrumento = new InstrumentoProtesto();
-			
+
 			instrumento.setDataDeEntrada(new LocalDate());
 			instrumento.setDataSlip(new LocalDate());
 			instrumento.setSituacao(false);
 			instrumento.setTitulo(tituloDao.buscarTituloPorChave(retorno.getTitulo()));
-			
+
 			instrumentoSalvo = instrumentoDao.salvarInstrumento(instrumento);
 			listaSlip.add(instrumentoSalvo);
 		}
 		return listaSlip;
 	}
-	
+
 	public List<InstrumentoProtesto> buscarInstrumentosParaSlip() {
 		return instrumentoDao.buscarInstrumentosParaSlip();
 	}

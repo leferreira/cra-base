@@ -14,7 +14,7 @@ import br.com.ieptbto.cra.entidade.Municipio;
 
 @Repository
 public class MunicipioDAO extends AbstractBaseDAO {
-	
+
 	private static final int CARTORIO = 2;
 
 	public Municipio salvar(Municipio municipio) {
@@ -56,17 +56,17 @@ public class MunicipioDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public Municipio buscaMunicipioPorCodigoIBGE(Integer codigoMunicipio) {
+	public Municipio buscaMunicipioPorCodigoIBGE(String codigoMunicipio) {
 		Criteria criteria = getCriteria(Municipio.class);
 		criteria.add(Restrictions.eq("codigoIBGE", codigoMunicipio));
 		return Municipio.class.cast(criteria.uniqueResult());
 	}
-	
+
 	public Municipio buscarMunicipioDoCartorio(Instituicao cartorio) {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.createAlias("municipio", "municipio");
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
-		
+
 		criteria.add(Restrictions.eq("tipoInstituicao.id", CARTORIO));
 		criteria.add(Restrictions.eq("nomeFantasia", cartorio.getNomeFantasia()));
 		criteria.setMaxResults(1);

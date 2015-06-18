@@ -20,7 +20,7 @@ public class Municipio extends AbstractEntidade<Municipio> {
 	private int id;
 	private String nomeMunicipio;
 	private String uf;
-	private Integer codigoIBGE;
+	private String codigoIBGE;
 	private boolean situacao;
 
 	@Id
@@ -41,7 +41,7 @@ public class Municipio extends AbstractEntidade<Municipio> {
 	}
 
 	@Column(name = "COD_IBGE", nullable = false, unique = true, length = 7)
-	public Integer getCodigoIBGE() {
+	public String getCodigoIBGE() {
 		return codigoIBGE;
 	}
 
@@ -62,7 +62,7 @@ public class Municipio extends AbstractEntidade<Municipio> {
 		this.uf = uf;
 	}
 
-	public void setCodigoIBGE(Integer codIBGE) {
+	public void setCodigoIBGE(String codIBGE) {
 		this.codigoIBGE = codIBGE;
 	}
 
