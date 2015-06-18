@@ -9,7 +9,10 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Filiado;
+import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
+import br.com.ieptbto.cra.entidade.TituloRemessa;
+import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
 
 /**
@@ -107,5 +110,23 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(TituloFiliado.class);
 		criteria.add(Restrictions.eq("situacaoTituloConvenio", SituacaoTituloConvenio.ENVIADO));
 		return criteria.list().size();
+	}
+
+	public TituloRemessa buscarTituloDoConvenioNaCra(TituloFiliado tituloFiliado) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<TituloFiliado> consultarTitulosConvenio(
+			Instituicao instituicao, TituloFiliado titulo,
+			String numeroProtocolo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<TituloFiliado> consultarTitulosFiliado(Usuario usuarioFiliado,
+			TituloFiliado titulo, String numeroProtocolo) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
