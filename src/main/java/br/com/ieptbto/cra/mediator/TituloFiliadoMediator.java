@@ -48,24 +48,25 @@ public class TituloFiliadoMediator {
 		tituloFiliadoDAO.enviarTitulosPendentes(listaTitulosFiliado);
 	}
 
-	public List<TituloFiliado> consultarTitulosConvenio(Instituicao instituicao, TituloFiliado titulo, String numeroProtocolo) {
-		return tituloFiliadoDAO.consultarTitulosConvenio(instituicao, titulo, numeroProtocolo);
+	public List<TituloFiliado> consultarTitulosConvenio(Instituicao instituicao, String nomeDevedor,
+			String numeroDocumento, String numeroTitulo, LocalDate dataEmissao,
+			Municipio pracaProtesto, Filiado filiado) {
+		return tituloFiliadoDAO.consultarTitulosConvenio(instituicao, nomeDevedor, numeroDocumento, numeroTitulo, dataEmissao, pracaProtesto, filiado);
 	}
 	
-	public List<TituloFiliado> consultarTitulosFiliado(Usuario usuarioFiliado, TituloFiliado titulo, String numeroProtocolo) {
-		return tituloFiliadoDAO.consultarTitulosFiliado(usuarioFiliado, titulo, numeroProtocolo);
+	public List<TituloFiliado> consultarTitulosFiliado(Usuario usuarioFiliado, String nomeDevedor,
+			String numeroDocumento, String numeroTitulo, LocalDate dataEmissao,
+			Municipio pracaProtesto) {
+		return tituloFiliadoDAO.consultarTitulosFiliado(usuarioFiliado, nomeDevedor, numeroDocumento, numeroTitulo, dataEmissao, pracaProtesto);
 	}
 
 	public List<TituloFiliado> buscarTitulosParaRelatorioFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim,
 			Municipio pracaProtesto) {
-		// TODO Auto-generated method stub
-		return null;
+		return tituloFiliadoDAO.buscarTitulosParaRelatorioFiliado(filiado, dataInicio, dataFim, pracaProtesto);
 	}
 
-	public List<TituloFiliado> buscarTitulosParaRelatorioConvenio(
-			Instituicao convenio, LocalDate dataInicio, LocalDate dataFim,
+	public List<TituloFiliado> buscarTitulosParaRelatorioConvenio(Instituicao convenio, Filiado filiado, LocalDate dataInicio, LocalDate dataFim,
 			Municipio pracaProtesto) {
-		// TODO Auto-generated method stub
-		return null;
+		return tituloFiliadoDAO.buscarTitulosParaRelatorioConvenio(convenio, filiado ,dataInicio, dataFim, pracaProtesto);
 	}
 }

@@ -7,10 +7,12 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -120,33 +122,40 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<TituloFiliado> consultarTitulosConvenio(Instituicao instituicao, TituloFiliado titulo, String numeroProtocolo) {
+	public List<TituloFiliado> consultarTitulosConvenio(Instituicao instituicao, String nomeDevedor,
+			String numeroDocumento, String numeroTitulo, LocalDate dataEmissao,
+			Municipio pracaProtesto, Filiado filiado) {
 		Criteria criteriaTitulos = getCriteria(TituloFiliado.class);
 		criteriaTitulos.createAlias("filiado", "filiado");
 		criteriaTitulos.createAlias("filiado.instituicaoConvenio", "filiado.instituicaoConvenio");
 		criteriaTitulos.add(Restrictions.eq("filiado.instituicaoConvenio", instituicao));
 
-		if (titulo.getNumeroTitulo() != null)
-			criteriaTitulos.add(Restrictions.ilike("numeroTitulo", titulo.getNumeroTitulo(), MatchMode.EXACT));
+		if (filiado != null)
+			criteriaTitulos.add(Restrictions.eq("filiado", filiado));
 
-		if (titulo.getNomeDevedor() != null)
-			criteriaTitulos.add(Restrictions.ilike("nomeDevedor", titulo.getNomeDevedor(), MatchMode.ANYWHERE));
+		if (numeroTitulo != null)
+			criteriaTitulos.add(Restrictions.ilike("numeroTitulo", numeroTitulo, MatchMode.EXACT));
 
-		if (titulo.getDocumentoDevedor() != null)
-			criteriaTitulos.add(Restrictions.ilike("documentoDevedor", titulo.getDocumentoDevedor(), MatchMode.ANYWHERE));
+		if (nomeDevedor != null)
+			criteriaTitulos.add(Restrictions.ilike("nomeDevedor", nomeDevedor, MatchMode.ANYWHERE));
 
-		if (titulo.getDataEmissao() != null)
-			criteriaTitulos.add(Restrictions.between("dataEmissao", titulo.getDataEmissao(), titulo.getDataEmissao()));
+		if (numeroDocumento != null)
+			criteriaTitulos.add(Restrictions.ilike("documentoDevedor", numeroDocumento, MatchMode.ANYWHERE));
 
-		if (titulo.getPracaProtesto() != null)
-			criteriaTitulos.add(Restrictions.eq("pracaProtesto", titulo.getPracaProtesto()));
+		if (dataEmissao != null)
+			criteriaTitulos.add(Restrictions.between("dataEmissao", dataEmissao, dataEmissao));
+
+		if (pracaProtesto != null)
+			criteriaTitulos.add(Restrictions.eq("pracaProtesto", pracaProtesto));
 		
-		criteriaTitulos.addOrder(Order.asc("nomeDevedor"));
+		criteriaTitulos.addOrder(Order.desc("nomeDevedor"));
 		return criteriaTitulos.list();
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<TituloFiliado> consultarTitulosFiliado(Usuario usuarioFiliado,	TituloFiliado titulo, String numeroProtocolo) {
+	public List<TituloFiliado> consultarTitulosFiliado(Usuario usuarioFiliado,	String nomeDevedor,
+			String numeroDocumento, String numeroTitulo, LocalDate dataEmissao,
+			Municipio pracaProtesto) {
 		
 		Criteria criteria = getCriteria(UsuarioFiliado.class);
 		criteria.createAlias("filiado", "filiado");
@@ -156,22 +165,59 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		Criteria criteriaTitulos = getCriteria(TituloFiliado.class);
 		criteriaTitulos.add(Restrictions.eq("filiado", empresaFiliado));
 
-		if (titulo.getNumeroTitulo() != null)
-			criteriaTitulos.add(Restrictions.ilike("numeroTitulo", titulo.getNumeroTitulo(), MatchMode.EXACT));
+		if (numeroTitulo != null)
+			criteriaTitulos.add(Restrictions.ilike("numeroTitulo", numeroTitulo, MatchMode.EXACT));
 
-		if (titulo.getNomeDevedor() != null)
-			criteriaTitulos.add(Restrictions.ilike("nomeDevedor", titulo.getNomeDevedor(), MatchMode.ANYWHERE));
+		if (nomeDevedor != null)
+			criteriaTitulos.add(Restrictions.ilike("nomeDevedor", nomeDevedor, MatchMode.ANYWHERE));
 
-		if (titulo.getDocumentoDevedor() != null)
-			criteriaTitulos.add(Restrictions.ilike("documentoDevedor", titulo.getDocumentoDevedor(), MatchMode.ANYWHERE));
+		if (numeroDocumento != null)
+			criteriaTitulos.add(Restrictions.ilike("documentoDevedor", numeroDocumento, MatchMode.ANYWHERE));
 
-		if (titulo.getDataEmissao() != null)
-			criteriaTitulos.add(Restrictions.between("dataEmissao", titulo.getDataEmissao(), titulo.getDataEmissao()));
+		if (dataEmissao != null)
+			criteriaTitulos.add(Restrictions.between("dataEmissao", dataEmissao, dataEmissao));
 
-		if (titulo.getPracaProtesto() != null)
-			criteriaTitulos.add(Restrictions.eq("pracaProtesto", titulo.getPracaProtesto()));
+		if (pracaProtesto != null)
+			criteriaTitulos.add(Restrictions.eq("pracaProtesto", pracaProtesto));
 		
 		criteriaTitulos.addOrder(Order.asc("nomeDevedor"));
 		return criteriaTitulos.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<TituloFiliado> buscarTitulosParaRelatorioFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim,
+			Municipio pracaProtesto) {
+		Criteria criteria = getCriteria(TituloFiliado.class);
+
+		if (filiado != null)
+			criteria.add(Restrictions.eq("filiado", filiado));
+		
+		if (pracaProtesto != null){
+			criteria.add(Restrictions.eq("pracaProtesto", pracaProtesto));
+		}
+		
+		criteria.add(Restrictions.between("dataEmissao", dataInicio, dataFim));
+		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<TituloFiliado> buscarTitulosParaRelatorioConvenio(Instituicao convenio, Filiado filiado, LocalDate dataInicio,
+			LocalDate dataFim, Municipio pracaProtesto) {
+		Criteria criteria = getCriteria(TituloFiliado.class);
+
+		if (convenio != null){
+			criteria.createAlias("filiado", "filiado");
+			criteria.add(Restrictions.eq("filiado.instituicaoConvenio", convenio));
+		}
+		
+		if (filiado != null)
+			criteria.add(Restrictions.eq("filiado", filiado));
+		
+		if (pracaProtesto != null){
+			criteria.add(Restrictions.eq("pracaProtesto", pracaProtesto));
+		}
+		
+		criteria.add(Restrictions.between("dataEmissao", dataInicio, dataFim));
+		return criteria.list();
 	}
 }
