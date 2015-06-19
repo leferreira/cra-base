@@ -51,8 +51,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 		return razaoSocial;
 	}
 
-//	@Column(name = "CPF_CNPJ", length = 11, unique = true, nullable = false)
-	@Column(name = "CPF_CNPJ", length = 18, unique = true, nullable = false)
+	@Column(name = "CPF_CNPJ", length = 11, unique = true, nullable = false)
 	public String getCnpjCpf() {
 		return cnpjCpf;
 	}
@@ -62,7 +61,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 		return endereco;
 	}
 
-	@Column(name = "CEP", length = 11)
+	@Column(name = "CEP", length = 8)
 	public String getCep() {
 		return cep;
 	}
