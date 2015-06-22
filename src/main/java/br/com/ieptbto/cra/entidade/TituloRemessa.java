@@ -454,6 +454,9 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.setEnderecoDevedor(tituloFiliado.getEnderecoDevedor());
 		this.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(tituloFiliado.getDocumentoDevedor()));
 		this.setNumeroIdentificacaoDevedor(tituloFiliado.getCpfCnpj());
+		this.setCepDevedor(tituloFiliado.getCepDevedor());
+		this.setCidadeDevedor(tituloFiliado.getCidadeDevedor());
+		this.setUfDevedor(tituloFiliado.getUfDevedor());
 
 	}
 

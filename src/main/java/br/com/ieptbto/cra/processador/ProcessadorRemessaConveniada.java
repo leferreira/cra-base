@@ -1,5 +1,6 @@
 package br.com.ieptbto.cra.processador;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,29 +40,30 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private Map<chaveTitulo, TituloFiliado> mapaTitulos;
 	private List<TituloFiliado> listTitulosFiliado;
 	private Usuario usuario;
-	private List<Remessa> remessas;
 	private Arquivo arquivo;
+	private List<Remessa> remessas;
 
 	public Arquivo processar(List<TituloFiliado> listaTitulosConvenios, Usuario usuario) {
 		this.listTitulosFiliado = listaTitulosConvenios;
 		this.usuario = usuario;
 		agruparTitulosFiliado();
 		gerarRemessas();
+		getArquivo().setRemessas(getRemessas());
 
-		return null;
+		return getArquivo();
 	}
 
 	private void gerarRemessas() {
 		Map<chaveTitulo, Remessa> mapaRemessa = new HashMap<chaveTitulo, Remessa>();
 		for (chaveTitulo key : getMapaTitulos().keySet()) {
 			if (mapaRemessa.containsKey(key)) {
-				atualizaRemessa(getMapaTitulos().get(key));
+				atualizaRemessa(mapaRemessa.get(key), getMapaTitulos().get(key));
 
 			} else {
 				mapaRemessa.put(key, criarRemessa(getMapaTitulos().get(key)));
 			}
 		}
-
+		setRemessas(new ArrayList<Remessa>(mapaRemessa.values()));
 	}
 
 	private Remessa criarRemessa(TituloFiliado tituloFiliado) {
@@ -102,8 +104,19 @@ public class ProcessadorRemessaConveniada extends Processador {
 		return tituloFiliado.getFiliado().getInstituicaoConvenio();
 	}
 
-	private void atualizaRemessa(TituloFiliado tituloFiliado) {
-		// TODO Auto-generated method stub
+	private void atualizaRemessa(Remessa remessa, TituloFiliado tituloFiliado) {
+		int quantidade = remessa.getCabecalho().getQtdTitulosRemessa() + 1;
+		BigDecimal valorSaldo = remessa.getRodape().getSomatorioValorRemessa().add(tituloFiliado.getValorSaldoTitulo());
+		remessa.getCabecalho().setQtdIndicacoesRemessa(quantidade);
+		remessa.getCabecalho().setQtdOriginaisRemessa(quantidade);
+		remessa.getCabecalho().setQtdTitulosRemessa(quantidade);
+		remessa.getCabecalho().setQtdRegistrosRemessa(quantidade);
+		remessa.getRodape().setSomatorioValorRemessa(valorSaldo);
+		remessa.getRodape().setSomatorioQtdRemessa(valorSaldo);
+
+		TituloRemessa titulo = new TituloRemessa();
+		titulo.parseTituloFiliado(tituloFiliado);
+		remessa.getTitulos().add(titulo);
 
 	}
 
@@ -140,6 +153,9 @@ public class ProcessadorRemessaConveniada extends Processador {
 		cabecalho.setNumeroCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
 		cabecalho.setNumeroSequencialRegistroArquivo("0001");
 		cabecalho.setVersaoLayout("043");
+		cabecalho.setQtdTitulosRemessa(1);
+		cabecalho.setQtdOriginaisRemessa(1);
+		cabecalho.setQtdRegistrosRemessa(1);
 		cabecalho.setDataMovimento(new LocalDate());
 
 		return cabecalho;
@@ -183,6 +199,14 @@ public class ProcessadorRemessaConveniada extends Processador {
 
 	public void setArquivo(Arquivo arquivo) {
 		this.arquivo = arquivo;
+	}
+
+	public List<Remessa> getRemessas() {
+		return remessas;
+	}
+
+	public void setRemessas(List<Remessa> remessas) {
+		this.remessas = remessas;
 	}
 
 }
