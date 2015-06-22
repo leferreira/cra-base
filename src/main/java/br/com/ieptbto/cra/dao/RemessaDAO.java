@@ -23,6 +23,7 @@ import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 
 /**
  * @author Thasso Araújo
@@ -42,7 +43,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "a");
 
-		if (!usuarioCorrente.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals("CRA"))
+		if (!usuarioCorrente.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA))
 			criteria.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoDestino", usuarioCorrente.getInstituicao()))
 			        .add(Restrictions.eq("instituicaoOrigem", usuarioCorrente.getInstituicao())));
 
@@ -185,11 +186,11 @@ public class RemessaDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoOrigem", instituicao))
 			        .add(Restrictions.eq("instituicaoDestino", instituicao)));
 		}
-		
+
 		TipoArquivoEnum tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
 		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA))
 			criteria.add(Restrictions.eq("arquivo", arquivo));
-		else 
+		else
 			criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
 		List<Remessa> remessas = criteria.list();
 

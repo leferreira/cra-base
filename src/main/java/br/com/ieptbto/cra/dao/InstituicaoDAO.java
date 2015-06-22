@@ -196,7 +196,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		criteria.createAlias("municipio", "municipio");
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
 		criteria.add(Restrictions.eq("municipio.codigoIBGE", codigoMunicipio));
-		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
+		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 		return Instituicao.class.cast(criteria.uniqueResult());
 	}
 

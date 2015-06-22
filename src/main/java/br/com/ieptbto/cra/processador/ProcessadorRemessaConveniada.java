@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.processador;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Rodape;
+import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
@@ -36,6 +38,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
+	@Autowired
 	private TipoArquivoMediator tipoArquivoMediator;
 	private Map<chaveTitulo, TituloFiliado> mapaTitulos;
 	private List<TituloFiliado> listTitulosFiliado;
@@ -54,13 +57,13 @@ public class ProcessadorRemessaConveniada extends Processador {
 	}
 
 	private void gerarRemessas() {
-		Map<chaveTitulo, Remessa> mapaRemessa = new HashMap<chaveTitulo, Remessa>();
+		Map<String, Remessa> mapaRemessa = new HashMap<String, Remessa>();
 		for (chaveTitulo key : getMapaTitulos().keySet()) {
-			if (mapaRemessa.containsKey(key)) {
-				atualizaRemessa(mapaRemessa.get(key), getMapaTitulos().get(key));
+			if (mapaRemessa.containsKey(key.toString())) {
+				atualizaRemessa(mapaRemessa.get(key.toString()), getMapaTitulos().get(key));
 
 			} else {
-				mapaRemessa.put(key, criarRemessa(getMapaTitulos().get(key)));
+				mapaRemessa.put(key.toString(), criarRemessa(getMapaTitulos().get(key)));
 			}
 		}
 		setRemessas(new ArrayList<Remessa>(mapaRemessa.values()));
@@ -73,6 +76,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		remessa.setCabecalho(setCabecalho(tituloFiliado));
 		remessa.setDataRecebimento(new LocalDate());
 		remessa.setRodape(setRodape(tituloFiliado));
+		remessa.getRodape().setRemessa(remessa);
 		remessa.setInstituicaoDestino(setInstituicaoDestino(tituloFiliado));
 		remessa.setTitulos(setTitulosRemessa(listaTitulos, tituloFiliado));
 		remessa.setInstituicaoOrigem(setInstituicaoOrigem(tituloFiliado));
@@ -87,7 +91,15 @@ public class ProcessadorRemessaConveniada extends Processador {
 		getArquivo().setNomeArquivo(montarNomeArquivo(tituloFiliado));
 		getArquivo().setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.REMESSA));
 		getArquivo().setUsuarioEnvio(getUsuario());
+		getArquivo().setStatusArquivo(gerarStatusArquivo());
 		return getArquivo();
+	}
+
+	private StatusArquivo gerarStatusArquivo() {
+		StatusArquivo status = new StatusArquivo();
+		status.setData(new Date());
+		status.setStatus("AGUARDANDO");
+		return status;
 	}
 
 	public static void main(String[] args) {
@@ -137,7 +149,8 @@ public class ProcessadorRemessaConveniada extends Processador {
 		rodape.setIdentificacaoRegistro(TipoRegistro.RODAPE);
 		rodape.setNomePortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getRazaoSocial());
 		rodape.setNumeroCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
-
+		rodape.getSomatorioQtdRemessa().add(tituloFiliado.getValorSaldoTitulo());
+		rodape.getSomatorioValorRemessa().add(tituloFiliado.getValorSaldoTitulo());
 		return rodape;
 	}
 
@@ -170,6 +183,9 @@ public class ProcessadorRemessaConveniada extends Processador {
 	}
 
 	public Map<chaveTitulo, TituloFiliado> getMapaTitulos() {
+		if (mapaTitulos == null) {
+			mapaTitulos = new HashMap<chaveTitulo, TituloFiliado>();
+		}
 		return mapaTitulos;
 	}
 

@@ -86,11 +86,17 @@ public class Rodape extends AbstractEntidade<Rodape> {
 
 	@Column(name = "QTD_REMESSA")
 	public BigDecimal getSomatorioQtdRemessa() {
+		if (somatorioQtdRemessa == null) {
+			somatorioQtdRemessa = BigDecimal.ZERO;
+		}
 		return somatorioQtdRemessa;
 	}
 
 	@Column(name = "SOMATORIO_VLR_REMESSA")
 	public BigDecimal getSomatorioValorRemessa() {
+		if (somatorioValorRemessa == null) {
+			somatorioValorRemessa = BigDecimal.ZERO;
+		}
 		return somatorioValorRemessa;
 	}
 

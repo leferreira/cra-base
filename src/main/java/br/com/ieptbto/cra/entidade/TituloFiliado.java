@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
@@ -150,7 +151,10 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 
 	@Column(name = "CPF_CNPJ_DEVEDOR", length = 18)
 	public String getCpfCnpj() {
-		return CpfCnpj;
+		if (CpfCnpj == null) {
+			CpfCnpj = StringUtils.EMPTY;
+		}
+		return CpfCnpj.replace(".", "").replace("-", "").replace("/", "").trim();
 	}
 
 	public void setCpfCnpj(String cpfCnpj) {
