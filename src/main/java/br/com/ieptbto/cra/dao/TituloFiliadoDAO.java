@@ -18,6 +18,7 @@ import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.UsuarioFiliado;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
+import br.com.ieptbto.cra.exception.InfraException;
 
 /**
  * @author Thasso Araújo
@@ -122,9 +123,8 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<TituloFiliado> consultarTitulosConvenio(Instituicao instituicao, String nomeDevedor,
-			String numeroDocumento, String numeroTitulo, LocalDate dataEmissao,
-			Municipio pracaProtesto, Filiado filiado) {
+	public List<TituloFiliado> consultarTitulosConvenio(Instituicao instituicao, String nomeDevedor, String numeroDocumento,
+	        String numeroTitulo, LocalDate dataEmissao, Municipio pracaProtesto, Filiado filiado) {
 		Criteria criteriaTitulos = getCriteria(TituloFiliado.class);
 		criteriaTitulos.createAlias("filiado", "filiado");
 		criteriaTitulos.createAlias("filiado.instituicaoConvenio", "filiado.instituicaoConvenio");
@@ -147,20 +147,19 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 
 		if (pracaProtesto != null)
 			criteriaTitulos.add(Restrictions.eq("pracaProtesto", pracaProtesto));
-		
+
 		criteriaTitulos.addOrder(Order.desc("nomeDevedor"));
 		return criteriaTitulos.list();
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<TituloFiliado> consultarTitulosFiliado(Usuario usuarioFiliado,	String nomeDevedor,
-			String numeroDocumento, String numeroTitulo, LocalDate dataEmissao,
-			Municipio pracaProtesto) {
-		
+	public List<TituloFiliado> consultarTitulosFiliado(Usuario usuarioFiliado, String nomeDevedor, String numeroDocumento,
+	        String numeroTitulo, LocalDate dataEmissao, Municipio pracaProtesto) {
+
 		Criteria criteria = getCriteria(UsuarioFiliado.class);
 		criteria.createAlias("filiado", "filiado");
 		criteria.add(Restrictions.eq("usuario", usuarioFiliado));
-		Filiado empresaFiliado  = UsuarioFiliado.class.cast(criteria.uniqueResult()).getFiliado();
+		Filiado empresaFiliado = UsuarioFiliado.class.cast(criteria.uniqueResult()).getFiliado();
 
 		Criteria criteriaTitulos = getCriteria(TituloFiliado.class);
 		criteriaTitulos.add(Restrictions.eq("filiado", empresaFiliado));
@@ -179,45 +178,60 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 
 		if (pracaProtesto != null)
 			criteriaTitulos.add(Restrictions.eq("pracaProtesto", pracaProtesto));
-		
+
 		criteriaTitulos.addOrder(Order.asc("nomeDevedor"));
 		return criteriaTitulos.list();
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<TituloFiliado> buscarTitulosParaRelatorioFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim,
-			Municipio pracaProtesto) {
+	        Municipio pracaProtesto) {
 		Criteria criteria = getCriteria(TituloFiliado.class);
 
 		if (filiado != null)
 			criteria.add(Restrictions.eq("filiado", filiado));
-		
-		if (pracaProtesto != null){
+
+		if (pracaProtesto != null) {
 			criteria.add(Restrictions.eq("pracaProtesto", pracaProtesto));
 		}
-		
+
 		criteria.add(Restrictions.between("dataEmissao", dataInicio, dataFim));
 		return criteria.list();
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<TituloFiliado> buscarTitulosParaRelatorioConvenio(Instituicao convenio, Filiado filiado, LocalDate dataInicio,
-			LocalDate dataFim, Municipio pracaProtesto) {
+	        LocalDate dataFim, Municipio pracaProtesto) {
 		Criteria criteria = getCriteria(TituloFiliado.class);
 
-		if (convenio != null){
+		if (convenio != null) {
 			criteria.createAlias("filiado", "filiado");
 			criteria.add(Restrictions.eq("filiado.instituicaoConvenio", convenio));
 		}
-		
+
 		if (filiado != null)
 			criteria.add(Restrictions.eq("filiado", filiado));
-		
-		if (pracaProtesto != null){
+
+		if (pracaProtesto != null) {
 			criteria.add(Restrictions.eq("pracaProtesto", pracaProtesto));
 		}
-		
+
 		criteria.add(Restrictions.between("dataEmissao", dataInicio, dataFim));
 		return criteria.list();
+	}
+
+	public void marcarComoEnviadoParaCRA(List<TituloFiliado> listaTitulosConvenios) {
+		try {
+			for (TituloFiliado tituloFiliado : listaTitulosConvenios) {
+				Transaction transaction = getBeginTransation();
+				tituloFiliado.setSituacaoTituloConvenio(SituacaoTituloConvenio.EM_PROCESSO);
+				update(tituloFiliado);
+				transaction.commit();
+				logger.info("Titulo Filiado enviado para o cartório com sucesso {" + tituloFiliado.getId() + "}");
+			}
+		} catch (Exception ex) {
+			logger.error(ex.getMessage());
+			new InfraException(ex.getMessage(), ex.getCause());
+		}
 	}
 }

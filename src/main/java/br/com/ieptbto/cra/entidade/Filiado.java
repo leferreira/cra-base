@@ -51,7 +51,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 		return razaoSocial;
 	}
 
-	@Column(name = "CPF_CNPJ", length = 11, unique = true, nullable = false)
+	@Column(name = "CPF_CNPJ", length = 14, unique = true, nullable = false)
 	public String getCnpjCpf() {
 		return cnpjCpf;
 	}
@@ -92,7 +92,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	public List<UsuarioFiliado> getUsuariosFiliados() {
 		return usuariosFiliados;
 	}
-	
+
 	@OneToMany(mappedBy = "filiado")
 	public List<TituloFiliado> getTitulosFiliado() {
 		return titulosFiliado;
@@ -142,7 +142,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	public void setUsuariosFiliados(List<UsuarioFiliado> usuariosFiliados) {
 		this.usuariosFiliados = usuariosFiliados;
 	}
-	
+
 	public void setTitulosFiliado(List<TituloFiliado> titulosFiliado) {
 		this.titulosFiliado = titulosFiliado;
 	}
@@ -150,7 +150,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	public void setAtivo(Boolean ativo) {
 		this.ativo = ativo;
 	}
-	
+
 	@Override
 	public int compareTo(Filiado entidade) {
 		// TODO Auto-generated method stub
