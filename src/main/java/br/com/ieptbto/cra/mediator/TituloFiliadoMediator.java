@@ -48,16 +48,12 @@ public class TituloFiliadoMediator {
 		tituloFiliadoDAO.enviarTitulosPendentes(listaTitulosFiliado);
 	}
 
-	public List<TituloFiliado> consultarTitulosConvenio(Instituicao instituicao, String nomeDevedor,
-			String numeroDocumento, String numeroTitulo, LocalDate dataEmissao,
-			Municipio pracaProtesto, Filiado filiado) {
-		return tituloFiliadoDAO.consultarTitulosConvenio(instituicao, nomeDevedor, numeroDocumento, numeroTitulo, dataEmissao, pracaProtesto, filiado);
+	public List<TituloFiliado> consultarTitulosFiliado(Usuario user, TituloFiliado tituloBuscado) {
+		return tituloFiliadoDAO.consultarTitulosFiliado(user, tituloBuscado);
 	}
-	
-	public List<TituloFiliado> consultarTitulosFiliado(Usuario usuarioFiliado, String nomeDevedor,
-			String numeroDocumento, String numeroTitulo, LocalDate dataEmissao,
-			Municipio pracaProtesto) {
-		return tituloFiliadoDAO.consultarTitulosFiliado(usuarioFiliado, nomeDevedor, numeroDocumento, numeroTitulo, dataEmissao, pracaProtesto);
+
+	public List<TituloFiliado> consultarTitulosConvenio(Instituicao instituicao, TituloFiliado tituloBuscado) {
+		return tituloFiliadoDAO.consultarTitulosConvenio(instituicao, tituloBuscado);
 	}
 
 	public List<TituloFiliado> buscarTitulosParaRelatorioFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim,

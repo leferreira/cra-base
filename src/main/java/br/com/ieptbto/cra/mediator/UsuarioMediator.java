@@ -172,17 +172,6 @@ public class UsuarioMediator {
 		tipoArquivoDao.inserirTipoArquivo("AC");
 
 		/*
-		 * Inserindo a instituição CRA
-		 */
-		// Municipio m = new Municipio();
-		// m.setNomeMunicipio("Palmas");
-		// m.setUf("TO");
-		// m.setCodigoIBGE(1721000);
-		// m.setSituacao(true);
-		// Municipio m = municipioMediator.buscarMunicipio("Palmas");
-		// instituicaoDao.inserirInstituicaoInicial(m);
-
-		/*
 		 * Inserindo os Grupos dos Usuário e as Permissões
 		 */
 		GrupoUsuario grupo1 = new GrupoUsuario();
@@ -202,6 +191,12 @@ public class UsuarioMediator {
 		String[] roles2 = { CraRoles.USER };
 		grupo3.setRoles(new Roles(roles2));
 		grupoUsuarioDao.inserirGruposCargaInicial(grupo3);
+		
+		GrupoUsuario grupo4 = new GrupoUsuario();
+		grupo4.setGrupo("Convênio");
+		String[] roles4 = { CraRoles.SUPER, Roles.ADMIN };
+		grupo4.setRoles(new Roles(roles4));
+		grupoUsuarioDao.inserirGruposCargaInicial(grupo4);
 
 		/*
 		 * Inserindo o usuário de teste

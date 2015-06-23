@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
 
 /**
@@ -51,9 +52,12 @@ public class Filiado extends AbstractEntidade<Filiado> {
 		return razaoSocial;
 	}
 
-	@Column(name = "CPF_CNPJ", length = 14, unique = true, nullable = false)
+	@Column(name = "CPF_CNPJ", length = 18, unique = true, nullable = false)
 	public String getCnpjCpf() {
-		return cnpjCpf;
+		if (cnpjCpf == null){
+			cnpjCpf = StringUtils.EMPTY;
+		}
+		return cnpjCpf.replace(".", "").replace("-", "").replace("/", "").trim();
 	}
 
 	@Column(name = "ENDERECO", length = 45)
@@ -61,9 +65,12 @@ public class Filiado extends AbstractEntidade<Filiado> {
 		return endereco;
 	}
 
-	@Column(name = "CEP", length = 8)
+	@Column(name = "CEP", length = 10)
 	public String getCep() {
-		return cep;
+		if (cep == null){
+			cep = StringUtils.EMPTY;
+		}
+		return cep.replace(".", "").replace("-", "").trim();
 	}
 
 	@ManyToOne
