@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -72,6 +74,21 @@ public class Municipio extends AbstractEntidade<Municipio> {
 
 	@Override
 	public int compareTo(Municipio entidade) {
-		return 0;
+		CompareToBuilder compareToBuilder = new CompareToBuilder();
+		compareToBuilder.append(this.getId(), entidade.getId());
+		compareToBuilder.append(this.getCodigoIBGE(), entidade.getCodigoIBGE());
+		return compareToBuilder.toComparison();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Municipio) {
+			Municipio modalidade = Municipio.class.cast(obj);
+			EqualsBuilder equalsBuilder = new EqualsBuilder();
+			equalsBuilder.append(this.getId(), modalidade.getId());
+			equalsBuilder.append(this.getCodigoIBGE(), modalidade.getCodigoIBGE());
+			return equalsBuilder.isEquals();
+		}
+		return false;
 	}
 }
