@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
@@ -71,12 +72,18 @@ public class Rodape extends AbstractEntidade<Rodape> {
 
 	@Column(name = "CODIGO_PORTADOR")
 	public String getNumeroCodigoPortador() {
-		return numeroCodigoPortador;
+		if (numeroCodigoPortador == null) {
+			numeroCodigoPortador = StringUtils.EMPTY;
+		}
+		return numeroCodigoPortador.trim();
 	}
 
 	@Column(name = "NOME_PORTADOR")
 	public String getNomePortador() {
-		return nomePortador;
+		if (nomePortador == null) {
+			nomePortador = StringUtils.EMPTY;
+		}
+		return nomePortador.trim();
 	}
 
 	@Column(name = "DATA_MOVIMENTO")
@@ -102,12 +109,18 @@ public class Rodape extends AbstractEntidade<Rodape> {
 
 	@Column(name = "COMPLEMENTO_REGISTRO")
 	public String getComplementoRegistro() {
-		return complementoRegistro;
+		if (complementoRegistro == null) {
+			complementoRegistro = StringUtils.EMPTY;
+		}
+		return complementoRegistro.trim();
 	}
 
 	@Column(name = "NUMERO_SEQUENCIAL")
 	public String getNumeroSequencialRegistroArquivo() {
-		return numeroSequencialRegistroArquivo;
+		if (numeroSequencialRegistroArquivo == null) {
+			numeroSequencialRegistroArquivo = StringUtils.EMPTY;
+		}
+		return numeroSequencialRegistroArquivo.trim();
 	}
 
 	public void setId(int id) {

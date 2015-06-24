@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
@@ -67,12 +68,18 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 
 	@Column(name = "NUMERO_CODIGO_PORTADOR", length = 3)
 	public String getNumeroCodigoPortador() {
-		return numeroCodigoPortador;
+		if (numeroCodigoPortador == null) {
+			numeroCodigoPortador = StringUtils.EMPTY;
+		}
+		return numeroCodigoPortador.trim();
 	}
 
 	@Column(name = "NOME_PORTADOR")
 	public String getNomePortador() {
-		return nomePortador;
+		if (nomePortador == null) {
+			nomePortador = StringUtils.EMPTY;
+		}
+		return nomePortador.trim();
 	}
 
 	@Column(name = "DATA_MOVIMENTO")
@@ -82,32 +89,50 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 
 	@Column(name = "NUMERO_SEQUENCIAL_REMESSA")
 	public Integer getNumeroSequencialRemessa() {
+		if (numeroSequencialRemessa == null) {
+			numeroSequencialRemessa = 1;
+		}
 		return numeroSequencialRemessa;
 	}
 
 	@Column(name = "QUANTIDADE_REGISTROS_REMESSA")
 	public Integer getQtdRegistrosRemessa() {
+		if (qtdOriginaisRemessa == null) {
+			qtdOriginaisRemessa = 0;
+		}
 		return qtdRegistrosRemessa;
 	}
 
 	@Column(name = "QUANTIDADE_TITULOS_REMESSA")
 	public Integer getQtdTitulosRemessa() {
+		if (qtdOriginaisRemessa == null) {
+			qtdOriginaisRemessa = 0;
+		}
 		return qtdTitulosRemessa;
 	}
 
 	@Column(name = "QUANTIDADE_INDICACOES_REMESSA")
 	public Integer getQtdIndicacoesRemessa() {
+		if (qtdIndicacoesRemessa == null) {
+			qtdIndicacoesRemessa = 0;
+		}
 		return qtdIndicacoesRemessa;
 	}
 
 	@Column(name = "QUANTIDADE_ORIGINAL_REMESSA")
 	public Integer getQtdOriginaisRemessa() {
+		if (qtdOriginaisRemessa == null) {
+			qtdOriginaisRemessa = 0;
+		}
 		return qtdOriginaisRemessa;
 	}
 
 	@Column(name = "AGENCIA_CENTRALIZADORA")
 	public String getAgenciaCentralizadora() {
-		return agenciaCentralizadora;
+		if (agenciaCentralizadora == null) {
+			agenciaCentralizadora = StringUtils.EMPTY;
+		}
+		return agenciaCentralizadora.trim();
 	}
 
 	@Column(name = "VERSAO_LAYOUT", length = 3)
@@ -122,12 +147,18 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 
 	@Column(name = "COMPLEMENTO_REGISTRO")
 	public String getComplementoRegistro() {
-		return complementoRegistro;
+		if (complementoRegistro == null) {
+			complementoRegistro = StringUtils.EMPTY;
+		}
+		return complementoRegistro.trim();
 	}
 
 	@Column(name = "NUMERO_SEQUENCIAL_ARQUIVO")
 	public String getNumeroSequencialRegistroArquivo() {
-		return numeroSequencialRegistroArquivo;
+		if (numeroSequencialRegistroArquivo == null) {
+			numeroSequencialRegistroArquivo = StringUtils.EMPTY;
+		}
+		return numeroSequencialRegistroArquivo.trim();
 	}
 
 	public void setId(int id) {

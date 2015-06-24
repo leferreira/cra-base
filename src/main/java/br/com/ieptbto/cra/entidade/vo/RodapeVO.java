@@ -121,12 +121,12 @@ public class RodapeVO extends AbstractArquivoVO {
 
 	public static RodapeVO parseRodape(Rodape rodape) {
 		RodapeVO rodapeVO = new RodapeVO();
-		rodapeVO.setComplementoRegistro(rodape.getComplementoRegistro().trim());
+		rodapeVO.setComplementoRegistro(rodape.getComplementoRegistro());
 		rodapeVO.setDataMovimento(rodape.getDataMovimento().toString(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY));
-		rodapeVO.setIdentificacaoRegistro(rodape.getIdentificacaoRegistro().getConstante().trim());
-		rodapeVO.setNomePortador(rodape.getNomePortador().trim());
-		rodapeVO.setNumeroCodigoPortador(rodape.getNumeroCodigoPortador().trim());
-		rodapeVO.setNumeroSequencialRegistroArquivo(rodape.getNumeroSequencialRegistroArquivo().trim());
+		rodapeVO.setIdentificacaoRegistro(rodape.getIdentificacaoRegistro().getConstante());
+		rodapeVO.setNomePortador(rodape.getNomePortador());
+		rodapeVO.setNumeroCodigoPortador(rodape.getNumeroCodigoPortador());
+		rodapeVO.setNumeroSequencialRegistroArquivo(rodape.getNumeroSequencialRegistroArquivo());
 		rodapeVO.setSomatorioQtdRemessa(StringUtils.leftPad(rodape.getSomatorioQtdRemessa().toString().replaceAll("\\D", ""), 5, "0"));
 		rodapeVO.setSomatorioValorRemessa(StringUtils.leftPad(rodape.getSomatorioValorRemessa().toString().replaceAll("\\D", ""), 5, "0"));
 

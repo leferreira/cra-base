@@ -228,17 +228,17 @@ public class CabecalhoVO extends AbstractArquivoVO {
 
 	public static CabecalhoVO parseCabecalho(CabecalhoRemessa cabecalho) {
 		CabecalhoVO cabecalhoVO = new CabecalhoVO();
-		cabecalhoVO.setAgenciaCentralizadora(cabecalho.getAgenciaCentralizadora().trim());
+		cabecalhoVO.setAgenciaCentralizadora(cabecalho.getAgenciaCentralizadora());
 		cabecalhoVO.setCodigoMunicipio(cabecalho.getCodigoMunicipio().toString());
-		cabecalhoVO.setComplementoRegistro(cabecalho.getComplementoRegistro().trim());
+		cabecalhoVO.setComplementoRegistro(cabecalho.getComplementoRegistro());
 		cabecalhoVO.setDataMovimento(cabecalho.getDataMovimento().toString(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY));
 		cabecalhoVO.setIdentificacaoRegistro(cabecalho.getIdentificacaoRegistro().getConstante());
 		cabecalhoVO.setIdentificacaoTransacaoDestinatario(cabecalho.getIdentificacaoTransacaoDestinatario());
 		cabecalhoVO.setIdentificacaoTransacaoRemetente(cabecalho.getIdentificacaoTransacaoRemetente());
 		cabecalhoVO.setIdentificacaoTransacaoTipo(cabecalho.getIdentificacaoTransacaoTipo());
 		cabecalhoVO.setNomePortador(cabecalho.getNomePortador().trim());
-		cabecalhoVO.setNumeroCodigoPortador(cabecalho.getNumeroCodigoPortador().trim());
-		cabecalhoVO.setNumeroSequencialRegistroArquivo(cabecalho.getNumeroSequencialRegistroArquivo().trim());
+		cabecalhoVO.setNumeroCodigoPortador(cabecalho.getNumeroCodigoPortador());
+		cabecalhoVO.setNumeroSequencialRegistroArquivo(cabecalho.getNumeroSequencialRegistroArquivo());
 		cabecalhoVO.setNumeroSequencialRemessa(cabecalho.getNumeroSequencialRemessa().toString());
 		cabecalhoVO.setQtdIndicacoesRemessa(StringUtils.leftPad(cabecalho.getQtdIndicacoesRemessa().toString(), 4, "0"));
 		cabecalhoVO.setQtdOriginaisRemessa(StringUtils.leftPad(cabecalho.getQtdOriginaisRemessa().toString(), 4, "0"));
