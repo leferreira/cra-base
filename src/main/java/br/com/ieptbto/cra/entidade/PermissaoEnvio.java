@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.entidade;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -34,7 +33,7 @@ public class PermissaoEnvio extends AbstractEntidade<PermissaoEnvio> {
 		return id;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "TIPO_INSTITUICAO_ID")
 	public TipoInstituicao getTipoInstituicao() {
 		return tipoInstituicao;

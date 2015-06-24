@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -11,48 +10,36 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.PermissaoEnvio;
-import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.TipoInstituicao;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.exception.InfraException;
 
+/**
+ * @author Thasso Araújo
+ *
+ */
 @Repository
 public class TipoInstituicaoDAO extends AbstractBaseDAO {
 
-	public TipoInstituicao salvar(TipoInstituicao tipoInstituicao, List<TipoArquivo> tiposPermitidos) {
-		TipoInstituicao novo = new TipoInstituicao();
-		PermissaoEnvio permissao = new PermissaoEnvio();
-		List<PermissaoEnvio> listaPermissoes = new ArrayList<PermissaoEnvio>();
+	@SuppressWarnings("unchecked")
+	public TipoInstituicao alterar(TipoInstituicao tipoInstituicao, List<PermissaoEnvio> permissoes) {
 		Transaction transaction = getBeginTransation();
+		
 		try {
-			novo = save(tipoInstituicao);
-			permissao.setTipoInstituicao(tipoInstituicao);
-			for (TipoArquivo tipoArquivo : tiposPermitidos) {
-				permissao.setTipoArquivo(tipoArquivo);
-				listaPermissoes.add(permissao);
+			Criteria criteria = getCriteria(PermissaoEnvio.class);
+			criteria.add(Restrictions.eq("tipoInstituicao", tipoInstituicao));
+			List<PermissaoEnvio> lista = criteria.list();
+			
+			for (PermissaoEnvio permissao: lista){
+				delete(permissao);
 			}
-			inserirLista(listaPermissoes);
+			for (PermissaoEnvio permissao : permissoes){
+				save(permissao);
+			}
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
-		}
-		return novo;
-	}
-
-	public TipoInstituicao alterar(TipoInstituicao tipoInstituicao, List<TipoArquivo> tiposPermitidos) {
-		PermissaoEnvio permissao = new PermissaoEnvio();
-		Transaction transaction = getBeginTransation();
-		try {
-			update(tipoInstituicao);
-			permissao.setTipoInstituicao(tipoInstituicao);
-			for (TipoArquivo tipoArquivo : tiposPermitidos) {
-				permissao.setTipoArquivo(tipoArquivo);
-				update(permissao);
-			}
-			transaction.commit();
-
-		} catch (Exception ex) {
-			transaction.rollback();
-			System.out.println(ex.getMessage());
+			throw new InfraException("Não foi possível alterar as permissões para o tipo selecionado !");
 		}
 		return tipoInstituicao;
 	}

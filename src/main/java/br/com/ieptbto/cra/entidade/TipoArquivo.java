@@ -32,6 +32,7 @@ public class TipoArquivo extends AbstractEntidade<TipoArquivo> {
 
 	/****/
 	private static final long serialVersionUID = 1L;
+	
 	private int id;
 	private TipoArquivoEnum tipoArquivo;
 	private List<PermissaoEnvio> arquivosEnvioPermitido;
