@@ -11,8 +11,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
 /**
@@ -158,9 +161,46 @@ public class Filiado extends AbstractEntidade<Filiado> {
 		this.ativo = ativo;
 	}
 
+	@Transient
+	public String getSituacao() {
+		if (isAtivo() == null || isAtivo() !=null && isAtivo() == false) {
+			return "Não Ativo";
+		} 
+		return "Ativo";
+	}
+
+	public void setSituacao(String status) {
+		if (status.equals("Ativo")) {
+			setAtivo(true);
+		} else {
+			setAtivo(false);
+		}
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Filiado) {
+			Filiado modalidade = Filiado.class.cast(obj);
+			EqualsBuilder equalsBuilder = new EqualsBuilder();
+			equalsBuilder.append(this.getId(), modalidade.getId());
+			equalsBuilder.append(this.getRazaoSocial(), modalidade.getRazaoSocial());
+			equalsBuilder.append(this.getCnpjCpf(), modalidade.getCnpjCpf());
+			return equalsBuilder.isEquals();
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (getId() == 0) {
+			return 0;
+		}
+		return getId();
+	}
+	
 	@Override
 	public int compareTo(Filiado entidade) {
-		// TODO Auto-generated method stub
-		return 0;
+		CompareToBuilder compareTo = new CompareToBuilder();
+		return compareTo.toComparison();
 	}
 }

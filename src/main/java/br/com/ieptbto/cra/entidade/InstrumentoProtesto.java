@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
@@ -89,9 +91,30 @@ public class InstrumentoProtesto extends AbstractEntidade<InstrumentoProtesto> {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof InstrumentoProtesto) {
+			InstrumentoProtesto modalidade = InstrumentoProtesto.class.cast(obj);
+			EqualsBuilder equalsBuilder = new EqualsBuilder();
+			equalsBuilder.append(this.getId(), modalidade.getId());
+			equalsBuilder.append(this.getTitulo(), modalidade.getTitulo());
+			equalsBuilder.append(this.getDataDeEntrada(), modalidade.getDataDeEntrada());
+			return equalsBuilder.isEquals();
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (getId() == 0) {
+			return 0;
+		}
+		return getId();
+	}
+	
+	@Override
 	public int compareTo(InstrumentoProtesto entidade) {
-		// TODO Auto-generated method stub
-		return 0;
+		CompareToBuilder compareTo = new CompareToBuilder();
+		return compareTo.toComparison();
 	}
 
 }

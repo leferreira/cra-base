@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalTime;
 
@@ -85,9 +87,29 @@ public class TipoArquivo extends AbstractEntidade<TipoArquivo> {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof TipoArquivo) {
+			TipoArquivo modalidade = TipoArquivo.class.cast(obj);
+			EqualsBuilder equalsBuilder = new EqualsBuilder();
+			equalsBuilder.append(this.getId(), modalidade.getId());
+			equalsBuilder.append(this.getTipoArquivo(), modalidade.getTipoArquivo());
+			return equalsBuilder.isEquals();
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (getId() == 0) {
+			return 0;
+		}
+		return getId();
+	}
+	
+	@Override
 	public int compareTo(TipoArquivo entidade) {
-		// TODO Auto-generated method stub
-		return 0;
+		CompareToBuilder compareTo = new CompareToBuilder();
+		return compareTo.toComparison();
 	}
 
 	@Override

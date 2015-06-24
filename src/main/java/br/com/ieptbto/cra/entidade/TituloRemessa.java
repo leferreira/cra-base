@@ -407,11 +407,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		return compareToBuilder.toComparison();
 	}
 
-	// public void setSituacaoTituloConvenio(SituacaoTituloConvenio
-	// situacaoTituloConvenio) {
-	// this.situacaoTituloConvenio = situacaoTituloConvenio;
-	// }
-
 	@Transient
 	public String getSituacaoTitulo() {
 		if (this.confirmacao == null) {

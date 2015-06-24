@@ -17,6 +17,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
 @Entity
@@ -233,8 +235,30 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Instituicao) {
+			Instituicao modalidade = Instituicao.class.cast(obj);
+			EqualsBuilder equalsBuilder = new EqualsBuilder();
+			equalsBuilder.append(this.getId(), modalidade.getId());
+			equalsBuilder.append(this.getRazaoSocial(), modalidade.getRazaoSocial());
+			equalsBuilder.append(this.getCnpj(), modalidade.getCnpj());
+			return equalsBuilder.isEquals();
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (getId() == 0) {
+			return 0;
+		}
+		return getId();
+	}
+	
+	@Override
 	public int compareTo(Instituicao entidade) {
-		return 0;
+		CompareToBuilder compareTo = new CompareToBuilder();
+		return compareTo.toComparison();
 	}
 
 	@Transient

@@ -5,6 +5,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 public class Cartorio extends Instituicao {
 
 	/***/
@@ -20,5 +22,27 @@ public class Cartorio extends Instituicao {
 	
 	public void setMunicipio(Municipio municipio) {
 		this.municipio = municipio;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Cartorio) {
+			Cartorio modalidade = Cartorio.class.cast(obj);
+			EqualsBuilder equalsBuilder = new EqualsBuilder();
+			equalsBuilder.append(this.getId(), modalidade.getId());
+			equalsBuilder.append(this.getRazaoSocial(), modalidade.getRazaoSocial());
+			equalsBuilder.append(this.getCnpj(), modalidade.getCnpj());
+			equalsBuilder.append(this.getMunicipio(), modalidade.getMunicipio());
+			return equalsBuilder.isEquals();
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (getId() == 0) {
+			return 0;
+		}
+		return getId();
 	}
 }

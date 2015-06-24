@@ -20,12 +20,12 @@ public class UsuarioFiliadoMediator {
 	@Autowired
 	UsuarioFiliadoDAO usuarioFiliadoDAO;
 
-	public UsuarioFiliado salvarUsuarioFiliado(Usuario user, UsuarioFiliado usuarioFiliado) {
-		return usuarioFiliadoDAO.salvar(user, usuarioFiliado);
+	public UsuarioFiliado salvarUsuarioFiliado(UsuarioFiliado usuarioFiliado) {
+		return usuarioFiliadoDAO.salvar(usuarioFiliado);
 	}
 
-	public UsuarioFiliado alterarUsuarioFiliado(Usuario user, UsuarioFiliado usuarioFiliado) {
-		return usuarioFiliadoDAO.alterar(user, usuarioFiliado);
+	public UsuarioFiliado alterarUsuarioFiliado(UsuarioFiliado usuarioFiliado) {
+		return usuarioFiliadoDAO.alterar(usuarioFiliado);
 	}
 
 	public List<UsuarioFiliado> buscarUsuariosDoConvenio(Usuario usuario) {

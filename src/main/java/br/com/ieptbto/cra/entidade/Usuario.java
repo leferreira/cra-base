@@ -197,9 +197,8 @@ public class Usuario extends AbstractEntidade<Usuario> implements IClusterable, 
 	public String getSituacao() {
 		if (isStatus() == true) {
 			return "Ativo";
-		} else {
-			return "Não Ativo";
-		}
+		} 
+		return "Não Ativo";
 	}
 
 	public void setSituacao(String situacao) {

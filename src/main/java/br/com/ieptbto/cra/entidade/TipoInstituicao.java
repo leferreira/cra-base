@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -68,7 +70,28 @@ public class TipoInstituicao extends AbstractEntidade<TipoInstituicao> {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof TipoInstituicao) {
+			TipoInstituicao modalidade = TipoInstituicao.class.cast(obj);
+			EqualsBuilder equalsBuilder = new EqualsBuilder();
+			equalsBuilder.append(this.getId(), modalidade.getId());
+			equalsBuilder.append(this.getTipoInstituicao(), modalidade.getTipoInstituicao());
+			return equalsBuilder.isEquals();
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (getId() == 0) {
+			return 0;
+		}
+		return getId();
+	}
+	
+	@Override
 	public int compareTo(TipoInstituicao entidade) {
-		return 0;
+		CompareToBuilder compareTo = new CompareToBuilder();
+		return compareTo.toComparison();
 	}
 }

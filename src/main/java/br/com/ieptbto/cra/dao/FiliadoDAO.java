@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.exception.InfraException;
 
 /**
  * @author Thasso Araújo
@@ -29,6 +30,7 @@ public class FiliadoDAO extends AbstractBaseDAO {
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível cadastrar o novo filiado !");
 		}
 		return novoFiliado;
 	}

@@ -14,6 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
@@ -110,9 +112,12 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 		return cidadeDevedor;
 	}
 
-	@Column(name = "CEP_DEVEDOR", length = 8)
+	@Column(name = "CEP_DEVEDOR", length = 10)
 	public String getCepDevedor() {
-		return cepDevedor;
+		if (cepDevedor == null) {
+			cepDevedor = StringUtils.EMPTY;
+		}
+		return cepDevedor.replace(".", "").replace("-", "").trim();
 	}
 
 	@Column(name = "UF_DEVEDOR", length = 2)
@@ -234,9 +239,31 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	}
 
 	@Override
-	public int compareTo(TituloFiliado entidade) {
-		// TODO Auto-generated method stub
-		return 0;
+	public boolean equals(Object obj) {
+		if (obj instanceof TituloFiliado) {
+			TituloFiliado modalidade = TituloFiliado.class.cast(obj);
+			EqualsBuilder equalsBuilder = new EqualsBuilder();
+			equalsBuilder.append(this.getId(), modalidade.getId());
+			equalsBuilder.append(this.getFiliado(), modalidade.getFiliado());
+			equalsBuilder.append(this.getNomeDevedor(), modalidade.getNomeDevedor());
+			equalsBuilder.append(this.getNumeroTitulo(), modalidade.getNumeroTitulo());
+			return equalsBuilder.isEquals();
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (getId() == 0) {
+			return 0;
+		}
+		return getId();
+	}
+	
+	@Override
+	public int compareTo(TituloFiliado tituloFiliado) {
+		CompareToBuilder compareTo = new CompareToBuilder();
+		return compareTo.toComparison();
 	}
 
 }

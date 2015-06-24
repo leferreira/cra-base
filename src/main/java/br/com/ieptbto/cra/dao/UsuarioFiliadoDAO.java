@@ -19,15 +19,12 @@ import br.com.ieptbto.cra.entidade.UsuarioFiliado;
 @Repository
 public class UsuarioFiliadoDAO extends AbstractBaseDAO {
 
-	public UsuarioFiliado salvar(Usuario usuario, UsuarioFiliado usuarioFiliado) {
+	public UsuarioFiliado salvar(UsuarioFiliado usuarioFiliado) {
 		UsuarioFiliado novoFiliado = new UsuarioFiliado();
-		Usuario novoUsuario = new Usuario();
 		Transaction transaction = getBeginTransation();
 
 		try {
-			usuario.setSenha(Usuario.cryptPass(usuario.getSenha()));
-			novoUsuario = save(usuario);
-			usuarioFiliado.setUsuario(novoUsuario);
+			usuarioFiliado.getUsuario().setSenha(Usuario.cryptPass(usuarioFiliado.getUsuario().getSenha()));
 			novoFiliado = save(usuarioFiliado);
 
 			transaction.commit();
@@ -38,13 +35,13 @@ public class UsuarioFiliadoDAO extends AbstractBaseDAO {
 		return novoFiliado;
 	}
 
-	public UsuarioFiliado alterar(Usuario usuario, UsuarioFiliado usuarioFiliado) {
+	public UsuarioFiliado alterar(UsuarioFiliado usuarioFiliado) {
 		UsuarioFiliado alterado = new UsuarioFiliado();
 		Transaction transaction = getBeginTransation();
 
 		try {
-			usuario.setSenha(Usuario.cryptPass(usuario.getSenha()));
-			update(usuario);
+			usuarioFiliado.getUsuario().setSenha(Usuario.cryptPass(usuarioFiliado.getUsuario().getSenha()));
+			update(usuarioFiliado.getUsuario());
 			alterado = update(usuarioFiliado);
 			transaction.commit();
 		} catch (Exception ex) {
