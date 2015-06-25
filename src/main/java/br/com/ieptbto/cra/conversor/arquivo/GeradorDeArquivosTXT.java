@@ -34,7 +34,7 @@ public class GeradorDeArquivosTXT extends Gerador {
 				titulos.put(Integer.parseInt(tituloVO.getNumeroSequencialArquivo()), gerarLinhaTitulo(tituloVO));
 			}
 
-			for (Integer i : titulos.keySet()) {
+			for (int i = 2; i < titulos.keySet().size() + 2; i++) {
 				bWrite.write(titulos.get(i));
 				bWrite.newLine();
 			}
