@@ -22,6 +22,8 @@ import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.enumeration.StatusRemessa;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.exception.XmlCraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
@@ -199,7 +201,11 @@ public class RemessaMediator {
 		this.erros = erros;
 	}
 
-	public File baixarRemessaTXT(Remessa remessa) {
+	public File baixarRemessaTXT(Instituicao instituicao, Remessa remessa) {
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)){
+			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
+			remessaDao.alterarSituacaoRemessa(remessa);
+		}
 		remessa = remessaDao.buscarPorPK(remessa);
 		return processadorArquivo.processarArquivoTXT(remessa);
 	}

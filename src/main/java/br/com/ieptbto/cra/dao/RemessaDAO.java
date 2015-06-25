@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -22,8 +23,10 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
+import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.exception.InfraException;
 
 /**
  * @author Thasso Araújo
@@ -66,7 +69,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "a");
 
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals("CRA"))
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA))
 			criteria.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoOrigem", instituicao))
 			        .add(Restrictions.eq("instituicaoDestino", instituicao)));
 
@@ -76,15 +79,11 @@ public class RemessaDAO extends AbstractBaseDAO {
 		}
 
 		if (!situacoes.isEmpty()) {
-			if (situacoes.contains(SituacaoArquivo.AGUARDANDO.getLabel()))
-				criteria.createAlias("a.statusArquivo", "statusArquivo");
-
 			criteria.add(filtrarRemessaPorSituacao(situacoes, instituicao));
 		}
 
 		if (dataInicio == null) {
-			criteria.createAlias("a.statusArquivo", "statusArquivo");
-			criteria.add(Restrictions.eq("statusArquivo.status", SituacaoArquivo.AGUARDANDO.getLabel()));
+			criteria.add(Restrictions.eq("statusRemessa", SituacaoArquivo.AGUARDANDO));
 		}
 
 		if (situacoes.isEmpty() && dataInicio != null)
@@ -96,7 +95,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 
 	public List<Remessa> listarRemessasPorInstituicao(Instituicao instituicao) {
 		Criteria criteria = getCriteria(Remessa.class);
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals("CRA")) {
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			criteria.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoDestino", instituicao))
 			        .add(Restrictions.eq("instituicaoOrigem", instituicao)));
 		}
@@ -129,12 +128,12 @@ public class RemessaDAO extends AbstractBaseDAO {
 	private Disjunction filtrarRemessaPorSituacao(ArrayList<String> situacao, Instituicao instituicao) {
 		Disjunction disjunction = Restrictions.disjunction();
 		for (String s : situacao) {
-			if (s.equals(SituacaoArquivo.ENVIADO.getLabel())) {
-				disjunction.add(Restrictions.eq("instituicaoOrigem", instituicao));
-			} else if (s.equals(SituacaoArquivo.RECEBIDO.getLabel())) {
-				disjunction.add(Restrictions.eq("instituicaoDestino", instituicao));
-			} else {
-				disjunction.add(Restrictions.eq("statusArquivo.status", SituacaoArquivo.AGUARDANDO.getLabel()));
+			if (s.equals(StatusRemessa.ENVIADO.getLabel())) {
+				disjunction.add(Restrictions.eq("statusRemessa", StatusRemessa.ENVIADO));
+			} else if (s.equals(StatusRemessa.RECEBIDO.getLabel())) {
+				disjunction.add(Restrictions.eq("statusRemessa", StatusRemessa.RECEBIDO));
+			} else if (s.equals(StatusRemessa.AGUARDANDO.getLabel())) {
+				disjunction.add(Restrictions.eq("statusRemessa", StatusRemessa.AGUARDANDO));
 			}
 		}
 		return disjunction;
@@ -170,7 +169,6 @@ public class RemessaDAO extends AbstractBaseDAO {
 		criteriaTitulo.createAlias("remessa", "remessa");
 		criteriaTitulo.add(Restrictions.eq("remessa", remessa));
 		remessa.setTitulos(criteriaTitulo.list());
-
 		return remessa;
 	}
 
@@ -182,7 +180,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "arquivo");
 
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals("CRA")) {
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			criteria.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoOrigem", instituicao))
 			        .add(Restrictions.eq("instituicaoDestino", instituicao)));
 		}
@@ -212,5 +210,20 @@ public class RemessaDAO extends AbstractBaseDAO {
 			remessa.setTitulos(titulos);
 		}
 		return remessas;
+	}
+
+	public Remessa alterarSituacaoRemessa(Remessa remessa) {
+		Transaction transaction = getBeginTransation();
+		
+		try {
+			update(remessa);
+		
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível inserir esses dados na base.");
+		}
+		return remessa;
 	}
 }

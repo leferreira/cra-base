@@ -20,12 +20,14 @@ import br.com.ieptbto.cra.entidade.Historico;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
-import br.com.ieptbto.cra.entidade.StatusArquivo;
+import br.com.ieptbto.cra.entidade.TipoInstituicao;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
+import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 
@@ -67,8 +69,9 @@ public class ArquivoDAO extends AbstractBaseDAO {
 				 *       retorno [feito pelo Thasso] - corrigir o quanto antes.
 				 */
 				remessa.setArquivoGeradoProBanco(arquivoSalvo);
-
 				remessa.setDataRecebimento(new LocalDate());
+				
+				setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
 				setSituacaoRemessa(arquivo, remessa);
 				save(remessa);
 				for (Titulo titulo : remessa.getTitulos()) {
@@ -111,6 +114,15 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 	}
 
+	private void setStatusRemessa(TipoInstituicao tipoInstituicao, Remessa remessa) {
+		if (tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA) || 
+				tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO) ) {
+			remessa.setStatusRemessa(StatusRemessa.AGUARDANDO);
+		} else if (tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
+			remessa.setStatusRemessa(StatusRemessa.ENVIADO);
+		} 
+	}
+	
 	private void setSituacaoRemessa(Arquivo arquivo, Remessa remessa) {
 		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)
 		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
@@ -121,16 +133,9 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 	}
 
-	public StatusArquivo buscarStatusArquivo(SituacaoArquivo situacao) {
-		Criteria criteria = getCriteria(StatusArquivo.class);
-		criteria.add(Restrictions.eq("situacaoArquivo", situacao));
-		criteria.addOrder(Order.asc("id"));
-		return StatusArquivo.class.cast(criteria.uniqueResult());
-	}
-
 	public Arquivo buscarArquivosPorNome(Instituicao instituicao, String nomeArquivo) {
 		Criteria criteria = getCriteria(Arquivo.class);
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals("CRA")) {
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			criteria.createAlias("remessas", "remessas");
 			criteria.add(Restrictions.disjunction().add(Restrictions.eq("remessas.instituicaoOrigem", instituicao))
 			        .add(Restrictions.eq("remessas.instituicaoDestino", instituicao)));
@@ -144,7 +149,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	        LocalDate dataInicio, LocalDate dataFim) {
 		Criteria criteria = getCriteria(Arquivo.class);
 
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals("CRA")) {
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			criteria.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoEnvio", instituicao))
 			        .add(Restrictions.eq("instituicaoRecebe", instituicao)));
 		}
@@ -155,15 +160,13 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 
 		if (!situacoes.isEmpty()) {
-			if (situacoes.contains(SituacaoArquivo.AGUARDANDO.getLabel()))
-				criteria.createAlias("statusArquivo", "statusArquivo");
-
+			criteria.createAlias("statusArquivo", "statusArquivo");
 			criteria.add(filtrarArquivoPorSituacao(situacoes, instituicao));
 		}
 
 		if (dataInicio == null) {
 			criteria.createAlias("statusArquivo", "statusArquivo");
-			criteria.add(Restrictions.eq("statusArquivo.status", SituacaoArquivo.AGUARDANDO.getLabel()));
+			criteria.add(Restrictions.eq("statusArquivo.situacaoArquivo", SituacaoArquivo.AGUARDANDO));
 		}
 
 		if (situacoes.isEmpty() && dataInicio != null)
@@ -184,10 +187,13 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	private Disjunction filtrarArquivoPorSituacao(ArrayList<String> situacao, Instituicao instituicao) {
 		Disjunction disjunction = Restrictions.disjunction();
 		for (String s : situacao) {
-			if (s.equals("Enviados"))
-				disjunction.add(Restrictions.eq("remessas.instituicaoOrigem", instituicao));
-			else
-				disjunction.add(Restrictions.eq("remessas.instituicaoDestino", instituicao));
+			if (s.equals(SituacaoArquivo.ENVIADO.getLabel())) {
+				disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", SituacaoArquivo.ENVIADO));
+			} else if (s.equals(StatusRemessa.RECEBIDO.getLabel())) {
+				disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", SituacaoArquivo.RECEBIDO));
+			} else if (s.equals(StatusRemessa.AGUARDANDO.getLabel())) {
+				disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", SituacaoArquivo.AGUARDANDO));
+			}		
 		}
 		return disjunction;
 	}

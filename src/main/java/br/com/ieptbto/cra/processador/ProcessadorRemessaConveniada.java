@@ -2,12 +2,12 @@ package br.com.ieptbto.cra.processador;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +21,8 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
+import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
@@ -80,6 +82,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		remessa.setInstituicaoDestino(setInstituicaoDestino(tituloFiliado));
 		remessa.setTitulos(setTitulosRemessa(listaTitulos, tituloFiliado));
 		remessa.setInstituicaoOrigem(setInstituicaoOrigem(tituloFiliado));
+		remessa.setStatusRemessa(StatusRemessa.AGUARDANDO);
 		return remessa;
 	}
 
@@ -97,8 +100,8 @@ public class ProcessadorRemessaConveniada extends Processador {
 
 	private StatusArquivo gerarStatusArquivo() {
 		StatusArquivo status = new StatusArquivo();
-		status.setData(new Date());
-		status.setStatus("AGUARDANDO");
+		status.setData(new LocalDateTime());
+		status.setSituacaoArquivo(SituacaoArquivo.ENVIADO);
 		return status;
 	}
 

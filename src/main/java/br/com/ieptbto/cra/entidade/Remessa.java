@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,6 +19,8 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
+
+import br.com.ieptbto.cra.enumeration.StatusRemessa;
 
 /**
  * @author Thasso Araújo
@@ -43,6 +47,7 @@ public class Remessa extends AbstractEntidade<Remessa> {
 	private Rodape rodape;
 	private List<Historico> historicos;
 	private List<Titulo> titulos;
+	private StatusRemessa statusRemessa;
 	private Boolean situacaoBatimento;
 	private Boolean situacao; // confirmacoes e retornos
 
@@ -176,5 +181,15 @@ public class Remessa extends AbstractEntidade<Remessa> {
 
 	public void setSituacaoBatimento(Boolean situacaoBatimento) {
 		this.situacaoBatimento = situacaoBatimento;
+	}
+
+	@Column(name = "STATUS_REMESSA")
+	@Enumerated(EnumType.STRING)
+	public StatusRemessa getStatusRemessa() {
+		return statusRemessa;
+	}
+
+	public void setStatusRemessa(StatusRemessa statusRemessa) {
+		this.statusRemessa = statusRemessa;
 	}
 }

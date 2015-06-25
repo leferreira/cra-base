@@ -1,7 +1,6 @@
 package br.com.ieptbto.cra.dao;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -116,8 +115,8 @@ public class RetornoDAO extends AbstractBaseDAO {
 		try {
 			for (Arquivo retorno : arquivosDeRetorno){
 				StatusArquivo status = new StatusArquivo();
-				status.setData(new Date());
-				status.setStatus(SituacaoArquivo.AGUARDANDO.getLabel());
+				status.setData(new LocalDateTime());
+				status.setSituacaoArquivo(SituacaoArquivo.AGUARDANDO);
 				
 				retorno.setUsuarioEnvio(usuarioAcao);
 				retorno.setStatusArquivo(save(status));

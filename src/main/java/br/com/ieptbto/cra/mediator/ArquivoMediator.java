@@ -1,11 +1,11 @@
 package br.com.ieptbto.cra.mediator;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -79,8 +79,8 @@ public class ArquivoMediator {
 
 	private StatusArquivo setStatusArquivo() {
 		StatusArquivo status = new StatusArquivo();
-		status.setData(new Date());
-		status.setStatus(SituacaoArquivo.AGUARDANDO.getLabel());
+		status.setData(new LocalDateTime());
+		status.setSituacaoArquivo(SituacaoArquivo.ENVIADO);
 		return status;
 	}
 

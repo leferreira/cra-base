@@ -1,12 +1,12 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.LocalDateTime;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
@@ -32,8 +32,8 @@ public class ConfirmacaoDAO extends AbstractBaseDAO {
 		try {
 			for (Arquivo confirmacao : arquivosDeConfirmacao){
 				StatusArquivo status = new StatusArquivo();
-				status.setData(new Date());
-				status.setStatus(SituacaoArquivo.AGUARDANDO.getLabel());
+				status.setData(new LocalDateTime());
+				status.setSituacaoArquivo(SituacaoArquivo.AGUARDANDO);
 				
 				confirmacao.setUsuarioEnvio(usuarioAcao);
 				confirmacao.setStatusArquivo(save(status));

@@ -2,9 +2,13 @@ package br.com.ieptbto.cra.enumeration;
 
 import br.com.ieptbto.cra.exception.InfraException;
 
+/**
+ * @author Thasso Araújo
+ *
+ */
 public enum SituacaoArquivo implements CraEnum {
 	
-	AGUARDANDO("0","Aguardando"),ENVIADO("1","Enviado"),RECEBIDO("2","Recebido");
+	AGUARDANDO("A","Aguardando"),ENVIADO("E","Enviado"),RECEBIDO("R","Recebido");
 	
 	private String constante;
 	private String label;
@@ -30,13 +34,13 @@ public enum SituacaoArquivo implements CraEnum {
 	 * @param valor
 	 * @return status arquivo
 	 */
-	public static SituacaoArquivo get(String valor) {
+	public static SituacaoArquivo getSituacao(String constante) {
 		SituacaoArquivo[] values = SituacaoArquivo.values();
 		for (SituacaoArquivo situacao : values) {
-			if (valor.startsWith(situacao.getLabel())) {
+			if (constante.startsWith(situacao.getLabel())) {
 				return situacao;
 			}
 		}
-		throw new InfraException("Situacao do Arquivo desconhecido : " + valor);
+		throw new InfraException("Situacao do Arquivo desconhecido : " + constante);
 	}
 }
