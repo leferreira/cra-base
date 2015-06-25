@@ -156,42 +156,42 @@ public class UsuarioMediator {
 		/*
 		 * Inserindo os Tipos da Instituição
 		 */
-		 tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.CRA.getConstante());
-		 tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.CARTORIO.getConstante());
-		 tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA.getConstante());
-		 tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.CONVENIO.getConstante());
-		
-		 /*
+		tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.CRA.getConstante());
+		tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.CARTORIO.getConstante());
+		tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA.getConstante());
+		tipoInstituicaoDao.inserirTipoInstituicaoInicial(TipoInstituicaoCRA.CONVENIO.getConstante());
+
+		/*
 		 * Inserindo os Tipos da Instituição
 		 */
-		 tipoArquivoDao.inserirTipoArquivo("B");
-		 tipoArquivoDao.inserirTipoArquivo("C");
-		 tipoArquivoDao.inserirTipoArquivo("R");
-		 tipoArquivoDao.inserirTipoArquivo("CP");
-		 tipoArquivoDao.inserirTipoArquivo("DP");
-		 tipoArquivoDao.inserirTipoArquivo("AC");
-		
-		 /*
+		tipoArquivoDao.inserirTipoArquivo("B");
+		tipoArquivoDao.inserirTipoArquivo("C");
+		tipoArquivoDao.inserirTipoArquivo("R");
+		tipoArquivoDao.inserirTipoArquivo("CP");
+		tipoArquivoDao.inserirTipoArquivo("DP");
+		tipoArquivoDao.inserirTipoArquivo("AC");
+
+		/*
 		 * Inserindo os Grupos dos Usuário e as Permissões
 		 */
-		 GrupoUsuario grupo1 = new GrupoUsuario();
-		 grupo1.setGrupo("Super Administrador");
-		 String[] roles = { CraRoles.ADMIN, CraRoles.USER, CraRoles.SUPER };
-		 grupo1.setRoles(new Roles(roles));
-		 grupoUsuarioDao.inserirGruposCargaInicial(grupo1);
-		
-		 GrupoUsuario grupo2 = new GrupoUsuario();
-		 grupo2.setGrupo("Administrador");
-		 String[] roles1 = { Roles.ADMIN, CraRoles.USER };
-		 grupo2.setRoles(new Roles(roles1));
-		 grupoUsuarioDao.inserirGruposCargaInicial(grupo2);
-		
-		 GrupoUsuario grupo3 = new GrupoUsuario();
-		 grupo3.setGrupo("Usuário");
-		 String[] roles2 = { CraRoles.USER };
-		 grupo3.setRoles(new Roles(roles2));
-		 grupoUsuarioDao.inserirGruposCargaInicial(grupo3);
-		
+		GrupoUsuario grupo1 = new GrupoUsuario();
+		grupo1.setGrupo("Super Administrador");
+		String[] roles = { CraRoles.ADMIN, CraRoles.USER, CraRoles.SUPER };
+		grupo1.setRoles(new Roles(roles));
+		grupoUsuarioDao.inserirGruposCargaInicial(grupo1);
+
+		GrupoUsuario grupo2 = new GrupoUsuario();
+		grupo2.setGrupo("Administrador");
+		String[] roles1 = { Roles.ADMIN, CraRoles.USER };
+		grupo2.setRoles(new Roles(roles1));
+		grupoUsuarioDao.inserirGruposCargaInicial(grupo2);
+
+		GrupoUsuario grupo3 = new GrupoUsuario();
+		grupo3.setGrupo("Usuário");
+		String[] roles2 = { CraRoles.USER };
+		grupo3.setRoles(new Roles(roles2));
+		grupoUsuarioDao.inserirGruposCargaInicial(grupo3);
+
 		GrupoUsuario grupo4 = new GrupoUsuario();
 		grupo4.setGrupo("Convênio");
 		String[] roles4 = { Roles.ADMIN };
@@ -201,7 +201,7 @@ public class UsuarioMediator {
 		/*
 		 * Inserindo o usuário de teste
 		 */
-		// usuarioDao.incluirUsuarioDeTeste();
+		usuarioDao.incluirUsuarioDeTeste();
 	}
 
 	public List<Usuario> listarTodos() {
