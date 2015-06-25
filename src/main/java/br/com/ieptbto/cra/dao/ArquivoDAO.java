@@ -191,4 +191,19 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 		return disjunction;
 	}
+
+	/**
+	 * Verifica se o arquivo já foi enviado para CRA
+	 * 
+	 * @param instituicao
+	 * @param nomeArquivo
+	 * @return
+	 */
+	public Arquivo buscarArquivosPorNomeArquivoInstituicaoEnvio(Instituicao instituicao, String nomeArquivo) {
+		Criteria criteria = getCriteria(Arquivo.class);
+		criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));
+		criteria.add(Restrictions.eq("nomeArquivo", nomeArquivo));
+
+		return Arquivo.class.cast(criteria.uniqueResult());
+	}
 }
