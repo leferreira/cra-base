@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.entidade;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -16,6 +17,7 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
@@ -75,9 +77,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	private String instrumentoProtesto;
 	private String complementoRegistro;
 	private String situacaoTitulo;
-	private LocalDate dataCadastro;
-
-	// private SituacaoTituloConvenio situacaoTituloConvenio;
+	private Date dataCadastro;
 
 	@Id
 	@Column(name = "ID_TITULO", columnDefinition = "serial")
@@ -253,14 +253,15 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	}
 
 	@Column(name = "DATA_CADASTRO")
-	public LocalDate getDataCadastro() {
+	@Type(type = "date")
+	public Date getDataCadastro() {
 		if (dataCadastro == null) {
-			dataCadastro = new LocalDate();
+			dataCadastro = new Date();
 		}
 		return dataCadastro;
 	}
 
-	public void setDataCadastro(LocalDate dataCadastro) {
+	public void setDataCadastro(Date dataCadastro) {
 		this.dataCadastro = dataCadastro;
 	}
 

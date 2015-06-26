@@ -30,7 +30,6 @@ public class StatusArquivo extends AbstractEntidade<StatusArquivo> {
 
 	private int id;
 	private LocalDateTime data;
-//	private String status;
 	private SituacaoArquivo situacaoArquivo;
 
 	@Override
@@ -41,21 +40,16 @@ public class StatusArquivo extends AbstractEntidade<StatusArquivo> {
 		return this.id;
 	}
 
-	 @Column(name = "SITUACAO_ARQUIVO")
-	 @Enumerated(EnumType.STRING)
-	 public SituacaoArquivo getSituacaoArquivo() {
-		 return situacaoArquivo;
-	 }
+	@Column(name = "SITUACAO_ARQUIVO")
+	@Enumerated(EnumType.STRING)
+	public SituacaoArquivo getSituacaoArquivo() {
+		return situacaoArquivo;
+	}
 
 	@Column(name = "DATA")
 	public LocalDateTime getData() {
 		return data;
 	}
-
-//	@Column(name = "STATUS")
-//	public String getStatus() {
-//		return status;
-//	}
 
 	public void setId(int id) {
 		this.id = id;
@@ -65,13 +59,9 @@ public class StatusArquivo extends AbstractEntidade<StatusArquivo> {
 		this.data = data;
 	}
 
-//	public void setStatus(String status) {
-//		this.status = status;
-//	}
-
-	 public void setSituacaoArquivo(SituacaoArquivo situacaoArquivo) {
-		 this.situacaoArquivo = situacaoArquivo;
-	 }
+	public void setSituacaoArquivo(SituacaoArquivo situacaoArquivo) {
+		this.situacaoArquivo = situacaoArquivo;
+	}
 
 	@Override
 	public int compareTo(StatusArquivo entidade) {
