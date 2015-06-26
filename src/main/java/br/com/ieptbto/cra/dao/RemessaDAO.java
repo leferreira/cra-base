@@ -41,8 +41,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 	@Autowired
 	InstituicaoDAO instituicaoDAO;
 
-	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio pracaProtesto, Instituicao portador, LocalDate dataInicio,
-	        LocalDate dataFim, Usuario usuarioCorrente, ArrayList<String> tipos) {
+	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio,LocalDate dataInicio, LocalDate dataFim, Usuario usuarioCorrente, ArrayList<String> tipos) {
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "a");
 
@@ -57,7 +56,17 @@ public class RemessaDAO extends AbstractBaseDAO {
 			criteria.createAlias("a.tipoArquivo", "tipoArquivo");
 			criteria.add(filtrarRemessaPorTipoArquivo(tipos));
 		}
-		criteria.add(filtraRemessaPorInsituicaoOuPraca(portador, pracaProtesto));
+		
+		Disjunction disjunction = Restrictions.disjunction();
+		if (arquivo.getInstituicaoEnvio() != null)
+			disjunction.add(Restrictions.eq("instituicaoOrigem", arquivo.getInstituicaoEnvio())).add(Restrictions.eq("instituicaoDestino", arquivo.getInstituicaoEnvio()));
+
+		if (municipio != null) {
+			Instituicao cartorioProtesto = instituicaoDAO.buscarCartorioPorMunicipio(municipio.getNomeMunicipio());
+			disjunction.add(Restrictions.eq("instituicaoOrigem", cartorioProtesto)).add(
+			        Restrictions.eq("instituicaoDestino", cartorioProtesto));
+		}
+		criteria.add(disjunction);
 
 		criteria.add(Restrictions.between("dataRecebimento", dataInicio, dataFim));
 		criteria.addOrder(Order.desc("dataRecebimento"));
@@ -101,20 +110,6 @@ public class RemessaDAO extends AbstractBaseDAO {
 		}
 		criteria.addOrder(Order.desc("dataRecebimento"));
 		return criteria.list();
-	}
-
-	private Disjunction filtraRemessaPorInsituicaoOuPraca(Instituicao portador, Municipio pracaProtesto) {
-		Disjunction disjunction = Restrictions.disjunction();
-
-		if (portador != null)
-			disjunction.add(Restrictions.eq("instituicaoOrigem", portador)).add(Restrictions.eq("instituicaoDestino", portador));
-
-		if (pracaProtesto != null) {
-			Instituicao cartorioProtesto = instituicaoDAO.buscarCartorioPorMunicipio(pracaProtesto.getNomeMunicipio());
-			disjunction.add(Restrictions.eq("instituicaoOrigem", cartorioProtesto)).add(
-			        Restrictions.eq("instituicaoDestino", cartorioProtesto));
-		}
-		return disjunction;
 	}
 
 	private Disjunction filtrarRemessaPorTipoArquivo(ArrayList<String> tipos) {

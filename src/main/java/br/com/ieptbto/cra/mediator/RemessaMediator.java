@@ -57,11 +57,10 @@ public class RemessaMediator {
 	private List<Remessa> remessasFiltradas;
 	private List<Remessa> remessas = new ArrayList<Remessa>();
 
-	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio, Instituicao portador, LocalDate dataInicio,
-	        LocalDate dataFim, ArrayList<String> tipos, Usuario usuario) {
+	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<String> tipos, Usuario usuario) {
 
 		try {
-			remessas = remessaDao.buscarRemessaAvancado(arquivo, municipio, portador, dataInicio, dataFim, usuario, tipos);
+			remessas = remessaDao.buscarRemessaAvancado(arquivo, municipio,dataInicio, dataFim, usuario, tipos);
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
 			new InfraException("Não foi possível realizar a busca, contate a CRA.");

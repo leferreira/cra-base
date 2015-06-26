@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,10 +63,10 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 
 	public Instituicao buscarCartorioPorMunicipio(String nomeMunicipio) {
 		Criteria criteria = getCriteria(Instituicao.class);
-		criteria.createAlias("tipoInstituicao", "t");
-		criteria.createAlias("municipio", "m");
-
-		criteria.add(Restrictions.and(Restrictions.eq("t.tipoInstituicao", "Cartório"), Restrictions.eq("m.nomeMunicipio", nomeMunicipio)));
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.createAlias("municipio", "municipio");
+		criteria.add(Restrictions.like("municipio.nomeMunicipio", nomeMunicipio, MatchMode.EXACT));
+		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 		return Instituicao.class.cast(criteria.uniqueResult());
 	}
 

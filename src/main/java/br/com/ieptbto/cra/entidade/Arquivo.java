@@ -82,7 +82,7 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 		return instituicaoEnvio;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "INSTITUICAO_RECEBE_ID")
 	public Instituicao getInstituicaoRecebe() {
 		return instituicaoRecebe;
