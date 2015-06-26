@@ -31,7 +31,8 @@ import br.com.ieptbto.cra.enumeration.TipoRegistro;
  */
 @Entity
 @Audited
-@Table(name = "TB_TITULO", uniqueConstraints = { @UniqueConstraint(columnNames = { "CODIGO_PORTADOR", "NOSSO_NUMERO", "NUMERO_TITULO" }) })
+@Table(name = "TB_TITULO", uniqueConstraints = { @UniqueConstraint(columnNames = { "CODIGO_PORTADOR", "NOSSO_NUMERO", "NUMERO_TITULO",
+        "DATA_CADASTRO" }) })
 @org.hibernate.annotations.Table(appliesTo = "TB_TITULO")
 public class TituloRemessa extends Titulo<TituloRemessa> {
 
@@ -74,6 +75,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	private String instrumentoProtesto;
 	private String complementoRegistro;
 	private String situacaoTitulo;
+	private LocalDate dataCadastro;
 
 	// private SituacaoTituloConvenio situacaoTituloConvenio;
 
@@ -250,11 +252,17 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		return complementoRegistro;
 	}
 
-	// @Column(name = "SITUACAO_TITULO_CONVENIO", unique = true)
-	// @Enumerated(EnumType.STRING)
-	// public SituacaoTituloConvenio getSituacaoTituloConvenio() {
-	// return situacaoTituloConvenio;
-	// }
+	@Column(name = "DATA_CADASTRO")
+	public LocalDate getDataCadastro() {
+		if (dataCadastro == null) {
+			dataCadastro = new LocalDate();
+		}
+		return dataCadastro;
+	}
+
+	public void setDataCadastro(LocalDate dataCadastro) {
+		this.dataCadastro = dataCadastro;
+	}
 
 	public void setId(int id) {
 		this.id = id;

@@ -102,6 +102,7 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	public TituloRemessa buscarTituloPorChave(TituloRemessa titulo) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.add(Restrictions.eq("dataCadastro", titulo.getDataCadastro()));
 		criteria.add(Restrictions.eq("codigoPortador", titulo.getCodigoPortador()));
 		criteria.add(Restrictions.eq("nossoNumero", titulo.getNossoNumero()));
 		if (titulo.getNumeroTitulo() != null)
