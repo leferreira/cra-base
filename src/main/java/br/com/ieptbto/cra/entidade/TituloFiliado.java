@@ -48,6 +48,7 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	private String cidadeDevedor;
 	private String cepDevedor;
 	private String ufDevedor;
+	private String alinea;
 	private Filiado filiado;
 	private SituacaoTituloConvenio situacaoTituloConvenio;
 	private LocalDate dataEnvioCRA;
@@ -264,6 +265,15 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	public int compareTo(TituloFiliado tituloFiliado) {
 		CompareToBuilder compareTo = new CompareToBuilder();
 		return compareTo.toComparison();
+	}
+
+	@Column(name="ALINEA", length=2)
+	public String getAlinea() {
+		return alinea;
+	}
+
+	public void setAlinea(String alinea) {
+		this.alinea = alinea;
 	}
 
 }
