@@ -19,9 +19,11 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -207,5 +209,23 @@ public class RemessaMediator {
 		}
 		remessa = remessaDao.buscarPorPK(remessa);
 		return processadorArquivo.processarArquivoTXT(remessa);
+	}
+
+	public File baixarArquivoTXT(Instituicao instituicao, Arquivo arquivo) {
+//		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)){
+//			
+//			arquivo.setStatusArquivo(gerarStatusArquivoRecebido());
+//			arquivoDAO.alterarSituacaoArquivo(arquivo);
+//		}
+//		remessa = remessaDao.buscarPorPK(remessa);
+//		return processadorArquivo.processarArquivoTXT(remessa);
+		return null;
+	}
+	
+	private StatusArquivo gerarStatusArquivoRecebido(){
+		StatusArquivo status = new StatusArquivo();
+		status.setData(new LocalDateTime());
+		status.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
+		return status;
 	}
 }

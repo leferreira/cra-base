@@ -35,4 +35,8 @@ public class UsuarioFiliadoMediator {
 	public Filiado buscarEmpresaFiliadaDoUsuario(Usuario user) {
 		return usuarioFiliadoDAO.buscarEmpresaFiliadaDoUsuario(user);
 	}
+
+	public UsuarioFiliado buscarUsuarioFiliado(Usuario usuario) {
+		return usuarioFiliadoDAO.buscarUsuarioFiliado(usuario);
+	}
 }

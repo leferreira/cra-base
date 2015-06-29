@@ -78,4 +78,10 @@ public class UsuarioFiliadoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("usuario", user));
 		return UsuarioFiliado.class.cast(criteria.uniqueResult()).getFiliado();
 	}
+
+	public UsuarioFiliado buscarUsuarioFiliado(Usuario usuario) {
+		Criteria criteria = getCriteria(UsuarioFiliado.class);
+		criteria.add(Restrictions.eq("usuario", usuario));
+		return UsuarioFiliado.class.cast(criteria.uniqueResult());
+	}
 }
