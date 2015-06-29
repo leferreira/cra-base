@@ -25,6 +25,7 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -67,6 +68,9 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		if (titulo.getNossoNumero() != null)
 			criteria.add(Restrictions.ilike("nossoNumero", titulo.getNossoNumero(), MatchMode.ANYWHERE));
+		
+		if (titulo.getPracaProtesto() != null)
+			criteria.add(Restrictions.ilike("pracaProtesto", titulo.getPracaProtesto().toUpperCase(), MatchMode.ANYWHERE));
 
 		criteria.addOrder(Order.asc("nomeDevedor"));
 		return criteria.list();
@@ -93,7 +97,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	private Disjunction filtrarTitulosPorInstituicao(Instituicao instituicaoCorrente) {
 		Disjunction disj = Restrictions.disjunction();
 
-		if (!instituicaoCorrente.getTipoInstituicao().getTipoInstituicao().equals("CRA")) {
+		if (!instituicaoCorrente.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			disj.add(Restrictions.eq("remessa.instituicaoOrigem", instituicaoCorrente)).add(
 			        Restrictions.eq("remessa.instituicaoDestino", instituicaoCorrente));
 		}
@@ -209,7 +213,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		List<TituloRemessa> listaTitulos = new ArrayList<TituloRemessa>();
 
 		Criteria criteria = getCriteria(Remessa.class);
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals("CRA")) {
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			criteria.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoOrigem", instituicao))
 			        .add(Restrictions.eq("instituicaoDestino", instituicao)));
 		}
@@ -243,7 +247,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		List<TituloRemessa> listaTitulos = new ArrayList<TituloRemessa>();
 
 		Criteria criteria = getCriteria(Remessa.class);
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals("CRA")) {
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			criteria.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoOrigem", instituicao))
 			        .add(Restrictions.eq("instituicaoDestino", instituicao)));
 		}
@@ -283,7 +287,7 @@ public class TituloDAO extends AbstractBaseDAO {
 			criteria.add(filtrarTitulosPorInstituicao(cartorioProtesto));
 		}
 
-		if (!usuarioCorrente.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals("CRA")) {
+		if (!usuarioCorrente.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			criteria.add(Restrictions.disjunction().add(Restrictions.eq("remessa.instituicaoOrigem", usuarioCorrente.getInstituicao()))
 			        .add(Restrictions.eq("remessa.instituicaoDestino", usuarioCorrente.getInstituicao())));
 		}
