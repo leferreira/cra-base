@@ -125,12 +125,9 @@ public class UsuarioMediator {
 	 * */
 	public boolean isSenhasIguais(Usuario usuario) {
 		if (usuario.getSenha().equals(usuario.getConfirmarSenha())) {
-			System.out.println("true");
 			return true;
-		} else {
-			System.out.println("false");
-			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -146,10 +143,9 @@ public class UsuarioMediator {
 		}
 		return false;
 	}
-
-	public boolean trocarSenha(String senha, String novaSenha, String confirmaSenha, Usuario usuario) {
-		return false;
-
+	
+	public Usuario trocarSenha(Usuario usuario) {
+		return usuarioDao.trocarSenha(usuario);
 	}
 
 	public void cargaInicial() {

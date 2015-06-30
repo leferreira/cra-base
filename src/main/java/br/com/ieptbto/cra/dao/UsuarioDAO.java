@@ -111,4 +111,18 @@ public class UsuarioDAO extends AbstractBaseDAO {
 		List<Usuario> listaUsuario = criteria.list();
 		return listaUsuario;
 	}
+
+	public Usuario trocarSenha(Usuario usuario) {
+		Transaction transaction = getBeginTransation();
+		
+		try {
+			usuario.setSenha(Usuario.cryptPass(usuario.getSenha()));
+			update(usuario);
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			System.out.println(ex.getMessage());
+		}
+		return usuario;
+	}
 }

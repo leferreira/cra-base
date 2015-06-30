@@ -39,4 +39,14 @@ public class UsuarioFiliadoMediator {
 	public UsuarioFiliado buscarUsuarioFiliado(Usuario usuario) {
 		return usuarioFiliadoDAO.buscarUsuarioFiliado(usuario);
 	}
+
+	public UsuarioFiliado confirmarAceiteTermosContrato(Usuario usuario) {
+		UsuarioFiliado usuarioFiliado = usuarioFiliadoDAO.buscarUsuarioFiliado(usuario);
+		return usuarioFiliadoDAO.confirmarAceiteTermosContrato(usuarioFiliado);
+	}
+
+	public UsuarioFiliado naoAceiteTermosContrato(Usuario usuario) {
+		UsuarioFiliado usuarioFiliado = usuarioFiliadoDAO.buscarUsuarioFiliado(usuario);
+		return usuarioFiliadoDAO.naoAceiteTermosContrato(usuarioFiliado);
+	}
 }

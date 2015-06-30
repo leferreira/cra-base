@@ -6,6 +6,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.LocalDateTime;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Filiado;
@@ -83,5 +84,42 @@ public class UsuarioFiliadoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(UsuarioFiliado.class);
 		criteria.add(Restrictions.eq("usuario", usuario));
 		return UsuarioFiliado.class.cast(criteria.uniqueResult());
+	}
+
+	public UsuarioFiliado confirmarAceiteTermosContrato(UsuarioFiliado usuarioFiliado) {
+		UsuarioFiliado usuarioAlterado = new UsuarioFiliado();
+		Transaction transaction = getBeginTransation();
+		
+		try {
+			usuarioFiliado.setTermosContratoAceite(true);
+			usuarioFiliado.setDataAceiteContrato(new LocalDateTime());
+			
+			usuarioAlterado = update(usuarioFiliado);
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			System.out.println(ex.getMessage());
+		}
+		return usuarioAlterado;
+	}
+
+	public UsuarioFiliado naoAceiteTermosContrato(UsuarioFiliado usuarioFiliado) {
+		UsuarioFiliado usuarioAlterado = new UsuarioFiliado();
+		Transaction transaction = getBeginTransation();
+		
+		try {
+			Usuario user = usuarioFiliado.getUsuario();
+			user.setStatus(false);
+			update(user);
+			
+			usuarioFiliado.setTermosContratoAceite(false);
+			usuarioAlterado = update(usuarioFiliado);
+			
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			System.out.println(ex.getMessage());
+		}
+		return usuarioAlterado;
 	}
 }

@@ -20,6 +20,7 @@ import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
+import br.com.ieptbto.cra.enumeration.TipoAlineaCheque;
 import br.com.ieptbto.cra.enumeration.TipoEspecieTitulo;
 
 /**
@@ -48,7 +49,7 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	private String cidadeDevedor;
 	private String cepDevedor;
 	private String ufDevedor;
-	private String alinea;
+	private TipoAlineaCheque alinea;
 	private Filiado filiado;
 	private SituacaoTituloConvenio situacaoTituloConvenio;
 	private LocalDate dataEnvioCRA;
@@ -267,12 +268,13 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 		return compareTo.toComparison();
 	}
 
-	@Column(name="ALINEA", length=2)
-	public String getAlinea() {
+	@Column(name="ALINEA")
+	@Enumerated(EnumType.STRING)
+	public TipoAlineaCheque getAlinea() {
 		return alinea;
 	}
 
-	public void setAlinea(String alinea) {
+	public void setAlinea(TipoAlineaCheque alinea) {
 		this.alinea = alinea;
 	}
 

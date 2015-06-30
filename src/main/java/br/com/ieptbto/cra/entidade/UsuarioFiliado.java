@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
+import org.joda.time.LocalDateTime;
 
 /**
  * @author Thasso Araújo
@@ -32,6 +33,8 @@ public class UsuarioFiliado extends AbstractEntidade<UsuarioFiliado> {
 	private int id;
 	private Filiado filiado;
 	private Usuario usuario;
+	private boolean termosContratoAceite;
+	private LocalDateTime dataAceiteContrato;
 
 	@Override
 	@Id
@@ -52,6 +55,16 @@ public class UsuarioFiliado extends AbstractEntidade<UsuarioFiliado> {
 	public Filiado getFiliado() {
 		return filiado;
 	}
+	
+	@Column(name="TERMOS_CONTRATO_ACEITE")
+	public boolean isTermosContratoAceite() {
+		return termosContratoAceite;
+	}
+
+	@Column(name="DATA_CONTRATO_ACEITE")
+	public LocalDateTime getDataAceiteContrato() {
+		return dataAceiteContrato;
+	}
 
 	public void setFiliado(Filiado filiado) {
 		this.filiado = filiado;
@@ -63,6 +76,14 @@ public class UsuarioFiliado extends AbstractEntidade<UsuarioFiliado> {
 
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
+	}
+	
+	public void setTermosContratoAceite(boolean termosContratoAceite) {
+		this.termosContratoAceite = termosContratoAceite;
+	}
+
+	public void setDataAceiteContrato(LocalDateTime dataAceiteContrato) {
+		this.dataAceiteContrato = dataAceiteContrato;
 	}
 
 	@Override
