@@ -70,7 +70,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 				 */
 				remessa.setArquivoGeradoProBanco(arquivoSalvo);
 				remessa.setDataRecebimento(new LocalDate());
-				
+
 				setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
 				setSituacaoRemessa(arquivo, remessa);
 				save(remessa);
@@ -105,6 +105,10 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			transaction.commit();
 			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
 			        + " foi inserido na base ");
+		} catch (InfraException ex) {
+			logger.error(ex.getMessage());
+			throw new InfraException(ex.getMessage(), ex.getCause());
+
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
@@ -115,14 +119,14 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	}
 
 	private void setStatusRemessa(TipoInstituicao tipoInstituicao, Remessa remessa) {
-		if (tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA) || 
-				tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO) ) {
+		if (tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)
+		        || tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
 			remessa.setStatusRemessa(StatusRemessa.AGUARDANDO);
 		} else if (tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
 			remessa.setStatusRemessa(StatusRemessa.ENVIADO);
-		} 
+		}
 	}
-	
+
 	private void setSituacaoRemessa(Arquivo arquivo, Remessa remessa) {
 		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)
 		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
@@ -193,7 +197,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 				disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", SituacaoArquivo.RECEBIDO));
 			} else if (s.equals(StatusRemessa.AGUARDANDO.getLabel())) {
 				disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", SituacaoArquivo.AGUARDANDO));
-			}		
+			}
 		}
 		return disjunction;
 	}

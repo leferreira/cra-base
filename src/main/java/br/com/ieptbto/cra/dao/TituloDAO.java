@@ -68,7 +68,7 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		if (titulo.getNossoNumero() != null)
 			criteria.add(Restrictions.ilike("nossoNumero", titulo.getNossoNumero(), MatchMode.ANYWHERE));
-		
+
 		if (titulo.getPracaProtesto() != null)
 			criteria.add(Restrictions.ilike("pracaProtesto", titulo.getPracaProtesto().toUpperCase(), MatchMode.ANYWHERE));
 
@@ -132,7 +132,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		}
 		if (Confirmacao.class.isInstance(titulo)) {
 			Confirmacao tituloConfirmacao = Confirmacao.class.cast(titulo);
-			return salvarTituloConfirmacao(tituloConfirmacao, transaction);
+			return salvarTituloConfirmacao(tituloConfirmacao);
 		}
 		if (Retorno.class.isInstance(titulo)) {
 			Retorno tituloConfirmacao = Retorno.class.cast(titulo);
@@ -142,12 +142,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	}
 
 	private TituloRemessa salvarTituloRetorno(Retorno tituloRetorno, Transaction transaction) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.add(Restrictions.eq("codigoPortador", tituloRetorno.getCodigoPortador().trim()));
-		criteria.add(Restrictions.eq("nossoNumero", tituloRetorno.getNossoNumero().trim()));
-		criteria.add(Restrictions.eq("agenciaCodigoCedente", tituloRetorno.getAgenciaCodigoCedente().trim()));
-
-		TituloRemessa titulo = TituloRemessa.class.cast(criteria.uniqueResult());
+		TituloRemessa titulo = buscaTituloRetornoSalvo(tituloRetorno);
 
 		if (titulo == null) {
 			new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] não existe em nossa base de dados.");
@@ -167,17 +162,22 @@ public class TituloDAO extends AbstractBaseDAO {
 		return null;
 	}
 
-	private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao, Transaction transaction) {
+	public TituloRemessa buscaTituloRetornoSalvo(Retorno tituloRetorno) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.add(Restrictions.eq("codigoPortador", tituloConfirmacao.getCodigoPortador().trim()));
-		criteria.add(Restrictions.eq("nossoNumero", tituloConfirmacao.getNossoNumero().trim()));
-		criteria.add(Restrictions.eq("numeroTitulo", tituloConfirmacao.getNumeroTitulo().trim()));
+		criteria.add(Restrictions.eq("codigoPortador", tituloRetorno.getCodigoPortador().trim()));
+		criteria.add(Restrictions.eq("nossoNumero", tituloRetorno.getNossoNumero().trim()));
+		criteria.add(Restrictions.eq("agenciaCodigoCedente", tituloRetorno.getAgenciaCodigoCedente().trim()));
 
 		TituloRemessa titulo = TituloRemessa.class.cast(criteria.uniqueResult());
+		return titulo;
+	}
+
+	private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao) {
+		TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao);
 
 		if (titulo == null) {
-			new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] não existe em nossa base de dados.");
-			return null;
+			throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero()
+			        + "] não existe em nossa base de dados.");
 		}
 		try {
 			tituloConfirmacao.setTitulo(titulo);
@@ -189,6 +189,16 @@ public class TituloDAO extends AbstractBaseDAO {
 			logger.error(ex.getMessage(), ex.getCause());
 			new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] não existe em nossa base de dados.");
 		}
+		return titulo;
+	}
+
+	public TituloRemessa buscaTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao) {
+		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.add(Restrictions.eq("codigoPortador", tituloConfirmacao.getCodigoPortador().trim()));
+		criteria.add(Restrictions.eq("nossoNumero", tituloConfirmacao.getNossoNumero().trim()));
+		criteria.add(Restrictions.eq("numeroTitulo", tituloConfirmacao.getNumeroTitulo().trim()));
+
+		TituloRemessa titulo = TituloRemessa.class.cast(criteria.uniqueResult());
 		return titulo;
 	}
 

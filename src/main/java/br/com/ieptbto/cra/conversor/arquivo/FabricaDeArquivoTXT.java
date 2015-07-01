@@ -13,6 +13,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Confirmacao;
@@ -50,6 +51,8 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	private ValidarCabecalhoRemessa validarCabecalhoRemessa;
 	@Autowired
 	private GeradorDeArquivosTXT geradorDeArquivosTXT;
+	@Autowired
+	private TituloDAO tituloDAO;
 	private List<Exception> errosCabecalho;
 	private Remessa remessa;
 
