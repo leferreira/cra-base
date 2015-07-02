@@ -17,6 +17,7 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
@@ -467,5 +468,27 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	private String verificarTipoIdentificacaoDevedor(String documentoDevedor2) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof TituloRemessa) {
+			TituloRemessa modalidade = TituloRemessa.class.cast(obj);
+			EqualsBuilder equalsBuilder = new EqualsBuilder();
+			equalsBuilder.append(this.getId(), modalidade.getId());
+			equalsBuilder.append(this.getNomeDevedor(), modalidade.getNomeDevedor());
+			equalsBuilder.append(this.getNossoNumero(), modalidade.getNossoNumero());
+			equalsBuilder.append(this.getNumeroTitulo(), modalidade.getNumeroTitulo());
+			return equalsBuilder.isEquals();
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (getId() == 0) {
+			return 0;
+		}
+		return getId();
 	}
 }

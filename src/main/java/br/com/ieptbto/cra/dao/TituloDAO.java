@@ -323,4 +323,14 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.setMaxResults(1);
 		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
+
+	public TituloRemessa carregarDadosHistoricoTitulo(TituloRemessa titulo) {
+		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.createAlias("confirmacao", "confirmacao");
+		criteria.createAlias("retorno", "retorno");
+		criteria.add(Restrictions.eq("numeroTitulo", titulo.getNumeroTitulo()));
+		criteria.add(Restrictions.eq("nossoNumero", titulo.getNossoNumero()));
+		criteria.add(Restrictions.eq("codigoPortador", titulo.getCodigoPortador()));
+		return TituloRemessa.class.cast(criteria.uniqueResult());
+	}
 }

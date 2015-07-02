@@ -50,4 +50,8 @@ public class TituloMediator {
 	public TituloRemessa carregarTitulo(TituloRemessa titulo){
 		return tituloDAO.carregarTitulo(titulo);
 	}
+
+	public TituloRemessa carregarDadosHistoricoTitulo(TituloRemessa titulo) {
+		return tituloDAO.carregarDadosHistoricoTitulo(titulo);
+	}
 }
