@@ -29,7 +29,6 @@ import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 
 /**
  * 
@@ -40,8 +39,6 @@ import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 @Repository
 public class ArquivoDAO extends AbstractBaseDAO {
 
-	@Autowired
-	InstituicaoMediator InstituicaoMediator;
 	@Autowired
 	TituloDAO tituloDAO;
 
@@ -70,7 +67,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 				 */
 				remessa.setArquivoGeradoProBanco(arquivoSalvo);
 				remessa.setDataRecebimento(new LocalDate());
-
+				remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
 				setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
 				setSituacaoRemessa(arquivo, remessa);
 				save(remessa);
@@ -117,7 +114,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return arquivoSalvo;
 
 	}
-
+	
 	private void setStatusRemessa(TipoInstituicao tipoInstituicao, Remessa remessa) {
 		if (tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)
 		        || tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {

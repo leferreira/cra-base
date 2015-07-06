@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.LocalDate;
@@ -29,9 +28,6 @@ public class InstrumentoDeProtestoMediator {
 	}
 
 	public List<InstrumentoProtesto> processarInstrumentos(List<Retorno> listaRetorno) {
-		InstrumentoProtesto instrumentoSalvo = new InstrumentoProtesto();
-		List<InstrumentoProtesto> listaSlip = new ArrayList<InstrumentoProtesto>();
-
 		for (Retorno retorno : listaRetorno) {
 			InstrumentoProtesto instrumento = new InstrumentoProtesto();
 
@@ -40,13 +36,9 @@ public class InstrumentoDeProtestoMediator {
 			instrumento.setSituacao(false);
 			instrumento.setTitulo(tituloDao.buscarTituloPorChave(retorno.getTitulo()));
 
-			instrumentoSalvo = instrumentoDao.salvarInstrumento(instrumento);
-			listaSlip.add(instrumentoSalvo);
+			instrumentoDao.salvarInstrumento(instrumento);
 		}
-		return listaSlip;
-	}
-
-	public List<InstrumentoProtesto> buscarInstrumentosParaSlip() {
+		
 		return instrumentoDao.buscarInstrumentosParaSlip();
 	}
 }

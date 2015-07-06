@@ -17,6 +17,7 @@ import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
+import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
@@ -28,6 +29,8 @@ import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 @Service
 public class ArquivoMediator {
 
+	@Autowired
+	InstituicaoMediator instituicaoMediator;
 	@Autowired
 	private TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
@@ -49,6 +52,7 @@ public class ArquivoMediator {
 		}
 
 		processarArquivo(arquivo, uploadedFile);
+		arquivo.setInstituicaoEnvio(setInstituicaoEnvio(arquivo));
 		setArquivo(arquivoDAO.salvar(arquivo, usuario));
 		return this;
 	}
@@ -75,6 +79,21 @@ public class ArquivoMediator {
 		}
 
 		return true;
+	}
+	
+	private Instituicao setInstituicaoEnvio(Arquivo arquivo) {
+
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)
+				|| arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)
+				|| arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
+			return instituicaoMediator.getInstituicaoPorCodigoPortador(arquivo.getNomeArquivo().substring(1, 4));
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO) 
+				|| arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)
+				|| arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
+			return instituicaoMediator.getInstituicaoPorCodigoIBGE(arquivo.getRemessas().get(0).getCabecalho().getCodigoMunicipio());
+		} else {
+			throw new InfraException("Tipo Do arquivo [" + arquivo.getTipoArquivo().getTipoArquivo().getLabel() + "] inválido");
+		}
 	}
 
 	private StatusArquivo setStatusArquivo() {

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
@@ -117,7 +116,6 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	public List<Historico> buscarHistoricoDoTitulo(TituloRemessa titulo) {
 		Criteria criteria = getCriteria(Historico.class);
-		Hibernate.initialize(titulo);
 		criteria.createAlias("titulo", "titulo");
 		criteria.add(Restrictions.eq("titulo.codigoPortador", titulo.getCodigoPortador()));
 		criteria.add(Restrictions.eq("titulo.nossoNumero", titulo.getNossoNumero()));
@@ -326,8 +324,6 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	public TituloRemessa carregarDadosHistoricoTitulo(TituloRemessa titulo) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("confirmacao", "confirmacao");
-		criteria.createAlias("retorno", "retorno");
 		criteria.add(Restrictions.eq("numeroTitulo", titulo.getNumeroTitulo()));
 		criteria.add(Restrictions.eq("nossoNumero", titulo.getNossoNumero()));
 		criteria.add(Restrictions.eq("codigoPortador", titulo.getCodigoPortador()));

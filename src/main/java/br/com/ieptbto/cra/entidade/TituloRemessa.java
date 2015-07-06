@@ -462,7 +462,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.setCepDevedor(tituloFiliado.getCepDevedor());
 		this.setCidadeDevedor(tituloFiliado.getCidadeDevedor());
 		this.setUfDevedor(tituloFiliado.getUfDevedor());
-
 	}
 
 	private String verificarTipoIdentificacaoDevedor(String documentoDevedor2) {
