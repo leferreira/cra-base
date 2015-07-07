@@ -2,7 +2,6 @@ package br.com.ieptbto.cra.dao;
 
 import java.util.List;
 
-import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +14,6 @@ import br.com.ieptbto.cra.exception.InfraException;
  * @author Thasso Araújo
  *
  */
-@SuppressWarnings("unused")
 @Repository
 public class ArquivoDeParaDAO extends AbstractBaseDAO{
 
@@ -65,7 +63,7 @@ public class ArquivoDeParaDAO extends AbstractBaseDAO{
 			}
 			transaction.commit();
 			
-			logger.info("O arquivo Bradesco enviado foi inserido na base ");
+			logger.info("O arquivo banco do brasil enviado foi inserido na base ");
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);

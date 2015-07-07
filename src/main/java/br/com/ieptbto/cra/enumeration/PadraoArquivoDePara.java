@@ -10,7 +10,7 @@ public enum PadraoArquivoDePara {
 
 	CAF("CAF", "txt"), //
 	BRADESCO("BRADESCO", "xls"), //
-	BANCO_DO_BRASIL("BANCO DO BRASIL", "txt");
+	BANCO_DO_BRASIL("CBR", "txt");
 
 	private String modelo;
 	private String extensao;

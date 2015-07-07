@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.UsuarioFiliado;
+import br.com.ieptbto.cra.exception.InfraException;
 
 /**
  * @author Thasso Araújo
@@ -35,22 +36,26 @@ public class UsuarioFiliadoDAO extends AbstractBaseDAO {
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível salvar os dados ! Entre em contato com o IEPTB !");
 		}
 		return novoFiliado;
 	}
 
-	public UsuarioFiliado alterar(UsuarioFiliado usuarioFiliado) {
+	public UsuarioFiliado alterar(UsuarioFiliado usuarioFiliado, String senhaAntiga, String novaSenha) {
 		UsuarioFiliado alterado = new UsuarioFiliado();
 		Transaction transaction = getBeginTransation();
 
 		try {
-//			usuarioFiliado.getUsuario().setSenha(Usuario.cryptPass(usuarioFiliado.getUsuario().getSenha()));
+			if (novaSenha!="")
+				usuarioFiliado.getUsuario().setSenha(Usuario.cryptPass(novaSenha));
+			
 			update(usuarioFiliado.getUsuario());
 			alterado = update(usuarioFiliado);
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
-			System.out.println(ex.getMessage());
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível alterar os dados ! Entre em contato com o IEPTB !");
 		}
 		return alterado;
 	}

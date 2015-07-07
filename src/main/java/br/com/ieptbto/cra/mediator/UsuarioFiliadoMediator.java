@@ -24,8 +24,8 @@ public class UsuarioFiliadoMediator {
 		return usuarioFiliadoDAO.salvar(usuarioFiliado);
 	}
 
-	public UsuarioFiliado alterarUsuarioFiliado(UsuarioFiliado usuarioFiliado) {
-		return usuarioFiliadoDAO.alterar(usuarioFiliado);
+	public UsuarioFiliado alterarUsuarioFiliado(UsuarioFiliado usuarioFiliado, String senhaAntiga, String novaSenha) {
+		return usuarioFiliadoDAO.alterar(usuarioFiliado, senhaAntiga, novaSenha);
 	}
 
 	public List<UsuarioFiliado> buscarUsuariosDoConvenio(Usuario usuario) {

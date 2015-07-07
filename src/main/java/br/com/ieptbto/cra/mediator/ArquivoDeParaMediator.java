@@ -25,7 +25,7 @@ public class ArquivoDeParaMediator {
 
 		if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.CAF.getModelo())) {
 			deParaDAO.salvarArquivoCAF(new ArquivoCAF().processar(uploadedFile));
-		} else if (PadraoArquivoDePara.BANCO_DO_BRASIL.equals(uploadedFile)) {
+		} else if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.BANCO_DO_BRASIL.getModelo())) {
 			deParaDAO.salvarArquivoBancoDoBrasil(new ArquivoBancoDoBrasil().processar(uploadedFile));
 		} else if (uploadedFile.getClientFileName().toUpperCase().contains(PadraoArquivoDePara.BRADESCO.getModelo())) {
 			deParaDAO.salvarArquivoBradesco(new ArquivoBradesco().processar(uploadedFile));

@@ -22,6 +22,8 @@ public class AgenciaBancoDoBrasil extends AbstractEntidade<AgenciaBancoDoBrasil>
 	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
+	private String numeroContrato;
+	private String agenciaDestino;
 
 	@Id
 	@Column(name = "ID_AGENCIA_BANCO_BRASIL", columnDefinition = "serial")
@@ -34,11 +36,27 @@ public class AgenciaBancoDoBrasil extends AbstractEntidade<AgenciaBancoDoBrasil>
 		this.id = id;
 	}
 
+	@Column(name="NUMERO_CONTRATO", length=9)
+	public String getNumeroContrato() {
+		return numeroContrato;
+	}
+
+	@Column(name="AGENCIA_DESTINO", length=4)
+	public String getAgenciaDestino() {
+		return agenciaDestino;
+	}
+
+	public void setNumeroContrato(String numeroContrato) {
+		this.numeroContrato = numeroContrato;
+	}
+
+	public void setAgenciaDestino(String agenciaDestino) {
+		this.agenciaDestino = agenciaDestino;
+	}
+
 	@Override
 	public int compareTo(AgenciaBancoDoBrasil entidade) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
-	
 }
