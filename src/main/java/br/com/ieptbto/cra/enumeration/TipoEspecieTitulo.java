@@ -10,7 +10,7 @@ public enum TipoEspecieTitulo implements CraEnum {
 	DSI("DSI","DSI - Duplicata de Prestação de Serviços"),
 	NP("NP","NP - Nota Promissória"),
 	SJ("SJ","SJ - Sentença Judicial"),
-	CONTRATO("CONTRATO", "Contrato");
+	CTR("CTR","CTR - Contrato");
 	
 	private String constante;
 	private String label;

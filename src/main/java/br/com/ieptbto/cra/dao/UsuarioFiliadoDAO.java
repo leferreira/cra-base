@@ -41,13 +41,12 @@ public class UsuarioFiliadoDAO extends AbstractBaseDAO {
 		return novoFiliado;
 	}
 
-	public UsuarioFiliado alterar(UsuarioFiliado usuarioFiliado, String senhaAntiga, String novaSenha) {
+	public UsuarioFiliado alterar(UsuarioFiliado usuarioFiliado) {
 		UsuarioFiliado alterado = new UsuarioFiliado();
 		Transaction transaction = getBeginTransation();
 
 		try {
-			if (novaSenha!="")
-				usuarioFiliado.getUsuario().setSenha(Usuario.cryptPass(novaSenha));
+			usuarioFiliado.getUsuario().setSenha(Usuario.cryptPass(usuarioFiliado.getUsuario().getSenha()));
 			
 			update(usuarioFiliado.getUsuario());
 			alterado = update(usuarioFiliado);

@@ -49,6 +49,7 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	private String cidadeDevedor;
 	private String cepDevedor;
 	private String ufDevedor;
+//	private List<Avalista> avalistas;
 	private TipoAlineaCheque alinea;
 	private Filiado filiado;
 	private SituacaoTituloConvenio situacaoTituloConvenio;
