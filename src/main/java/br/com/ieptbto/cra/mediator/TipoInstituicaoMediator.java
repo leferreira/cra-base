@@ -9,6 +9,7 @@ import br.com.ieptbto.cra.dao.TipoArquivoDAO;
 import br.com.ieptbto.cra.dao.TipoInstituicaoDAO;
 import br.com.ieptbto.cra.entidade.PermissaoEnvio;
 import br.com.ieptbto.cra.entidade.TipoInstituicao;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 
 /**
  * @author Thasso Araújo
@@ -26,7 +27,7 @@ public class TipoInstituicaoMediator {
 		return tipoInstituicaoDao.alterar(tipo, permissoes);
 	}
 	
-	public TipoInstituicao buscarTipoInstituicao(String tipoInstituicao) {
+	public TipoInstituicao buscarTipoInstituicao(TipoInstituicaoCRA tipoInstituicao) {
 		return tipoInstituicaoDao.buscarTipoInstituicao(tipoInstituicao);
 	}
 	

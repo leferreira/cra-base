@@ -2,7 +2,6 @@ package br.com.ieptbto.cra.dao;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
@@ -75,13 +74,9 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public TipoInstituicao buscarTipoInstituicao(String tipoInstituicao) {
+	public TipoInstituicao buscarTipoInstituicao(TipoInstituicaoCRA tipoInstituicao) {
 		Criteria criteria = getCriteria(TipoInstituicao.class);
-		if (StringUtils.isNotBlank(tipoInstituicao)) {
-			criteria.createAlias("tipoInstituicao", "tipoInstituicao");
-			criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.get(tipoInstituicao)));
-		}
-		criteria.addOrder(Order.asc("tipoInstituicao"));
+		criteria.add(Restrictions.eq("tipoInstituicao", tipoInstituicao));
 		return TipoInstituicao.class.cast(criteria.uniqueResult());
 	}
 

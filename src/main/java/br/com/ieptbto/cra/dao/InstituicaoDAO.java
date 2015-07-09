@@ -87,7 +87,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 			instituicao.setCnpj("123");
 			instituicao.setMunicipio(muMunicipio);
 			instituicao.setRazaoSocial("CRA");
-			instituicao.setTipoInstituicao(tipoInstituicaoDAO.buscarTipoInstituicao("CRA"));
+			instituicao.setTipoInstituicao(tipoInstituicaoDAO.buscarTipoInstituicao(TipoInstituicaoCRA.CRA));
 			save(instituicao);
 
 			transaction.commit();

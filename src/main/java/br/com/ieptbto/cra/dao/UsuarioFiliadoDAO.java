@@ -46,8 +46,7 @@ public class UsuarioFiliadoDAO extends AbstractBaseDAO {
 		Transaction transaction = getBeginTransation();
 
 		try {
-			usuarioFiliado.getUsuario().setSenha(Usuario.cryptPass(usuarioFiliado.getUsuario().getSenha()));
-			
+//			usuarioFiliado.getUsuario().setSenha(Usuario.cryptPass(usuarioFiliado.getUsuario().getSenha()));
 			update(usuarioFiliado.getUsuario());
 			alterado = update(usuarioFiliado);
 			transaction.commit();
