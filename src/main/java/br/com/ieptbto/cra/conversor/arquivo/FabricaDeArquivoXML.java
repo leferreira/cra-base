@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
+import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Rodape;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
@@ -19,6 +21,7 @@ import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
+import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.XmlCraException;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
@@ -105,8 +108,16 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 	@SuppressWarnings("rawtypes")
 	private List<Titulo> getTitulos(List<TituloVO> titulosVO, Remessa remessa) {
 		List<Titulo> titulos = new ArrayList<Titulo>();
+		Titulo titulo = null;
 		for (TituloVO tituloVO : titulosVO) {
-			TituloRemessa titulo = TituloRemessa.parseTituloVO(tituloVO);
+			if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				titulo = TituloRemessa.parseTituloVO(tituloVO);
+			} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				titulo = Confirmacao.parseTituloVO(tituloVO);
+			} else if (TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				titulo = Retorno.parseTituloVO(tituloVO);
+			}
+
 			titulo.setRemessa(remessa);
 			titulos.add(titulo);
 		}

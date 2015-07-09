@@ -11,6 +11,9 @@ import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
 
+import br.com.ieptbto.cra.conversor.arquivo.RetornoConversor;
+import br.com.ieptbto.cra.entidade.vo.TituloVO;
+
 /**
  * 
  * @author Lefer
@@ -57,6 +60,11 @@ public class Retorno extends Titulo<Retorno> {
 
 	public void setTitulo(TituloRemessa titulo) {
 		this.titulo = titulo;
+	}
+
+	public static Retorno parseTituloVO(TituloVO tituloVO) {
+		Retorno titulo = new RetornoConversor().converter(Retorno.class, tituloVO);
+		return titulo;
 	}
 
 	@Override

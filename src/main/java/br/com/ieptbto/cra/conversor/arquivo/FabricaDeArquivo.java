@@ -74,8 +74,40 @@ public class FabricaDeArquivo {
 			return converterRemessa(arquivoFisico, arquivo, erros);
 		} else if (TipoArquivoEnum.CONFIRMACAO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
 			return converterConfirmacao(arquivoFisico, arquivo, erros);
+		} else if (TipoArquivoEnum.RETORNO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
+			return converterRetorno(arquivoFisico, arquivo, erros);
 		}
 		return null;
+	}
+
+	private Arquivo converterRetorno(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
+		JAXBContext context;
+		ArquivoVO arquivoVO = new ArquivoVO();
+		try {
+			context = JAXBContext.newInstance(ArquivoVO.class);
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			String xmlGerado = "";
+			Scanner scanner = new Scanner(new FileInputStream(arquivoFisico));
+			while (scanner.hasNext()) {
+
+				xmlGerado = xmlGerado + scanner.nextLine().replaceAll("& ", "&amp;");
+				xmlGerado = xmlGerado.replaceAll("retorno", "remessa").trim();
+			}
+			scanner.close();
+
+			InputStream xml = new ByteArrayInputStream(xmlGerado.getBytes());
+			arquivoVO = (ArquivoVO) unmarshaller.unmarshal(new InputSource(xml));
+			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.RETORNO));
+
+		} catch (JAXBException e) {
+			logger.error(e.getMessage(), e.getCause());
+			throw new InfraException(CodigoErro.ARQUIVO_CORROMPIDO.getDescricao());
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e.getCause());
+			throw new InfraException(CodigoErro.ARQUIVO_CORROMPIDO.getDescricao());
+		}
+		arquivo = conversorRemessaArquivo.converter(arquivoVO, arquivo, erros);
+		return arquivo;
 	}
 
 	private Arquivo converterConfirmacao(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
@@ -90,12 +122,12 @@ public class FabricaDeArquivo {
 
 				xmlGerado = xmlGerado + scanner.nextLine().replaceAll("& ", "&amp;");
 				xmlGerado = xmlGerado.replaceAll("confirmacao", "remessa").trim();
-				xmlGerado = xmlGerado.replaceAll("confirmacao", "remessa").trim();
 			}
 			scanner.close();
 
 			InputStream xml = new ByteArrayInputStream(xmlGerado.getBytes());
 			arquivoVO = (ArquivoVO) unmarshaller.unmarshal(new InputSource(xml));
+			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.CONFIRMACAO));
 
 		} catch (JAXBException e) {
 			logger.error(e.getMessage(), e.getCause());

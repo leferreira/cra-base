@@ -143,8 +143,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		TituloRemessa titulo = buscaTituloRetornoSalvo(tituloRetorno);
 
 		if (titulo == null) {
-			new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] não existe em nossa base de dados.");
-			return null;
+			throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] não existe em nossa base de dados.");
 		}
 		try {
 			tituloRetorno.setTitulo(titulo);
