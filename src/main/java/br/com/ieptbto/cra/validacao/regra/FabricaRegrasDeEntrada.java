@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.validacao.RegraVerificarDuplicidade;
 
 /**
  * 
@@ -22,11 +24,14 @@ public class FabricaRegrasDeEntrada {
 	private RegraNomeArquivo regraNomeArquivo;
 	@Autowired
 	private RegraValidarUsuarioEnvio regraValidarUsuarioEnvio;
+	@Autowired
+	private RegraVerificarDuplicidade regraValidarDuplicidade;
 
-	public void validar(File arquivo, Usuario usuario, List<Exception> erros) {
+	public void validar(File arquivo, Arquivo arquivoProcessado ,Usuario usuario, List<Exception> erros) {
 		regraNomeArquivo.validar(arquivo, usuario, erros);
 		regraValidarInstituicaoEnvio.validar(arquivo, usuario, erros);
 		regraValidarUsuarioEnvio.validar(arquivo, usuario, erros);
+		regraValidarDuplicidade.validar(arquivo, usuario, erros);
 	}
 
 }

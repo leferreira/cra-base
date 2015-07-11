@@ -33,7 +33,6 @@ public class RegraValidarUsuarioEnvio extends RegrasDeEntrada {
 		setErros(erros);
 
 		executar();
-
 	}
 
 	/**

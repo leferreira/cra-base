@@ -63,7 +63,6 @@ public class ProcessadorRemessaConveniada extends Processador {
 		for (chaveTitulo key : getMapaTitulos().keySet()) {
 			if (mapaRemessa.containsKey(key.toString())) {
 				atualizaRemessa(mapaRemessa.get(key.toString()), getMapaTitulos().get(key));
-
 			} else {
 				mapaRemessa.put(key.toString(), criarRemessa(getMapaTitulos().get(key)));
 			}
@@ -88,7 +87,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 
 	private Arquivo criarArquivo(TituloFiliado tituloFiliado) {
 		setArquivo(new Arquivo());
-		getArquivo().setDataEnvio(tituloFiliado.getDataEnvioCRA());
+		getArquivo().setDataEnvio(new LocalDate());
 		getArquivo().setInstituicaoEnvio(tituloFiliado.getFiliado().getInstituicaoConvenio());
 		getArquivo().setInstituicaoRecebe(instituicaoMediator.buscarCRA());
 		getArquivo().setNomeArquivo(montarNomeArquivo(tituloFiliado));

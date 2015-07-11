@@ -35,7 +35,7 @@ public class Avalista extends AbstractEntidade<Avalista> {
 	private String uf;
 
 	@Id
-	@Column(name = "ID_ARQUIVO", columnDefinition = "serial")
+	@Column(name = "ID_AVALISTA", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getId() {
 		return id;

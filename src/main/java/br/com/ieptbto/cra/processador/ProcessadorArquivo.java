@@ -67,8 +67,8 @@ public class ProcessadorArquivo extends Processador {
 			        + getUsuario().getLogin());
 			verificaDiretorio();
 			copiarArquivoParaDiretorioDoUsuarioTemporario(getFile().getClientFileName());
-			validarArquivo();
 			converterArquivo();
+			validarArquivo();
 			copiarArquivoEapagarTemporario();
 
 			logger.info("Fim do processamento do arquivoFisico " + getFile().getClientFileName() + " do usuário " + getUsuario().getLogin());
@@ -171,7 +171,7 @@ public class ProcessadorArquivo extends Processador {
 		logger.info("Iniciar validação do arquivoFisico " + getFile().getClientFileName() + " enviado pelo usuário "
 		        + getUsuario().getLogin());
 
-		fabricaValidacaoArquivo.validar(getArquivoFisico(), getUsuario(), getErros());
+		fabricaValidacaoArquivo.validar(getArquivoFisico(), getArquivo(), getUsuario(), getErros());
 
 		logger.info("Fim validação do arquivoFisico " + getFile().getClientFileName() + " enviado pelo usuário " + getUsuario().getLogin());
 	}
@@ -290,5 +290,4 @@ public class ProcessadorArquivo extends Processador {
 	public String getPathUsuario() {
 		return pathUsuario;
 	}
-
 }

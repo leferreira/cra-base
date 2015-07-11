@@ -88,6 +88,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 
 			for (TituloFiliado titulo : listaTitulosFiliado) {
 				titulo.setSituacaoTituloConvenio(SituacaoTituloConvenio.ENVIADO);
+				titulo.setDataEnvioCRA(new LocalDate());
 				update(titulo);
 			}
 			transaction.commit();
@@ -100,13 +101,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<TituloFiliado> buscarTitulosConvenios() {
 		Criteria criteria = getCriteria(TituloFiliado.class);
-		// criteria.createAlias("filiado", "filiado");
 		criteria.createAlias("pracaProtesto", "p");
-		// criteria.createAlias("filiado.instituicaoConvenio",
-		// "instituicaoConvenio");
-		// criteria.setProjection(Projections.distinct(Projections.property("pracaProtesto")));
-		// criteria.setProjection(Projections.projectionList().add(Projections.groupProperty("p.id")));
-
 		criteria.add(Restrictions.eq("situacaoTituloConvenio", SituacaoTituloConvenio.ENVIADO));
 		criteria.addOrder(Order.asc("pracaProtesto"));
 		return criteria.list();
