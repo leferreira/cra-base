@@ -52,6 +52,9 @@ public class Filiado extends AbstractEntidade<Filiado> {
 
 	@Column(name = "RAZAO_SOCIAL", length = 45)
 	public String getRazaoSocial() {
+		if (razaoSocial == null){
+			return StringUtils.EMPTY;
+		}
 		return razaoSocial;
 	}
 

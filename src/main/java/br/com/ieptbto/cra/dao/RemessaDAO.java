@@ -55,7 +55,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 		if (!tipos.isEmpty()) {
 			criteria.createAlias("a.tipoArquivo", "tipoArquivo");
 			criteria.add(filtrarRemessaPorTipoArquivo(tipos));
-		}
+		} 
 		
 		Disjunction disjunction = Restrictions.disjunction();
 		if (arquivo.getInstituicaoEnvio() != null)
@@ -68,7 +68,9 @@ public class RemessaDAO extends AbstractBaseDAO {
 		}
 		criteria.add(disjunction);
 
-		criteria.add(Restrictions.between("dataRecebimento", dataInicio, dataFim));
+		if (dataInicio != null)
+			criteria.add(Restrictions.between("dataRecebimento", dataInicio, dataFim));
+		
 		criteria.addOrder(Order.desc("dataRecebimento"));
 		return criteria.list();
 	}

@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.annotations.Type;
@@ -26,6 +27,7 @@ import br.com.ieptbto.cra.conversor.arquivo.TituloConversor;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.util.RemoveAcentosUtil;
 
 /**
  * 
@@ -435,17 +437,17 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	}
 
 	public void parseTituloFiliado(TituloFiliado tituloFiliado) {
-		this.setAgenciaCodigoCedente(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + "/"
-		        + tituloFiliado.getFiliado().getCodigoFiliado());
+		this.setAgenciaCodigoCedente(tituloFiliado.getFiliado().getCodigoFiliado());
 		this.setIdentificacaoRegistro(TipoRegistro.TITULO);
 		this.setCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
-		this.setNomeCedenteFavorecido(tituloFiliado.getFiliado().getRazaoSocial());
-		this.setNomeSacadorVendedor(tituloFiliado.getFiliado().getRazaoSocial());
+		this.setNomeCedenteFavorecido(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getRazaoSocial()));
+		this.setNomeSacadorVendedor(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getRazaoSocial()));
 		this.setDocumentoSacador(tituloFiliado.getFiliado().getCnpjCpf());
 		this.setEnderecoSacadorVendedor(tituloFiliado.getFiliado().getEndereco());
 		this.setCepSacadorVendedor(tituloFiliado.getFiliado().getCep());
+		this.setCidadeSacadorVendedor(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase());
 		this.setUfSacadorVendedor(tituloFiliado.getFiliado().getUf());
-		this.setNossoNumero(tituloFiliado.getFiliado().getCodigoFiliado() + tituloFiliado.getId());
+		this.setNossoNumero(gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId()));
 		this.setEspecieTitulo(tituloFiliado.getEspecieTitulo().getConstante());
 		this.setNumeroTitulo(tituloFiliado.getNumeroTitulo());
 		this.setDataEmissaoTitulo(tituloFiliado.getDataEmissao());
@@ -453,20 +455,38 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.setTipoMoeda("001");
 		this.setValorTitulo(tituloFiliado.getValorTitulo());
 		this.setSaldoTitulo(tituloFiliado.getValorSaldoTitulo());
-		this.setPracaProtesto(tituloFiliado.getPracaProtesto().getNomeMunicipio());
+		this.setPracaProtesto(tituloFiliado.getPracaProtesto().getNomeMunicipio().toUpperCase());
+		this.setTipoEndoso("M");
+		this.setInformacaoSobreAceite("N");
+		// TODO implementar situacao para avalistas
+		this.setNumeroControleDevedor(1);
 		this.setNomeDevedor(tituloFiliado.getNomeDevedor());
 		this.setDocumentoDevedor(tituloFiliado.getDocumentoDevedor());
 		this.setEnderecoDevedor(tituloFiliado.getEnderecoDevedor());
-		this.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(tituloFiliado.getDocumentoDevedor()));
+		this.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(tituloFiliado.getCpfCnpj()));
 		this.setNumeroIdentificacaoDevedor(tituloFiliado.getCpfCnpj());
 		this.setCepDevedor(tituloFiliado.getCepDevedor());
 		this.setCidadeDevedor(tituloFiliado.getCidadeDevedor());
+		this.setBairroDevedor(tituloFiliado.getBairroDevedor());
 		this.setUfDevedor(tituloFiliado.getUfDevedor());
+		this.setComplementoRegistro(buscarAlineaCheque(tituloFiliado));
+	}
+	private String gerarNossoNumero(String nossoNumero) {
+		return StringUtils.rightPad(nossoNumero, 15, "0");
 	}
 
-	private String verificarTipoIdentificacaoDevedor(String documentoDevedor2) {
-		// TODO Auto-generated method stub
-		return null;
+	private String buscarAlineaCheque(TituloFiliado tituloFiliado) {
+		if (tituloFiliado.getAlinea() != null) {
+			return tituloFiliado.getAlinea().getConstante();
+		}
+		return StringUtils.EMPTY;
+	}
+
+	private String verificarTipoIdentificacaoDevedor(String documentoDevedor) {
+		if (documentoDevedor.length() == 14 ){
+			return "001";
+		}
+		return "002";
 	}
 	
 	@Override

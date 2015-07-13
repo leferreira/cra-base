@@ -18,6 +18,7 @@ import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 
 
 /**
@@ -44,11 +45,10 @@ public class ConfirmacaoMediator {
 		return confirmacaoDAO.buscarConfirmacoesPendentesDeEnvio();
 	}
 
-	public boolean gerarConfirmacoes(Usuario usuarioCorrente, List<Remessa> confirmacoesParaEnvio) {
+	public void gerarConfirmacoes(Usuario usuarioCorrente, List<Remessa> confirmacoesParaEnvio) {
 		List<Arquivo> arquivosDeConfirmacao = new ArrayList<Arquivo>();
-		
-		cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
-		tipoArquivo = tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.CONFIRMACAO);
+		setCra(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
+		setTipoArquivo(tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.CONFIRMACAO));
 		
 		Instituicao instituicaoDestino = new Instituicao();
 		for (Remessa confirmacao: confirmacoesParaEnvio){
@@ -66,16 +66,15 @@ public class ConfirmacaoMediator {
 		}
 		
 		confirmacaoDAO.salvarArquivosDeConfirmacaoGerados(usuarioCorrente, arquivosDeConfirmacao);
-		return true;
 	} 
 
 	private void criarNovoArquivoDeConfirmacao(Instituicao destino,Remessa confirmacao) {
-		arquivo = new Arquivo();
-		arquivo.setTipoArquivo(tipoArquivo);
-		arquivo.setNomeArquivo(gerarNomeArquivoConfirmacao(confirmacao));
-		arquivo.setInstituicaoRecebe(destino);
-		arquivo.setInstituicaoEnvio(cra);
-		arquivo.setDataEnvio(new LocalDate());
+		this.arquivo = new Arquivo();
+		getArquivo().setTipoArquivo(getTipoArquivo());
+		getArquivo().setNomeArquivo(gerarNomeArquivoConfirmacao(confirmacao));
+		getArquivo().setInstituicaoRecebe(destino);
+		getArquivo().setInstituicaoEnvio(getCra());
+		getArquivo().setDataEnvio(new LocalDate());
 	}
 
 	private String gerarNomeArquivoConfirmacao(Remessa confirmacao) {
@@ -89,5 +88,29 @@ public class ConfirmacaoMediator {
 	private String gerarDataArquivo(){
 		SimpleDateFormat dataPadraArquivo = new SimpleDateFormat("ddMM.yy");
 		return dataPadraArquivo.format(new Date()).toString();
+	}
+
+	public Instituicao getCra() {
+		return cra;
+	}
+
+	public TipoArquivo getTipoArquivo() {
+		return tipoArquivo;
+	}
+
+	public Arquivo getArquivo() {
+		return arquivo;
+	}
+
+	public void setCra(Instituicao cra) {
+		this.cra = cra;
+	}
+
+	public void setTipoArquivo(TipoArquivo tipoArquivo) {
+		this.tipoArquivo = tipoArquivo;
+	}
+
+	public void setArquivo(Arquivo arquivo) {
+		this.arquivo = arquivo;
 	}
 }

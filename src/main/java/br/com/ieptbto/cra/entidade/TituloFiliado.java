@@ -49,6 +49,7 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	private String cidadeDevedor;
 	private String cepDevedor;
 	private String ufDevedor;
+	private String bairroDevedor;
 //	private List<Avalista> avalistas;
 	private TipoAlineaCheque alinea;
 	private Filiado filiado;
@@ -277,6 +278,15 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 
 	public void setAlinea(TipoAlineaCheque alinea) {
 		this.alinea = alinea;
+	}
+
+	@Column(name="BAIRRO_DEVEDOR", length=20)
+	public String getBairroDevedor() {
+		return bairroDevedor;
+	}
+
+	public void setBairroDevedor(String bairroDevedor) {
+		this.bairroDevedor = bairroDevedor;
 	}
 
 //	@OneToMany(mappedBy="tituloFiliado")

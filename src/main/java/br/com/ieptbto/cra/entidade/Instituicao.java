@@ -265,9 +265,8 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	public String getStatus() {
 		if (isSituacao() == true) {
 			return "Ativo";
-		} else {
-			return "Não Ativo";
-		}
+		} 
+		return "Não Ativo";
 	}
 
 	public void setStatus(String status) {

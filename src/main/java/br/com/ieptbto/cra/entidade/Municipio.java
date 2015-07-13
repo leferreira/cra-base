@@ -34,7 +34,7 @@ public class Municipio extends AbstractEntidade<Municipio> {
 
 	@Column(name = "NOME_MUNICIPIO", nullable = false, unique = true, length = 60)
 	public String getNomeMunicipio() {
-		return nomeMunicipio;
+		return nomeMunicipio.toUpperCase();
 	}
 
 	@Column(name = "UF", nullable = false, length = 2)

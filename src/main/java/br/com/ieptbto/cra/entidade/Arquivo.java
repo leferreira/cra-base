@@ -71,7 +71,7 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 		return dataEnvio;
 	}
 
-	@OneToMany(mappedBy = "arquivo", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
 	public List<Remessa> getRemessas() {
 		return remessas;
 	}

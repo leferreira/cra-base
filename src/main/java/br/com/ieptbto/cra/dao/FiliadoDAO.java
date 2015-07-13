@@ -48,7 +48,6 @@ public class FiliadoDAO extends AbstractBaseDAO {
 		}
 		return novoFiliado;
 	}
-
 	private String geradorCodigoCedenteFiliado(Filiado novoFiliado) {
 		String codigoCedente = novoFiliado.getId() + novoFiliado.getInstituicaoConvenio().getCodigoCompensacao();
 		while (codigoCedente.length() < 15){

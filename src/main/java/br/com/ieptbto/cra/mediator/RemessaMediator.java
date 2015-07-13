@@ -56,30 +56,13 @@ public class RemessaMediator {
 	private ProcessadorArquivo processadorArquivo;
 	private List<Exception> erros;
 
-	private List<Remessa> remessasFiltradas;
-	private List<Remessa> remessas = new ArrayList<Remessa>();
-
 	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<String> tipos, Usuario usuario) {
-
-		try {
-			remessas = remessaDao.buscarRemessaAvancado(arquivo, municipio,dataInicio, dataFim, usuario, tipos);
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex);
-			new InfraException("Não foi possível realizar a busca, contate a CRA.");
-		}
-		return remessas;
+		return remessaDao.buscarRemessaAvancado(arquivo, municipio,dataInicio, dataFim, usuario, tipos);
 	}
 
 	public List<Remessa> buscarRemessaSimples(Instituicao instituicao, ArrayList<String> tipos, ArrayList<String> situacoes,
 	        LocalDate dataInicio, LocalDate dataFim) {
-
-		try {
-			remessas = remessaDao.buscarRemessaSimples(instituicao, tipos, situacoes, dataInicio, dataFim);
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex);
-			new InfraException("Não foi possível realizar a busca, contate a CRA.");
-		}
-		return remessas;
+		return remessaDao.buscarRemessaSimples(instituicao, tipos, situacoes, dataInicio, dataFim);
 	}
 
 	public List<Remessa> buscarRemessasDoArquivo(Arquivo arquivo, Instituicao instituicao) {

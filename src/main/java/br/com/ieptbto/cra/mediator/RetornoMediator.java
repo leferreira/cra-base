@@ -50,11 +50,10 @@ public class RetornoMediator {
 	}
 	
 	public BigDecimal buscarValorDeTitulosPagos(Remessa retorno){
-		
 		if (!retorno.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)){
 			throw new InfraException("O arquivo não é um arquivo de RETORNO válido.");
-		} else 
-			return retornoDao.buscarValorDeTitulosPagos(retorno);
+		} 
+		return retornoDao.buscarValorDeTitulosPagos(retorno);
 	}
 	
 	public void confirmarBatimentos(List<Remessa> retornos){
@@ -68,21 +67,21 @@ public class RetornoMediator {
 	public void gerarRetornos(Usuario usuarioAcao, List<Remessa> retornos){
 		List<Arquivo> arquivosDeRetorno = new ArrayList<Arquivo>();
 		
-		cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
-		tipoArquivo = tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.RETORNO);
+		setCra(instituicaoDAO.buscarInstituicaoInicial("CRA"));
+		setTipoArquivo(tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.RETORNO));
 		
 		Instituicao instituicaoDestino = new Instituicao();
 		for (Remessa retorno: retornos){
 			
-			if (arquivo == null || !instituicaoDestino.equals(retorno.getInstituicaoDestino())){
+			if (getArquivo() == null || !instituicaoDestino.equals(retorno.getInstituicaoDestino())){
 				instituicaoDestino = retorno.getInstituicaoDestino();
 				criarNovoArquivoDeRetorno(instituicaoDestino, retorno);
 				
 				List<Remessa> retornosDaInstituicao = retornoDao.buscarRetornosConfirmadosPorInstituicao(instituicaoDestino);
-				arquivo.setRemessas(retornosDaInstituicao);
+				getArquivo().setRemessas(retornosDaInstituicao);
 				
-				if (!arquivosDeRetorno.contains(arquivo) && arquivo != null)
-					arquivosDeRetorno.add(arquivo);
+				if (!arquivosDeRetorno.contains(getArquivo()) && getArquivo() != null)
+					arquivosDeRetorno.add(getArquivo());
 			} 
 		}
 		
@@ -90,12 +89,12 @@ public class RetornoMediator {
 	}
 	
 	private void criarNovoArquivoDeRetorno(Instituicao destino, Remessa retorno) {
-		arquivo = new Arquivo();
-		arquivo.setTipoArquivo(tipoArquivo);
-		arquivo.setNomeArquivo(gerarNomeArquivoRetorno(retorno));
-		arquivo.setInstituicaoRecebe(destino);
-		arquivo.setInstituicaoEnvio(cra);
-		arquivo.setDataEnvio(new LocalDate());
+		this.arquivo = new Arquivo();
+		getArquivo().setTipoArquivo(getTipoArquivo());
+		getArquivo().setNomeArquivo(gerarNomeArquivoRetorno(retorno));
+		getArquivo().setInstituicaoRecebe(destino);
+		getArquivo().setInstituicaoEnvio(getCra());
+		getArquivo().setDataEnvio(new LocalDate());
 	}
 	
 	private String gerarNomeArquivoRetorno(Remessa retorno) {
@@ -109,5 +108,29 @@ public class RetornoMediator {
 	private String gerarDataArquivo(){
 		SimpleDateFormat dataPadraArquivo = new SimpleDateFormat("ddMM.yy");
 		return dataPadraArquivo.format(new Date()).toString();
+	}
+
+	public Instituicao getCra() {
+		return cra;
+	}
+
+	public TipoArquivo getTipoArquivo() {
+		return tipoArquivo;
+	}
+
+	public Arquivo getArquivo() {
+		return arquivo;
+	}
+
+	public void setCra(Instituicao cra) {
+		this.cra = cra;
+	}
+
+	public void setTipoArquivo(TipoArquivo tipoArquivo) {
+		this.tipoArquivo = tipoArquivo;
+	}
+
+	public void setArquivo(Arquivo arquivo) {
+		this.arquivo = arquivo;
 	}
 }
