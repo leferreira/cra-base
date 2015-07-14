@@ -1,7 +1,9 @@
 package br.com.ieptbto.cra.processador;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +29,6 @@ import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.mediator.TipoArquivoMediator;
-import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.RemoveAcentosUtil;
 
 /**
@@ -39,24 +40,37 @@ import br.com.ieptbto.cra.util.RemoveAcentosUtil;
 @Service
 public class ProcessadorRemessaConveniada extends Processador {
 
+	private static final int NUMERO_SEQUENCIAL_REMESSA = 1;
+	
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
 	@Autowired
 	private TipoArquivoMediator tipoArquivoMediator;
 	private Map<chaveTitulo, TituloFiliado> mapaTitulos;
+	private Map<String, Arquivo> mapaArquivos;
 	private List<TituloFiliado> listTitulosFiliado;
 	private Usuario usuario;
-	private Arquivo arquivo;
 	private List<Remessa> remessas;
+	private List<Arquivo> arquivos;
 
-	public Arquivo processar(List<TituloFiliado> listaTitulosConvenios, Usuario usuario) {
+	public List<Arquivo> processar(List<TituloFiliado> listaTitulosConvenios, Usuario usuario) {
 		this.listTitulosFiliado = listaTitulosConvenios;
 		this.usuario = usuario;
 		agruparTitulosFiliado();
 		gerarRemessas();
-		getArquivo().setRemessas(getRemessas());
+		criarArquivos();
 
-		return getArquivo();
+		return getArquivos();
+	}
+	
+	private void criarArquivos() {
+		for (Remessa remessa: getRemessas()){
+			if (getMapaArquivos().containsKey(remessa.getInstituicaoOrigem().getCodigoCompensacao())) {
+				getMapaArquivos().get(remessa.getInstituicaoOrigem().getCodigoCompensacao()).getRemessas().add(remessa);
+			} else {
+				getMapaArquivos().put(remessa.getInstituicaoOrigem().getCodigoCompensacao(), criarArquivo(remessa));
+			}
+		}
 	}
 
 	private void gerarRemessas() {
@@ -74,7 +88,6 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private Remessa criarRemessa(TituloFiliado tituloFiliado) {
 		List<Titulo> listaTitulos = new ArrayList<Titulo>();
 		Remessa remessa = new Remessa();
-		remessa.setArquivo(criarArquivo(tituloFiliado));
 		remessa.setCabecalho(setCabecalho(tituloFiliado));
 		remessa.setDataRecebimento(new LocalDate());
 		remessa.setRodape(setRodape(tituloFiliado));
@@ -86,16 +99,19 @@ public class ProcessadorRemessaConveniada extends Processador {
 		return remessa;
 	}
 
-	private Arquivo criarArquivo(TituloFiliado tituloFiliado) {
-		setArquivo(new Arquivo());
-		getArquivo().setDataEnvio(new LocalDate());
-		getArquivo().setInstituicaoEnvio(tituloFiliado.getFiliado().getInstituicaoConvenio());
-		getArquivo().setInstituicaoRecebe(instituicaoMediator.buscarCRA());
-		getArquivo().setNomeArquivo(montarNomeArquivo(tituloFiliado));
-		getArquivo().setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.REMESSA));
-		getArquivo().setUsuarioEnvio(getUsuario());
-		getArquivo().setStatusArquivo(gerarStatusArquivo());
-		return getArquivo();
+	private Arquivo criarArquivo(Remessa remessa) {
+		Arquivo arquivo = new Arquivo();
+		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setInstituicaoEnvio(remessa.getInstituicaoOrigem());
+		arquivo.setInstituicaoRecebe(instituicaoMediator.buscarCRA());
+		arquivo.setNomeArquivo(gerarNomeArquivo(remessa.getInstituicaoOrigem()));
+		arquivo.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.REMESSA));
+		arquivo.setUsuarioEnvio(getUsuario());
+		arquivo.setStatusArquivo(gerarStatusArquivo());
+		arquivo.setRemessas(new ArrayList<Remessa>());
+		arquivo.getRemessas().add(remessa);
+		getArquivos().add(arquivo);
+		return arquivo;
 	}
 
 	private StatusArquivo gerarStatusArquivo() {
@@ -105,14 +121,17 @@ public class ProcessadorRemessaConveniada extends Processador {
 		return status;
 	}
 
-	public static void main(String[] args) {
-		new ProcessadorRemessaConveniada().montarNomeArquivo(new TituloFiliado());
+	private String gerarNomeArquivo(Instituicao instituicao) {
+		
+		return TipoArquivoEnum.REMESSA.getConstante() 
+			+ instituicao.getCodigoCompensacao()
+			+ gerarDataArquivo()
+			+ NUMERO_SEQUENCIAL_REMESSA;
 	}
-
-	private String montarNomeArquivo(TituloFiliado tituloFiliado) {
-		String dataDiaMes = DataUtil.getDataAtual().substring(0, 5).replace("/", "");
-		String dataAno = DataUtil.getDataAtual().substring(8, 10);
-		return "B" + tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + dataDiaMes + "." + dataAno + "1";
+	
+	private String gerarDataArquivo(){
+		SimpleDateFormat dataPadraArquivo = new SimpleDateFormat("ddMM.yy");
+		return dataPadraArquivo.format(new Date()).toString();
 	}
 
 	private Instituicao setInstituicaoOrigem(TituloFiliado tituloFiliado) {
@@ -132,7 +151,6 @@ public class ProcessadorRemessaConveniada extends Processador {
 		TituloRemessa titulo = new TituloRemessa();
 		titulo.parseTituloFiliado(tituloFiliado);
 		remessa.getTitulos().add(titulo);
-
 	}
 
 	private List<Titulo> setTitulosRemessa(List<Titulo> listaTitulos, TituloFiliado tituloFiliado) {
@@ -212,14 +230,6 @@ public class ProcessadorRemessaConveniada extends Processador {
 		this.usuario = usuario;
 	}
 
-	public Arquivo getArquivo() {
-		return arquivo;
-	}
-
-	public void setArquivo(Arquivo arquivo) {
-		this.arquivo = arquivo;
-	}
-
 	public List<Remessa> getRemessas() {
 		return remessas;
 	}
@@ -228,6 +238,27 @@ public class ProcessadorRemessaConveniada extends Processador {
 		this.remessas = remessas;
 	}
 
+	public Map<String, Arquivo> getMapaArquivos() {
+		if (mapaArquivos == null) {
+			mapaArquivos = new HashMap<String, Arquivo>();
+		}
+		return mapaArquivos;
+	}
+
+	public void setMapaArquivos(Map<String, Arquivo> mapaArquivos) {
+		this.mapaArquivos = mapaArquivos;
+	}
+
+	public List<Arquivo> getArquivos() {
+		if (arquivos == null) {
+			arquivos = new ArrayList<Arquivo>();
+		}
+		return arquivos;
+	}
+
+	public void setArquivos(List<Arquivo> arquivos) {
+		this.arquivos = arquivos;
+	}
 }
 
 class chaveTitulo {

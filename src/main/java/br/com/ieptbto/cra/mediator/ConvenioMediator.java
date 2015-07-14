@@ -34,8 +34,10 @@ public class ConvenioMediator {
 	}
 
 	public void gerarRemessas(Usuario usuario, List<TituloFiliado> listaTitulosConvenios) {
-		Arquivo arquivo = processadorRemessaConveniada.processar(listaTitulosConvenios, usuario);
-		arquivoDAO.salvar(arquivo, usuario);
+		List<Arquivo> arquivos = processadorRemessaConveniada.processar(listaTitulosConvenios, usuario);
+		for (Arquivo arquivo: arquivos) {
+			arquivoDAO.salvar(arquivo, usuario);
+		}
 		tituloFiliadoDAO.marcarComoEnviadoParaCRA(listaTitulosConvenios);
 	}
 }
