@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -27,7 +28,7 @@ public class RegraValidarUsuarioEnvio extends RegrasDeEntrada {
 	private File arquivo;
 	private Usuario usuario;
 
-	protected void validar(File arquivo, Usuario usuario, List<Exception> erros) {
+	protected void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
 		setArquivo(arquivo);
 		setUsuario(usuario);
 		setErros(erros);

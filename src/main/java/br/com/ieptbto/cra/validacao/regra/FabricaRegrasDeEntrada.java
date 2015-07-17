@@ -27,11 +27,11 @@ public class FabricaRegrasDeEntrada {
 	@Autowired
 	private RegraVerificarDuplicidade regraValidarDuplicidade;
 
-	public void validar(File arquivo, Arquivo arquivoProcessado ,Usuario usuario, List<Exception> erros) {
-		regraNomeArquivo.validar(arquivo, usuario, erros);
-		regraValidarInstituicaoEnvio.validar(arquivo, usuario, erros);
-		regraValidarUsuarioEnvio.validar(arquivo, usuario, erros);
-		regraValidarDuplicidade.validar(arquivo, usuario, erros);
+	public void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
+		regraNomeArquivo.validar(arquivo, arquivoProcessado, usuario, erros);
+		regraValidarInstituicaoEnvio.validar(arquivo, arquivoProcessado, usuario, erros);
+		regraValidarUsuarioEnvio.validar(arquivo, arquivoProcessado, usuario, erros);
+		regraValidarDuplicidade.validar(arquivo, arquivoProcessado, usuario, erros);
 	}
 
 }

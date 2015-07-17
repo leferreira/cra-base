@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
 /**
@@ -115,6 +116,28 @@ public class Avalista extends AbstractEntidade<Avalista> {
 
 	public void setUf(String uf) {
 		this.uf = uf;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Avalista) {
+			Avalista modalidade = Avalista.class.cast(obj);
+			EqualsBuilder equalsBuilder = new EqualsBuilder();
+			equalsBuilder.append(this.getId(), modalidade.getId());
+			equalsBuilder.append(this.getTituloFiliado(), modalidade.getTituloFiliado());
+			equalsBuilder.append(this.getNome(), modalidade.getNome());
+			equalsBuilder.append(this.getDocumento(), modalidade.getDocumento());
+			return equalsBuilder.isEquals();
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (getId() == 0) {
+			return 0;
+		}
+		return getId();
 	}
 	
 	@Override

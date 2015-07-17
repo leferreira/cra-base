@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.conversor.enumeration.ErroValidacao;
+import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.exception.InfraException;
 
@@ -18,13 +19,12 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class RegraValidarInstituicaoEnvio extends RegrasDeEntrada {
 
 	@Override
-	protected void validar(File arquivo, Usuario usuario, List<Exception> erros) {
+	protected void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
 		this.arquivo = arquivo;
 		this.usuario = usuario;
 		setErros(erros);
 
 		executar();
-
 	}
 
 	@Override

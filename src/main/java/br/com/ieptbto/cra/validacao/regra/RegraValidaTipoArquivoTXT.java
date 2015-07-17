@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -30,7 +31,7 @@ public class RegraValidaTipoArquivoTXT extends RegrasDeEntrada {
 	private File arquivo;
 	private String linha;
 
-	public void validar(File arquivo, Usuario usuario, List<Exception> erros) {
+	public void validar(File arquivo, Arquivo arquivoProcessado,Usuario usuario, List<Exception> erros) {
 		this.arquivo = arquivo;
 		setErros(erros);
 		executar();

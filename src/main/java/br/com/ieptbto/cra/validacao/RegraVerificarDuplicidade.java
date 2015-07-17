@@ -1,22 +1,17 @@
 package br.com.ieptbto.cra.validacao;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.ArquivoDAO;
+import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.exception.ValidacaoErroException;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.validacao.regra.RegrasDeEntrada;
 
@@ -33,12 +28,14 @@ public class RegraVerificarDuplicidade extends RegrasDeEntrada {
 	private ArquivoDAO arquivoDAO;
 	private Usuario usuario;
 	private File arquivo;
+	private Arquivo arquivoProcessado;
 	private Instituicao instituicaoEnvio;
 	
-	public void validar(File arquivo, Usuario usuario, List<Exception> erros) {
+	public void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
 		setArquivo(arquivo);
 		setUsuario(usuario);
 		setErros(erros);
+		setArquivoProcessado(arquivoProcessado);
 		
 		executar();
 	}
@@ -73,20 +70,7 @@ public class RegraVerificarDuplicidade extends RegrasDeEntrada {
 		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO) 
 				|| tipoArquivo.equals(TipoArquivoEnum.RETORNO)
 				|| tipoArquivo.equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
-			
-			String linha = "";
-			try {
-				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(arquivo)));
-				linha = reader.readLine();
-				reader.close();
-			
-			} catch (IOException e) {
-				logger.error(e.getMessage());
-				getErros().add(new ValidacaoErroException(arquivo.getName(), e.getMessage(), e.getCause()));
-				throw new InfraException(Erro.NAO_FOI_POSSIVEL_VERIFICAR_A_PRIMEIRA_LINHA_DO_ARQUIVO.getMensagemErro());
-			}
-			
-			return instituicaoMediator.getInstituicaoPorCodigoIBGE(linha.substring(92, 99));
+			return instituicaoMediator.getInstituicaoPorCodigoIBGE(getArquivoProcessado().getRemessas().get(0).getCabecalho().getCodigoMunicipio());
 		} else {
 			throw new InfraException("Não foi possível validar a duplicidade do arquivo !");
 		}
@@ -94,7 +78,8 @@ public class RegraVerificarDuplicidade extends RegrasDeEntrada {
 	
 	private void verificarExistencia() {
 		if (arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(getInstituicaoEnvio(), getArquivo().getName()) != null) {
-			throw new InfraException("O arquivo não pode ser enviado por motivo de duplicidade !");
+			throw new InfraException("Não foi possível importar, pois, o arquivo [ "+ getArquivo().getName()
+					+" ] já foi enviado para a CRA !");
 		}
 	}
 	
@@ -120,5 +105,13 @@ public class RegraVerificarDuplicidade extends RegrasDeEntrada {
 
 	public void setInstituicaoEnvio(Instituicao instituicaoEnvio) {
 		this.instituicaoEnvio = instituicaoEnvio;
+	}
+
+	public Arquivo getArquivoProcessado() {
+		return arquivoProcessado;
+	}
+
+	public void setArquivoProcessado(Arquivo arquivoProcessado) {
+		this.arquivoProcessado = arquivoProcessado;
 	}
 }

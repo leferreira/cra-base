@@ -36,7 +36,7 @@ public class FabricaValidacaoArquivo {
 	}
 
 	private void validarEntradaDoArquivo() {
-		fabricaRegrasDeEntrada.validar(getArquivoFisico(), getArquivoProcessado() ,getUsuario(), getErros());
+		fabricaRegrasDeEntrada.validar(getArquivoFisico(), getArquivoProcessado(), getUsuario(), getErros());
 	}
 
 	public File getArquivoFisico() {

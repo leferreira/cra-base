@@ -185,7 +185,6 @@ public class ProcessadorArquivo extends Processador {
 			getErros().add(new ValidacaoErroException(e.getMessage(), e.getCause()));
 			throw new InfraException("Não foi possível criar arquivo Físico temporário para o arquivo " + getFile().getClientFileName());
 		}
-
 	}
 
 	private void verificaDiretorio() {

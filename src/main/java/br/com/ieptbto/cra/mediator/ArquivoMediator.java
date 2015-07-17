@@ -13,6 +13,7 @@ import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.TipoArquivoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -21,6 +22,7 @@ import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
+import br.com.ieptbto.cra.processador.ProcessadorMigracaoAntigaCRA;
 
 /**
  * @author Thasso Araújo
@@ -40,6 +42,8 @@ public class ArquivoMediator {
 
 	@Autowired
 	private ProcessadorArquivo processadorArquivo;
+	@Autowired
+	private ProcessadorMigracaoAntigaCRA processadorArquivoMigracao;
 
 	public ArquivoMediator salvar(Arquivo arquivo, FileUpload uploadedFile, Usuario usuario) {
 		arquivo.setTipoArquivo(getTipoArquivo(arquivo));
@@ -47,23 +51,21 @@ public class ArquivoMediator {
 		if (verificarPermissaoDeEnvio(usuario, arquivo)) {
 			throw new InfraException("O usuário " + usuario.getNome() + " não pode enviar arquivos " + arquivo.getNomeArquivo());
 		}
-		if (verificaSeArquivoJaEnviado(usuario, arquivo)) {
-			throw new InfraException("O arquivo " + arquivo.getNomeArquivo() + " já foi enviado ");
-		}
 
 		processarArquivo(arquivo, uploadedFile);
-		arquivo.setInstituicaoEnvio(setInstituicaoEnvio(arquivo));
-		setArquivo(arquivoDAO.salvar(arquivo, usuario));
+		
+		/** @TODO Gato feito pelo THASSO, para receber os arquivos de Confirmacao e Retorno, gerados pela CRA ANTIGA.
+		 * Arquivos com mais de uma praça de protesto. Para fins de migração do sistema apenas!
+		 */
+		if (verificarSeArquivoDaCraAntigaParaMigracao(arquivo)) {
+			processarArquivoMigracao(arquivo, usuario);
+		} else {
+			arquivo.setInstituicaoEnvio(setInstituicaoEnvio(arquivo));
+			setArquivo(arquivoDAO.salvar(arquivo, usuario));
+		}
 		return this;
 	}
-
-	private boolean verificaSeArquivoJaEnviado(Usuario usuario, Arquivo arquivo) {
-		if (arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(usuario.getInstituicao(), arquivo.getNomeArquivo()) == null) {
-			return false;
-		}
-		return true;
-	}
-
+	
 	private boolean verificarPermissaoDeEnvio(Usuario user, Arquivo arquivo) {
 		String nome = arquivo.getNomeArquivo().substring(1, 4);
 		if (arquivo.getNomeArquivo().length() == 13) {
@@ -97,6 +99,33 @@ public class ArquivoMediator {
 		}
 	}
 
+	private void processarArquivoMigracao(Arquivo arquivo, Usuario usuario) {
+		processadorArquivoMigracao.processarArquivoMigracao(arquivo, usuario);
+	}
+
+	private boolean verificarSeArquivoDaCraAntigaParaMigracao(Arquivo arquivo) {
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO) ||
+				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+			
+			if (verificarSeTemMaisDeUmaPraca(arquivo))
+				return true;
+		}
+		return false;
+	}
+	
+	private boolean verificarSeTemMaisDeUmaPraca(Arquivo arquivo) {
+		List<String> pracasProtesto = new ArrayList<String>();
+		
+		for (Remessa remessa : arquivo.getRemessas()) {
+			if (!pracasProtesto.contains(remessa.getCabecalho().getCodigoMunicipio())) {
+				pracasProtesto.add(remessa.getCabecalho().getCodigoMunicipio());
+			} else {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private StatusArquivo setStatusArquivo() {
 		StatusArquivo status = new StatusArquivo();
 		status.setData(new LocalDateTime());

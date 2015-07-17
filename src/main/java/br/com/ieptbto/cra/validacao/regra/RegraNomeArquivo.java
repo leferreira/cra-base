@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.exception.Erro;
@@ -16,7 +17,7 @@ import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 public class RegraNomeArquivo extends RegrasDeEntrada {
 
 	@Override
-	protected void validar(File arquivo, Usuario usuario, List<Exception> erros) {
+	protected void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
 		this.usuario = usuario;
 		this.arquivo = arquivo;
 		setErros(erros);

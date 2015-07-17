@@ -223,7 +223,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 	@Override
 	public void validar() {
-		new RegraValidaTipoArquivoTXT().validar(arquivoFisico, arquivo.getUsuarioEnvio(), erros);
+		new RegraValidaTipoArquivoTXT().validar(arquivoFisico, arquivo ,arquivo.getUsuarioEnvio(), erros);
 
 	}
 
