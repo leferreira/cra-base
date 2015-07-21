@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +20,21 @@ import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.mediator.TipoArquivoMediator;
+import br.com.ieptbto.cra.validacao.FabricaValidacaoArquivo;
 
 @Service
 public class ProcessadorMigracaoAntigaCRA extends Processador {
 
+	private static final Logger logger = Logger.getLogger(ProcessadorMigracaoAntigaCRA.class);
+	
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
 	@Autowired
 	private TipoArquivoMediator tipoArquivoMediator;
 	@Autowired
 	private ArquivoDAO arquivoDAO;
+	@Autowired
+	private FabricaValidacaoArquivo fabricaValidacaoArquivo;
 	private HashMap<String, Arquivo> arquivosMigrados;
 	private Arquivo arquivo;
 	private List<Arquivo> novosArquivos;
@@ -38,25 +44,35 @@ public class ProcessadorMigracaoAntigaCRA extends Processador {
 		setArquivo(arquivo);
 		setUsuario(usuarioEnvio);
 		
-		gerarArquivosCartorios();
+		logger.info("Início do processamento do arquivo " + arquivo.getNomeArquivo() + " gerado pela antiga CRA !");
+		
+		sapararArquivos();
 		salvarNovosArquivos();
+		
+		logger.info("Fim do processamento do arquivo " + arquivo.getNomeArquivo() + " gerado pela antiga CRA !");
 	}
 
-	private void salvarNovosArquivos() {
-		for (Arquivo novoArquivo : getNovosArquivos()){
-			arquivoDAO.salvar(novoArquivo, getUsuario());
-		}
-	}
-
-	private void gerarArquivosCartorios() {
+	private void sapararArquivos() {
 		for (Remessa remessa: getArquivo().getRemessas()){
 			setSituacaoOrigemDestinoRemessa(remessa);
-
+			
 			if (getArquivosMigrados().containsKey(remessa.getCabecalho().getCodigoMunicipio())) {
 				getArquivosMigrados().get(remessa.getCabecalho().getCodigoMunicipio()).getRemessas().add(remessa);
 			} else {
 				getArquivosMigrados().put(remessa.getCabecalho().getCodigoMunicipio(), criarArquivo(remessa));
 			}
+		}
+	}
+
+	private void salvarNovosArquivos() {
+		
+		for (Arquivo novoArquivo : getNovosArquivos()){
+			logger.info("Salvando arquivo " + novoArquivo.getNomeArquivo() + " de origem "+ novoArquivo.getInstituicaoEnvio().getNomeFantasia() +
+					" e com destino para  " + novoArquivo.getInstituicaoRecebe().getNomeFantasia() + " !");
+			
+			arquivoDAO.salvar(novoArquivo, getUsuario());
+			
+			logger.info("Arquivo " + getArquivo().getNomeArquivo() + " salvo !");
 		}
 	}
 	

@@ -484,9 +484,9 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 
 	private String verificarTipoIdentificacaoDevedor(String documentoDevedor) {
 		if (documentoDevedor.length() == 14 ){
-			return "001";
+			return "002";
 		}
-		return "002";
+		return "001";
 	}
 	
 	@Override

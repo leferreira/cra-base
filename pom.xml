@@ -187,8 +187,9 @@
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
-			<version>5.0.1</version>
+			<version>6.0.0</version>
 		</dependency>
+
 		
 		<!-- Apache POI -->
 		<dependency>
@@ -201,7 +202,7 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.9</version>
 		</dependency>
-	
+		
 		<!-- Wicket Extension -->
 		<dependency>
 			<groupId>org.apache.wicket</groupId>

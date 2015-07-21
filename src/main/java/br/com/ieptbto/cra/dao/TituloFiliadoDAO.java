@@ -8,8 +8,10 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import br.com.ieptbto.cra.entidade.Avalista;
 import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
@@ -26,20 +28,34 @@ import br.com.ieptbto.cra.exception.InfraException;
  */
 @Repository
 public class TituloFiliadoDAO extends AbstractBaseDAO {
-
+	
+	@Autowired
+	AvalistaDAO avalistaDAO;
+	
 	public TituloFiliado salvar(TituloFiliado titulo) {
 		TituloFiliado novoTitulo = new TituloFiliado();
 		Transaction transaction = getBeginTransation();
 
 		try {
 			novoTitulo = save(titulo);
+			for (Avalista avalista : titulo.getAvalistas()) {
+				avalista.setTipoDocumento(verificarTipoDocumento(avalista.getDocumento()));
+				avalista.setTituloFiliado(novoTitulo);
+				avalistaDAO.saveOrUpdate(avalista);
+			}
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
 		}
-
 		return novoTitulo;
+	}
+
+	private String verificarTipoDocumento(String documento) {
+		if (documento.length() == 14) {
+			return "002";
+		}
+		return "001";
 	}
 
 	public TituloFiliado alterar(TituloFiliado titulo) {
@@ -48,12 +64,16 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 
 		try {
 			alterado = update(titulo);
+			for (Avalista avalista : titulo.getAvalistas()) {
+				avalista.setTipoDocumento(verificarTipoDocumento(avalista.getDocumento()));
+				avalista.setTituloFiliado(alterado);
+				avalistaDAO.saveOrUpdate(avalista);
+			}
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
 		}
-
 		return alterado;
 	}
 
@@ -85,7 +105,6 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		Transaction transaction = getBeginTransation();
 
 		try {
-
 			for (TituloFiliado titulo : listaTitulosFiliado) {
 				titulo.setSituacaoTituloConvenio(SituacaoTituloConvenio.ENVIADO);
 				titulo.setDataEnvioCRA(new LocalDate());
