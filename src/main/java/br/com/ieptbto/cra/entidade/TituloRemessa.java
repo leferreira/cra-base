@@ -471,6 +471,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.setUfDevedor(tituloFiliado.getUfDevedor());
 		this.setComplementoRegistro(buscarAlineaCheque(tituloFiliado));
 	}
+	
 	private String gerarNossoNumero(String nossoNumero) {
 		return StringUtils.rightPad(nossoNumero, 15, "0");
 	}

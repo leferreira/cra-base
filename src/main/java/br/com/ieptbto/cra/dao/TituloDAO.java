@@ -117,6 +117,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	public List<Historico> buscarHistoricoDoTitulo(TituloRemessa titulo) {
 		Criteria criteria = getCriteria(Historico.class);
 		criteria.createAlias("titulo", "titulo");
+		criteria.add(Restrictions.eq("dataCadastro", titulo.getDataCadastro()));
 		criteria.add(Restrictions.eq("titulo.codigoPortador", titulo.getCodigoPortador()));
 		criteria.add(Restrictions.eq("titulo.nossoNumero", titulo.getNossoNumero()));
 
@@ -161,12 +162,12 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	public TituloRemessa buscaTituloRetornoSalvo(Retorno tituloRetorno) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.add(Restrictions.eq("dataCadastro", tituloRetorno.getTitulo().getDataCadastro()));
 		criteria.add(Restrictions.eq("codigoPortador", tituloRetorno.getCodigoPortador().trim()));
 		criteria.add(Restrictions.eq("nossoNumero", tituloRetorno.getNossoNumero().trim()));
 		criteria.add(Restrictions.eq("agenciaCodigoCedente", tituloRetorno.getAgenciaCodigoCedente().trim()));
 
-		TituloRemessa titulo = TituloRemessa.class.cast(criteria.uniqueResult());
-		return titulo;
+		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
 
 	private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao) {
@@ -191,12 +192,12 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	public TituloRemessa buscaTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.add(Restrictions.eq("dataCadastro", tituloConfirmacao.getTitulo().getDataCadastro()));
 		criteria.add(Restrictions.eq("codigoPortador", tituloConfirmacao.getCodigoPortador().trim()));
 		criteria.add(Restrictions.eq("nossoNumero", tituloConfirmacao.getNossoNumero().trim()));
 		criteria.add(Restrictions.eq("numeroTitulo", tituloConfirmacao.getNumeroTitulo().trim()));
 
-		TituloRemessa titulo = TituloRemessa.class.cast(criteria.uniqueResult());
-		return titulo;
+		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
 
 	private TituloRemessa salvarTituloRemessa(TituloRemessa tituloRemessa, Transaction transaction) {
@@ -314,6 +315,7 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	public TituloRemessa carregarTitulo(TituloRemessa titulo) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.add(Restrictions.eq("dataCadastro", titulo.getDataCadastro()));
 		criteria.add(Restrictions.eq("codigoPortador", titulo.getCodigoPortador()));
 		criteria.add(Restrictions.eq("nossoNumero", titulo.getNossoNumero()));
 
@@ -323,6 +325,7 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	public TituloRemessa carregarDadosHistoricoTitulo(TituloRemessa titulo) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.add(Restrictions.eq("dataCadastro", titulo.getDataCadastro()));
 		criteria.add(Restrictions.eq("numeroTitulo", titulo.getNumeroTitulo()));
 		criteria.add(Restrictions.eq("nossoNumero", titulo.getNossoNumero()));
 		criteria.add(Restrictions.eq("codigoPortador", titulo.getCodigoPortador()));
