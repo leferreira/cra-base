@@ -38,12 +38,12 @@ public enum TipoEspecieTitulo implements CraEnum {
 
 	@Override
 	public String getConstante() {
-		return this.constante;
+		return constante;
 	}
 
 	@Override
 	public String getLabel() {
-		return this.label;
+		return label;
 	}
 
 }

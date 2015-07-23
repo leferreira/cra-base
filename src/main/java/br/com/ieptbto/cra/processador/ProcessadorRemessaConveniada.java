@@ -197,7 +197,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 
 	private void agruparTitulosFiliado() {
 		for (TituloFiliado tituloFiliado : getListTitulosFiliado()) {
-			getMapaTitulos().put(new chaveTitulo(tituloFiliado.getFiliado().getId(), tituloFiliado.getPracaProtesto().getCodigoIBGE()),
+			getMapaTitulos().put(new chaveTitulo(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao(), tituloFiliado.getPracaProtesto().getCodigoIBGE()),
 			        tituloFiliado);
 		}
 
@@ -262,24 +262,24 @@ public class ProcessadorRemessaConveniada extends Processador {
 }
 
 class chaveTitulo {
-	private int idFiliado;
+	private String codigoPortador;
 	private String codigoMunicipio;
 
-	public chaveTitulo(int idFiliado, String codigoMunicipio) {
-		this.idFiliado = idFiliado;
+	public chaveTitulo(String codigoPortador, String codigoMunicipio) {
+		this.codigoPortador = codigoPortador;
 		this.codigoMunicipio = codigoMunicipio;
 	}
 
-	public int getIdFiliado() {
-		return idFiliado;
+	public String getCodigoPortador() {
+		return codigoPortador;
 	}
 
 	public String getCodigoMunicipio() {
 		return codigoMunicipio;
 	}
 
-	public void setIdFiliado(int idFiliado) {
-		this.idFiliado = idFiliado;
+	public void setCodigoPortador(String codigoPortador) {
+		this.codigoPortador = codigoPortador;
 	}
 
 	public void setCodigoMunicipio(String codigoMunicipio) {
@@ -288,6 +288,6 @@ class chaveTitulo {
 
 	@Override
 	public String toString() {
-		return String.valueOf(getIdFiliado()).concat(getCodigoMunicipio());
+		return String.valueOf(getCodigoPortador()).concat(getCodigoMunicipio());
 	}
 }
