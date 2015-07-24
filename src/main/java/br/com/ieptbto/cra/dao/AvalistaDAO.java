@@ -19,16 +19,13 @@ public class AvalistaDAO extends AbstractBaseDAO {
 
 	public Avalista saveOrUpdate(Avalista avalista) {
 		Avalista novoAvalista = new Avalista();
-		Transaction transaction = getBeginTransation();
 		try {
 			if (avalista.getId() != 0) {
 				novoAvalista = update(avalista);
 			} else {
 				novoAvalista = save(avalista);
 			}
-			transaction.commit();
 		} catch (Exception ex) {
-			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
 		}
 		return novoAvalista;

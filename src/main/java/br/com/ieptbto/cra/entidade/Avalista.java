@@ -34,6 +34,7 @@ public class Avalista extends AbstractEntidade<Avalista> {
 	private String cidade;
 	private String cep;
 	private String uf;
+	private String bairro;
 
 	@Id
 	@Column(name = "ID_AVALISTA", columnDefinition = "serial")
@@ -144,5 +145,13 @@ public class Avalista extends AbstractEntidade<Avalista> {
 	public int compareTo(Avalista entidade) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public String getBairro() {
+		return bairro;
+	}
+
+	public void setBairro(String bairro) {
+		this.bairro = bairro;
 	}
 }
