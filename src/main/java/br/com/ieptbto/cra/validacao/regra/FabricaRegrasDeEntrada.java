@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.validacao.RegraValidarHoraEnvio;
 import br.com.ieptbto.cra.validacao.RegraVerificarDuplicidade;
 
 /**
@@ -26,12 +27,15 @@ public class FabricaRegrasDeEntrada {
 	private RegraValidarUsuarioEnvio regraValidarUsuarioEnvio;
 	@Autowired
 	private RegraVerificarDuplicidade regraValidarDuplicidade;
-
+	@Autowired
+	private RegraValidarHoraEnvio regraHoraEnvio;
+	
 	public void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
 		regraNomeArquivo.validar(arquivo, arquivoProcessado, usuario, erros);
 		regraValidarInstituicaoEnvio.validar(arquivo, arquivoProcessado, usuario, erros);
 		regraValidarUsuarioEnvio.validar(arquivo, arquivoProcessado, usuario, erros);
 		regraValidarDuplicidade.validar(arquivo, arquivoProcessado, usuario, erros);
+		regraHoraEnvio.validar(arquivo, arquivoProcessado, usuario, erros);
 	}
 
 }

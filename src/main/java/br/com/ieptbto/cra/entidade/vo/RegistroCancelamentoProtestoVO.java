@@ -7,7 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
 
 @SuppressWarnings("serial")
-public class RegistroCancelamentoProtesto extends AbstractArquivoVO {
+public class RegistroCancelamentoProtestoVO extends AbstractArquivoVO {
 
 	@XmlAttribute(name = "t01")
 	@IAtributoArquivo(ordem = 1, posicao = 1, tamanho = 1, descricao = "Identificar o Registro Transação no arquivo. Constante 2", obrigatoriedade = true, validacao = "2", tipo = Integer.class)
