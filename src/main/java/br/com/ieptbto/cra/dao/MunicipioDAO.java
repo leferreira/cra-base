@@ -55,6 +55,14 @@ public class MunicipioDAO extends AbstractBaseDAO {
 		criteria.addOrder(Order.asc("nomeMunicipio"));
 		return criteria.list();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Municipio> listarTodosTocantins() {
+		Criteria criteria = getCriteria(Municipio.class);
+		criteria.addOrder(Order.asc("nomeMunicipio"));
+		criteria.add(Restrictions.eq("uf", "TO"));
+		return criteria.list();
+	}
 
 	public Municipio buscaMunicipioPorCodigoIBGE(String codigoMunicipio) {
 		Criteria criteria = getCriteria(Municipio.class);

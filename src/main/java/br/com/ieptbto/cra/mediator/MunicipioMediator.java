@@ -75,6 +75,10 @@ public class MunicipioMediator {
 	public List<Municipio> listarTodos() {
 		return municipioDao.listarTodos();
 	}
+	
+	public List<Municipio> getMunicipiosTocantins() {
+		return municipioDao.listarTodosTocantins();
+	}
 
 	public Municipio salvar(Municipio municipio) {
 		return municipioDao.salvar(municipio);

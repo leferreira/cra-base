@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.enumeration;
 
-import br.com.ieptbto.cra.exception.InfraException;
 
 
 /**
@@ -58,6 +57,6 @@ public enum TipoOcorrencia implements CraEnum{
 				return tipoOcorrencia;
 			}
 		}
-		throw new InfraException("Tipo de Ocorrência não encontrado: " + valor);
+		return null;
 	}
 }
