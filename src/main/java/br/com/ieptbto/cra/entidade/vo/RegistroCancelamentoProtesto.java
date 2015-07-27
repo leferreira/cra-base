@@ -6,15 +6,8 @@ import org.apache.commons.lang.StringUtils;
 
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
 
-/**
- * 
- * @author Lefer
- *
- */
-public class PedidoDesistenciaVO extends AbstractArquivoVO {
-	private static final long serialVersionUID = 4806576818944343466L;
-
-	private int id;
+@SuppressWarnings("serial")
+public class RegistroCancelamentoProtesto extends AbstractArquivoVO {
 
 	@XmlAttribute(name = "t01")
 	@IAtributoArquivo(ordem = 1, posicao = 1, tamanho = 1, descricao = "Identificar o Registro Transação no arquivo. Constante 2", obrigatoriedade = true, validacao = "2", tipo = Integer.class)
@@ -40,7 +33,7 @@ public class PedidoDesistenciaVO extends AbstractArquivoVO {
 	@XmlAttribute(name = "t06")
 	private String valorTitulo;
 
-	@IAtributoArquivo(ordem = 7, posicao = 90, tamanho = 1, descricao = "solicitacao de sustação / cancelamento", obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 7, posicao = 90, tamanho = 1, descricao = "solicitacao do cancelamento de Protesto", obrigatoriedade = true)
 	@XmlAttribute(name = "t07")
 	private String solicitacaoCancelamentoSustacao;
 
@@ -63,10 +56,6 @@ public class PedidoDesistenciaVO extends AbstractArquivoVO {
 	@IAtributoArquivo(ordem = 12, posicao = 123, tamanho = 5, descricao = "sequencia do registro", obrigatoriedade = true)
 	@XmlAttribute(name = "t12")
 	private String sequenciaRegistro;
-
-	public int getId() {
-		return this.id;
-	}
 
 	public String getTipoRegistro() {
 		if (tipoRegistro == null) {
@@ -147,10 +136,6 @@ public class PedidoDesistenciaVO extends AbstractArquivoVO {
 			sequenciaRegistro = StringUtils.EMPTY;
 		}
 		return sequenciaRegistro.trim();
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public void setTipoRegistro(String tipoRegistro) {
