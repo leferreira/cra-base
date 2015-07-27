@@ -111,7 +111,10 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (titulo.getNumeroTitulo() != null)
 			criteria.add(Restrictions.eq("numeroTitulo", titulo.getNumeroTitulo()));
 
-		return TituloRemessa.class.cast(criteria.uniqueResult());
+		TituloRemessa tituloRemessa = TituloRemessa.class.cast(criteria.uniqueResult());
+		if (tituloRemessa == null)
+			throw new InfraException("O Título [ Nosso Número : "+titulo.getNossoNumero()+" ] não existe na CRA !");
+		return tituloRemessa;
 	}
 
 	public List<Historico> buscarHistoricoDoTitulo(TituloRemessa titulo) {
