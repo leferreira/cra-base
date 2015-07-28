@@ -159,6 +159,31 @@ public class RemessaDAO extends AbstractBaseDAO {
 
 		return remessa;
 	}
+	
+	@SuppressWarnings("rawtypes")
+	@Transactional(readOnly = true)
+	public Remessa buscarRemessaParaCartorio(Instituicao cartorio, String nomeArquivo) {
+		List<Titulo> titulos = new ArrayList<Titulo>();
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "arquivo");
+		criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
+		criteria.add(Restrictions.eq("instituicaoDestino", cartorio));
+		criteria.setMaxResults(1);
+		Remessa remessa = Remessa.class.cast(criteria.uniqueResult());
+
+		if (remessa == null) {
+			return null;
+		}
+
+		Criteria criteriaTitulo = getCriteria(Titulo.class);
+		criteriaTitulo.createAlias("remessa", "remessa");
+		criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+		titulos = criteriaTitulo.list();
+
+		remessa.setTitulos(titulos);
+
+		return remessa;
+	}
 
 	public Remessa buscarPorPK(Remessa entidade) {
 		Remessa remessa = super.buscarPorPK(entidade);
@@ -187,8 +212,8 @@ public class RemessaDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("arquivo", arquivo));
 		else
 			criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
+		
 		List<Remessa> remessas = criteria.list();
-
 		for (Remessa remessa : remessas) {
 			Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
 			if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {

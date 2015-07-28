@@ -26,7 +26,6 @@ import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.exception.XmlCraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 import br.com.ieptbto.cra.util.DataUtil;
@@ -98,7 +97,17 @@ public class RemessaMediator {
 
 		return arquivo;
 	}
+	
+	public ArquivoVO buscarRemessaParaCartorio(Instituicao cartorio, String nome) {
+		Remessa remessa = remessaDao.buscarRemessaParaCartorio(cartorio, nome);
+		if (remessa == null) {
+			return null;
+		}
 
+		ArquivoVO arquivo = conversorRemessaArquivo.converter(remessa);
+		return arquivo;
+	}
+	
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public MensagemRetornoXml processarArquivoXML(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
 		Arquivo arquivo = processarArquivoXMLManual(arquivoRecebido, usuario, nomeArquivo);

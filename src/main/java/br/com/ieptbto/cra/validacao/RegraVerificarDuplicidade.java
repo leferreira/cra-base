@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.validacao;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -31,6 +33,7 @@ public class RegraVerificarDuplicidade extends RegrasDeEntrada {
 	private Arquivo arquivoProcessado;
 	private Instituicao instituicaoEnvio;
 	
+	@Override
 	public void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
 		setArquivo(arquivo);
 		setUsuario(usuario);
@@ -57,7 +60,9 @@ public class RegraVerificarDuplicidade extends RegrasDeEntrada {
 		}
 		
 		setInstituicaoEnvio(buscarInstituicaoEnvioArquivo(tipoArquivo));
-		verificarExistencia();
+		
+		if (!verificarSeArquivoDaCraAntigaParaMigracao())
+			verificarExistencia();
 	}
 
 	private Instituicao buscarInstituicaoEnvioArquivo(TipoArquivoEnum tipoArquivo) {
@@ -81,6 +86,29 @@ public class RegraVerificarDuplicidade extends RegrasDeEntrada {
 			throw new InfraException("Não foi possível importar, pois, o arquivo [ "+ getArquivo().getName()
 					+" ] já foi enviado para a CRA !");
 		}
+	}
+	
+	private boolean verificarSeArquivoDaCraAntigaParaMigracao() {
+		if (arquivoProcessado.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO) ||
+				arquivoProcessado.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+			
+			if (verificarSeTemMaisDeUmaPraca(arquivoProcessado))
+				return true;
+		}
+		return false;
+	}
+	
+	private boolean verificarSeTemMaisDeUmaPraca(Arquivo arquivo) {
+		List<String> pracasProtesto = new ArrayList<String>();
+		
+		for (Remessa remessa : arquivo.getRemessas()) {
+			if (!pracasProtesto.contains(remessa.getCabecalho().getCodigoMunicipio())) {
+				pracasProtesto.add(remessa.getCabecalho().getCodigoMunicipio());
+			} else {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public Usuario getUsuario() {

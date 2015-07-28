@@ -1,5 +1,6 @@
 package br.com.ieptbto.cra.processador;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import br.com.ieptbto.cra.validacao.FabricaValidacaoArquivo;
 public class ProcessadorMigracaoAntigaCRA extends Processador {
 
 	private static final Logger logger = Logger.getLogger(ProcessadorMigracaoAntigaCRA.class);
+	private static final int NUMERO_SEQUENCIAL = 1;
 	
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
@@ -70,13 +72,15 @@ public class ProcessadorMigracaoAntigaCRA extends Processador {
 			logger.info("Salvando arquivo " + novoArquivo.getNomeArquivo() + " de origem "+ novoArquivo.getInstituicaoEnvio().getNomeFantasia() +
 					" e com destino para  " + novoArquivo.getInstituicaoRecebe().getNomeFantasia() + " !");
 			
-			arquivoDAO.salvar(novoArquivo, getUsuario());
-			
+			if (!arquivoJaExiste(novoArquivo)){
+				arquivoDAO.salvar(novoArquivo, getUsuario());
+			}
 			logger.info("Arquivo " + getArquivo().getNomeArquivo() + " salvo !");
 		}
 	}
 	
 	private void setSituacaoOrigemDestinoRemessa(Remessa remessa) {
+		remessa.setDataRecebimento(remessa.getCabecalho().getDataMovimento());
 		remessa.setInstituicaoOrigem(instituicaoMediator.getInstituicaoPorCodigoIBGE(remessa.getCabecalho().getCodigoMunicipio()));
 		remessa.setInstituicaoDestino(instituicaoMediator.getInstituicaoPorCodigoPortador(remessa.getCabecalho().getNumeroCodigoPortador()));
 		remessa.setStatusRemessa(StatusRemessa.ENVIADO);
@@ -88,10 +92,10 @@ public class ProcessadorMigracaoAntigaCRA extends Processador {
 	
 	private Arquivo criarArquivo(Remessa remessa) {
 		Arquivo arquivo = new Arquivo();
-		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setDataEnvio(remessa.getCabecalho().getDataMovimento());
 		arquivo.setInstituicaoEnvio(remessa.getInstituicaoOrigem());
 		arquivo.setInstituicaoRecebe(instituicaoMediator.buscarCRA());
-		arquivo.setNomeArquivo(getArquivo().getNomeArquivo());
+		arquivo.setNomeArquivo(gerarNomeArquivo(remessa));
 		arquivo.setTipoArquivo(getArquivo().getTipoArquivo());
 		arquivo.setUsuarioEnvio(getUsuario());
 		arquivo.setStatusArquivo(gerarStatusArquivo());
@@ -101,11 +105,31 @@ public class ProcessadorMigracaoAntigaCRA extends Processador {
 		return arquivo;
 	}
 
+	private String gerarNomeArquivo(Remessa remessa) {
+		
+		return remessa.getArquivo().getTipoArquivo().getTipoArquivo().getConstante()
+			+ remessa.getInstituicaoDestino().getCodigoCompensacao()
+			+ gerarDataArquivo(remessa.getCabecalho().getDataMovimento())
+			+ NUMERO_SEQUENCIAL;
+	}
+	
+	private String gerarDataArquivo(LocalDate dataArquivo){
+		SimpleDateFormat dataPadraArquivo = new SimpleDateFormat("ddMM.yy");
+		return dataPadraArquivo.format(dataArquivo.toDate()).toString();
+	}
+	
 	private StatusArquivo gerarStatusArquivo() {
 		StatusArquivo status = new StatusArquivo();
 		status.setData(new LocalDateTime());
 		status.setSituacaoArquivo(SituacaoArquivo.ENVIADO);
 		return status;
+	}
+	
+	private boolean arquivoJaExiste(Arquivo novoArquivo) {
+		if (arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(novoArquivo.getInstituicaoEnvio(), novoArquivo.getNomeArquivo()) != null) {
+			return true;
+		}
+		return false;
 	}
 
 	public Arquivo getArquivo() {

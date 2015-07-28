@@ -214,7 +214,7 @@ public class TituloDAO extends AbstractBaseDAO {
 			} else {
 				transaction.rollback();
 				logger.error(ex.getMessage(), ex.getCause());
-				throw new InfraException("O Título número: " + tituloRemessa.getNumeroTitulo() + " não pode ser inserido.");
+				throw new InfraException("O Título número: " + tituloRemessa.getNumeroTitulo() + " não pode ser inserido, pois será duplicado !");
 			}
 		}
 	}
