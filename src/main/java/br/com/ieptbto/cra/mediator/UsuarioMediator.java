@@ -44,6 +44,26 @@ public class UsuarioMediator {
 	@Autowired
 	FiliadoDAO filiadoDAO;
 
+	public Usuario autenticarWS(String login, String senha) {
+		Usuario usuario = usuarioDao.buscarUsuarioPorLogin(login);
+		if (usuario != null && usuario.isSenha(senha)) {
+			if (instituicaoDao.isInstituicaoAtiva(usuario.getInstituicao())) {
+				if (usuario.isStatus() == true) {
+					logger.info("O usuário <<" + usuario.getLogin() + ">> entrou na CRA.");
+					return usuario;
+				} else {
+					logger.error(Erro.USUARIO_INATIVO.getMensagemErro());
+					new InfraException(Erro.USUARIO_INATIVO.getMensagemErro());
+				}
+			} else {
+				logger.error(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
+				new InfraException(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
+			}
+		}
+		new InfraException("Login ou senha inválido(s) ou não ativo.");
+		return null;
+	}
+
 	public Usuario autenticar(String login, String senha) {
 		Usuario usuario = usuarioDao.buscarUsuarioPorLogin(login);
 		if (usuario != null && usuario.isSenha(senha)) {
@@ -143,7 +163,7 @@ public class UsuarioMediator {
 		}
 		return false;
 	}
-	
+
 	public Usuario trocarSenha(Usuario usuario) {
 		return usuarioDao.trocarSenha(usuario);
 	}
