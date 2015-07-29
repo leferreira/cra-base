@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.ArquivoDAO;
+import br.com.ieptbto.cra.dao.RemessaDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
@@ -21,7 +22,6 @@ import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.mediator.TipoArquivoMediator;
-import br.com.ieptbto.cra.validacao.FabricaValidacaoArquivo;
 
 @Service
 public class ProcessadorMigracaoAntigaCRA extends Processador {
@@ -36,7 +36,7 @@ public class ProcessadorMigracaoAntigaCRA extends Processador {
 	@Autowired
 	private ArquivoDAO arquivoDAO;
 	@Autowired
-	private FabricaValidacaoArquivo fabricaValidacaoArquivo;
+	private RemessaDAO remessaDAO;
 	private HashMap<String, Arquivo> arquivosMigrados;
 	private Arquivo arquivo;
 	private List<Arquivo> novosArquivos;
@@ -57,17 +57,17 @@ public class ProcessadorMigracaoAntigaCRA extends Processador {
 	private void sapararArquivos() {
 		for (Remessa remessa: getArquivo().getRemessas()){
 			setSituacaoOrigemDestinoRemessa(remessa);
-			
-			if (getArquivosMigrados().containsKey(remessa.getCabecalho().getCodigoMunicipio())) {
-				getArquivosMigrados().get(remessa.getCabecalho().getCodigoMunicipio()).getRemessas().add(remessa);
-			} else {
-				getArquivosMigrados().put(remessa.getCabecalho().getCodigoMunicipio(), criarArquivo(remessa));
+			if (verificarSeRemessaExiste(remessa)) {
+				if (getArquivosMigrados().containsKey(remessa.getCabecalho().getCodigoMunicipio())) {
+					getArquivosMigrados().get(remessa.getCabecalho().getCodigoMunicipio()).getRemessas().add(remessa);
+				} else {
+					getArquivosMigrados().put(remessa.getCabecalho().getCodigoMunicipio(), criarArquivo(remessa));
+				}
 			}
 		}
 	}
 
 	private void salvarNovosArquivos() {
-		
 		for (Arquivo novoArquivo : getNovosArquivos()){
 			logger.info("Salvando arquivo " + novoArquivo.getNomeArquivo() + " de origem "+ novoArquivo.getInstituicaoEnvio().getNomeFantasia() +
 					" e com destino para  " + novoArquivo.getInstituicaoRecebe().getNomeFantasia() + " !");
@@ -130,6 +130,13 @@ public class ProcessadorMigracaoAntigaCRA extends Processador {
 			return true;
 		}
 		return false;
+	}
+	
+	private boolean verificarSeRemessaExiste(Remessa remessa) {
+		if (remessaDAO.buscarRemessaParaCartorio(remessa.getInstituicaoOrigem(), remessa.getArquivo().getNomeArquivo()) != null) {
+			return false;
+		}
+		return true;
 	}
 
 	public Arquivo getArquivo() {

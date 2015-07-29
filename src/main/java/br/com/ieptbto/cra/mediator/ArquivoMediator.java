@@ -59,6 +59,7 @@ public class ArquivoMediator {
 		 * Arquivos com mais de uma praça de protesto. Para fins de migração do sistema apenas!
 		 */
 		if (verificarSeArquivoDaCraAntigaParaMigracao(arquivo)) {
+			setArquivo(arquivo);
 			processarArquivoMigracao(arquivo, usuario);
 		} else {
 			arquivo.setInstituicaoEnvio(setInstituicaoEnvio(arquivo));

@@ -66,7 +66,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 				 *       retorno [feito pelo Thasso] - corrigir o quanto antes.
 				 */
 				remessa.setArquivoGeradoProBanco(arquivoSalvo);
-				remessa.setDataRecebimento(new LocalDate());
+				remessa.setDataRecebimento(remessa.getCabecalho().getDataMovimento());
 				remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
 				setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
 				setSituacaoRemessa(arquivo, remessa);
