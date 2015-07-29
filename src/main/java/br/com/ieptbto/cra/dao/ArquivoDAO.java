@@ -41,6 +41,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 	@Autowired
 	TituloDAO tituloDAO;
+	@Autowired
+	InstituicaoDAO instituicaoDAO;
 
 	public List<Arquivo> buscarTodosArquivos() {
 		Criteria criteria = getCriteria(Arquivo.class);
@@ -55,6 +57,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		BigDecimal valorTotalSaldo = BigDecimal.ZERO;
 		try {
 			arquivo.setStatusArquivo(save(arquivo.getStatusArquivo()));
+			verificaInstituicaoRecebe(arquivo);
 			arquivoSalvo = save(arquivo);
 
 			for (Remessa remessa : arquivo.getRemessas()) {
@@ -114,7 +117,14 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return arquivoSalvo;
 
 	}
-	
+
+	private void verificaInstituicaoRecebe(Arquivo arquivo) {
+		if (arquivo.getInstituicaoRecebe() == null) {
+			arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao("CRA"));
+		}
+
+	}
+
 	private void setStatusRemessa(TipoInstituicao tipoInstituicao, Remessa remessa) {
 		if (tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)
 		        || tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {

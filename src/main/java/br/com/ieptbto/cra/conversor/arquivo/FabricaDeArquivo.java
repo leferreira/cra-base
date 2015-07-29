@@ -186,12 +186,12 @@ public class FabricaDeArquivo {
 
 	public void processarArquivoXML(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo, Arquivo arquivo,
 	        List<Exception> erros) {
-		fabricaDeArquivoXML.fabrica(arquivoRecebido, arquivo, erros);
+		arquivo.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.getTipoArquivoEnum(nomeArquivo)));
 		arquivo.setNomeArquivo(nomeArquivo);
 		arquivo.setDataEnvio(new LocalDate());
-		arquivo.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.getTipoArquivoEnum(nomeArquivo)));
 		arquivo.setUsuarioEnvio(usuario);
 		arquivo.setStatusArquivo(getStatusEnviado());
+		fabricaDeArquivoXML.fabrica(arquivoRecebido, arquivo, erros);
 
 	}
 
