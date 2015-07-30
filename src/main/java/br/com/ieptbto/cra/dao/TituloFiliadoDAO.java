@@ -212,7 +212,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 
 		criteria.add(Restrictions.ne("situacaoTituloConvenio", SituacaoTituloConvenio.REMOVIDO));
 		criteria.add(Restrictions.between("dataEnvioCRA", dataInicio, dataFim));
-		criteria.addOrder(Order.asc("dataEmissao"));
+		criteria.addOrder(Order.asc("nomeDevedor"));
 		return criteria.list();
 	}
 
@@ -235,7 +235,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 
 		criteria.add(Restrictions.ne("situacaoTituloConvenio", SituacaoTituloConvenio.REMOVIDO));
 		criteria.add(Restrictions.between("dataEnvioCRA", dataInicio, dataFim));
-		criteria.addOrder(Order.asc("dataEmissao"));
+		criteria.addOrder(Order.asc("nomeDevedor"));
 		return criteria.list();
 	}
 
