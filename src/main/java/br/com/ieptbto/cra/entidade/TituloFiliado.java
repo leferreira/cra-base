@@ -110,6 +110,9 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 
 	@Column(name = "ENDERECO_DEVEDOR", length = 45)
 	public String getEnderecoDevedor() {
+		if (enderecoDevedor != null) {
+			return enderecoDevedor.replaceAll("\n", "").replaceAll("\t", "").replaceAll("\r", "");
+		}
 		return enderecoDevedor;
 	}
 

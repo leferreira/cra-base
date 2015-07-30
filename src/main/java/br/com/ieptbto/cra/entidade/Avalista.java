@@ -66,6 +66,9 @@ public class Avalista extends AbstractEntidade<Avalista> {
 
 	@Column(name="ENDERECO_")
 	public String getEndereco() {
+		if (endereco != null) {
+			return endereco.replaceAll("\n", "").replaceAll("\t", "").replaceAll("\r", "");
+		}
 		return endereco;
 	}
 

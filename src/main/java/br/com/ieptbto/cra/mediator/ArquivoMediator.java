@@ -55,7 +55,7 @@ public class ArquivoMediator {
 		processarArquivo(arquivo, uploadedFile);
 		
 		/** 
-		 * @TODO Gato feito pelo THASSO, para receber os arquivos de Confirmacao e Retorno, gerados pela CRA ANTIGA.
+		 * @TODO Processador para receber os arquivos de Confirmacao e Retorno, gerados pela CRA ANTIGA.
 		 * Arquivos com mais de uma praça de protesto. Para fins de migração do sistema apenas!
 		 */
 		if (verificarSeArquivoDaCraAntigaParaMigracao(arquivo)) {

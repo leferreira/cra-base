@@ -102,6 +102,9 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 	}
 
 	private LocalDate getDataRecebimento(String dataMovimento) {
+		if (dataMovimento.equals("00000000") || dataMovimento == null) {
+			return new LocalDate();
+		}
 		return DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, dataMovimento);
 	}
 

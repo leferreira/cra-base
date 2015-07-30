@@ -36,7 +36,7 @@ public class InstrumentoDeProtestoMediator {
 			instrumento.setSituacao(false);
 			instrumento.setTitulo(tituloDao.buscarTituloPorChave(retorno.getTitulo()));
 
-			instrumentoDao.salvarInstrumento(instrumento);
+//			instrumentoDao.salvarInstrumento(instrumento);
 		}
 		
 		return instrumentoDao.buscarInstrumentosParaSlip();

@@ -237,7 +237,7 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 		cabecalho.setAgenciaCentralizadora(cabecalhoVO.getAgenciaCentralizadora());
 		cabecalho.setCodigoMunicipio(cabecalhoVO.getCodigoMunicipio().trim());
 		cabecalho.setComplementoRegistro(cabecalhoVO.getComplementoRegistro());
-		cabecalho.setDataMovimento(DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, cabecalhoVO.getDataMovimento()));
+		cabecalho.setDataMovimento(verificaDataMovimento(cabecalhoVO.getDataMovimento()));
 		cabecalho.setIdentificacaoRegistro(TipoRegistro.get(cabecalhoVO.getIdentificacaoRegistro()));
 		cabecalho.setIdentificacaoTransacaoDestinatario(cabecalhoVO.getIdentificacaoTransacaoDestinatario());
 		cabecalho.setIdentificacaoTransacaoRemetente(cabecalhoVO.getIdentificacaoTransacaoRemetente());
@@ -253,5 +253,12 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 		cabecalho.setVersaoLayout(cabecalhoVO.getVersaoLayout());
 
 		return cabecalho;
+	}
+
+	private static LocalDate verificaDataMovimento(String dataMovimento) {
+		if (dataMovimento.equals("00000000") || dataMovimento == null) {
+			return new LocalDate();
+		}
+		return DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, dataMovimento);
 	}
 }

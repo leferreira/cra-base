@@ -166,7 +166,7 @@ public class Rodape extends AbstractEntidade<Rodape> {
 	public static Rodape parseRodapeVO(RodapeVO rodapeVO) {
 		Rodape rodape = new Rodape();
 		rodape.setComplementoRegistro(rodapeVO.getComplementoRegistro());
-		rodape.setDataMovimento(DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, rodapeVO.getDataMovimento()));
+		rodape.setDataMovimento(verificaDataMovimento(rodapeVO.getDataMovimento()));
 		rodape.setIdentificacaoRegistro(TipoRegistro.get(rodapeVO.getIdentificacaoRegistro()));
 		rodape.setNomePortador(rodapeVO.getNomePortador());
 		rodape.setNumeroCodigoPortador(rodapeVO.getNumeroCodigoPortador());
@@ -179,5 +179,12 @@ public class Rodape extends AbstractEntidade<Rodape> {
 
 	private static Integer getValorTotalTitulos(String valor) {
 		return Integer.parseInt(valor) / 100;
+	}
+	
+	private static LocalDate verificaDataMovimento(String dataMovimento) {
+		if (dataMovimento.equals("00000000") || dataMovimento == null) {
+			return new LocalDate();
+		}
+		return DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, dataMovimento);
 	}
 }

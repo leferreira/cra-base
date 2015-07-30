@@ -667,7 +667,6 @@ public class TituloVO extends AbstractArquivoVO {
 				}
 				propertyAccessTituloVO.setPropertyValue(propertyName, valor.trim());
 			}
-
 		}
 
 		return tituloVO;
