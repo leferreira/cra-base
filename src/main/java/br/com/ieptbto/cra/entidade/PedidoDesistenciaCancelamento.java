@@ -27,7 +27,7 @@ import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaCancelamento;
 @Audited
 @Table(name = "TB_PEDIDO_DESISTENCIA")
 @org.hibernate.annotations.Table(appliesTo = "TB_PEDIDO_DESISTENCIA")
-public class PedidoDesistencia extends AbstractEntidade<PedidoDesistencia> {
+public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesistenciaCancelamento> {
 
 	private static final long serialVersionUID = 4806576818944343466L;
 
@@ -194,7 +194,7 @@ public class PedidoDesistencia extends AbstractEntidade<PedidoDesistencia> {
 	}
 
 	@Override
-	public int compareTo(PedidoDesistencia entidade) {
+	public int compareTo(PedidoDesistenciaCancelamento entidade) {
 		CompareToBuilder compareToBuilder = new CompareToBuilder();
 		compareToBuilder.append(this.getId(), entidade.getId());
 		return compareToBuilder.toComparison();
