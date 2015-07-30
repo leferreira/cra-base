@@ -2,7 +2,16 @@ package br.com.ieptbto.cra.entidade;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
@@ -15,56 +24,52 @@ import org.hibernate.envers.Audited;
 @Audited
 @Table(name = "TB_DESISTENCIA_PROTESTO")
 @org.hibernate.annotations.Table(appliesTo = "TB_DESISTENCIA_PROTESTO")
-public class DesistenciaProtesto extends AbstractEntidade<DesistenciaProtesto>{
+public class DesistenciaProtesto extends AbstractEntidade<DesistenciaProtesto> {
 
 	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
-	private Remessa remessa;
-	private CabecalhoArquivo cabecalhoArquivo;
 	private CabecalhoCartorio cabecalhoCartorio;
 	private List<PedidoDesistenciaCancelamento> desistencias;
 	private RodapeCartorio rodapeCartorio;
-	private RodapeArquivo rodapeArquivo;
+	private RemessaDesistenciaProtesto remessaDesistenciaProtesto;
 
+	@Id
+	@Column(name = "ID_DESISTENCIA_PROTESTO", columnDefinition = "serial")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getId() {
 		return id;
 	}
-	
-	public Remessa getRemessa() {
-		return remessa;
-	}
 
-	public CabecalhoArquivo getCabecalhoArquivo() {
-		return cabecalhoArquivo;
-	}
-
+	@OneToOne
+	@JoinColumn(name = "CABECALHO_ID")
 	public CabecalhoCartorio getCabecalhoCartorio() {
 		return cabecalhoCartorio;
 	}
 
+	@OneToMany(mappedBy = "desistenciaProtesto", fetch = FetchType.EAGER)
 	public List<PedidoDesistenciaCancelamento> getDesistencias() {
 		return desistencias;
 	}
 
+	@OneToOne
+	@JoinColumn(name = "RODAPE_ID")
 	public RodapeCartorio getRodapeCartorio() {
 		return rodapeCartorio;
 	}
 
-	public RodapeArquivo getRodapeArquivo() {
-		return rodapeArquivo;
+	@ManyToOne
+	@JoinColumn(name = "REMESSA_DESISTENCIA_PROTESTO_ID")
+	public RemessaDesistenciaProtesto getRemessaDesistenciaProtesto() {
+		return remessaDesistenciaProtesto;
+	}
+
+	public void setRemessaDesistenciaProtesto(RemessaDesistenciaProtesto remessaDesistenciaProtesto) {
+		this.remessaDesistenciaProtesto = remessaDesistenciaProtesto;
 	}
 
 	public void setId(int id) {
 		this.id = id;
-	}
-
-	public void setRemessa(Remessa remessa) {
-		this.remessa = remessa;
-	}
-
-	public void setCabecalhoArquivo(CabecalhoArquivo cabecalhoArquivo) {
-		this.cabecalhoArquivo = cabecalhoArquivo;
 	}
 
 	public void setCabecalhoCartorio(CabecalhoCartorio cabecalhoCartorio) {
@@ -77,10 +82,6 @@ public class DesistenciaProtesto extends AbstractEntidade<DesistenciaProtesto>{
 
 	public void setRodapeCartorio(RodapeCartorio rodapeCartorio) {
 		this.rodapeCartorio = rodapeCartorio;
-	}
-
-	public void setRodapeArquivo(RodapeArquivo rodapeArquivo) {
-		this.rodapeArquivo = rodapeArquivo;
 	}
 
 	@Override

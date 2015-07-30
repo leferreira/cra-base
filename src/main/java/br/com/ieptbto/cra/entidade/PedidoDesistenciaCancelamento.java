@@ -9,6 +9,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
@@ -44,6 +47,8 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 	private String reservado;
 	private String numeroControleRecebimento;
 	private String sequenciaRegistro;
+	private DesistenciaProtesto desistenciaProtesto;
+	private TituloRemessa titulo;
 
 	@Override
 	@Id
@@ -139,6 +144,26 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 			sequenciaRegistro = StringUtils.EMPTY;
 		}
 		return sequenciaRegistro.trim();
+	}
+
+	@ManyToOne
+	@JoinColumn(name = "DESISTENCIA_PROTESTO_ID")
+	public DesistenciaProtesto getDesistenciaProtesto() {
+		return desistenciaProtesto;
+	}
+
+	@OneToOne
+	@JoinColumn(name = "TITULO_ID")
+	public TituloRemessa getTitulo() {
+		return titulo;
+	}
+
+	public void setTitulo(TituloRemessa titulo) {
+		this.titulo = titulo;
+	}
+
+	public void setDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto) {
+		this.desistenciaProtesto = desistenciaProtesto;
 	}
 
 	public void setId(int id) {
