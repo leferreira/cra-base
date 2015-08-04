@@ -15,24 +15,34 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.CabecalhoArquivo;
+import br.com.ieptbto.cra.entidade.CabecalhoCartorio;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Confirmacao;
+import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Rodape;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
+import br.com.ieptbto.cra.entidade.vo.CabecalhoArquivoDesistenciaProtestoVO;
+import br.com.ieptbto.cra.entidade.vo.CabecalhoCartorioDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
+import br.com.ieptbto.cra.entidade.vo.RegistroDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.processador.FabricaRegistro;
+import br.com.ieptbto.cra.processador.FabricaRegistroDesistenciaProtesto;
 import br.com.ieptbto.cra.validacao.ValidarCabecalhoRemessa;
 import br.com.ieptbto.cra.validacao.regra.RegraValidaTipoArquivoTXT;
 
@@ -121,6 +131,82 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	}
 
 	public Arquivo converter() {
+		if (TipoArquivoEnum.REMESSA.equals(getArquivo().getTipoArquivo().getTipoArquivo())
+		        || TipoArquivoEnum.CONFIRMACAO.equals(getArquivo().getTipoArquivo().getTipoArquivo())
+		        || TipoArquivoEnum.RETORNO.equals(getArquivo().getTipoArquivo().getTipoArquivo())) {
+
+			return processarRemessa();
+		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(getArquivo().getTipoArquivo().getTipoArquivo())) {
+			return processarDesistenciaProtesto();
+
+		} else {
+			return null;
+		}
+	}
+
+	private Arquivo processarDesistenciaProtesto() {
+		try {
+			List<RemessaDesistenciaProtesto> remessas = new ArrayList<RemessaDesistenciaProtesto>();
+			getArquivo().setRemessaDesistenciaProtesto(remessas);
+			RemessaDesistenciaProtesto remessa = new RemessaDesistenciaProtesto();
+			remessa.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
+			remessa.setArquivo(getArquivo());
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(getArquivoFisico())));
+			String linha = "";
+			while ((linha = reader.readLine()) != null) {
+				setRegistroDesistenciaProtesto(linha, remessa);
+				if (remessa.getRodape() != null) {
+					remessas.add(remessa);
+					remessa = new RemessaDesistenciaProtesto();
+					remessa.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
+					remessa.setArquivo(getArquivo());
+				}
+			}
+			reader.close();
+
+			return getArquivo();
+
+		} catch (FileNotFoundException e) {
+			getErros().add(e);
+			new InfraException("arquivoFisico não encontrado");
+			logger.error(e.getMessage());
+		} catch (IOException e) {
+			getErros().add(e);
+			new InfraException("arquivoFisico não encontrado");
+			logger.error(e.getMessage());
+		}
+
+		return null;
+	}
+
+	private void setRegistroDesistenciaProtesto(String linha, RemessaDesistenciaProtesto remessa) {
+		AbstractArquivoVO registro = FabricaRegistroDesistenciaProtesto.getInstance(linha).criarRegistro();
+		DesistenciaProtesto desistenciaProtesto = new DesistenciaProtesto();
+
+		if (TipoRegistroDesistenciaProtesto.HEADER_APRESENTANTE.getConstante().equals(registro.getIdentificacaoRegistro())) {
+			CabecalhoArquivoDesistenciaProtestoVO cabecalhoVO = CabecalhoArquivoDesistenciaProtestoVO.class.cast(registro);
+			CabecalhoArquivo cabecalhoArquivo = new CabecalhoArquivoDesistenciaProtestoConversor().converter(CabecalhoArquivo.class,
+			        cabecalhoVO);
+			remessa.setCabecalho(cabecalhoArquivo);
+
+		} else if (TipoRegistroDesistenciaProtesto.HEADER_CARTORIO.getConstante().equals(registro.getIdentificacaoRegistro())) {
+			CabecalhoCartorioDesistenciaProtestoVO cabecalhoCartorioVO = CabecalhoCartorioDesistenciaProtestoVO.class.cast(registro);
+			CabecalhoCartorio cabecalhoCartorio = new CabecalhoCartorioDesistenciaProtestoConversor().converter(CabecalhoCartorio.class,
+			        cabecalhoCartorioVO);
+			desistenciaProtesto.setCabecalhoCartorio(cabecalhoCartorio);
+
+		} else if (TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA.getConstante().equals(registro.getIdentificacaoRegistro())) {
+			RegistroDesistenciaProtestoVO tituloDesistenciaProtesto = RegistroDesistenciaProtestoVO.class.cast(registro);
+			PedidoDesistenciaCancelamento pedidoDesistencia = new RegistroDesistenciaProtestoConversor().converter(
+			        PedidoDesistenciaCancelamento.class, tituloDesistenciaProtesto);
+			desistenciaProtesto.getDesistencias().add(pedidoDesistencia);
+
+		}
+
+	}
+
+	private Arquivo processarRemessa() {
 		try {
 			List<Remessa> remessas = new ArrayList<Remessa>();
 			getArquivo().setRemessas(remessas);
@@ -154,6 +240,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		}
 
 		return null;
+
 	}
 
 	private void setRegistro(String linha, Remessa remessa) {
@@ -223,7 +310,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 	@Override
 	public void validar() {
-		new RegraValidaTipoArquivoTXT().validar(arquivoFisico, arquivo ,arquivo.getUsuarioEnvio(), erros);
+		new RegraValidaTipoArquivoTXT().validar(arquivoFisico, arquivo, arquivo.getUsuarioEnvio(), erros);
 
 	}
 

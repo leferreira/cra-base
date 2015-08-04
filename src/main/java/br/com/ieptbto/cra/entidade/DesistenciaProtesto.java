@@ -47,7 +47,7 @@ public class DesistenciaProtesto extends AbstractEntidade<DesistenciaProtesto> {
 		return cabecalhoCartorio;
 	}
 
-	@OneToMany(mappedBy = "desistenciaProtesto", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "desistenciaProtesto", fetch = FetchType.LAZY)
 	public List<PedidoDesistenciaCancelamento> getDesistencias() {
 		return desistencias;
 	}

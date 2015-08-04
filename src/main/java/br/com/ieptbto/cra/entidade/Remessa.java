@@ -31,7 +31,7 @@ import br.com.ieptbto.cra.enumeration.StatusRemessa;
 @Audited
 @Table(name = "TB_REMESSA")
 @org.hibernate.annotations.Table(appliesTo = "TB_REMESSA")
-public class Remessa extends AbstractEntidade<Remessa> {
+public class Remessa extends AbstractRemessa<Remessa> {
 
 	/***/
 	private static final long serialVersionUID = 1L;
@@ -74,7 +74,7 @@ public class Remessa extends AbstractEntidade<Remessa> {
 	public Arquivo getArquivoGeradoProBanco() {
 		return arquivoGeradoProBanco;
 	}
-	
+
 	@Column(name = "DATA_RECEBIMENTO")
 	public LocalDate getDataRecebimento() {
 		return dataRecebimento;
@@ -108,13 +108,13 @@ public class Remessa extends AbstractEntidade<Remessa> {
 	public Instituicao getInstituicaoOrigem() {
 		return instituicaoOrigem;
 	}
-	
-	@OneToOne(optional=true ,mappedBy="remessa", fetch=FetchType.LAZY)
-	public Batimento getBatimento(){
+
+	@OneToOne(optional = true, mappedBy = "remessa", fetch = FetchType.LAZY)
+	public Batimento getBatimento() {
 		return batimento;
 	}
 
-	@Column(name="SITUACAO", nullable=true)
+	@Column(name = "SITUACAO", nullable = true)
 	public Boolean getSituacao() {
 		return situacao;
 	}
@@ -150,7 +150,7 @@ public class Remessa extends AbstractEntidade<Remessa> {
 	public void setArquivoGeradoProBanco(Arquivo arquivoGeradoProBanco) {
 		this.arquivoGeradoProBanco = arquivoGeradoProBanco;
 	}
-	
+
 	public void setInstituicaoDestino(Instituicao instituicaoDestino) {
 		this.instituicaoDestino = instituicaoDestino;
 	}
@@ -174,7 +174,7 @@ public class Remessa extends AbstractEntidade<Remessa> {
 		this.rodape = rodape;
 	}
 
-	@Column(name="SITUACAO_BATIMENTO")
+	@Column(name = "SITUACAO_BATIMENTO")
 	public Boolean getSituacaoBatimento() {
 		return situacaoBatimento;
 	}

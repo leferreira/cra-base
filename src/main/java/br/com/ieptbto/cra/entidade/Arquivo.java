@@ -38,6 +38,7 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	private String path;
 	private LocalDate dataEnvio;
 	private List<Remessa> remessas;
+	private List<RemessaDesistenciaProtesto> remessaDesistenciaProtesto;
 	private Instituicao instituicaoRecebe;
 	private Instituicao instituicaoEnvio;
 	private TipoArquivo tipoArquivo;
@@ -71,9 +72,14 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 		return dataEnvio;
 	}
 
-	@OneToMany(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
+	@OneToMany(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	public List<Remessa> getRemessas() {
 		return remessas;
+	}
+
+	@OneToMany(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	public List<RemessaDesistenciaProtesto> getRemessaDesistenciaProtesto() {
+		return remessaDesistenciaProtesto;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -87,7 +93,7 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	public Instituicao getInstituicaoRecebe() {
 		return instituicaoRecebe;
 	}
-	
+
 	@OneToOne
 	@JoinColumn(name = "TIPO_ARQUIVO_ID")
 	public TipoArquivo getTipoArquivo() {
@@ -133,7 +139,7 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	public void setInstituicaoRecebe(Instituicao instituicaoRecebe) {
 		this.instituicaoRecebe = instituicaoRecebe;
 	}
-	
+
 	public void setUsuarioEnvio(Usuario usuarioEnvio) {
 		this.usuarioEnvio = usuarioEnvio;
 	}
@@ -144,6 +150,10 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 
 	public void setRemessas(List<Remessa> remessas) {
 		this.remessas = remessas;
+	}
+
+	public void setRemessaDesistenciaProtesto(List<RemessaDesistenciaProtesto> remessaDesistenciaProtesto) {
+		this.remessaDesistenciaProtesto = remessaDesistenciaProtesto;
 	}
 
 	public void setInstituicaoEnvio(Instituicao instituicaoEnvio) {

@@ -18,6 +18,7 @@ public class ConfiguracaoBase {
 	public static String DIRETORIO_BASE_DE_PARA_TEMP = DIRETORIO_TEMP_BASE + "ARQUIVOS_DE_PARA/";
 	public static String BARRA = "/";
 	public static final int TAMANHO_PADRAO_LINHA = 600;
+	public static final int TAMANHO_PADRAO_LINHA_DESISTENCIA_PROTESTO = 127;
 	public static final String FECHA_CHAVE = "]";
 	public static final String CARACTER_INICIO_TXT = "0";
 	public static final String CARACTER_INICIO_XML = "<";

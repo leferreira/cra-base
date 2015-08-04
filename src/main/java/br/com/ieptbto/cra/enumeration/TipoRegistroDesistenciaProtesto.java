@@ -7,7 +7,7 @@ import br.com.ieptbto.cra.exception.InfraException;
  * @author Lefer
  *
  */
-public enum TipoRegistroDesistenciaCancelamento implements CraEnum {
+public enum TipoRegistroDesistenciaProtesto implements CraEnum {
 	HEADER_APRESENTANTE("0", "Header do Apresentante"), //
 	HEADER_CARTORIO("1", "Header do Cartório"), //
 	REGISTRO_PEDIDO_DESISTENCIA("2", "Registros dos Pedidos de Desistência de Protesto (Transação)"), //
@@ -17,7 +17,7 @@ public enum TipoRegistroDesistenciaCancelamento implements CraEnum {
 	private String label;
 	private String constante;
 
-	private TipoRegistroDesistenciaCancelamento(String constante, String label) {
+	private TipoRegistroDesistenciaProtesto(String constante, String label) {
 		this.label = label;
 		this.constante = constante;
 	}
@@ -32,9 +32,9 @@ public enum TipoRegistroDesistenciaCancelamento implements CraEnum {
 		return this.label;
 	}
 
-	public static TipoRegistroDesistenciaCancelamento get(String valor) {
-		TipoRegistroDesistenciaCancelamento[] values = TipoRegistroDesistenciaCancelamento.values();
-		for (TipoRegistroDesistenciaCancelamento tipoRegistroDP : values) {
+	public static TipoRegistroDesistenciaProtesto get(String valor) {
+		TipoRegistroDesistenciaProtesto[] values = TipoRegistroDesistenciaProtesto.values();
+		for (TipoRegistroDesistenciaProtesto tipoRegistroDP : values) {
 			if (tipoRegistroDP.getConstante().equals(valor)) {
 				return tipoRegistroDP;
 			}

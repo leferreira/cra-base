@@ -5,7 +5,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
 
-import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaCancelamento;
+import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 
 /**
  * @author Thasso Araújo
@@ -17,7 +17,7 @@ public abstract class CabecalhoDesistenciaCancelamento<T> extends AbstractEntida
 
 	/***/
 	private static final long serialVersionUID = 1L;
-	private TipoRegistroDesistenciaCancelamento TipoRegistroDesistenciaCancelamento;
+	private TipoRegistroDesistenciaProtesto TipoRegistroDesistenciaCancelamento;
 	private int quantidadeCancelamentoDesistencia;
 	private String reservado;
 	private String sequencialRegistro;
@@ -27,7 +27,7 @@ public abstract class CabecalhoDesistenciaCancelamento<T> extends AbstractEntida
 
 	@Column(name = "TIPO_REGISTO", length = 30)
 	@Enumerated(EnumType.STRING)
-	public TipoRegistroDesistenciaCancelamento getTipoRegistroDesistenciaCancelamento() {
+	public TipoRegistroDesistenciaProtesto getTipoRegistroDesistenciaCancelamento() {
 		return TipoRegistroDesistenciaCancelamento;
 	}
 
@@ -46,7 +46,7 @@ public abstract class CabecalhoDesistenciaCancelamento<T> extends AbstractEntida
 		return sequencialRegistro;
 	}
 
-	public void setTipoRegistroDesistenciaCancelamento(TipoRegistroDesistenciaCancelamento TipoRegistroDesistenciaCancelamento) {
+	public void setTipoRegistroDesistenciaCancelamento(TipoRegistroDesistenciaProtesto TipoRegistroDesistenciaCancelamento) {
 		this.TipoRegistroDesistenciaCancelamento = TipoRegistroDesistenciaCancelamento;
 	}
 

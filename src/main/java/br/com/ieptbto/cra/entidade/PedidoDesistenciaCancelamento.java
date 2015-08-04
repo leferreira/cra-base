@@ -19,7 +19,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
-import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaCancelamento;
+import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 
 /**
  * 
@@ -35,7 +35,7 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 	private static final long serialVersionUID = 4806576818944343466L;
 
 	private int id;
-	private TipoRegistroDesistenciaCancelamento tipoRegistro;
+	private TipoRegistroDesistenciaProtesto tipoRegistro;
 	private String numeroProtocolo;
 	private LocalDate dataProtocolagem;
 	private String numeroTitulo;
@@ -60,7 +60,7 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 
 	@Column(name = "TIPO_REGISTO")
 	@Enumerated(EnumType.STRING)
-	public TipoRegistroDesistenciaCancelamento getTipoRegistro() {
+	public TipoRegistroDesistenciaProtesto getTipoRegistro() {
 		return tipoRegistro;
 	}
 
@@ -170,7 +170,7 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 		this.id = id;
 	}
 
-	public void setTipoRegistro(TipoRegistroDesistenciaCancelamento tipoRegistro) {
+	public void setTipoRegistro(TipoRegistroDesistenciaProtesto tipoRegistro) {
 		this.tipoRegistro = tipoRegistro;
 	}
 
