@@ -22,7 +22,7 @@ import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
-import br.com.ieptbto.cra.processador.ProcessadorMigracaoAntigaCRA;
+import br.com.ieptbto.cra.processador.ProcessadorMigracaoCRA;
 
 /**
  * @author Thasso Araújo
@@ -43,7 +43,7 @@ public class ArquivoMediator {
 	@Autowired
 	private ProcessadorArquivo processadorArquivo;
 	@Autowired
-	private ProcessadorMigracaoAntigaCRA processadorArquivoMigracao;
+	private ProcessadorMigracaoCRA processadorArquivoMigracao;
 
 	public ArquivoMediator salvar(Arquivo arquivo, FileUpload uploadedFile, Usuario usuario) {
 		arquivo.setTipoArquivo(getTipoArquivo(arquivo));
@@ -59,8 +59,7 @@ public class ArquivoMediator {
 		 * Arquivos com mais de uma praça de protesto. Para fins de migração do sistema apenas!
 		 */
 		if (verificarSeArquivoDaCraAntigaParaMigracao(arquivo)) {
-			setArquivo(arquivo);
-			processarArquivoMigracao(arquivo, usuario);
+			setArquivo(processarArquivoMigracao(arquivo, usuario).getArquivo());
 		} else {
 			arquivo.setInstituicaoEnvio(setInstituicaoEnvio(arquivo));
 			setArquivo(arquivoDAO.salvar(arquivo, usuario));
@@ -101,8 +100,8 @@ public class ArquivoMediator {
 		}
 	}
 
-	private void processarArquivoMigracao(Arquivo arquivo, Usuario usuario) {
-		processadorArquivoMigracao.processarArquivoMigracao(arquivo, usuario);
+	private ProcessadorMigracaoCRA processarArquivoMigracao(Arquivo arquivo, Usuario usuario) {
+		return processadorArquivoMigracao.processarArquivoMigracao(arquivo, usuario);
 	}
 
 	private boolean verificarSeArquivoDaCraAntigaParaMigracao(Arquivo arquivo) {

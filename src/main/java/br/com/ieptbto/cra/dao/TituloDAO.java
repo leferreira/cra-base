@@ -195,7 +195,7 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	public TituloRemessa buscaTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
-//		criteria.add(Restrictions.eq("dataCadastro", tituloConfirmacao.getTitulo().getDataCadastro()));
+		criteria.add(Restrictions.eq("dataCadastro", tituloConfirmacao.getRemessa().getCabecalho().getDataMovimento().toDate()));
 		criteria.add(Restrictions.eq("codigoPortador", tituloConfirmacao.getCodigoPortador().trim()));
 		criteria.add(Restrictions.eq("nossoNumero", tituloConfirmacao.getNossoNumero().trim()));
 		criteria.add(Restrictions.eq("numeroTitulo", tituloConfirmacao.getNumeroTitulo().trim()));
@@ -205,6 +205,7 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	private TituloRemessa salvarTituloRemessa(TituloRemessa tituloRemessa, Transaction transaction) {
 		try {
+			tituloRemessa.setDataCadastro(tituloRemessa.getRemessa().getCabecalho().getDataMovimento().toDate());
 			return save(tituloRemessa);
 		} catch (Exception ex) {
 			if (PSQLException.class.isInstance(ex)) {

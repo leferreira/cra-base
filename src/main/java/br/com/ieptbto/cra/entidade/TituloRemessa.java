@@ -258,9 +258,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	@Column(name = "DATA_CADASTRO")
 	@Type(type = "date")
 	public Date getDataCadastro() {
-		if (dataCadastro == null) {
-			dataCadastro = new Date();
-		}
 		return dataCadastro;
 	}
 
