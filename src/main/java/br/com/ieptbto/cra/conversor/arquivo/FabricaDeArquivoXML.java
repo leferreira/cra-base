@@ -57,8 +57,8 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 				remessa.setRodape(getRodape(remessaVO.getRodape()));
 				remessa.getRodape().setRemessa(remessa);
 				remessa.setArquivo(getArquivo());
-				remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho().getCodigoMunicipio()));
-				remessa.setInstituicaoOrigem(getInstituicaoOrigem(remessaVO.getCabecalho().getNumeroCodigoPortador()));
+				remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho().getCodigoMunicipio())); // aqui
+				remessa.setInstituicaoOrigem(getInstituicaoOrigem(remessaVO.getCabecalho().getNumeroCodigoPortador())); // aqui
 				remessa.setDataRecebimento(getDataRecebimento(remessaVO.getCabecalho().getDataMovimento()));
 				remessa.setTitulos(getTitulos(remessaVO.getTitulos(), remessa));
 				getArquivo().getRemessas().add(remessa);
