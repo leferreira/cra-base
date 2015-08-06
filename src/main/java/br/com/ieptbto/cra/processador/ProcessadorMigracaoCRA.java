@@ -23,10 +23,14 @@ import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.mediator.TipoArquivoMediator;
 
+/**
+ * @author Thasso Araújo
+ *
+ */
 @Service
-public class ProcessadorMigracaoAntigaCRA extends Processador {
+public class ProcessadorMigracaoCRA extends Processador {
 
-	private static final Logger logger = Logger.getLogger(ProcessadorMigracaoAntigaCRA.class);
+	private static final Logger logger = Logger.getLogger(ProcessadorMigracaoCRA.class);
 	private static final int NUMERO_SEQUENCIAL = 1;
 	
 	@Autowired
@@ -42,7 +46,7 @@ public class ProcessadorMigracaoAntigaCRA extends Processador {
 	private List<Arquivo> novosArquivos;
 	private Usuario usuario;
 		
-	public void processarArquivoMigracao(Arquivo arquivo, Usuario usuarioEnvio) {
+	public ProcessadorMigracaoCRA processarArquivoMigracao(Arquivo arquivo, Usuario usuarioEnvio) {
 		setArquivo(arquivo);
 		setUsuario(usuarioEnvio);
 		
@@ -52,12 +56,13 @@ public class ProcessadorMigracaoAntigaCRA extends Processador {
 		salvarNovosArquivos();
 		
 		logger.info("Fim do processamento do arquivo " + arquivo.getNomeArquivo() + " gerado pela antiga CRA !");
+		return this;
 	}
 
 	private void sapararArquivos() {
 		for (Remessa remessa: getArquivo().getRemessas()){
 			setSituacaoOrigemDestinoRemessa(remessa);
-			if (verificarSeRemessaExiste(remessa)) {
+			if (!remessaDAO.isRemessaEnviada(remessa.getArquivo().getNomeArquivo(), remessa.getInstituicaoOrigem())) {
 				if (getArquivosMigrados().containsKey(remessa.getCabecalho().getCodigoMunicipio())) {
 					getArquivosMigrados().get(remessa.getCabecalho().getCodigoMunicipio()).getRemessas().add(remessa);
 				} else {
@@ -72,9 +77,7 @@ public class ProcessadorMigracaoAntigaCRA extends Processador {
 			logger.info("Salvando arquivo " + novoArquivo.getNomeArquivo() + " de origem "+ novoArquivo.getInstituicaoEnvio().getNomeFantasia() +
 					" e com destino para  " + novoArquivo.getInstituicaoRecebe().getNomeFantasia() + " !");
 			
-			if (!arquivoJaExiste(novoArquivo)){
-				arquivoDAO.salvar(novoArquivo, getUsuario());
-			}
+			arquivoDAO.salvar(novoArquivo, getUsuario());
 			logger.info("Arquivo " + getArquivo().getNomeArquivo() + " salvo !");
 		}
 	}
@@ -125,20 +128,6 @@ public class ProcessadorMigracaoAntigaCRA extends Processador {
 		return status;
 	}
 	
-	private boolean arquivoJaExiste(Arquivo novoArquivo) {
-		if (arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(novoArquivo.getInstituicaoEnvio(), novoArquivo.getNomeArquivo()) != null) {
-			return true;
-		}
-		return false;
-	}
-	
-	private boolean verificarSeRemessaExiste(Remessa remessa) {
-		if (remessaDAO.buscarRemessaParaCartorio(remessa.getInstituicaoOrigem(), remessa.getArquivo().getNomeArquivo()) != null) {
-			return false;
-		}
-		return true;
-	}
-
 	public Arquivo getArquivo() {
 		return arquivo;
 	}

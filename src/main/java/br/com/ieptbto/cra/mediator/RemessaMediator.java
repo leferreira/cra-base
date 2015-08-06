@@ -220,4 +220,8 @@ public class RemessaMediator {
 		status.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
 		return status;
 	}
+
+	public int getNumeroSequencialConvenio(Instituicao convenio, Instituicao instituicaoDestino) {
+		return remessaDao.getNumeroSequencialConvenio(convenio, instituicaoDestino);
+	}
 }

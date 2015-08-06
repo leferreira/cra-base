@@ -248,4 +248,24 @@ public class RemessaDAO extends AbstractBaseDAO {
 		}
 		return remessa;
 	}
+	
+	public boolean isRemessaEnviada(String nomeArquivo, Instituicao instituicaoOrigem){
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "arquivo");
+		criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
+		criteria.add(Restrictions.eq("instituicaoOrigem", instituicaoOrigem));
+		criteria.setMaxResults(1);
+		Remessa remessa = Remessa.class.cast(criteria.uniqueResult());
+		if (remessa != null) {
+			return true;	
+		}
+		return false;
+	}
+
+	public int getNumeroSequencialConvenio(Instituicao convenio, Instituicao instituicaoDestino) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.add(Restrictions.eq("instituicaoOrigem", convenio));
+		criteria.add(Restrictions.eq("instituicaoDestino", instituicaoDestino));
+		return criteria.list().size() + 1;
+	}
 }
