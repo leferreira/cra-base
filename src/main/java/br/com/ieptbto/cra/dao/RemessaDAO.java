@@ -261,4 +261,11 @@ public class RemessaDAO extends AbstractBaseDAO {
 		}
 		return false;
 	}
+
+	public int getNumeroSequencialConvenio(Instituicao convenio, Instituicao instituicaoDestino) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.add(Restrictions.eq("instituicaoOrigem", convenio));
+		criteria.add(Restrictions.eq("instituicaoDestino", instituicaoDestino));
+		return criteria.list().size();
+	}
 }

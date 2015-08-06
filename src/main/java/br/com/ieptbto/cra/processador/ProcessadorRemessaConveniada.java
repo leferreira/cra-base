@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
+import br.com.ieptbto.cra.mediator.RemessaMediator;
 import br.com.ieptbto.cra.mediator.TipoArquivoMediator;
 import br.com.ieptbto.cra.util.RemoveAcentosUtil;
 
@@ -46,6 +48,8 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private InstituicaoMediator instituicaoMediator;
 	@Autowired
 	private TipoArquivoMediator tipoArquivoMediator;
+	@Autowired
+	private RemessaMediator remessaMediator;
 	private Map<chaveTitulo, TituloFiliado> mapaTitulos;
 	private Map<String, Arquivo> mapaArquivos;
 	private List<TituloFiliado> listTitulosFiliado;
@@ -88,13 +92,14 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private Remessa criarRemessa(TituloFiliado tituloFiliado) {
 		List<Titulo> listaTitulos = new ArrayList<Titulo>();
 		Remessa remessa = new Remessa();
-		remessa.setCabecalho(setCabecalho(tituloFiliado));
 		remessa.setDataRecebimento(new LocalDate());
-		remessa.setRodape(setRodape(tituloFiliado));
-		remessa.getRodape().setRemessa(remessa);
 		remessa.setInstituicaoDestino(setInstituicaoDestino(tituloFiliado));
 		remessa.setTitulos(setTitulosRemessa(listaTitulos, tituloFiliado));
 		remessa.setInstituicaoOrigem(setInstituicaoOrigem(tituloFiliado));
+		remessa.setCabecalho(setCabecalho(tituloFiliado, remessa.getInstituicaoDestino()));
+		remessa.setRodape(setRodape(tituloFiliado));
+		remessa.getCabecalho().setRemessa(remessa);
+		remessa.getRodape().setRemessa(remessa);
 		remessa.setStatusRemessa(StatusRemessa.AGUARDANDO);
 		return remessa;
 	}
@@ -175,7 +180,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		return rodape;
 	}
 
-	private CabecalhoRemessa setCabecalho(TituloFiliado tituloFiliado) {
+	private CabecalhoRemessa setCabecalho(TituloFiliado tituloFiliado, Instituicao instituicaoDestino) {
 		CabecalhoRemessa cabecalho = new CabecalhoRemessa();
 		cabecalho.setAgenciaCentralizadora(tituloFiliado.getFiliado().getInstituicaoConvenio().getAgenciaCentralizadora());
 		cabecalho.setCodigoMunicipio(tituloFiliado.getPracaProtesto().getCodigoIBGE());
@@ -185,7 +190,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		cabecalho.setIdentificacaoTransacaoTipo("TPR");
 		cabecalho.setNomePortador(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getInstituicaoConvenio().getRazaoSocial()));
 		cabecalho.setNumeroCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
-		cabecalho.setNumeroSequencialRegistroArquivo("0001");
+		cabecalho.setNumeroSequencialRegistroArquivo(gerarNumeroSequencial(tituloFiliado.getFiliado().getInstituicaoConvenio(), instituicaoDestino));
 		cabecalho.setVersaoLayout("043");
 		cabecalho.setQtdTitulosRemessa(1);
 		cabecalho.setQtdOriginaisRemessa(1);
@@ -200,9 +205,13 @@ public class ProcessadorRemessaConveniada extends Processador {
 			getMapaTitulos().put(new chaveTitulo(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao(), tituloFiliado.getPracaProtesto().getCodigoIBGE()),
 			        tituloFiliado);
 		}
-
 	}
-
+	
+	private String gerarNumeroSequencial(Instituicao convenio, Instituicao instituicaoDestino) {
+		int quantidadeAtual = remessaMediator.getNumeroSequencialConvenio(convenio, instituicaoDestino);
+		return StringUtils.leftPad(Integer.toString(quantidadeAtual), 5, "0");
+	}
+	
 	public Map<chaveTitulo, TituloFiliado> getMapaTitulos() {
 		if (mapaTitulos == null) {
 			mapaTitulos = new HashMap<chaveTitulo, TituloFiliado>();
