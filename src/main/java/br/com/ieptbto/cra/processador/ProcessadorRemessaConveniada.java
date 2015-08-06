@@ -190,7 +190,8 @@ public class ProcessadorRemessaConveniada extends Processador {
 		cabecalho.setIdentificacaoTransacaoTipo("TPR");
 		cabecalho.setNomePortador(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getInstituicaoConvenio().getRazaoSocial()));
 		cabecalho.setNumeroCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
-		cabecalho.setNumeroSequencialRegistroArquivo(gerarNumeroSequencial(tituloFiliado.getFiliado().getInstituicaoConvenio(), instituicaoDestino));
+		cabecalho.setNumeroSequencialRegistroArquivo("0001");
+		cabecalho.setNumeroSequencialRemessa(gerarNumeroSequencial(tituloFiliado.getFiliado().getInstituicaoConvenio(), instituicaoDestino));
 		cabecalho.setVersaoLayout("043");
 		cabecalho.setQtdTitulosRemessa(1);
 		cabecalho.setQtdOriginaisRemessa(1);
@@ -207,9 +208,9 @@ public class ProcessadorRemessaConveniada extends Processador {
 		}
 	}
 	
-	private String gerarNumeroSequencial(Instituicao convenio, Instituicao instituicaoDestino) {
+	private Integer gerarNumeroSequencial(Instituicao convenio, Instituicao instituicaoDestino) {
 		int quantidadeAtual = remessaMediator.getNumeroSequencialConvenio(convenio, instituicaoDestino);
-		return StringUtils.leftPad(Integer.toString(quantidadeAtual), 5, "0");
+		return Integer.parseInt(StringUtils.leftPad(Integer.toString(quantidadeAtual), 5, "0"));
 	}
 	
 	public Map<chaveTitulo, TituloFiliado> getMapaTitulos() {

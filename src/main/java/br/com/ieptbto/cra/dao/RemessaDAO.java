@@ -266,6 +266,6 @@ public class RemessaDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.add(Restrictions.eq("instituicaoOrigem", convenio));
 		criteria.add(Restrictions.eq("instituicaoDestino", instituicaoDestino));
-		return criteria.list().size();
+		return criteria.list().size() + 1;
 	}
 }
