@@ -25,6 +25,7 @@ import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
+import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.XmlCraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
@@ -55,8 +56,9 @@ public class RemessaMediator {
 	private ProcessadorArquivo processadorArquivo;
 	private List<Exception> erros;
 
-	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<String> tipos, Usuario usuario) {
-		return remessaDao.buscarRemessaAvancado(arquivo, municipio,dataInicio, dataFim, usuario, tipos);
+	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
+	        ArrayList<String> tipos, Usuario usuario) {
+		return remessaDao.buscarRemessaAvancado(arquivo, municipio, dataInicio, dataFim, usuario, tipos);
 	}
 
 	public List<Remessa> buscarRemessaSimples(Instituicao instituicao, ArrayList<String> tipos, ArrayList<String> situacoes,
@@ -97,7 +99,7 @@ public class RemessaMediator {
 
 		return arquivo;
 	}
-	
+
 	public ArquivoVO buscarRemessaParaCartorio(Instituicao cartorio, String nome) {
 		Remessa remessa = remessaDao.buscarRemessaParaCartorio(cartorio, nome);
 		if (remessa == null) {
@@ -107,7 +109,7 @@ public class RemessaMediator {
 		ArquivoVO arquivo = conversorRemessaArquivo.converter(remessa);
 		return arquivo;
 	}
-	
+
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public MensagemRetornoXml processarArquivoXML(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
 		Arquivo arquivo = processarArquivoXMLManual(arquivoRecebido, usuario, nomeArquivo);
@@ -155,7 +157,7 @@ public class RemessaMediator {
 		for (Remessa remessa : arquivo.getRemessas()) {
 			Mensagem mensagem = new Mensagem();
 			mensagem.setCodigo("0000");
-			mensagem.setMunicipio(remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString());
+			mensagem.setMunicipio(getMunicipio(remessa));
 			mensagem.setDescricao(formatarMensagemRetorno(remessa));
 			mensagens.add(mensagem);
 		}
@@ -173,10 +175,28 @@ public class RemessaMediator {
 		return mensagemRetorno;
 	}
 
+	private String getMunicipio(Remessa remessa) {
+		if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+			return remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString();
+		} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
+		        || TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+			return remessa.getCabecalho().getNumeroCodigoPortador();
+		}
+		return "";
+	}
+
 	private String formatarMensagemRetorno(Remessa remessa) {
-		return "Município: " + remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString() + " - "
-		        + remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - " + remessa.getCabecalho().getQtdTitulosRemessa()
-		        + " Títulos.";
+		if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+			return "Município: " + remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString() + " - "
+			        + remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - "
+			        + remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.";
+		} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
+		        || TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+			return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
+			        + remessa.getCabecalho().getQtdTitulosRemessa() + " títulos confirmados.";
+		}
+		return "";
+
 	}
 
 	private Arquivo salvarArquivo(Arquivo arquivo, Usuario usuario) {
@@ -195,7 +215,7 @@ public class RemessaMediator {
 	}
 
 	public File baixarRemessaTXT(Instituicao instituicao, Remessa remessa) {
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)){
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
 			remessaDao.alterarSituacaoRemessa(remessa);
 		}
@@ -204,17 +224,18 @@ public class RemessaMediator {
 	}
 
 	public File baixarArquivoTXT(Instituicao instituicao, Arquivo arquivo) {
-//		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)){
-//			
-//			arquivo.setStatusArquivo(gerarStatusArquivoRecebido());
-//			arquivoDAO.alterarSituacaoArquivo(arquivo);
-//		}
-//		remessa = remessaDao.buscarPorPK(remessa);
-//		return processadorArquivo.processarArquivoTXT(remessa);
+		// if
+		// (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)){
+		//
+		// arquivo.setStatusArquivo(gerarStatusArquivoRecebido());
+		// arquivoDAO.alterarSituacaoArquivo(arquivo);
+		// }
+		// remessa = remessaDao.buscarPorPK(remessa);
+		// return processadorArquivo.processarArquivoTXT(remessa);
 		return null;
 	}
-	
-	private StatusArquivo gerarStatusArquivoRecebido(){
+
+	private StatusArquivo gerarStatusArquivoRecebido() {
 		StatusArquivo status = new StatusArquivo();
 		status.setData(new LocalDateTime());
 		status.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
