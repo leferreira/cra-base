@@ -57,12 +57,12 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 				remessa.setRodape(getRodape(remessaVO.getRodape()));
 				remessa.getRodape().setRemessa(remessa);
 				remessa.setArquivo(getArquivo());
-				remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho().getCodigoMunicipio()));
-				remessa.setInstituicaoOrigem(getInstituicaoOrigem(remessaVO.getCabecalho().getNumeroCodigoPortador()));
+				remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho()));
+				remessa.setInstituicaoOrigem(getInstituicaoEnvio(remessaVO.getCabecalho()));
 				remessa.setDataRecebimento(getDataRecebimento(remessaVO.getCabecalho().getDataMovimento()));
 				remessa.setTitulos(getTitulos(remessaVO.getTitulos(), remessa));
 				getArquivo().getRemessas().add(remessa);
-				getArquivo().setInstituicaoEnvio(getInstituicaoEnvio());
+				getArquivo().setInstituicaoEnvio(getInstituicaoEnvio(remessaVO.getCabecalho()));
 			}
 		}
 		return getArquivo();
@@ -81,7 +81,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 
 	private void validarMunicipioAtivo(RemessaVO remessaVO) {
 		try {
-			getInstituicaoDestino(remessaVO.getCabecalho().getCodigoMunicipio());
+			getInstituicaoDestino(remessaVO.getCabecalho());
 
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex.getCause());
@@ -127,15 +127,13 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		return titulos;
 	}
 
-	private Instituicao getInstituicaoOrigem(String numeroCodigoPortador) {
-		if (getInstituicaoEnvio() == null) {
-			setInstituicaoEnvio(instituicaoMediator.getInstituicaoPorCodigoPortador(numeroCodigoPortador));
+	private Instituicao getInstituicaoDestino(CabecalhoVO cabecalho) {
+		if (TipoArquivoEnum.CONFIRMACAO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))
+		        || TipoArquivoEnum.RETORNO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))) {
+			return instituicaoMediator.getInstituicaoPorCodigoPortador(cabecalho.getNumeroCodigoPortador());
+		} else {
+			return instituicaoMediator.getInstituicaoPorCodigoIBGE(cabecalho.getCodigoMunicipio());
 		}
-		return getInstituicaoEnvio();
-	}
-
-	private Instituicao getInstituicaoDestino(String codigoMunicipio) {
-		return instituicaoMediator.getInstituicaoPorCodigoIBGE(codigoMunicipio);
 	}
 
 	private Rodape getRodape(RodapeVO rodapeVO) {
@@ -160,7 +158,16 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		this.arquivoVO = arquivoVO;
 	}
 
-	public Instituicao getInstituicaoEnvio() {
+	public Instituicao getInstituicaoEnvio(CabecalhoVO cabecalho) {
+		if (instituicaoEnvio == null) {
+			if (TipoArquivoEnum.CONFIRMACAO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))
+			        || TipoArquivoEnum.RETORNO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))) {
+				instituicaoEnvio = instituicaoMediator.getInstituicaoPorCodigoIBGE(cabecalho.getCodigoMunicipio());
+			} else {
+				instituicaoEnvio = instituicaoMediator.getInstituicaoPorCodigoPortador(cabecalho.getNumeroCodigoPortador());
+			}
+
+		}
 		return instituicaoEnvio;
 	}
 

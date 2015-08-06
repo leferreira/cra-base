@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import br.com.ieptbto.cra.conversor.ConversorArquivoVo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
+import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Rodape;
 import br.com.ieptbto.cra.entidade.Titulo;
@@ -46,8 +47,14 @@ public class ConversorRemessaArquivo {
 
 	private List<TituloVO> converterTitulos(List<Titulo> titulos) {
 		List<TituloVO> titulosVO = new ArrayList<TituloVO>();
+		TituloVO tituloVO;
 		for (Titulo titulo : titulos) {
-			TituloVO tituloVO = TituloVO.parseTitulo(TituloRemessa.class.cast(titulo));
+			if (titulo instanceof TituloRemessa) {
+				tituloVO = TituloVO.parseTitulo(TituloRemessa.class.cast(titulo));
+			} else {
+				tituloVO = TituloVO.parseTitulo(Confirmacao.class.cast(titulo));
+			}
+
 			titulosVO.add(tituloVO);
 		}
 		return titulosVO;

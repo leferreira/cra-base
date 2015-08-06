@@ -13,6 +13,7 @@ import org.springframework.beans.PropertyAccessorFactory;
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
 import br.com.ieptbto.cra.conversor.arquivo.CampoArquivo;
 import br.com.ieptbto.cra.conversor.arquivo.FabricaConversor;
+import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
 
@@ -650,6 +651,26 @@ public class TituloVO extends AbstractArquivoVO {
 
 	public void setNumeroSequencialArquivo(String numeroSequencialArquivo) {
 		this.numeroSequencialArquivo = numeroSequencialArquivo;
+	}
+
+	public static TituloVO parseTitulo(Confirmacao titulo) {
+		TituloVO tituloVO = new TituloVO();
+		BeanWrapper propertyAccessCCR = PropertyAccessorFactory.forBeanPropertyAccess(titulo);
+		BeanWrapper propertyAccessTituloVO = PropertyAccessorFactory.forBeanPropertyAccess(tituloVO);
+		PropertyDescriptor[] propertyDescriptors = propertyAccessTituloVO.getPropertyDescriptors();
+		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+			String propertyName = propertyDescriptor.getName();
+			if (propertyAccessCCR.isReadableProperty(propertyName) && propertyAccessTituloVO.isWritableProperty(propertyName)) {
+				String valor = "";
+				if (propertyAccessCCR.getPropertyValue(propertyName) != null) {
+					valor = getValorString(propertyAccessCCR.getPropertyValue(propertyName),
+					        new CampoArquivo(propertyName, tituloVO.getClass()));
+				}
+				propertyAccessTituloVO.setPropertyValue(propertyName, valor.trim());
+			}
+		}
+
+		return tituloVO;
 	}
 
 	public static TituloVO parseTitulo(TituloRemessa titulo) {
