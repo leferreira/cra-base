@@ -138,8 +138,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<TituloFiliado> consultarTitulosFiliado(Usuario user,
-			TituloFiliado tituloBuscado) {
+	public List<TituloFiliado> consultarTitulosFiliado(Usuario user, TituloFiliado tituloBuscado) {
 		Criteria criteria = getCriteria(UsuarioFiliado.class);
 		criteria.createAlias("filiado", "filiado");
 		criteria.add(Restrictions.eq("usuario", user));

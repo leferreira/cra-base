@@ -60,7 +60,7 @@ public class InstituicaoMediator {
 	/**
 	 * Busca as Instituicões ativas
 	 */
-	public List<Instituicao> listaDeInstituicoesAtivas() {
+	public List<Instituicao> getInstituicoesAtivas() {
 		List<Instituicao> lista = instituicaoDAO.buscarListaInstituicaoAtivas();
 		return lista;
 	}
@@ -84,8 +84,8 @@ public class InstituicaoMediator {
 	/**
 	 * Busca todos os cartórios, ativos ou não
 	 */
-	public List<Instituicao> listaDeCartorio() {
-		List<Instituicao> lista = instituicaoDAO.buscarListaCartorio();
+	public List<Instituicao> getCartorios() {
+		List<Instituicao> lista = instituicaoDAO.getCartorios();
 		return lista;
 	}
 
@@ -115,6 +115,10 @@ public class InstituicaoMediator {
 	 */
 	public List<Instituicao> getInstituicoesFinanceiras() {
 		return instituicaoDAO.getInstituicoesFinanceiras();
+	}
+	
+	public List<Instituicao> getConvenios() {
+		return instituicaoDAO.getConvenios();
 	}
 
 	public boolean isInstituicaoAtiva(Instituicao instituicao) {

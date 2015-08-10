@@ -163,7 +163,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	 * @return List<Instituicao>
 	 * */
 	@SuppressWarnings("unchecked")
-	public List<Instituicao> buscarListaCartorio() {
+	public List<Instituicao> getCartorios() {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.addOrder(Order.asc("id"));
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
@@ -207,5 +207,14 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("codigoCompensacao", codigoCompensacao));
 
 		return Instituicao.class.cast(criteria.uniqueResult());
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Instituicao> getConvenios() {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.addOrder(Order.asc("nomeFantasia"));
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CONVENIO));
+		return criteria.list();
 	}
 }

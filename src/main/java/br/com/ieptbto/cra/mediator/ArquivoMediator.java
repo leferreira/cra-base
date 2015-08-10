@@ -58,7 +58,7 @@ public class ArquivoMediator {
 		 * @TODO Processador para receber os arquivos de Confirmacao e Retorno, gerados pela CRA ANTIGA.
 		 * Arquivos com mais de uma praça de protesto. Para fins de migração do sistema apenas!
 		 */
-		if (verificarSeArquivoDaCraAntigaParaMigracao(arquivo)) {
+		if (isArquivoMigracao(arquivo)) {
 			setArquivo(processarArquivoMigracao(arquivo, usuario).getArquivo());
 		} else {
 			arquivo.setInstituicaoEnvio(setInstituicaoEnvio(arquivo));
@@ -104,7 +104,7 @@ public class ArquivoMediator {
 		return processadorArquivoMigracao.processarArquivoMigracao(arquivo, usuario);
 	}
 
-	private boolean verificarSeArquivoDaCraAntigaParaMigracao(Arquivo arquivo) {
+	private boolean isArquivoMigracao(Arquivo arquivo) {
 		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO) ||
 				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
 			
@@ -120,8 +120,9 @@ public class ArquivoMediator {
 		for (Remessa remessa : arquivo.getRemessas()) {
 			if (!pracasProtesto.contains(remessa.getCabecalho().getCodigoMunicipio())) {
 				pracasProtesto.add(remessa.getCabecalho().getCodigoMunicipio());
-			} else {
-				return true;
+				if (pracasProtesto.size() > 1) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -164,7 +165,7 @@ public class ArquivoMediator {
 	public Arquivo getArquivo() {
 		return arquivo;
 	}
-
+	
 	public List<Arquivo> buscarArquivosPorInstituicao(Instituicao instituicao, ArrayList<String> tiposSelect,
 	        ArrayList<String> statusSelect, LocalDate dataInicio, LocalDate dataFim) {
 		return arquivoDAO.buscarArquivosPorInstituicao(instituicao, tiposSelect, statusSelect, dataInicio, dataFim);

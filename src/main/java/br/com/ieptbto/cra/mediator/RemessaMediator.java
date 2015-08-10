@@ -57,13 +57,8 @@ public class RemessaMediator {
 	private List<Exception> erros;
 
 	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
-	        ArrayList<String> tipos, Usuario usuario) {
-		return remessaDao.buscarRemessaAvancado(arquivo, municipio, dataInicio, dataFim, usuario, tipos);
-	}
-
-	public List<Remessa> buscarRemessaSimples(Instituicao instituicao, ArrayList<String> tipos, ArrayList<String> situacoes,
-	        LocalDate dataInicio, LocalDate dataFim) {
-		return remessaDao.buscarRemessaSimples(instituicao, tipos, situacoes, dataInicio, dataFim);
+	        ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+		return remessaDao.buscarRemessaAvancado(arquivo, municipio, dataInicio, dataFim, usuario, tiposArquivo);
 	}
 
 	public List<Remessa> buscarRemessasDoArquivo(Arquivo arquivo, Instituicao instituicao) {

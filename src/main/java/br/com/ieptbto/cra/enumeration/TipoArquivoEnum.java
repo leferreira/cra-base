@@ -11,9 +11,9 @@ public enum TipoArquivoEnum implements CraEnum {
 	REMESSA("B", "Remessa"), 
 	CONFIRMACAO("C", "Confirmação"), 
 	RETORNO("R", "Retorno"), 
-	CANCELAMENTO_DE_PROTESTO("CP","Cancelamento de Protesto"), 
-	DEVOLUCAO_DE_PROTESTO("DP", "Devolução de Protesto"), 
-	AUTORIZACAO_DE_CANCELAMENTO("AC","Autorização de Cancelamento");
+	CANCELAMENTO_DE_PROTESTO("CP","Cancelamento"), 
+	DEVOLUCAO_DE_PROTESTO("DP", "Devolução"), 
+	AUTORIZACAO_DE_CANCELAMENTO("AC","Autorização");
 
 	public String constante;
 	public String label;
@@ -48,5 +48,9 @@ public enum TipoArquivoEnum implements CraEnum {
 	public String getLabel() {
 		return this.label;
 	}
-
+	
+	@Override
+	public String toString() {
+		return constante + " - " + label;
+	}
 }

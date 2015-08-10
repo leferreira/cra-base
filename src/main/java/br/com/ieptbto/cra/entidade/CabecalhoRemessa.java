@@ -84,6 +84,9 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 
 	@Column(name = "DATA_MOVIMENTO")
 	public LocalDate getDataMovimento() {
+		if (dataMovimento == null) {
+			dataMovimento = new LocalDate();
+		}
 		return dataMovimento;
 	}
 

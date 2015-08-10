@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -48,6 +49,7 @@ public class FiliadoDAO extends AbstractBaseDAO {
 		}
 		return novoFiliado;
 	}
+	
 	private String geradorCodigoCedenteFiliado(Filiado novoFiliado) {
 		String codigoCedente = novoFiliado.getId() + novoFiliado.getInstituicaoConvenio().getCodigoCompensacao();
 		while (codigoCedente.length() < 15){
@@ -59,7 +61,10 @@ public class FiliadoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<Filiado> buscarListaFiliadosPorConvenio(Instituicao instituicao) {
 		Criteria criteria = getCriteria(Filiado.class);
-		criteria.add(Restrictions.eq("instituicaoConvenio", instituicao));
+		
+		if (instituicao.getTipoInstituicao().getTipoInstituicao() != TipoInstituicaoCRA.CRA)
+			criteria.add(Restrictions.eq("instituicaoConvenio", instituicao));
+		
 		return criteria.list();
 	}
 
