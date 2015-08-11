@@ -89,7 +89,7 @@ public class InstituicaoMediator {
 		return lista;
 	}
 
-	public Instituicao getInstituicaoPorCodigoIBGE(String codigoMunicipio) {
+	public Instituicao getCartorioPorCodigoIBGE(String codigoMunicipio) {
 		Instituicao instituicao = instituicaoDAO.getInstituicao(codigoMunicipio);
 		if (instituicao == null) {
 			throw new InfraException("Instituição não cadastrada com o código IBGE [" + codigoMunicipio + "]");

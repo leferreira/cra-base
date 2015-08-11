@@ -132,7 +132,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		        || TipoArquivoEnum.RETORNO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))) {
 			return instituicaoMediator.getInstituicaoPorCodigoPortador(cabecalho.getNumeroCodigoPortador());
 		} else {
-			return instituicaoMediator.getInstituicaoPorCodigoIBGE(cabecalho.getCodigoMunicipio());
+			return instituicaoMediator.getCartorioPorCodigoIBGE(cabecalho.getCodigoMunicipio());
 		}
 	}
 
@@ -162,7 +162,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		if (instituicaoEnvio == null) {
 			if (TipoArquivoEnum.CONFIRMACAO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))
 			        || TipoArquivoEnum.RETORNO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))) {
-				instituicaoEnvio = instituicaoMediator.getInstituicaoPorCodigoIBGE(cabecalho.getCodigoMunicipio());
+				instituicaoEnvio = instituicaoMediator.getCartorioPorCodigoIBGE(cabecalho.getCodigoMunicipio());
 			} else {
 				instituicaoEnvio = instituicaoMediator.getInstituicaoPorCodigoPortador(cabecalho.getNumeroCodigoPortador());
 			}

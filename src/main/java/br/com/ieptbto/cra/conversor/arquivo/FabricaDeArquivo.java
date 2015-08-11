@@ -239,4 +239,8 @@ public class FabricaDeArquivo {
 	public void processarArquivoPersistente(Remessa remessa, File remessaTXT, List<Exception> erros) {
 		fabricaDeArquivoTXT.fabricaTXT(remessaTXT, remessa, erros).converterParaTXT();
 	}
+	
+	public void processarArquivoPersistente(List<Remessa> remessas, File arquivoTXT, List<Exception> erros) {
+		fabricaDeArquivoTXT.fabricaArquivoTXT(arquivoTXT, remessas, erros).converterParaArquivoTXT();
+	}
 }

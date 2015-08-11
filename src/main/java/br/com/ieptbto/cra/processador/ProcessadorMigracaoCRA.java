@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.ArquivoDAO;
+import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.dao.RemessaDAO;
+import br.com.ieptbto.cra.dao.TipoArquivoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
@@ -20,8 +22,7 @@ import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.mediator.InstituicaoMediator;
-import br.com.ieptbto.cra.mediator.TipoArquivoMediator;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -34,13 +35,14 @@ public class ProcessadorMigracaoCRA extends Processador {
 	private static final Logger logger = Logger.getLogger(ProcessadorMigracaoCRA.class);
 	
 	@Autowired
-	private InstituicaoMediator instituicaoMediator;
+	InstituicaoDAO instituicaoDAO;
 	@Autowired
-	private TipoArquivoMediator tipoArquivoMediator;
+	TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
-	private ArquivoDAO arquivoDAO;
+	ArquivoDAO arquivoDAO;
 	@Autowired
-	private RemessaDAO remessaDAO;
+	RemessaDAO remessaDAO;
+	
 	private HashMap<chaveArquivo, Arquivo> arquivosMigrados;
 	private Arquivo arquivo;
 	private List<Arquivo> novosArquivos;
@@ -101,8 +103,8 @@ public class ProcessadorMigracaoCRA extends Processador {
 
 	private void setSituacaoOrigemDestinoRemessa(Remessa remessa) {
 		remessa.setDataRecebimento(remessa.getCabecalho().getDataMovimento());
-		remessa.setInstituicaoOrigem(instituicaoMediator.getInstituicaoPorCodigoIBGE(remessa.getCabecalho().getCodigoMunicipio()));
-		remessa.setInstituicaoDestino(instituicaoMediator.getInstituicaoPorCodigoPortador(remessa.getCabecalho().getNumeroCodigoPortador()));
+		remessa.setInstituicaoOrigem(instituicaoDAO.getInstituicao(remessa.getCabecalho().getCodigoMunicipio()));
+		remessa.setInstituicaoDestino(instituicaoDAO.getInstituicaoPorCodigo(remessa.getCabecalho().getNumeroCodigoPortador()));
 		remessa.setStatusRemessa(StatusRemessa.ENVIADO);
 		remessa.setSituacao(false);
 		
@@ -114,7 +116,7 @@ public class ProcessadorMigracaoCRA extends Processador {
 		Arquivo arquivo = new Arquivo();
 		arquivo.setDataEnvio(remessa.getCabecalho().getDataMovimento());
 		arquivo.setInstituicaoEnvio(remessa.getInstituicaoOrigem());
-		arquivo.setInstituicaoRecebe(instituicaoMediator.buscarCRA());
+		arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
 		arquivo.setNomeArquivo(gerarNomeArquivo(remessa, 1));
 		arquivo.setTipoArquivo(getArquivo().getTipoArquivo());
 		arquivo.setUsuarioEnvio(getUsuario());

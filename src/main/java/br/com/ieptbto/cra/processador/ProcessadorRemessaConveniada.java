@@ -166,7 +166,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 	}
 
 	private Instituicao setInstituicaoDestino(TituloFiliado tituloFiliado) {
-		return instituicaoMediator.getInstituicaoPorCodigoIBGE(tituloFiliado.getPracaProtesto().getCodigoIBGE());
+		return instituicaoMediator.getCartorioPorCodigoIBGE(tituloFiliado.getPracaProtesto().getCodigoIBGE());
 	}
 
 	private Rodape setRodape(TituloFiliado tituloFiliado) {

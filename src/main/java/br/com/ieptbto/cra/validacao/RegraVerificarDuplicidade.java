@@ -75,7 +75,7 @@ public class RegraVerificarDuplicidade extends RegrasDeEntrada {
 		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO) 
 				|| tipoArquivo.equals(TipoArquivoEnum.RETORNO)
 				|| tipoArquivo.equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
-			return instituicaoMediator.getInstituicaoPorCodigoIBGE(getArquivoProcessado().getRemessas().get(0).getCabecalho().getCodigoMunicipio());
+			return instituicaoMediator.getCartorioPorCodigoIBGE(getArquivoProcessado().getRemessas().get(0).getCabecalho().getCodigoMunicipio());
 		} else {
 			throw new InfraException("Não foi possível validar a duplicidade do arquivo !");
 		}

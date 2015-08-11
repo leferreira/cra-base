@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -51,7 +52,37 @@ public class GeradorDeArquivosTXT extends Gerador {
 		}
 
 	}
+	
+	public void gerar(List<RemessaVO> remessasVO, File arquivoTXT) {
+		try {
+			Map<Integer, String> titulos = new HashMap<Integer, String>();
+			BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivoTXT));
 
+			for (RemessaVO remessaVO : remessasVO) {
+				bWrite.write(gerarLinha(remessaVO.getCabecalho()));
+				bWrite.newLine();
+				for (TituloVO tituloVO : remessaVO.getTitulos()) {
+					titulos.put(Integer.parseInt(tituloVO.getNumeroSequencialArquivo()), gerarLinhaTitulo(tituloVO));
+				}
+	
+				for (int i = 2; i < titulos.keySet().size() + 2; i++) {
+					bWrite.write(titulos.get(i));
+					bWrite.newLine();
+				}
+	
+				bWrite.write(gerarLinhaRodape(remessaVO.getRodape()));
+				bWrite.newLine();
+			}
+			
+			bWrite.flush();
+			bWrite.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
 	private String gerarLinhaRodape(RodapeVO rodape) {
 		return FabricaDeRegistroTXT.getLinha(rodape);
 	}

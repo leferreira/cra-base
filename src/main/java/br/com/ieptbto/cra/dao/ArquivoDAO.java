@@ -8,6 +8,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
@@ -19,14 +20,15 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Historico;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
+import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoInstituicao;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -165,67 +167,40 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 	}
 
-	public Arquivo buscarArquivosPorNome(Instituicao instituicao, String nomeArquivo) {
-		Criteria criteria = getCriteria(Arquivo.class);
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.createAlias("remessas", "remessas");
-			criteria.add(Restrictions.disjunction().add(Restrictions.eq("remessas.instituicaoOrigem", instituicao))
-			        .add(Restrictions.eq("remessas.instituicaoDestino", instituicao)));
-		}
-		criteria.add(Restrictions.eq("nomeArquivo", nomeArquivo));
-		criteria.setMaxResults(1);
-		return Arquivo.class.cast(criteria.uniqueResult());
-	}
-
-	public List<Arquivo> buscarArquivosPorInstituicao(Instituicao instituicao, ArrayList<String> tipos, ArrayList<String> situacoes,
+	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Instituicao instituicao, ArrayList<TipoArquivoEnum> tipoArquivos, Municipio municipio,
 	        LocalDate dataInicio, LocalDate dataFim) {
 		Criteria criteria = getCriteria(Arquivo.class);
 
+		Disjunction disjunction = Restrictions.disjunction();
 		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoEnvio", instituicao))
+			disjunction.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoEnvio", instituicao))
 			        .add(Restrictions.eq("instituicaoRecebe", instituicao)));
 		}
 
-		if (!tipos.isEmpty()) {
+		if (municipio != null) {
+			Instituicao cartorioProtesto = instituicaoDAO.buscarCartorioPorMunicipio(municipio.getNomeMunicipio());
+			disjunction.add(Restrictions.eq("instituicaoOrigem", cartorioProtesto)).add(
+					Restrictions.eq("instituicaoDestino", cartorioProtesto));
+		}
+		criteria.add(disjunction);
+		
+		if (arquivo.getNomeArquivo() != null) {
+			criteria.add(Restrictions.ilike("nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
+		}
+		
+		if (!tipoArquivos.isEmpty()) {
 			criteria.createAlias("tipoArquivo", "tipoArquivo");
-			criteria.add(filtrarArquivoPorTipoArquivo(tipos));
+			criteria.add(filtrarArquivoPorTipoArquivo(tipoArquivos));
 		}
-
-		if (!situacoes.isEmpty()) {
-			criteria.createAlias("statusArquivo", "statusArquivo");
-			criteria.add(filtrarArquivoPorSituacao(situacoes, instituicao));
-		}
-
-		if (dataInicio == null) {
-			criteria.createAlias("statusArquivo", "statusArquivo");
-			criteria.add(Restrictions.eq("statusArquivo.situacaoArquivo", SituacaoArquivo.AGUARDANDO));
-		}
-
-		if (situacoes.isEmpty() && dataInicio != null)
-			criteria.add(Restrictions.between("dataEnvio", dataInicio, dataFim));
-
 		criteria.addOrder(Order.desc("dataEnvio"));
 		return criteria.list();
 	}
 
-	private Disjunction filtrarArquivoPorTipoArquivo(ArrayList<String> tipos) {
-		Disjunction disjunction = Restrictions.disjunction();
-		for (String tipo : tipos) {
-			disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.getTipoArquivoEnum(tipo)));
-		}
-		return disjunction;
-	}
 
-	private Disjunction filtrarArquivoPorSituacao(ArrayList<String> situacao, Instituicao instituicao) {
+	private Disjunction filtrarArquivoPorTipoArquivo(ArrayList<TipoArquivoEnum> tipos) {
 		Disjunction disjunction = Restrictions.disjunction();
-		for (String s : situacao) {
-			if (s.equals(SituacaoArquivo.ENVIADO.getLabel())) {
-				disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", SituacaoArquivo.ENVIADO));
-			} else if (s.equals(StatusRemessa.RECEBIDO.getLabel())) {
-				disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", SituacaoArquivo.RECEBIDO));
-			} else if (s.equals(StatusRemessa.AGUARDANDO.getLabel())) {
-				disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", SituacaoArquivo.AGUARDANDO));
-			}
+		for (TipoArquivoEnum tipoArquivo : tipos) {
+			disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipoArquivo));
 		}
 		return disjunction;
 	}
@@ -243,5 +218,49 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("nomeArquivo", nomeArquivo));
 
 		return Arquivo.class.cast(criteria.uniqueResult());
+	}
+	
+	public Arquivo alterarSituacaoArquivo(Arquivo arquivo) {
+		Transaction transaction = getBeginTransation();
+		
+		try {
+			StatusArquivo statusArquivo = save(arquivo.getStatusArquivo());
+			arquivo.setStatusArquivo(statusArquivo);
+			update(arquivo);
+		
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível inserir esses dados na base.");
+		}
+		return arquivo;
+	}
+
+	public List<Remessa> buscarRemessasArquivo(Instituicao instituicao,
+			Arquivo arquivo) {
+		Criteria criteria = getCriteria(Remessa.class);
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA) ||
+				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO) ||
+				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO) ) {
+			criteria.add(Restrictions.eq("arquivo", arquivo));
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO) ||
+				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+			criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
+		}
+		List<Remessa> remessas = criteria.list();
+		
+		for (Remessa remessa : remessas) {
+			Criteria criteriaTitulo = getCriteria(Titulo.class);
+			List<Titulo> titulos = new ArrayList<Titulo>();
+
+			criteriaTitulo.createAlias("remessa", "remessa");
+			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+			titulos = criteriaTitulo.list();
+
+			remessa.setTitulos(new ArrayList<Titulo>());
+			remessa.getTitulos().addAll(titulos);
+		}
+		return remessas;
 	}
 }

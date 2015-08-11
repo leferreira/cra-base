@@ -20,7 +20,6 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Titulo;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -147,46 +146,6 @@ public class RemessaDAO extends AbstractBaseDAO {
 		criteriaTitulo.add(Restrictions.eq("remessa", remessa));
 		remessa.setTitulos(criteriaTitulo.list());
 		return remessa;
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Transactional(readOnly = true)
-	public List<Remessa> buscarRemessasDoArquivo(Instituicao instituicao, Arquivo arquivo) {
-		List<Titulo> titulos = new ArrayList<Titulo>();
-
-		Criteria criteria = getCriteria(Remessa.class);
-		criteria.createAlias("arquivo", "arquivo");
-
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoOrigem", instituicao))
-			        .add(Restrictions.eq("instituicaoDestino", instituicao)));
-		}
-
-		TipoArquivoEnum tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
-		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA))
-			criteria.add(Restrictions.eq("arquivo", arquivo));
-		else
-			criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
-		
-		List<Remessa> remessas = criteria.list();
-		for (Remessa remessa : remessas) {
-			Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
-			if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
-				criteriaTitulo.createAlias("remessa", "remessa");
-				criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-			} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
-				criteriaTitulo.createAlias("confirmacao", "confirmacao");
-				criteriaTitulo.add(Restrictions.eq("confirmacao.remessa", remessa));
-			} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-				criteriaTitulo.createAlias("retorno", "retorno");
-				criteriaTitulo.add(Restrictions.eq("retorno.remessa", remessa));
-			}
-			criteriaTitulo.addOrder(Order.asc("pracaProtesto"));
-			titulos = criteriaTitulo.list();
-
-			remessa.setTitulos(titulos);
-		}
-		return remessas;
 	}
 
 	public Remessa alterarSituacaoRemessa(Remessa remessa) {

@@ -109,6 +109,21 @@ public class ProcessadorArquivo extends Processador {
 
 		return getArquivoFisico();
 	}
+	
+	public File processarArquivoTXT(Arquivo arquivo, List<Remessa> remessas) {
+		this.arquivo = arquivo;
+		this.usuario = getArquivo().getUsuarioEnvio();
+
+		logger.info("Início do criação de Arquivo TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+
+		verificaDiretorio();
+		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + getArquivo().getNomeArquivo()));
+		fabricaDeArquivo.processarArquivoPersistente(remessas, getArquivoFisico(), getErros());
+		
+		logger.info("Fim da criação de Arquivo TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+
+		return getArquivoFisico();
+	}
 
 	private void converterArquivo() {
 		fabricaDeArquivo.processarArquivoFisico(getArquivoFisico(), getArquivo(), getErros());

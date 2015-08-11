@@ -13,6 +13,7 @@ import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.TipoArquivoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
@@ -94,13 +95,14 @@ public class ArquivoMediator {
 		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO) 
 				|| arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)
 				|| arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
-			return instituicaoMediator.getInstituicaoPorCodigoIBGE(arquivo.getRemessas().get(0).getCabecalho().getCodigoMunicipio());
+			return instituicaoMediator.getCartorioPorCodigoIBGE(arquivo.getRemessas().get(0).getCabecalho().getCodigoMunicipio());
 		} else {
 			throw new InfraException("Tipo Do arquivo [" + arquivo.getTipoArquivo().getTipoArquivo().getLabel() + "] inválido");
 		}
 	}
 
 	private ProcessadorMigracaoCRA processarArquivoMigracao(Arquivo arquivo, Usuario usuario) {
+		this.processadorArquivoMigracao = new ProcessadorMigracaoCRA();
 		return processadorArquivoMigracao.processarArquivoMigracao(arquivo, usuario);
 	}
 
@@ -166,8 +168,8 @@ public class ArquivoMediator {
 		return arquivo;
 	}
 	
-	public List<Arquivo> buscarArquivosPorInstituicao(Instituicao instituicao, ArrayList<String> tiposSelect,
-	        ArrayList<String> statusSelect, LocalDate dataInicio, LocalDate dataFim) {
-		return arquivoDAO.buscarArquivosPorInstituicao(instituicao, tiposSelect, statusSelect, dataInicio, dataFim);
+	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Instituicao instituicao, ArrayList<TipoArquivoEnum> tipoArquivos,
+	        Municipio pracaProtesto, LocalDate dataInicio, LocalDate dataFim) {
+		return arquivoDAO.buscarArquivosAvancado(arquivo, instituicao, tipoArquivos, pracaProtesto, dataInicio, dataFim);
 	}
 }

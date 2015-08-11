@@ -25,7 +25,7 @@ public class RegraVerificarCidadeAtiva extends RegraCabecalho {
 
 	@Override
 	protected void executar() {
-		Instituicao instituicao = instituicaoMediator.getInstituicaoPorCodigoIBGE(getCabecalhoRemessa().getCodigoMunicipio());
+		Instituicao instituicao = instituicaoMediator.getCartorioPorCodigoIBGE(getCabecalhoRemessa().getCodigoMunicipio());
 		if (instituicao == null || !instituicao.isSituacao()) {
 			getErros().add(
 			        new ValidacaoErroException(getCabecalhoRemessa().getRemessa().getArquivo().getNomeArquivo(),

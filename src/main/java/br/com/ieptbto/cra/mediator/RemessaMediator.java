@@ -39,7 +39,6 @@ import br.com.ieptbto.cra.webservice.VO.MensagemRetornoXml;
  * @author Thasso Araújo
  *
  */
-@SuppressWarnings("unused")
 @Service
 public class RemessaMediator {
 
@@ -56,26 +55,13 @@ public class RemessaMediator {
 	private ProcessadorArquivo processadorArquivo;
 	private List<Exception> erros;
 
-	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
+	public List<Remessa> buscarRemessas(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
 	        ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		return remessaDao.buscarRemessaAvancado(arquivo, municipio, dataInicio, dataFim, usuario, tiposArquivo);
 	}
 
-	public List<Remessa> buscarRemessasDoArquivo(Arquivo arquivo, Instituicao instituicao) {
-		return remessaDao.buscarRemessasDoArquivo(instituicao, arquivo);
-	}
-
-	public Arquivo buscarArquivoPorNome(Instituicao instituicao, String nomeArquivo) {
-		return arquivoDAO.buscarArquivosPorNome(instituicao, nomeArquivo);
-	}
-
 	public int buscarTotalRemessas() {
 		return 0;
-	}
-
-	public List<Remessa> buscarRemessa(Remessa qp) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public Remessa buscarRemessaPorId(long id) {
@@ -219,15 +205,13 @@ public class RemessaMediator {
 	}
 
 	public File baixarArquivoTXT(Instituicao instituicao, Arquivo arquivo) {
-		// if
-		// (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)){
-		//
-		// arquivo.setStatusArquivo(gerarStatusArquivoRecebido());
-		// arquivoDAO.alterarSituacaoArquivo(arquivo);
-		// }
-		// remessa = remessaDao.buscarPorPK(remessa);
-		// return processadorArquivo.processarArquivoTXT(remessa);
-		return null;
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)){
+			arquivo.setStatusArquivo(gerarStatusArquivoRecebido());
+			arquivoDAO.alterarSituacaoArquivo(arquivo);
+		}
+		
+		List<Remessa> remessas = arquivoDAO.buscarRemessasArquivo(instituicao, arquivo);
+		return processadorArquivo.processarArquivoTXT(arquivo ,remessas);
 	}
 
 	private StatusArquivo gerarStatusArquivoRecebido() {

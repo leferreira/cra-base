@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Historico;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
@@ -33,14 +32,6 @@ public class TituloMediator {
 	
 	public List<TituloRemessa> buscarTitulosPorArquivo(Arquivo arquivo, Instituicao instituicaoCorrente){
 		return tituloDAO.buscarTitulosPorArquivo(arquivo, instituicaoCorrente);
-	}
-	
-	public List<TituloRemessa> buscarTitulosConfirmacaoRetorno(Arquivo arquivo, Instituicao instituicaoCorrente){
-		return tituloDAO.buscarTitulosConfirmacaoRetorno(arquivo, instituicaoCorrente);
-	}
-	
-	public List<Historico> getHistoricoTitulo(TituloRemessa titulo){
-		return tituloDAO.buscarHistoricoDoTitulo(titulo);
 	}
 	
 	public TituloRemessa buscarTituloPorChave(TituloRemessa titulo){
