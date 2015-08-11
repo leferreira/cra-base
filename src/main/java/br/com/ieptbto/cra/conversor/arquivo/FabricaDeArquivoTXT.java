@@ -26,6 +26,8 @@ import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Rodape;
+import br.com.ieptbto.cra.entidade.RodapeArquivo;
+import br.com.ieptbto.cra.entidade.RodapeCartorio;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
@@ -34,6 +36,8 @@ import br.com.ieptbto.cra.entidade.vo.CabecalhoCartorioDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RegistroDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.entidade.vo.RodapeArquivoDesistenciaProtestoVO;
+import br.com.ieptbto.cra.entidade.vo.RodapeCartorioDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
@@ -65,6 +69,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	private TituloDAO tituloDAO;
 	private List<Exception> errosCabecalho;
 	private Remessa remessa;
+	private DesistenciaProtesto desistenciaProtesto;
 
 	public FabricaDeArquivoTXT fabrica(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
 		this.arquivoFisico = arquivoFisico;
@@ -146,9 +151,8 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 	private Arquivo processarDesistenciaProtesto() {
 		try {
-			List<RemessaDesistenciaProtesto> remessas = new ArrayList<RemessaDesistenciaProtesto>();
-			getArquivo().setRemessaDesistenciaProtesto(remessas);
 			RemessaDesistenciaProtesto remessa = new RemessaDesistenciaProtesto();
+			getArquivo().setRemessaDesistenciaProtesto(remessa);
 			remessa.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
 			remessa.setArquivo(getArquivo());
 
@@ -157,7 +161,6 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 			while ((linha = reader.readLine()) != null) {
 				setRegistroDesistenciaProtesto(linha, remessa);
 				if (remessa.getRodape() != null) {
-					remessas.add(remessa);
 					remessa = new RemessaDesistenciaProtesto();
 					remessa.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
 					remessa.setArquivo(getArquivo());
@@ -182,7 +185,6 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 	private void setRegistroDesistenciaProtesto(String linha, RemessaDesistenciaProtesto remessa) {
 		AbstractArquivoVO registro = FabricaRegistroDesistenciaProtesto.getInstance(linha).criarRegistro();
-		DesistenciaProtesto desistenciaProtesto = new DesistenciaProtesto();
 
 		if (TipoRegistroDesistenciaProtesto.HEADER_APRESENTANTE.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			CabecalhoArquivoDesistenciaProtestoVO cabecalhoVO = CabecalhoArquivoDesistenciaProtestoVO.class.cast(registro);
@@ -191,6 +193,8 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 			remessa.setCabecalho(cabecalhoArquivo);
 
 		} else if (TipoRegistroDesistenciaProtesto.HEADER_CARTORIO.getConstante().equals(registro.getIdentificacaoRegistro())) {
+			desistenciaProtesto = new DesistenciaProtesto();
+			desistenciaProtesto.setDesistencias(new ArrayList<PedidoDesistenciaCancelamento>());
 			CabecalhoCartorioDesistenciaProtestoVO cabecalhoCartorioVO = CabecalhoCartorioDesistenciaProtestoVO.class.cast(registro);
 			CabecalhoCartorio cabecalhoCartorio = new CabecalhoCartorioDesistenciaProtestoConversor().converter(CabecalhoCartorio.class,
 			        cabecalhoCartorioVO);
@@ -201,7 +205,25 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 			PedidoDesistenciaCancelamento pedidoDesistencia = new RegistroDesistenciaProtestoConversor().converter(
 			        PedidoDesistenciaCancelamento.class, tituloDesistenciaProtesto);
 			desistenciaProtesto.getDesistencias().add(pedidoDesistencia);
+			pedidoDesistencia.setDesistenciaProtesto(desistenciaProtesto);
 
+		} else if (TipoRegistroDesistenciaProtesto.TRAILLER_CARTORIO.getConstante().equals(registro.getIdentificacaoRegistro())) {
+			RodapeCartorioDesistenciaProtestoVO rodapeCartorioVO = RodapeCartorioDesistenciaProtestoVO.class.cast(registro);
+			RodapeCartorio rodapeCartorio = new RodapeCartorioDesistenciaProtestoConversor().converter(RodapeCartorio.class,
+			        rodapeCartorioVO);
+			desistenciaProtesto.setRodapeCartorio(rodapeCartorio);
+			remessa.getDesistenciaProtesto().add(desistenciaProtesto);
+			desistenciaProtesto.setRemessaDesistenciaProtesto(remessa);
+
+		} else if (TipoRegistroDesistenciaProtesto.TRAILLER_APRESENTANTE.getConstante().equals(registro.getIdentificacaoRegistro())) {
+			RodapeArquivoDesistenciaProtestoVO rodapeArquivoVO = RodapeArquivoDesistenciaProtestoVO.class.cast(registro);
+			RodapeArquivo rodapeArquivo = new RodapeArquivoDeistenciaProtestoVOConversor().converter(RodapeArquivo.class, rodapeArquivoVO);
+			remessa.setRodape(rodapeArquivo);
+
+		} else {
+			getErros().add(new InfraException("O Tipo do registro não foi encontrado: [" + registro.getIdentificacaoRegistro() + " ]"));
+			new InfraException("O Tipo do registro não foi encontrado: [" + registro.getIdentificacaoRegistro() + " ]");
+			logger.error("O Tipo do registro não foi encontrado: [" + registro.getIdentificacaoRegistro() + " ]");
 		}
 
 	}

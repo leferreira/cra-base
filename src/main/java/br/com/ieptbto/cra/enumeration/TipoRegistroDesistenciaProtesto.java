@@ -35,11 +35,10 @@ public enum TipoRegistroDesistenciaProtesto implements CraEnum {
 	public static TipoRegistroDesistenciaProtesto get(String valor) {
 		TipoRegistroDesistenciaProtesto[] values = TipoRegistroDesistenciaProtesto.values();
 		for (TipoRegistroDesistenciaProtesto tipoRegistroDP : values) {
-			if (tipoRegistroDP.getConstante().equals(valor)) {
+			if (valor.startsWith(tipoRegistroDP.getConstante())) {
 				return tipoRegistroDP;
 			}
 		}
 		throw new InfraException("Tipo de registro DP não existe : " + valor);
 	}
-
 }

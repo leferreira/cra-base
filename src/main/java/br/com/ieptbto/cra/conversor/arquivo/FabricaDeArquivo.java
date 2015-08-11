@@ -26,6 +26,7 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.vo.ArquivoDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.enumeration.LayoutArquivo;
@@ -50,6 +51,8 @@ public class FabricaDeArquivo {
 	private FabricaDeArquivoXML fabricaDeArquivoXML;
 	@Autowired
 	private ConversorRemessaArquivo conversorRemessaArquivo;
+	@Autowired
+	private ConversorArquivoDesistenciaProtesto conversorArquivoDesistenciaProtesto;
 	@Autowired
 	private TipoArquivoMediator tipoArquivoMediator;
 
@@ -76,8 +79,39 @@ public class FabricaDeArquivo {
 			return converterConfirmacao(arquivoFisico, arquivo, erros);
 		} else if (TipoArquivoEnum.RETORNO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
 			return converterRetorno(arquivoFisico, arquivo, erros);
+		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
+			return converterDesistenciaProtesto(arquivoFisico, arquivo, erros);
 		}
 		return null;
+	}
+
+	private Arquivo converterDesistenciaProtesto(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
+		JAXBContext context;
+		ArquivoDesistenciaProtestoVO arquivoVO = new ArquivoDesistenciaProtestoVO();
+		try {
+			context = JAXBContext.newInstance(ArquivoDesistenciaProtestoVO.class);
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			String xmlGerado = "";
+			Scanner scanner = new Scanner(new FileInputStream(arquivoFisico));
+			while (scanner.hasNext()) {
+
+				xmlGerado = xmlGerado + scanner.nextLine().replaceAll("& ", "&amp;");
+			}
+			scanner.close();
+
+			InputStream xml = new ByteArrayInputStream(xmlGerado.getBytes());
+			arquivoVO = (ArquivoDesistenciaProtestoVO) unmarshaller.unmarshal(new InputSource(xml));
+			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO));
+
+		} catch (JAXBException e) {
+			logger.error(e.getMessage(), e.getCause());
+			throw new InfraException(CodigoErro.ARQUIVO_CORROMPIDO.getDescricao());
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e.getCause());
+			throw new InfraException(CodigoErro.ARQUIVO_CORROMPIDO.getDescricao());
+		}
+		arquivo = conversorArquivoDesistenciaProtesto.converter(arquivoVO, erros);
+		return arquivo;
 	}
 
 	private Arquivo converterRetorno(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {

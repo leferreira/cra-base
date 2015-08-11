@@ -16,8 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Historico;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.TipoInstituicao;
@@ -60,47 +62,66 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			verificaInstituicaoRecebe(arquivo);
 			arquivoSalvo = save(arquivo);
 
-			for (Remessa remessa : arquivo.getRemessas()) {
-				remessa.setArquivo(arquivoSalvo);
-				remessa.setCabecalho(save(remessa.getCabecalho()));
-				remessa.setRodape(save(remessa.getRodape()));
-				/**
-				 * @TODO gambiarra gigante pra funcionar gerar confirmacao e
-				 *       retorno [feito pelo Thasso] - corrigir o quanto antes.
-				 */
-				remessa.setArquivoGeradoProBanco(arquivoSalvo);
-				remessa.setDataRecebimento(remessa.getCabecalho().getDataMovimento());
-				remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
-				setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
-				setSituacaoRemessa(arquivo, remessa);
-				save(remessa);
-				for (Titulo titulo : remessa.getTitulos()) {
-					titulo.setRemessa(remessa);
-					if (Retorno.class.isInstance(titulo)) {
-						Retorno.class.cast(titulo).setCabecalho(remessa.getCabecalho());
-					}
-					TituloRemessa tituloSalvo = tituloDAO.salvar(titulo, transaction);
-
-					Historico historico = new Historico();
-					if (tituloSalvo != null) {
-						historico.setDataOcorrencia(new LocalDateTime());
-						historico.setRemessa(remessa);
-						historico.setTitulo(tituloSalvo);
-						historico.setUsuarioAcao(usuarioAcao);
-						save(historico);
-					} else {
-						titulo.setSaldoTitulo(BigDecimal.ZERO);
-						remessa.getTitulos().remove(titulo);
-					}
-
-					valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
-					remessa.getCabecalho().setQtdTitulosRemessa(remessa.getTitulos().size());
-					remessa.getRodape().setSomatorioValorRemessa(valorTotalSaldo);
-
+			if (!arquivo.getRemessas().isEmpty()) {
+				for (Remessa remessa : arquivo.getRemessas()) {
+					remessa.setArquivo(arquivoSalvo);
 					remessa.setCabecalho(save(remessa.getCabecalho()));
 					remessa.setRodape(save(remessa.getRodape()));
+					/**
+					 * @TODO gambiarra gigante pra funcionar gerar confirmacao e
+					 *       retorno [feito pelo Thasso] - corrigir o quanto
+					 *       antes.
+					 */
+					remessa.setArquivoGeradoProBanco(arquivoSalvo);
+					remessa.setDataRecebimento(remessa.getCabecalho().getDataMovimento());
+					remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
+					setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
+					setSituacaoRemessa(arquivo, remessa);
+					save(remessa);
+					for (Titulo titulo : remessa.getTitulos()) {
+						titulo.setRemessa(remessa);
+						if (Retorno.class.isInstance(titulo)) {
+							Retorno.class.cast(titulo).setCabecalho(remessa.getCabecalho());
+						}
+						TituloRemessa tituloSalvo = tituloDAO.salvar(titulo, transaction);
 
+						Historico historico = new Historico();
+						if (tituloSalvo != null) {
+							historico.setDataOcorrencia(new LocalDateTime());
+							historico.setRemessa(remessa);
+							historico.setTitulo(tituloSalvo);
+							historico.setUsuarioAcao(usuarioAcao);
+							save(historico);
+						} else {
+							titulo.setSaldoTitulo(BigDecimal.ZERO);
+							remessa.getTitulos().remove(titulo);
+						}
+
+						valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
+						remessa.getCabecalho().setQtdTitulosRemessa(remessa.getTitulos().size());
+						remessa.getRodape().setSomatorioValorRemessa(valorTotalSaldo);
+
+						remessa.setCabecalho(save(remessa.getCabecalho()));
+						remessa.setRodape(save(remessa.getRodape()));
+
+					}
 				}
+			} else if (arquivo.getRemessaDesistenciaProtesto() != null) {
+				arquivo.getRemessaDesistenciaProtesto().setCabecalho(save(arquivo.getRemessaDesistenciaProtesto().getCabecalho()));
+				arquivo.getRemessaDesistenciaProtesto().setRodape(save(arquivo.getRemessaDesistenciaProtesto().getRodape()));
+				save(arquivo.getRemessaDesistenciaProtesto());
+
+				for (DesistenciaProtesto desistenciaProtestos : arquivo.getRemessaDesistenciaProtesto().getDesistenciaProtesto()) {
+					desistenciaProtestos.setCabecalhoCartorio(save(desistenciaProtestos.getCabecalhoCartorio()));
+					desistenciaProtestos.setRodapeCartorio(save(desistenciaProtestos.getRodapeCartorio()));
+					List<PedidoDesistenciaCancelamento> pedidosDesistencia = desistenciaProtestos.getDesistencias();
+					desistenciaProtestos.setDesistencias(new ArrayList<PedidoDesistenciaCancelamento>());
+					for (PedidoDesistenciaCancelamento pedido : pedidosDesistencia) {
+						desistenciaProtestos.getDesistencias().add(save(pedido));
+					}
+					save(desistenciaProtestos);
+				}
+
 			}
 			transaction.commit();
 			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()

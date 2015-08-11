@@ -38,7 +38,7 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	private String path;
 	private LocalDate dataEnvio;
 	private List<Remessa> remessas;
-	private List<RemessaDesistenciaProtesto> remessaDesistenciaProtesto;
+	private RemessaDesistenciaProtesto remessaDesistenciaProtesto;
 	private Instituicao instituicaoRecebe;
 	private Instituicao instituicaoEnvio;
 	private TipoArquivo tipoArquivo;
@@ -77,8 +77,8 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 		return remessas;
 	}
 
-	@OneToMany(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	public List<RemessaDesistenciaProtesto> getRemessaDesistenciaProtesto() {
+	@OneToOne(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	public RemessaDesistenciaProtesto getRemessaDesistenciaProtesto() {
 		return remessaDesistenciaProtesto;
 	}
 
@@ -152,7 +152,7 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 		this.remessas = remessas;
 	}
 
-	public void setRemessaDesistenciaProtesto(List<RemessaDesistenciaProtesto> remessaDesistenciaProtesto) {
+	public void setRemessaDesistenciaProtesto(RemessaDesistenciaProtesto remessaDesistenciaProtesto) {
 		this.remessaDesistenciaProtesto = remessaDesistenciaProtesto;
 	}
 

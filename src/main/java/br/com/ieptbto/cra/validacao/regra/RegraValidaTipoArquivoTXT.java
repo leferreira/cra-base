@@ -31,7 +31,7 @@ public class RegraValidaTipoArquivoTXT extends RegrasDeEntrada {
 	private File arquivo;
 	private String linha;
 
-	public void validar(File arquivo, Arquivo arquivoProcessado,Usuario usuario, List<Exception> erros) {
+	public void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
 		this.arquivo = arquivo;
 		setErros(erros);
 		executar();
@@ -44,7 +44,7 @@ public class RegraValidaTipoArquivoTXT extends RegrasDeEntrada {
 			linha = reader.readLine();
 			reader.close();
 			validaInicioLinha(linha);
-			validaTamanhoLinha(linha);
+			validaTamanhoLinha(linha, arquivo);
 
 		} catch (IOException e) {
 			logger.error(e.getMessage());
@@ -58,9 +58,13 @@ public class RegraValidaTipoArquivoTXT extends RegrasDeEntrada {
 	 * Verifica o tamanho da linha
 	 * 
 	 * @param linha
+	 * @param arquivo
 	 */
-	private void validaTamanhoLinha(String linha) {
-		if (linha.length() != ConfiguracaoBase.TAMANHO_PADRAO_LINHA) {
+	private void validaTamanhoLinha(String linha, File arquivo) {
+		if (!arquivo.getName().contains("DP") && linha.length() != ConfiguracaoBase.TAMANHO_PADRAO_LINHA) {
+			logger.error(Erro.O_ARQUIVO_NAO_E_UM_TIPO_TXT_VALIDO.getMensagemErro());
+			getErros().add(new ValidacaoErroException(arquivo.getName(), Erro.TAMANHO_LINHA_FORA_DO_PADRAO, getNumeroLinha()));
+		} else if (arquivo.getName().contains("DP") && linha.length() != ConfiguracaoBase.TAMANHO_PADRAO_LINHA_DESISTENCIA_PROTESTO) {
 			logger.error(Erro.O_ARQUIVO_NAO_E_UM_TIPO_TXT_VALIDO.getMensagemErro());
 			getErros().add(new ValidacaoErroException(arquivo.getName(), Erro.TAMANHO_LINHA_FORA_DO_PADRAO, getNumeroLinha()));
 		}
