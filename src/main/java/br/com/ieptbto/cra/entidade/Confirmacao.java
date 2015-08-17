@@ -6,9 +6,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 
 import br.com.ieptbto.cra.conversor.arquivo.ConfirmacaoConversor;
@@ -56,7 +57,7 @@ public class Confirmacao extends Titulo<Confirmacao> {
 		return identificacaoTransacaoTipo;
 	}
 
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name = "TITULO_ID")
 	public TituloRemessa getTitulo() {
 		return tituloRemessa;
@@ -89,8 +90,9 @@ public class Confirmacao extends Titulo<Confirmacao> {
 
 	@Override
 	public int compareTo(Confirmacao entidade) {
-		// TODO Auto-generated method stub
-		return 0;
+		CompareToBuilder compareToBuilder = new CompareToBuilder();
+		compareToBuilder.append(this.getId(), entidade.getId());
+		return compareToBuilder.toComparison();
 	}
 
 }
