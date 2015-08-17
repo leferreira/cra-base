@@ -125,6 +125,14 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		criteria.addOrder(Order.asc("pracaProtesto"));
 		return criteria.list();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Avalista> avalistasTituloFiliado(TituloFiliado titulo) {
+		Criteria criteriaAvalistas = getCriteria(Avalista.class);
+		criteriaAvalistas.add(Restrictions.eq("tituloFiliado", titulo));
+		
+		return criteriaAvalistas.list();
+	}
 
 	public int getNumeroDeTitulosPendentes() {
 		Criteria criteria = getCriteria(TituloFiliado.class);

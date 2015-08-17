@@ -31,6 +31,7 @@ import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.mediator.RemessaMediator;
 import br.com.ieptbto.cra.mediator.TipoArquivoMediator;
+import br.com.ieptbto.cra.mediator.TituloFiliadoMediator;
 import br.com.ieptbto.cra.util.RemoveAcentosUtil;
 
 /**
@@ -50,6 +51,8 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private TipoArquivoMediator tipoArquivoMediator;
 	@Autowired
 	private RemessaMediator remessaMediator;
+	@Autowired
+	private TituloFiliadoMediator tituloFiliadoMediator;
 	private Map<chaveTitulo, TituloFiliado> mapaTitulos;
 	private Map<String, Arquivo> mapaArquivos;
 	private List<TituloFiliado> listTitulosFiliado;

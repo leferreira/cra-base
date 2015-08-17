@@ -21,6 +21,7 @@ import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -38,7 +39,8 @@ public class RemessaDAO extends AbstractBaseDAO {
 	@Autowired
 	InstituicaoDAO instituicaoDAO;
 
-	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio,LocalDate dataInicio, LocalDate dataFim, Usuario usuarioCorrente, ArrayList<TipoArquivoEnum> tiposArquivo) {
+	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio,LocalDate dataInicio, LocalDate dataFim, Usuario usuarioCorrente,
+			ArrayList<TipoArquivoEnum> tiposArquivo, ArrayList<StatusRemessa> situacoes) {
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "a");
 
@@ -53,6 +55,10 @@ public class RemessaDAO extends AbstractBaseDAO {
 			criteria.createAlias("a.tipoArquivo", "tipoArquivo");
 			criteria.add(filtrarRemessaPorTipoArquivo(tiposArquivo));
 		} 
+		
+		if (!situacoes.isEmpty()) {
+			criteria.add(filtrarSituacaoRemessa(situacoes));
+		}
 		
 		Disjunction disjunction = Restrictions.disjunction();
 		if (arquivo.getInstituicaoEnvio() != null)
@@ -72,20 +78,18 @@ public class RemessaDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public List<Remessa> listarRemessasPorInstituicao(Instituicao instituicao) {
-		Criteria criteria = getCriteria(Remessa.class);
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoDestino", instituicao))
-			        .add(Restrictions.eq("instituicaoOrigem", instituicao)));
-		}
-		criteria.addOrder(Order.desc("dataRecebimento"));
-		return criteria.list();
-	}
-
 	private Disjunction filtrarRemessaPorTipoArquivo(ArrayList<TipoArquivoEnum> tiposArquivo) {
 		Disjunction disjunction = Restrictions.disjunction();
 		for (TipoArquivoEnum tipo : tiposArquivo) {
 			disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipo));
+		}
+		return disjunction;
+	}
+	
+	private Disjunction filtrarSituacaoRemessa(ArrayList<StatusRemessa> situacoesRemessa) {
+		Disjunction disjunction = Restrictions.disjunction();
+		for (StatusRemessa status : situacoesRemessa) {
+			disjunction.add(Restrictions.eq("statusRemessa", status));
 		}
 		return disjunction;
 	}

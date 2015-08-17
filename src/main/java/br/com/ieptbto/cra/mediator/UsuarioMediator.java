@@ -27,7 +27,7 @@ import br.com.ieptbto.cra.security.CraRoles;
 public class UsuarioMediator {
 
 	private static final Logger logger = Logger.getLogger(UsuarioMediator.class);
-	@Autowired
+	@Autowired 
 	UsuarioDAO usuarioDao;
 	@Autowired
 	InstituicaoDAO instituicaoDao;

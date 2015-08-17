@@ -8,6 +8,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.postgresql.util.PSQLException;
@@ -52,14 +53,20 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (titulo.getNumeroTitulo() != null)
 			criteria.add(Restrictions.ilike("numeroTitulo", titulo.getNumeroTitulo(), MatchMode.EXACT));
 
+		if (titulo.getNomeSacadorVendedor() != null)
+			criteria.add(Restrictions.ilike("nomeSacadorVendedor", titulo.getNomeSacadorVendedor(), MatchMode.ANYWHERE));
+
+		if (titulo.getDocumentoDevedor() != null)
+			criteria.add(Restrictions.ilike("documentoSacador", titulo.getDocumentoSacador(), MatchMode.ANYWHERE));
+		
 		if (titulo.getNomeDevedor() != null)
 			criteria.add(Restrictions.ilike("nomeDevedor", titulo.getNomeDevedor(), MatchMode.ANYWHERE));
 
-		if (titulo.getDocumentoDevedor() != null)
-			criteria.add(Restrictions.ilike("documentoDevedor", titulo.getDocumentoDevedor(), MatchMode.ANYWHERE));
+		if (titulo.getNumeroIdentificacaoDevedor() != null)
+			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor(), MatchMode.ANYWHERE));
 
-		if (titulo.getDataEmissaoTitulo() != null)
-			criteria.add(Restrictions.between("dataEmissaoTitulo", titulo.getDataEmissaoTitulo(), titulo.getDataEmissaoTitulo()));
+		if (titulo.getDataCadastro() != null)
+			criteria.add(Restrictions.between("dataCadastro", titulo.getDataCadastro(), titulo.getDataCadastro()));
 
 		if (titulo.getDataOcorrencia() != null)
 			criteria.add(Restrictions.between("dataOcorrencia", titulo.getDataOcorrencia(), titulo.getDataEmissaoTitulo()));
@@ -130,7 +137,7 @@ public class TituloDAO extends AbstractBaseDAO {
 				criteriaTitulo.createAlias("retorno", "retorno");
 				criteriaTitulo.add(Restrictions.eq("retorno.remessa", remessa));
 			}
-			criteriaTitulo.addOrder(Order.asc("nomeDevedor")).addOrder(Order.asc("pracaProtesto"));
+			criteriaTitulo.addOrder(Property.forName("nomeDevedor").asc());
 			titulos = criteriaTitulo.list();
 
 			listaTitulos.addAll(titulos);

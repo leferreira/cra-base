@@ -14,7 +14,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -36,8 +35,7 @@ import br.com.ieptbto.cra.util.RemoveAcentosUtil;
  */
 @Entity
 @Audited
-@Table(name = "TB_TITULO", uniqueConstraints = { @UniqueConstraint(columnNames = { "CODIGO_PORTADOR", "NOSSO_NUMERO", "NUMERO_TITULO",
-        "DATA_CADASTRO" }) })
+@Table(name = "TB_TITULO")
 @org.hibernate.annotations.Table(appliesTo = "TB_TITULO")
 public class TituloRemessa extends Titulo<TituloRemessa> {
 
@@ -440,9 +438,9 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.setNomeCedenteFavorecido(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getRazaoSocial()));
 		this.setNomeSacadorVendedor(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getRazaoSocial()));
 		this.setDocumentoSacador(tituloFiliado.getFiliado().getCnpjCpf());
-		this.setEnderecoSacadorVendedor(tituloFiliado.getFiliado().getEndereco());
+		this.setEnderecoSacadorVendedor(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getEndereco()));
 		this.setCepSacadorVendedor(tituloFiliado.getFiliado().getCep());
-		this.setCidadeSacadorVendedor(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase());
+		this.setCidadeSacadorVendedor(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
 		this.setUfSacadorVendedor(tituloFiliado.getFiliado().getUf());
 		this.setNossoNumero(gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId()));
 		this.setEspecieTitulo(tituloFiliado.getEspecieTitulo().getConstante());
@@ -452,21 +450,55 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.setTipoMoeda("001");
 		this.setValorTitulo(tituloFiliado.getValorTitulo());
 		this.setSaldoTitulo(tituloFiliado.getValorSaldoTitulo());
-		this.setPracaProtesto(tituloFiliado.getPracaProtesto().getNomeMunicipio().toUpperCase());
+		this.setPracaProtesto(RemoveAcentosUtil.removeAcentos(tituloFiliado.getPracaProtesto().getNomeMunicipio().toUpperCase()));
 		this.setTipoEndoso("M");
 		this.setInformacaoSobreAceite("N");
-		// TODO implementar situacao para avalistas
 		this.setNumeroControleDevedor(1);
-		this.setNomeDevedor(tituloFiliado.getNomeDevedor());
+		this.setNomeDevedor(RemoveAcentosUtil.removeAcentos(tituloFiliado.getNomeDevedor()));
 		this.setDocumentoDevedor(tituloFiliado.getDocumentoDevedor());
-		this.setEnderecoDevedor(tituloFiliado.getEnderecoDevedor());
+		this.setEnderecoDevedor(RemoveAcentosUtil.removeAcentos(tituloFiliado.getEnderecoDevedor()));
 		this.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(tituloFiliado.getCpfCnpj()));
 		this.setNumeroIdentificacaoDevedor(tituloFiliado.getCpfCnpj());
 		this.setCepDevedor(tituloFiliado.getCepDevedor());
-		this.setCidadeDevedor(tituloFiliado.getCidadeDevedor());
+		this.setCidadeDevedor(RemoveAcentosUtil.removeAcentos(tituloFiliado.getCidadeDevedor()));
 		this.setBairroDevedor(tituloFiliado.getBairroDevedor());
 		this.setUfDevedor(tituloFiliado.getUfDevedor());
 		this.setComplementoRegistro(buscarAlineaCheque(tituloFiliado));
+	}
+	
+	public void parseToAvalista(Avalista avalista, int numeroControleDevedor) {
+		this.setAgenciaCodigoCedente(avalista.getTituloFiliado().getFiliado().getCodigoFiliado());
+		this.setIdentificacaoRegistro(TipoRegistro.TITULO);
+		this.setCodigoPortador(avalista.getTituloFiliado().getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
+		this.setNomeCedenteFavorecido(RemoveAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getRazaoSocial()));
+		this.setNomeSacadorVendedor(RemoveAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getRazaoSocial()));
+		this.setDocumentoSacador(avalista.getTituloFiliado().getFiliado().getCnpjCpf());
+		this.setEnderecoSacadorVendedor(RemoveAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getEndereco()));
+		this.setCepSacadorVendedor(avalista.getTituloFiliado().getFiliado().getCep());
+		this.setCidadeSacadorVendedor(RemoveAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
+		this.setUfSacadorVendedor(avalista.getTituloFiliado().getFiliado().getUf());
+		this.setNossoNumero(gerarNossoNumero(avalista.getTituloFiliado().getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + avalista.getTituloFiliado().getId()));
+		this.setEspecieTitulo(avalista.getTituloFiliado().getEspecieTitulo().getConstante());
+		this.setNumeroTitulo(avalista.getTituloFiliado().getNumeroTitulo());
+		this.setDataEmissaoTitulo(avalista.getTituloFiliado().getDataEmissao());
+		this.setDataVencimentoTitulo(avalista.getTituloFiliado().getDataVencimento());
+		this.setTipoMoeda("001");
+		this.setValorTitulo(avalista.getTituloFiliado().getValorTitulo());
+		this.setSaldoTitulo(avalista.getTituloFiliado().getValorSaldoTitulo());
+		this.setPracaProtesto(RemoveAcentosUtil.removeAcentos(avalista.getTituloFiliado().getPracaProtesto().getNomeMunicipio().toUpperCase()));
+		this.setTipoEndoso("M");
+		this.setInformacaoSobreAceite("N");
+		this.setNumeroControleDevedor(numeroControleDevedor);
+		this.setNomeDevedor(RemoveAcentosUtil.removeAcentos(avalista.getNome()));
+		this.setDocumentoDevedor(avalista.getTituloFiliado().getDocumentoDevedor());
+		this.setEnderecoDevedor(RemoveAcentosUtil.removeAcentos(avalista.getEndereco()));
+		this.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(avalista.getDocumento()));
+		this.setNumeroIdentificacaoDevedor(avalista.getDocumento());
+		this.setCepDevedor(avalista.getCep());
+		this.setCidadeDevedor(RemoveAcentosUtil.removeAcentos(avalista.getCidade()));
+		this.setBairroDevedor(RemoveAcentosUtil.removeAcentos(avalista.getBairro()));
+		this.setUfDevedor(avalista.getUf());
+		this.setComplementoRegistro(buscarAlineaCheque(avalista.getTituloFiliado()));
 	}
 	
 	private String gerarNossoNumero(String nossoNumero) {

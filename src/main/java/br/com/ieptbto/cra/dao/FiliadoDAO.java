@@ -1,5 +1,6 @@
 package br.com.ieptbto.cra.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -61,6 +62,10 @@ public class FiliadoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<Filiado> buscarListaFiliadosPorConvenio(Instituicao instituicao) {
 		Criteria criteria = getCriteria(Filiado.class);
+		
+		if (instituicao.getId() == 0) {
+			return new ArrayList<Filiado>();
+		}
 		
 		if (instituicao.getTipoInstituicao().getTipoInstituicao() != TipoInstituicaoCRA.CRA)
 			criteria.add(Restrictions.eq("instituicaoConvenio", instituicao));

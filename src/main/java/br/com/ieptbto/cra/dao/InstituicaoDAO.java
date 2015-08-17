@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -126,6 +127,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	public List<Instituicao> buscarListaInstituicao() {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.createAlias("municipio", "municipio");
 		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 		criteria.addOrder(Order.asc("id"));
 		return criteria.list();
@@ -215,6 +217,18 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		criteria.addOrder(Order.asc("nomeFantasia"));
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
 		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CONVENIO));
+		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Instituicao> getInstituicoesFinanceirasEConvenios() {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.addOrder(Order.asc("nomeFantasia"));
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		Disjunction disjunction = Restrictions.disjunction();
+		disjunction.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
+		disjunction.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CRA));
+		criteria.add(disjunction);
 		return criteria.list();
 	}
 }

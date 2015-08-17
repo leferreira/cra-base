@@ -42,5 +42,10 @@ public enum SituacaoArquivo implements CraEnum {
 			}
 		}
 		throw new InfraException("Situacao do Arquivo desconhecido : " + constante);
+	} 
+	
+	@Override
+	public String toString() {
+		return label.toUpperCase();
 	}
 }

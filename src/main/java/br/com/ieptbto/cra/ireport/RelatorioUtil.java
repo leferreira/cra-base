@@ -23,165 +23,115 @@ import br.com.ieptbto.cra.util.DataUtil;
  * @author Thasso Araújo
  *
  */
-public class RelatorioUtils {
+public class RelatorioUtil {
 
-	private HashMap<String, Object> parametros = new HashMap<String, Object>();
+	private static HashMap<String, Object> parametros = new HashMap<String, Object>();
 	
-	/**
-	 * Retorna um município
-	 * 
-	 * @param String
-	 *            nomeMunicipio
-	 * @return
-	 * */
-	public JasperPrint relatorioSinteticoDeRemessa(List<SinteticoJRDataSource> beans, Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) throws JRException{
+	public static JasperPrint relatorioSinteticoDeRemessa(List<SinteticoJRDataSource> beans, Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) throws JRException{
 		parametros.put("BANCO", bancoPortador.getNomeFantasia());
 		parametros.put("DATA_INICIO", DataUtil.localDateToString(dataInicio));
 		parametros.put("DATA_FIM", DataUtil.localDateToString(dataFim));
 		
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(beans);
-		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("RelatorioSinteticoRemessa.jrxml"));
+		JasperReport jasperReport = JasperCompileManager.compileReport(RelatorioUtil.class.getClass().getResourceAsStream("../relatorio/RelatorioSinteticoRemessa.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 
-	/**
-	 * Retorna um município
-	 * 
-	 * @param String
-	 *            nomeMunicipio
-	 * @return
-	 * */
-	public JasperPrint relatorioSinteticoDeConfirmacao(List<SinteticoJRDataSource> beans, Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) throws JRException {
+	public static JasperPrint relatorioSinteticoDeConfirmacao(List<SinteticoJRDataSource> beans, Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) throws JRException {
 		parametros.put("BANCO", bancoPortador.getNomeFantasia());
 		parametros.put("DATA_INICIO", DataUtil.localDateToString(dataInicio));
 		parametros.put("DATA_FIM", DataUtil.localDateToString(dataFim));
 		
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(beans);
-		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("RelatorioSinteticoConfirmacao.jrxml"));
+		JasperReport jasperReport = JasperCompileManager.compileReport(RelatorioUtil.class.getClass().getResourceAsStream("../relatorio/RelatorioConfirmacaoDetalhado.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 
-	/**
-	 * Retorna um município
-	 * 
-	 * @param String
-	 *            nomeMunicipio
-	 * @return
-	 * */
-	public JasperPrint relatorioSinteticoDeRetorno(List<SinteticoJRDataSource> beans, Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) throws JRException, IOException{
+	public static JasperPrint relatorioSinteticoDeRetorno(List<SinteticoJRDataSource> beans, Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) throws JRException, IOException{
 		parametros.put("BANCO", bancoPortador.getNomeFantasia());
 		parametros.put("DATA_INICIO", DataUtil.localDateToString(dataInicio));
 		parametros.put("DATA_FIM", DataUtil.localDateToString(dataFim));
 
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(beans);
-		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("RelatorioSinteticoRetorno.jrxml"));
+		JasperReport jasperReport = JasperCompileManager.compileReport(RelatorioUtil.class.getClass().getResourceAsStream("../relatorio/RelatorioSinteticoRetorno.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 	
-	/**
-	 * Retorna um município
-	 * 
-	 * @param String
-	 *            nomeMunicipio
-	 * @return
-	 * */
-	public JasperPrint relatorioSinteticoDeRemessaPorMunicipio(List<SinteticoJRDataSource> beans, Municipio pracaProtesto,
+	public static JasperPrint relatorioSinteticoDeRemessaPorMunicipio(List<SinteticoJRDataSource> beans, Municipio pracaProtesto,
 			LocalDate dataInicio, LocalDate dataFim) throws JRException {
 		parametros.put("MUNICIPIO", pracaProtesto.getNomeMunicipio());
 		parametros.put("DATA_INICIO", DataUtil.localDateToString(dataInicio));
 		parametros.put("DATA_FIM", DataUtil.localDateToString(dataFim));
 		
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(beans);
-		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("RelatorioSinteticoRemessaPorMunicipio.jrxml"));
+		JasperReport jasperReport = JasperCompileManager.compileReport(RelatorioUtil.class.getClass().getResourceAsStream("../relatorio/RelatorioSinteticoRemessaPorMunicipio.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 	
-	/**
-	 * Retorna um município
-	 * 
-	 * @param String
-	 *            nomeMunicipio
-	 * @return
-	 * */
-	public JasperPrint relatorioSinteticoDeConfirmacaoPorMunicipio(List<SinteticoJRDataSource> beans, Municipio pracaProtesto,LocalDate dataInicio, LocalDate dataFim) throws JRException {
+	public static JasperPrint relatorioSinteticoDeConfirmacaoPorMunicipio(List<SinteticoJRDataSource> beans, Municipio pracaProtesto,LocalDate dataInicio, LocalDate dataFim) throws JRException {
 		parametros.put("MUNICIPIO", pracaProtesto.getNomeMunicipio());
 		parametros.put("DATA_INICIO", DataUtil.localDateToString(dataInicio));
 		parametros.put("DATA_FIM", DataUtil.localDateToString(dataFim));
 		
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(beans);
-		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("RelatorioSinteticoConfirmacaoPorMunicipio.jrxml"));
+		JasperReport jasperReport = JasperCompileManager.compileReport(RelatorioUtil.class.getClass().getResourceAsStream("../relatorio/RelatorioSinteticoConfirmacaoPorMunicipio.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 
-	/**
-	 * Retorna um município
-	 * 
-	 * @param String
-	 *            nomeMunicipio
-	 * @return
-	 * */
-	public JasperPrint relatorioSinteticoDeRetornoPorMunicipio(List<SinteticoJRDataSource> beans, Municipio pracaProtesto,LocalDate dataInicio, LocalDate dataFim) throws JRException {
+	public static JasperPrint relatorioSinteticoDeRetornoPorMunicipio(List<SinteticoJRDataSource> beans, Municipio pracaProtesto,LocalDate dataInicio, LocalDate dataFim) throws JRException {
 		parametros.put("MUNICIPIO", pracaProtesto.getNomeMunicipio());
 		parametros.put("DATA_INICIO", DataUtil.localDateToString(dataInicio));
 		parametros.put("DATA_FIM", DataUtil.localDateToString(dataFim));
 		
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(beans);
-		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("RelatorioSinteticoRetornoPorMunicipio.jrxml"));
+		JasperReport jasperReport = JasperCompileManager.compileReport(RelatorioUtil.class.getClass().getResourceAsStream("../relatorio/RelatorioSinteticoRetornoPorMunicipio.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 
-	/**
-	 * Retorna um município
-	 * 
-	 * @param String
-	 *            nomeMunicipio
-	 * @return
-	 * @throws JRException 
-	 * */
-	public JasperPrint relatorioArquivoDetalhadoRemessa(Arquivo file, List<TituloRemessa> titulos) throws JRException {
+	public static JasperPrint relatorioArquivoDetalhadoRemessa(Arquivo file, List<TituloRemessa> titulos) throws JRException {
 		parametros.put("NOME_ARQUIVO", file.getNomeArquivo());
 		parametros.put("DATA_ENVIO", DataUtil.localDateToString(file.getDataEnvio()));
 		
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(titulos);
-		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("RelatorioRemessaDetalhado.jrxml"));
+		JasperReport jasperReport = JasperCompileManager.compileReport(RelatorioUtil.class.getClass().getResourceAsStream("../relatorio/RelatorioRemessaDetalhado.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 
-	public JasperPrint relatorioArquivoDetalhadoConfirmacao(Arquivo arquivo, List<TituloRemessa> titulos) throws JRException {
+	public static JasperPrint relatorioArquivoDetalhadoConfirmacao(Arquivo arquivo, List<TituloRemessa> titulos) throws JRException {
 		parametros.put("NOME_ARQUIVO", arquivo.getNomeArquivo());
 		parametros.put("DATA_ENVIO", DataUtil.localDateToString(arquivo.getDataEnvio()));
 		
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(titulos);
-		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("RelatorioConfirmacaoDetalhado.jrxml"));
+		JasperReport jasperReport = JasperCompileManager.compileReport(RelatorioUtil.class.getClass().getResourceAsStream("../relatorio/RelatorioConfirmacaoDetalhado.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 
-	public JasperPrint relatorioArquivoDetalhadoRetorno(Arquivo arquivo, List<TituloRemessa> titulos) throws JRException {
+	public static JasperPrint relatorioArquivoDetalhadoRetorno(Arquivo arquivo, List<TituloRemessa> titulos) throws JRException {
 		parametros.put("NOME_ARQUIVO", arquivo.getNomeArquivo());
 		parametros.put("DATA_ENVIO", DataUtil.localDateToString(arquivo.getDataEnvio()));
 		
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(titulos);
-		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("RelatorioRetornoDetalhado.jrxml"));
+		JasperReport jasperReport = JasperCompileManager.compileReport(RelatorioUtil.class.getClass().getResourceAsStream("../relatorio/RelatorioRetornoDetalhado.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 
-	public JasperPrint relatorioDeTitulosPorInstituicao(Instituicao instituicao, List<TituloRemessa> titulos,LocalDate dataInicio, LocalDate dataFim) throws JRException{
+	public static JasperPrint relatorioDeTitulosPorInstituicao(Instituicao instituicao, List<TituloRemessa> titulos,LocalDate dataInicio, LocalDate dataFim) throws JRException{
 		parametros.put("DATA_INICIO", DataUtil.localDateToString(dataInicio));
 		parametros.put("DATA_FIM", DataUtil.localDateToString(dataFim));
 		parametros.put("INSTITUICAO", instituicao.getNomeFantasia());
 		
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(titulos);
-		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("RelatorioTitulos.jrxml"));
+		JasperReport jasperReport = JasperCompileManager.compileReport(RelatorioUtil.class.getClass().getResourceAsStream("../relatorio/RelatorioTitulos.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 	
-	public JasperPrint relatorioDeTitulosPorMunicipio(Municipio municipio, List<TituloRemessa> titulos,LocalDate dataInicio, LocalDate dataFim) throws JRException{
+	public static JasperPrint relatorioDeTitulosPorMunicipio(Municipio municipio, List<TituloRemessa> titulos,LocalDate dataInicio, LocalDate dataFim) throws JRException{
 		parametros.put("DATA_INICIO", DataUtil.localDateToString(dataInicio));
 		parametros.put("DATA_FIM", DataUtil.localDateToString(dataFim));
 		parametros.put("MUNICIPIO", municipio.getNomeMunicipio());
 		
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(titulos);
-		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("RelatorioTitulosPorMunicipio.jrxml"));
+		JasperReport jasperReport = JasperCompileManager.compileReport(RelatorioUtil.class.getClass().getResourceAsStream("../relatorio/RelatorioTitulosPorMunicipio.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 }

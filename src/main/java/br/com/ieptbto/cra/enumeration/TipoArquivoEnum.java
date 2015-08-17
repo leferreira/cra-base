@@ -51,6 +51,6 @@ public enum TipoArquivoEnum implements CraEnum {
 	
 	@Override
 	public String toString() {
-		return constante + " - " + label;
+		return constante + " - " + label.toUpperCase();
 	}
 }

@@ -29,6 +29,7 @@ import br.com.ieptbto.cra.entidade.TipoInstituicao;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -168,7 +169,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	}
 
 	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Instituicao instituicao, ArrayList<TipoArquivoEnum> tipoArquivos, Municipio municipio,
-	        LocalDate dataInicio, LocalDate dataFim) {
+	        LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		Criteria criteria = getCriteria(Arquivo.class);
 
 		Disjunction disjunction = Restrictions.disjunction();
@@ -176,13 +177,22 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			disjunction.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoEnvio", instituicao))
 			        .add(Restrictions.eq("instituicaoRecebe", instituicao)));
 		}
-
-		if (municipio != null) {
-			Instituicao cartorioProtesto = instituicaoDAO.buscarCartorioPorMunicipio(municipio.getNomeMunicipio());
-			disjunction.add(Restrictions.eq("instituicaoOrigem", cartorioProtesto)).add(
-					Restrictions.eq("instituicaoDestino", cartorioProtesto));
-		}
 		criteria.add(disjunction);
+		
+		if (!situacoes.isEmpty()) {
+			criteria.createAlias("statusArquivo", "statusArquivo");
+			Disjunction disj = Restrictions.disjunction();
+			for (SituacaoArquivo status : situacoes) {
+				disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", status));
+			}
+			criteria.add(disj);
+		}
+
+//		if (municipio != null) {
+//			Instituicao cartorioProtesto = instituicaoDAO.buscarCartorioPorMunicipio(municipio.getNomeMunicipio());
+//			disjunction.add(Restrictions.eq("instituicaoOrigem", cartorioProtesto)).add(
+//					Restrictions.eq("instituicaoDestino", cartorioProtesto));
+//		}
 		
 		if (arquivo.getNomeArquivo() != null) {
 			criteria.add(Restrictions.ilike("nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));

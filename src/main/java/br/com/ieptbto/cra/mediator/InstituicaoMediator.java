@@ -110,11 +110,12 @@ public class InstituicaoMediator {
 		return instituicao;
 	}
 
-	/**
-	 * Busca portador por Código do portador
-	 */
 	public List<Instituicao> getInstituicoesFinanceiras() {
 		return instituicaoDAO.getInstituicoesFinanceiras();
+	}
+	
+	public List<Instituicao> getInstituicoesFinanceirasEConvenios() {
+		return instituicaoDAO.getInstituicoesFinanceirasEConvenios();
 	}
 	
 	public List<Instituicao> getConvenios() {

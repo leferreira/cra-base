@@ -72,7 +72,6 @@ public class UsuarioDAO extends AbstractBaseDAO {
 	public Usuario alterar(Usuario usuario) {
 		Transaction transaction = getBeginTransation();
 		try {
-//			usuario.setSenha(Usuario.cryptPass(usuario.getSenha()));
 			update(usuario);
 			transaction.commit();
 		} catch (Exception ex) {

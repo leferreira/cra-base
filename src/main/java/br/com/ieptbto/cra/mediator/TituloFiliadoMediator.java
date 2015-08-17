@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.TituloFiliadoDAO;
+import br.com.ieptbto.cra.entidade.Avalista;
 import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
@@ -56,6 +57,10 @@ public class TituloFiliadoMediator {
 		return tituloFiliadoDAO.consultarTitulosConvenio(instituicao, tituloBuscado);
 	}
 
+	public List<Avalista> buscarAvalistasPorTitulo(TituloFiliado titulo){
+		return tituloFiliadoDAO.avalistasTituloFiliado(titulo);
+	}
+	
 	public List<TituloFiliado> buscarTitulosParaRelatorioFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim,
 			Municipio pracaProtesto) {
 		return tituloFiliadoDAO.buscarTitulosParaRelatorioFiliado(filiado, dataInicio, dataFim, pracaProtesto);
