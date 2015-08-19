@@ -172,14 +172,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	        LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		Criteria criteria = getCriteria(Arquivo.class);
 
-		Disjunction disjunction = Restrictions.disjunction();
 		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			disjunction.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoEnvio", instituicao))
-			        .add(Restrictions.eq("instituicaoRecebe", instituicao)));
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", instituicao), Restrictions.eq("instituicaoRecebe", instituicao)));
 		}
-		criteria.add(disjunction);
 		
 		if (!situacoes.isEmpty()) {
+			Disjunction disjunction = Restrictions.disjunction();
 			criteria.createAlias("statusArquivo", "statusArquivo");
 			Disjunction disj = Restrictions.disjunction();
 			for (SituacaoArquivo status : situacoes) {
@@ -188,31 +186,20 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			criteria.add(disj);
 		}
 
-//		if (municipio != null) {
-//			Instituicao cartorioProtesto = instituicaoDAO.buscarCartorioPorMunicipio(municipio.getNomeMunicipio());
-//			disjunction.add(Restrictions.eq("instituicaoOrigem", cartorioProtesto)).add(
-//					Restrictions.eq("instituicaoDestino", cartorioProtesto));
-//		}
-		
 		if (arquivo.getNomeArquivo() != null) {
 			criteria.add(Restrictions.ilike("nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
 		}
 		
 		if (!tipoArquivos.isEmpty()) {
 			criteria.createAlias("tipoArquivo", "tipoArquivo");
-			criteria.add(filtrarArquivoPorTipoArquivo(tipoArquivos));
+			Disjunction disjunction = Restrictions.disjunction();
+			for (TipoArquivoEnum tipoArquivo : tipoArquivos) {
+				disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipoArquivo));
+			}
+			criteria.add(disjunction);
 		}
 		criteria.addOrder(Order.desc("dataEnvio"));
 		return criteria.list();
-	}
-
-
-	private Disjunction filtrarArquivoPorTipoArquivo(ArrayList<TipoArquivoEnum> tipos) {
-		Disjunction disjunction = Restrictions.disjunction();
-		for (TipoArquivoEnum tipoArquivo : tipos) {
-			disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipoArquivo));
-		}
-		return disjunction;
 	}
 
 	/**

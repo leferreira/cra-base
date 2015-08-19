@@ -44,10 +44,10 @@ public class RemessaDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "a");
 
-		if (!usuarioCorrente.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA))
-			criteria.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoDestino", usuarioCorrente.getInstituicao()))
-			        .add(Restrictions.eq("instituicaoOrigem", usuarioCorrente.getInstituicao())));
-
+		if (!usuarioCorrente.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", usuarioCorrente.getInstituicao()), Restrictions.eq("instituicaoOrigem", usuarioCorrente.getInstituicao())));
+		}
+		
 		if (StringUtils.isNotBlank(arquivo.getNomeArquivo()))
 			criteria.add(Restrictions.ilike("a.nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
 
@@ -60,16 +60,14 @@ public class RemessaDAO extends AbstractBaseDAO {
 			criteria.add(filtrarSituacaoRemessa(situacoes));
 		}
 		
-		Disjunction disjunction = Restrictions.disjunction();
-		if (arquivo.getInstituicaoEnvio() != null)
-			disjunction.add(Restrictions.eq("instituicaoOrigem", arquivo.getInstituicaoEnvio())).add(Restrictions.eq("instituicaoDestino", arquivo.getInstituicaoEnvio()));
+		if (arquivo.getInstituicaoEnvio() != null) {
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem", arquivo.getInstituicaoEnvio()), Restrictions.eq("instituicaoDestino", arquivo.getInstituicaoEnvio())));
+		}
 
 		if (municipio != null) {
 			Instituicao cartorioProtesto = instituicaoDAO.buscarCartorioPorMunicipio(municipio.getNomeMunicipio());
-			disjunction.add(Restrictions.eq("instituicaoOrigem", cartorioProtesto)).add(
-			        Restrictions.eq("instituicaoDestino", cartorioProtesto));
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem", cartorioProtesto), Restrictions.eq("instituicaoDestino", cartorioProtesto)));
 		}
-		criteria.add(disjunction);
 
 		if (dataInicio != null)
 			criteria.add(Restrictions.between("dataRecebimento", dataInicio, dataFim));
@@ -180,7 +178,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.add(Restrictions.eq("instituicaoOrigem", convenio));
 		criteria.add(Restrictions.eq("instituicaoDestino", instituicaoDestino));
-		return criteria.list().size() + 1;
+		return criteria.list().size();
 	}
 
 	public int verificarSequencialArquivo(Remessa remessa) {

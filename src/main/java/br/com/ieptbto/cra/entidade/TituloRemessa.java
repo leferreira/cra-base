@@ -490,7 +490,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.setInformacaoSobreAceite("N");
 		this.setNumeroControleDevedor(numeroControleDevedor);
 		this.setNomeDevedor(RemoveAcentosUtil.removeAcentos(avalista.getNome()));
-		this.setDocumentoDevedor(avalista.getTituloFiliado().getDocumentoDevedor());
+//		this.setDocumentoDevedor(avalista.getDocumento());
 		this.setEnderecoDevedor(RemoveAcentosUtil.removeAcentos(avalista.getEndereco()));
 		this.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(avalista.getDocumento()));
 		this.setNumeroIdentificacaoDevedor(avalista.getDocumento());
@@ -513,7 +513,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	}
 
 	private String verificarTipoIdentificacaoDevedor(String documentoDevedor) {
-		if (documentoDevedor.length() == 14 ){
+		if (documentoDevedor.length() <= 11 ){
 			return "002";
 		}
 		return "001";

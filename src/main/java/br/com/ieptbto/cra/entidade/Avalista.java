@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
@@ -61,7 +62,10 @@ public class Avalista extends AbstractEntidade<Avalista> {
 	
 	@Column(name="DOCUMENTO_")
 	public String getDocumento() {
-		return documento;
+		if (documento == null) {
+			documento = StringUtils.EMPTY;
+		}
+		return documento.replace(".", "").replace("-", "").replace("/", "").trim();
 	}
 
 	@Column(name="ENDERECO_")
@@ -79,7 +83,10 @@ public class Avalista extends AbstractEntidade<Avalista> {
 
 	@Column(name="CEP")
 	public String getCep() {
-		return cep;
+		if (cep == null) {
+			cep = StringUtils.EMPTY;
+		}
+		return cep.replace(".", "").replace("-", "").trim();
 	}
 
 	public String getUf() {

@@ -196,7 +196,8 @@ public class RemessaMediator {
 	}
 
 	public File baixarRemessaTXT(Instituicao instituicao, Remessa remessa) {
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA) && 
+				!remessa.getStatusRemessa().equals(StatusRemessa.ENVIADO)) {
 			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
 			remessaDao.alterarSituacaoRemessa(remessa);
 		}
@@ -205,7 +206,8 @@ public class RemessaMediator {
 	}
 
 	public File baixarArquivoTXT(Instituicao instituicao, Arquivo arquivo) {
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)){
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA) && 
+				!arquivo.getStatusArquivo().getSituacaoArquivo().equals(SituacaoArquivo.ENVIADO)){
 			arquivo.setStatusArquivo(gerarStatusArquivoRecebido());
 			arquivoDAO.alterarSituacaoArquivo(arquivo);
 		}

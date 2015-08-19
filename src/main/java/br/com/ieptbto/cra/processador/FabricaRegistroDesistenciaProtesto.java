@@ -38,6 +38,7 @@ public class FabricaRegistroDesistenciaProtesto extends Processador {
 
 	private String linha;
 	private String tipoReg;
+	@SuppressWarnings("unused")
 	private TipoRegistroDesistenciaProtesto tipoRegistro;
 
 	/**

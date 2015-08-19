@@ -195,7 +195,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.ilike("documentoDevedor", titulo.getDocumentoDevedor(), MatchMode.ANYWHERE));
 
 		if (titulo.getDataEmissao() != null)
-			criteria.add(Restrictions.between("dataEmissao", titulo.getDataEmissao(), titulo.getDataEmissao()));
+			criteria.add(Restrictions.between("dataEnvioCRA", titulo.getDataEmissao(), titulo.getDataEmissao()));
 
 		if (titulo.getPracaProtesto() != null)
 			criteria.add(Restrictions.eq("pracaProtesto", titulo.getPracaProtesto()));

@@ -124,7 +124,7 @@ public class ProcessadorArquivo extends Processador {
 
 		return getArquivoFisico();
 	}
-
+	
 	private void converterArquivo() {
 		fabricaDeArquivo.processarArquivoFisico(getArquivoFisico(), getArquivo(), getErros());
 	}

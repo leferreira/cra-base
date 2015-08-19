@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Property;
@@ -40,8 +39,10 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
-		criteria.add(filtrarTitulosPorInstituicao(instituicaoUsuario));
-
+		if (!instituicaoUsuario.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem",instituicaoUsuario),Restrictions.eq("remessa.instituicaoDestino", instituicaoUsuario)));
+		}
+		
 		if (titulo.getCodigoPortador() != null)
 			criteria.add(Restrictions.ilike("codigoPortador", titulo.getCodigoPortador(), MatchMode.ANYWHERE));
 
@@ -101,7 +102,9 @@ public class TituloDAO extends AbstractBaseDAO {
 			
 		}
 
-		filtrarTitulosPorInstituicao(instituicaoCorrente);
+		if (!instituicaoCorrente.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem",instituicaoCorrente),Restrictions.eq("remessa.instituicaoDestino", instituicaoCorrente)));
+		}
 		return criteria.list();
 	}
 	
@@ -109,8 +112,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	public List<TituloRemessa> buscarTitulosPorArquivo(Arquivo arquivo, Instituicao instituicao) {
 		Criteria criteria = getCriteria(Remessa.class);
 		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.disjunction().add(Restrictions.eq("instituicaoOrigem", instituicao))
-			        .add(Restrictions.eq("instituicaoDestino", instituicao)));
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem",instituicao),Restrictions.eq("instituicaoDestino", instituicao)));
 		}
 		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA) ||
 				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO) ||
@@ -143,16 +145,6 @@ public class TituloDAO extends AbstractBaseDAO {
 			listaTitulos.addAll(titulos);
 		}
 		return listaTitulos;
-	}
-
-	private Disjunction filtrarTitulosPorInstituicao(Instituicao instituicaoCorrente) {
-		Disjunction disj = Restrictions.disjunction();
-
-		if (!instituicaoCorrente.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			disj.add(Restrictions.eq("remessa.instituicaoOrigem", instituicaoCorrente)).add(
-			        Restrictions.eq("remessa.instituicaoDestino", instituicaoCorrente));
-		}
-		return disj;
 	}
 
 	public TituloRemessa buscarTituloPorChave(TituloRemessa titulo) {
@@ -269,14 +261,13 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.createAlias("remessa", "remessa");
 
 		if (instituicao != null) {
-			criteria.add(filtrarTitulosPorInstituicao(instituicao));
+			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem",instituicao),Restrictions.eq("remessa.instituicaoDestino", instituicao)));
 		} else if (cartorioProtesto != null) {
-			criteria.add(filtrarTitulosPorInstituicao(cartorioProtesto));
+			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem",cartorioProtesto),Restrictions.eq("remessa.instituicaoDestino", cartorioProtesto)));
 		}
 
 		if (!usuarioCorrente.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.disjunction().add(Restrictions.eq("remessa.instituicaoOrigem", usuarioCorrente.getInstituicao()))
-			        .add(Restrictions.eq("remessa.instituicaoDestino", usuarioCorrente.getInstituicao())));
+			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem",usuarioCorrente.getInstituicao()),Restrictions.eq("remessa.instituicaoDestino", usuarioCorrente.getInstituicao())));
 		}
 		criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
 		return criteria.list();
@@ -308,6 +299,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("numeroTitulo", titulo.getNumeroTitulo()));
 		criteria.add(Restrictions.eq("nossoNumero", titulo.getNossoNumero()));
 		criteria.add(Restrictions.eq("codigoPortador", titulo.getCodigoPortador()));
+		criteria.add(Restrictions.eq("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor()));
 		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
 }
