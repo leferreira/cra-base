@@ -1,9 +1,15 @@
 package br.com.ieptbto.cra.dao;
 
+import java.util.List;
+
+import org.hibernate.Criteria;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
+import br.com.ieptbto.cra.entidade.Historico;
 import br.com.ieptbto.cra.entidade.HistoricoOcorrenciaTitulo;
+import br.com.ieptbto.cra.entidade.TituloRemessa;
 
 /**
  * @author Thasso Araújo
@@ -25,4 +31,10 @@ public class HistoricoOcorrenciaDAO extends AbstractBaseDAO {
 		return novoHistorico;
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Historico> buscarHistoricoTitulo(TituloRemessa titulo) {
+		Criteria criteria = getCriteria(Historico.class);
+		criteria.add(Restrictions.eq("titulo",titulo));
+		return criteria.list();
+	}
 }

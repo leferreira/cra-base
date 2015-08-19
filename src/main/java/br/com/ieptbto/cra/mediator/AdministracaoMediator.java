@@ -26,6 +26,7 @@ public class AdministracaoMediator {
 	private Arquivo arquivo;
 	private Instituicao instituicao;
 	private TipoArquivoEnum tipoArquivo;
+	private List<Remessa> remessas;
 	
 	public AdministracaoMediator removerArquivo(Arquivo arquivo, Instituicao instituicao) {
 		this.arquivo = arquivo;
@@ -37,22 +38,27 @@ public class AdministracaoMediator {
 	}
 
 	private void removerPorTipoArquivo() {
-		List<Remessa> remessas = arquivoDAO.buscarRemessasArquivo(getInstituicao(), getArquivo());
-
+		this.remessas = arquivoDAO.getRemessasArquivo(getArquivo(), getInstituicao());
+		
+		getArquivo().setRemessas(getRemessas());
 		if (!isArquivoEnviadoPelaCra()) {
 			if (getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
-				adminDAO.removerRemessa(getInstituicao(), getArquivo(), remessas);
+				adminDAO.removerRemessa(getInstituicao(), getArquivo());
 			} else if (getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
-				adminDAO.removerConfirmacao(getInstituicao(), getArquivo(), remessas);
+				adminDAO.removerConfirmacao(getInstituicao(), getArquivo());
 			} else if (getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-				adminDAO.removerRetorno(getInstituicao(), getArquivo(), remessas);
+				adminDAO.removerRetorno(getInstituicao(), getArquivo());
 			}
 		}
 	}
 
 	private boolean isArquivoEnviadoPelaCra() {
 		if (getArquivo().getInstituicaoEnvio().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			
+			if (getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
+				adminDAO.removerConfimacaoPelaCra(getArquivo());
+			} else if (getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
+				adminDAO.removerRetornoPelaCra(getArquivo());
+			}
 			return true;
 		}
 		return false;
@@ -80,5 +86,13 @@ public class AdministracaoMediator {
 
 	public void setInstituicao(Instituicao instituicao) {
 		this.instituicao = instituicao;
+	}
+
+	public List<Remessa> getRemessas() {
+		return remessas;
+	}
+
+	public void setRemessas(List<Remessa> remessas) {
+		this.remessas = remessas;
 	}
 }

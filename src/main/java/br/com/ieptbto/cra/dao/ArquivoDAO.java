@@ -260,4 +260,17 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 		return remessas;
 	}
+	
+	public List<Remessa> getRemessasArquivo(Arquivo arquivo, Instituicao instituicao) {
+		Criteria criteria = getCriteria(Remessa.class);
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA) ||
+				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO) ||
+				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO) ) {
+			criteria.add(Restrictions.eq("arquivo", arquivo));
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO) ||
+				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+			criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
+		}
+		return criteria.list();
+	}
 }
