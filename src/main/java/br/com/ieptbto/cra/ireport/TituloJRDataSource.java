@@ -40,7 +40,7 @@ public class TituloJRDataSource {
 		this.setDataOcorrencia("");
 		if (titulo.getConfirmacao() != null) {
 			this.setNumeroProtocoloCartorio(titulo.getConfirmacao().getNumeroProtocoloCartorio());
-			this.setDataOcorrencia(DataUtil.localDateToString(titulo.getConfirmacao().getDataOcorrencia()));
+			this.setDataOcorrencia(DataUtil.localDateToString(titulo.getConfirmacao().getDataProtocolo()));
 		} else if (titulo.getRetorno() != null) {
 			this.setNumeroProtocoloCartorio(titulo.getRetorno().getNumeroProtocoloCartorio());
 			this.setDataOcorrencia(DataUtil.localDateToString(titulo.getRetorno().getDataOcorrencia()));
