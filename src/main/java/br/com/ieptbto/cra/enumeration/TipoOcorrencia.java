@@ -8,6 +8,7 @@ package br.com.ieptbto.cra.enumeration;
  */
 public enum TipoOcorrencia implements CraEnum{
 	
+	EM_ABERTO("0", "EM ABERTO"),
 	PAGO("1", "PAGO"), 
 	PROTESTADO("2", "PROTESTADO"), 
 	RETIRADO("3", "RETIRADO"), 

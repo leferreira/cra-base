@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -70,6 +71,7 @@ public class FiliadoDAO extends AbstractBaseDAO {
 		if (instituicao.getTipoInstituicao().getTipoInstituicao() != TipoInstituicaoCRA.CRA)
 			criteria.add(Restrictions.eq("instituicaoConvenio", instituicao));
 		
+		criteria.addOrder(Order.asc("razaoSocial"));
 		return criteria.list();
 	}
 

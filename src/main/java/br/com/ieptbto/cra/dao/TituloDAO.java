@@ -7,7 +7,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.postgresql.util.PSQLException;
@@ -24,6 +23,8 @@ import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
+import br.com.ieptbto.cra.enumeration.TipoRelatorio;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -108,6 +109,31 @@ public class TituloDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 	
+	public List<TituloRemessa> buscarTitulosPorRemessa(Remessa remessa, Instituicao instituicaoOrigem, Instituicao instituicaoDestino) {
+		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.createAlias("remessa", "remessa");
+
+		if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
+			criteria.add(Restrictions.eq("remessa", remessa));
+		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
+			criteria.createAlias("confirmacao", "confirmacao");
+			criteria.add(Restrictions.eq("confirmacao.remessa", remessa));
+		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+			criteria.createAlias("retorno", "retorno");
+			criteria.add(Restrictions.eq("retorno.remessa", remessa));
+		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)) {
+			
+		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
+			
+		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
+			
+		}
+
+		criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoOrigem),Restrictions.eq("remessa.instituicaoDestino", instituicaoDestino)));
+		criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("nomeDevedor"));
+		return criteria.list();
+	}
+	
 	@Transactional(readOnly = true)
 	public List<TituloRemessa> buscarTitulosPorArquivo(Arquivo arquivo, Instituicao instituicao) {
 		Criteria criteria = getCriteria(Remessa.class);
@@ -122,7 +148,6 @@ public class TituloDAO extends AbstractBaseDAO {
 				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
 			criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
 		}
-		
 		List<TituloRemessa> listaTitulos = new ArrayList<TituloRemessa>();
 		List<Remessa> remessas = criteria.list();
 		for (Remessa remessa : remessas) {
@@ -139,9 +164,14 @@ public class TituloDAO extends AbstractBaseDAO {
 				criteriaTitulo.createAlias("retorno", "retorno");
 				criteriaTitulo.add(Restrictions.eq("retorno.remessa", remessa));
 			}
-			criteriaTitulo.addOrder(Property.forName("nomeDevedor").asc());
+			if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA) || 
+					instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
+				criteria.addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("nomeDevedor"));
+			} else {
+				criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("nomeDevedor"));
+			}
+			
 			titulos = criteriaTitulo.list();
-
 			listaTitulos.addAll(titulos);
 		}
 		return listaTitulos;
@@ -255,21 +285,38 @@ public class TituloDAO extends AbstractBaseDAO {
 		}
 	}
 
-	public List<TituloRemessa> buscarTitulosParaRelatorio(Instituicao instituicao, Instituicao cartorioProtesto, LocalDate dataInicio,
-	        LocalDate dataFim, Usuario usuarioCorrente) {
+	public List<TituloRemessa> buscarTitulosParaRelatorio(Instituicao instituicao, TipoRelatorio situacaoTitulos, LocalDate dataInicio,LocalDate dataFim, Usuario usuarioCorrente) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 
 		if (instituicao != null) {
 			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem",instituicao),Restrictions.eq("remessa.instituicaoDestino", instituicao)));
-		} else if (cartorioProtesto != null) {
-			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem",cartorioProtesto),Restrictions.eq("remessa.instituicaoDestino", cartorioProtesto)));
-		}
+		} 
 
 		if (!usuarioCorrente.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem",usuarioCorrente.getInstituicao()),Restrictions.eq("remessa.instituicaoDestino", usuarioCorrente.getInstituicao())));
 		}
+		
+		if (situacaoTitulos.equals(TipoRelatorio.GERAL)) {
+		} else if (situacaoTitulos.equals(TipoRelatorio.PENDENTES)) {
+			criteria.add(Restrictions.isNull("retorno"));
+		} else if (situacaoTitulos.equals(TipoRelatorio.EM_ABERTO)) {
+			criteria.createAlias("confirmacao", "confirmacao");
+			criteria.add(Restrictions.isNull("confirmacao"));
+			criteria.add(Restrictions.ne("confirmacao.tipoOcorrencia", TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante()));
+		} else {
+			criteria.createAlias("retorno", "retorno");
+			criteria.add(Restrictions.eq("retorno.tipoOcorrencia", situacaoTitulos.getTipoOcorrencia().getConstante()));
+		}
+		
 		criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
+		
+		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA) || 
+				instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
+			criteria.addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("nomeDevedor"));
+		} else {
+			criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("nomeDevedor"));
+		}
 		return criteria.list();
 	}
 

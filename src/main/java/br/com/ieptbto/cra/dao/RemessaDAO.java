@@ -204,4 +204,16 @@ public class RemessaDAO extends AbstractBaseDAO {
 		}
 		return true;
 	}
+
+	public List<Remessa> buscarRemessasPorArquivo(Instituicao instituicao,
+			Arquivo arquivo) {
+		Criteria criteria = getCriteria(Remessa.class);
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", instituicao), Restrictions.eq("instituicaoOrigem", instituicao)));
+		}
+		criteria.createAlias("arquivo", "arquivo");
+		criteria.add(Restrictions.ilike("arquivo.nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
+		criteria.addOrder(Order.asc("dataRecebimento"));
+		return criteria.list();
+	}
 }

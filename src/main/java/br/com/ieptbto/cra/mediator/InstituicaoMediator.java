@@ -23,12 +23,6 @@ public class InstituicaoMediator {
 		return instituicaoDAO.alterar(instituicao);
 	}
 
-	/**
-	 * Verifica se a instituicao não está cadastrada
-	 * 
-	 * @param instituicao
-	 * @return
-	 */
 	public boolean isInstituicaoNaoExiste(Instituicao instituicao) {
 		Instituicao instituicaoNova = instituicaoDAO.buscarInstituicao(instituicao.getNomeFantasia());
 		if (instituicaoNova == null) {
@@ -37,53 +31,26 @@ public class InstituicaoMediator {
 		return false;
 	}
 
-	/**
-	 * Busca uma instituicao cadastrada
-	 * 
-	 * @param instituicao
-	 * @return
-	 */
 	public Instituicao buscarInstituicao(Instituicao instituicao) {
 		return instituicaoDAO.buscarInstituicao(instituicao);
 	}
 
-	/**
-	 * Busca uma instituicao cadastrada
-	 * 
-	 * @param nomeFantasia
-	 * @return
-	 */
 	public Instituicao buscarInstituicaoIncial(String instituicao) {
 		return instituicaoDAO.buscarInstituicaoInicial(instituicao);
 	}
 
-	/**
-	 * Busca as Instituicões ativas
-	 */
 	public List<Instituicao> getInstituicoesAtivas() {
-		List<Instituicao> lista = instituicaoDAO.buscarListaInstituicaoAtivas();
-		return lista;
+		return instituicaoDAO.buscarListaInstituicaoAtivas();
 	}
 
-	/**
-	 * Buscar todos os cartórios e instituicao cadastrados
-	 */
-	public List<Instituicao> buscarCartoriosInstituicoes() {
-		return instituicaoDAO.buscarCartoriosInstituicoes();
+	public List<Instituicao> listarTodas() {
+		return instituicaoDAO.listarTodas();
 	}
 
-	/**
-	 * Busca todas as Instituicões ativas ou não, menos cartórios.
-	 * 
-	 */
 	public List<Instituicao> listarTodasInstituicoes() {
-		List<Instituicao> lista = instituicaoDAO.buscarListaInstituicao();
-		return lista;
+		return instituicaoDAO.buscarListaInstituicao();
 	}
 
-	/**
-	 * Busca todos os cartórios, ativos ou não
-	 */
 	public List<Instituicao> getCartorios() {
 		List<Instituicao> lista = instituicaoDAO.getCartorios();
 		return lista;
@@ -98,9 +65,6 @@ public class InstituicaoMediator {
 		return instituicao;
 	}
 
-	/**
-	 * Busca portador por Código do portador
-	 */
 	public Instituicao getInstituicaoPorCodigoPortador(String codigoPortador) {
 		Instituicao instituicao = instituicaoDAO.getInstituicaoPorCodigo(codigoPortador);
 		if (instituicao == null) {

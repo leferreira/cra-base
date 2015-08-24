@@ -273,4 +273,20 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 		return criteria.list();
 	}
+
+	public Arquivo buscarArquivoPorNome(Instituicao instituicao, String nomeArquivo) {
+		Criteria criteria = getCriteria(Arquivo.class);
+		criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
+		criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));
+		return Arquivo.class.cast(criteria.uniqueResult());
+	}
+	
+	public List<Arquivo> buscarArquivosPorNome(Instituicao instituicao, Arquivo arquivo) {
+		Criteria criteria = getCriteria(Arquivo.class);
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", instituicao), Restrictions.eq("instituicaoRecebe", instituicao)));
+		}
+		criteria.add(Restrictions.ilike("nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
+		return criteria.list();
+	}
 }

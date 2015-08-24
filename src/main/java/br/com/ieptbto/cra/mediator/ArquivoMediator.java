@@ -33,18 +33,18 @@ import br.com.ieptbto.cra.processador.ProcessadorMigracaoCRA;
 public class ArquivoMediator {
 
 	@Autowired
-	InstituicaoMediator instituicaoMediator;
+	private InstituicaoMediator instituicaoMediator;
 	@Autowired
 	private TipoArquivoDAO tipoArquivoDAO;
+	@Autowired
+	private ProcessadorArquivo processadorArquivo;
+	@Autowired
+	private ProcessadorMigracaoCRA processadorArquivoMigracao;
 	@Autowired
 	private ArquivoDAO arquivoDAO;
 	private List<Exception> erros;
 	private Arquivo arquivo;
 
-	@Autowired
-	private ProcessadorArquivo processadorArquivo;
-	@Autowired
-	private ProcessadorMigracaoCRA processadorArquivoMigracao;
 
 	public ArquivoMediator salvar(Arquivo arquivo, FileUpload uploadedFile, Usuario usuario) {
 		arquivo.setTipoArquivo(getTipoArquivo(arquivo));
@@ -171,5 +171,13 @@ public class ArquivoMediator {
 	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Instituicao instituicao, ArrayList<TipoArquivoEnum> tipoArquivos,
 	        Municipio pracaProtesto, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		return arquivoDAO.buscarArquivosAvancado(arquivo, instituicao, tipoArquivos, pracaProtesto, dataInicio, dataFim, situacoes);
+	}
+
+	public Arquivo buscarArquivoPorNome(Instituicao instituicao, String nomeArquivo) {
+		return arquivoDAO.buscarArquivoPorNome(instituicao, nomeArquivo);
+	}
+
+	public List<Arquivo> buscarArquivosPorNome(Instituicao instituicao,	Arquivo arquivo) {
+		return arquivoDAO.buscarArquivosPorNome(instituicao, arquivo);
 	}
 }

@@ -45,10 +45,9 @@ public class RemessaMediator {
 	protected static final Logger logger = Logger.getLogger(RemessaMediator.class);
 
 	@Autowired
-	RemessaDAO remessaDao;
+	private RemessaDAO remessaDao;
 	@Autowired
-	ArquivoDAO arquivoDAO;
-
+	private ArquivoDAO arquivoDAO;
 	@Autowired
 	private ConversorRemessaArquivo conversorRemessaArquivo;
 	@Autowired
@@ -225,5 +224,9 @@ public class RemessaMediator {
 
 	public int getNumeroSequencialConvenio(Instituicao convenio, Instituicao instituicaoDestino) {
 		return remessaDao.getNumeroSequencialConvenio(convenio, instituicaoDestino);
+	}
+
+	public List<Remessa> buscarRemessasPorArquivo(Instituicao instituicao, Arquivo arquivo) {
+		return remessaDao.buscarRemessasPorArquivo(instituicao, arquivo);
 	}
 }

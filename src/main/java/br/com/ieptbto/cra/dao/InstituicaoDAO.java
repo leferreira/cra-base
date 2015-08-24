@@ -97,31 +97,16 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		}
 	}
 
-	/**
-	 * Busca uma instituicao ou cartório
-	 * 
-	 * @return Instituicao
-	 * */
 	public Instituicao buscarInstituicao(Instituicao instituicao) {
 		return buscarInstituicao(instituicao.getNomeFantasia());
 	}
 
-	/**
-	 * Busca uma instituicao ou cartório
-	 * 
-	 * @return Instituicao
-	 * */
 	public Instituicao buscarInstituicao(String nome) {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.add(Restrictions.eq("nomeFantasia", nome));
 		return Instituicao.class.cast(criteria.uniqueResult());
 	}
 
-	/**
-	 * Buscar todos as instituicões, ativas ou não, menos cartórios
-	 * 
-	 * @return List<Instituicao>
-	 * */
 	@SuppressWarnings("unchecked")
 	public List<Instituicao> buscarListaInstituicao() {
 		Criteria criteria = getCriteria(Instituicao.class);
@@ -132,11 +117,6 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	/**
-	 * Buscar todos as instituições ativas, menos cartórios
-	 * 
-	 * @return List<Instituicao>
-	 * */
 	@SuppressWarnings("unchecked")
 	public List<Instituicao> buscarListaInstituicaoAtivas() {
 		Criteria criteria = getCriteria(Instituicao.class);
@@ -146,13 +126,8 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	/**
-	 * Buscar todas as instituicões e cartórios cadastrados
-	 * 
-	 * @return List<Instituicao>
-	 * */
 	@SuppressWarnings("unchecked")
-	public List<Instituicao> buscarCartoriosInstituicoes() {
+	public List<Instituicao> listarTodas() {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.addOrder(Order.asc("nomeFantasia"));
 		return criteria.list();
@@ -222,10 +197,10 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<Instituicao> getInstituicoesFinanceirasEConvenios() {
 		Criteria criteria = getCriteria(Instituicao.class);
-		criteria.addOrder(Order.asc("nomeFantasia"));
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
 		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CRA));
+		criteria.addOrder(Order.asc("nomeFantasia"));
 		return criteria.list();
 	}
 }
