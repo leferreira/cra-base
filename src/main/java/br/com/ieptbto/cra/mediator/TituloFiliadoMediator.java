@@ -70,4 +70,16 @@ public class TituloFiliadoMediator {
 			Municipio pracaProtesto) {
 		return tituloFiliadoDAO.buscarTitulosParaRelatorioConvenio(convenio, filiado ,dataInicio, dataFim, pracaProtesto);
 	}
+
+	public int quatidadeTitulosPendentesEnvioFiliados(Filiado filiado, LocalDate dataInicio, LocalDate dataFim) {
+		return tituloFiliadoDAO.quatidadeTitulosPendentesEnvioFiliados(filiado, dataInicio, dataFim);
+	}
+	
+	public int quatidadeTitulosEmProcessoFiliados(Filiado filiado, LocalDate dataInicio, LocalDate dataFim) {
+		return tituloFiliadoDAO.quatidadeTitulosEmProcessoFiliados(filiado, dataInicio, dataFim);
+	}
+	
+	public int quatidadeTitulosFinalizadosFiliados(Filiado filiado, LocalDate dataInicio, LocalDate dataFim) {
+		return tituloFiliadoDAO.quatidadeTitulosFnalizados(filiado, dataInicio, dataFim);
+	}
 }

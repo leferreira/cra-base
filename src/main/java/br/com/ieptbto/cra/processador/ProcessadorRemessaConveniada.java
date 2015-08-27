@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Avalista;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
@@ -110,10 +109,10 @@ public class ProcessadorRemessaConveniada extends Processador {
 		remessa.getCabecalho().setRemessa(remessa);
 		remessa.getRodape().setRemessa(remessa);
 		remessa.setStatusRemessa(StatusRemessa.AGUARDANDO);
-		List<Avalista> avalistasTitulo = avalistaMediator.buscarAvalistasPorTitulo(tituloFiliado);
-		if (!avalistasTitulo.isEmpty()) {
-			adicionarAvalistas(remessa, tituloFiliado, avalistasTitulo);
-		}
+//		List<Avalista> avalistasTitulo = avalistaMediator.buscarAvalistasPorTitulo(tituloFiliado);
+//		if (!avalistasTitulo.isEmpty()) {
+//			adicionarAvalistas(remessa, tituloFiliado, avalistasTitulo);
+//		}
 		return remessa;
 	}
 
@@ -173,21 +172,21 @@ public class ProcessadorRemessaConveniada extends Processador {
 		TituloRemessa titulo = new TituloRemessa();
 		titulo.parseTituloFiliado(tituloFiliado);
 		remessa.getTitulos().add(titulo);
-		int numeroControleDevedor = 2;
-		List<Avalista> avalistasTitulo = avalistaMediator.buscarAvalistasPorTitulo(tituloFiliado);
-		for (Avalista avalista : avalistasTitulo) {
-			TituloRemessa tituloAvalista = new TituloRemessa();
-			tituloAvalista.parseToAvalista(avalista, numeroControleDevedor);
-			
-			remessa.getTitulos().add(tituloAvalista);
-			numeroControleDevedor =+ 1;
-			quantidadeRegistros =+ 1;
-			valorSaldo.add(tituloAvalista.getSaldoTitulo());
-		}
+//		int numeroControleDevedor = 2;
+//		List<Avalista> avalistasTitulo = avalistaMediator.buscarAvalistasPorTitulo(tituloFiliado);
+//		for (Avalista avalista : avalistasTitulo) {
+//			TituloRemessa tituloAvalista = new TituloRemessa();
+//			tituloAvalista.parseToAvalista(avalista, numeroControleDevedor);
+//			
+//			remessa.getTitulos().add(tituloAvalista);
+//			numeroControleDevedor = numeroControleDevedor + 1;
+//			quantidadeRegistros = quantidadeRegistros + 1;
+//			valorSaldo.add(tituloAvalista.getSaldoTitulo());
+//		}
 		
 		if (tituloFiliado.getEspecieTitulo().equals(TipoEspecieTitulo.DMI)) {
-			quantidadeIndicacoes =+1; } else {
-			quantidadeOriginais =+ 1;
+			quantidadeIndicacoes = quantidadeIndicacoes + 1; } else {
+			quantidadeOriginais = quantidadeOriginais + 1;
 		}
 		remessa.getCabecalho().setQtdRegistrosRemessa(quantidadeRegistros + 1);
 		remessa.getCabecalho().setQtdTitulosRemessa(quantidadeTitulos + 1);
@@ -198,36 +197,36 @@ public class ProcessadorRemessaConveniada extends Processador {
 		remessa.getRodape().setSomatorioValorRemessa(valorSaldo);
 	}
 
-	private void adicionarAvalistas(Remessa remessa, TituloFiliado tituloFiliado, List<Avalista> avalistasTitulo) {
-		int quantidadeRegistros = remessa.getCabecalho().getQtdRegistrosRemessa() + 1;
-		int quantidadeTitulos = remessa.getCabecalho().getQtdTitulosRemessa() + 1;
-		int quantidadeIndicacoes = remessa.getCabecalho().getQtdIndicacoesRemessa();
-		int quantidadeOriginais =  remessa.getCabecalho().getQtdOriginaisRemessa();
-		BigDecimal valorSaldo = remessa.getRodape().getSomatorioValorRemessa().add(tituloFiliado.getValorSaldoTitulo());
-
-		int numeroControleDevedor = 2;
-		for (Avalista avalista : avalistasTitulo) {
-			TituloRemessa tituloAvalista = new TituloRemessa();
-			tituloAvalista.parseToAvalista(avalista, numeroControleDevedor);
-			
-			remessa.getTitulos().add(tituloAvalista);
-			numeroControleDevedor =+ 1;
-			quantidadeRegistros =+ 1;
-			valorSaldo.add(tituloAvalista.getSaldoTitulo());
-		}
-		
-		if (tituloFiliado.getEspecieTitulo().equals(TipoEspecieTitulo.DMI)) {
-			quantidadeIndicacoes =+1; } else {
-			quantidadeOriginais =+ 1;
-		}
-		remessa.getCabecalho().setQtdRegistrosRemessa(quantidadeRegistros);
-		remessa.getCabecalho().setQtdTitulosRemessa(quantidadeTitulos);
-		remessa.getCabecalho().setQtdIndicacoesRemessa(quantidadeIndicacoes);
-		remessa.getCabecalho().setQtdOriginaisRemessa(quantidadeOriginais);
-		BigDecimal somatorioQtdRemessa = new BigDecimal(quantidadeRegistros + quantidadeTitulos + quantidadeOriginais + quantidadeIndicacoes);
-		remessa.getRodape().setSomatorioQtdRemessa(somatorioQtdRemessa);
-		remessa.getRodape().setSomatorioValorRemessa(valorSaldo);
-	}
+//	private void adicionarAvalistas(Remessa remessa, TituloFiliado tituloFiliado, List<Avalista> avalistasTitulo) {
+//		int quantidadeRegistros = remessa.getCabecalho().getQtdRegistrosRemessa() + 1;
+//		int quantidadeTitulos = remessa.getCabecalho().getQtdTitulosRemessa() + 1;
+//		int quantidadeIndicacoes = remessa.getCabecalho().getQtdIndicacoesRemessa();
+//		int quantidadeOriginais =  remessa.getCabecalho().getQtdOriginaisRemessa();
+//		BigDecimal valorSaldo = remessa.getRodape().getSomatorioValorRemessa().add(tituloFiliado.getValorSaldoTitulo());
+//
+//		int numeroControleDevedor = 2;
+//		for (Avalista avalista : avalistasTitulo) {
+//			TituloRemessa tituloAvalista = new TituloRemessa();
+//			tituloAvalista.parseToAvalista(avalista, numeroControleDevedor);
+//			
+//			remessa.getTitulos().add(tituloAvalista);
+//			numeroControleDevedor = numeroControleDevedor + 1;
+//			quantidadeRegistros = quantidadeRegistros + 1;
+//			valorSaldo.add(tituloAvalista.getSaldoTitulo());
+//		}
+//		
+//		if (tituloFiliado.getEspecieTitulo().equals(TipoEspecieTitulo.DMI)) {
+//			quantidadeIndicacoes =+1; } else {
+//			quantidadeOriginais =+ 1;
+//		}
+//		remessa.getCabecalho().setQtdRegistrosRemessa(quantidadeRegistros);
+//		remessa.getCabecalho().setQtdTitulosRemessa(quantidadeTitulos);
+//		remessa.getCabecalho().setQtdIndicacoesRemessa(quantidadeIndicacoes);
+//		remessa.getCabecalho().setQtdOriginaisRemessa(quantidadeOriginais);
+//		BigDecimal somatorioQtdRemessa = new BigDecimal(quantidadeRegistros + quantidadeTitulos + quantidadeOriginais + quantidadeIndicacoes);
+//		remessa.getRodape().setSomatorioQtdRemessa(somatorioQtdRemessa);
+//		remessa.getRodape().setSomatorioValorRemessa(valorSaldo);
+//	}
 
 	private Instituicao setInstituicaoDestino(TituloFiliado tituloFiliado) {
 		return instituicaoMediator.getCartorioPorCodigoIBGE(tituloFiliado.getPracaProtesto().getCodigoIBGE());

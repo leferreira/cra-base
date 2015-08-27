@@ -9,7 +9,8 @@ public enum SituacaoTituloConvenio {
 	ENVIADO("Enviado"),
 	AGUARDANDO("Aguardando"),
 	REMOVIDO("Removido"),
-	EM_PROCESSO("Em Processo");
+	EM_PROCESSO("Em Processo"),
+	FINALIZADO("Finalizado");
 	
 	private String situacao;
 	

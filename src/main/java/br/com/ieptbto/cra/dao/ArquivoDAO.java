@@ -48,6 +48,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	TituloDAO tituloDAO;
 	@Autowired
 	InstituicaoDAO instituicaoDAO;
+	@Autowired
+	RemessaDAO remessaDAO;
 
 	public List<Arquivo> buscarTodosArquivos() {
 		Criteria criteria = getCriteria(Arquivo.class);
@@ -80,6 +82,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
 					setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
 					setSituacaoRemessa(arquivo, remessa);
+//					setSituacaoConfirmacao(arquivo, remessa);
 					save(remessa);
 					for (Titulo titulo : remessa.getTitulos()) {
 						titulo.setRemessa(remessa);
@@ -168,6 +171,17 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 	}
 
+//	private void setSituacaoConfirmacao(Arquivo arquivo, Remessa confirmacao) {
+//		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
+//			confirmacao.setSituacaoConfirmacao(SituacaoConfirmacao.AGUARDANDO);
+//		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
+//			Remessa arquivoRemessa = remessaDAO.buscarRemessaDaConfirmacao(confirmacao);
+//			if (arquivoRemessa != null) {
+//				arquivoRemessa.setSituacaoConfirmacao(SituacaoConfirmacao.RECEBIDO);
+//			}
+//		}
+//	}
+	
 	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Instituicao instituicao, ArrayList<TipoArquivoEnum> tipoArquivos, Municipio municipio,
 	        LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		Criteria criteria = getCriteria(Arquivo.class);

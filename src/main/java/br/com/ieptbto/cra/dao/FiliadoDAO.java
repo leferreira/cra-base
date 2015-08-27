@@ -63,6 +63,7 @@ public class FiliadoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<Filiado> buscarListaFiliadosPorConvenio(Instituicao instituicao) {
 		Criteria criteria = getCriteria(Filiado.class);
+		criteria.createAlias("municipio", "municipio");
 		
 		if (instituicao.getId() == 0) {
 			return new ArrayList<Filiado>();

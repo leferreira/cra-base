@@ -113,7 +113,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
 		criteria.createAlias("municipio", "municipio");
 		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
-		criteria.addOrder(Order.asc("id"));
+		criteria.addOrder(Order.asc("nomeFantasia"));
 		return criteria.list();
 	}
 
@@ -123,6 +123,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
 		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 		criteria.add(Restrictions.eq("situacao", true));
+		criteria.addOrder(Order.asc("nomeFantasia"));
 		return criteria.list();
 	}
 
@@ -144,6 +145,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		criteria.addOrder(Order.asc("id"));
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
 		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
+		criteria.addOrder(Order.asc("nomeFantasia"));
 		return criteria.list();
 	}
 
@@ -158,6 +160,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		criteria.addOrder(Order.asc("nomeFantasia"));
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
 		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA));
+		criteria.addOrder(Order.asc("nomeFantasia"));
 		return criteria.list();
 	}
 
@@ -188,9 +191,9 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<Instituicao> getConvenios() {
 		Criteria criteria = getCriteria(Instituicao.class);
-		criteria.addOrder(Order.asc("nomeFantasia"));
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
 		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CONVENIO));
+		criteria.addOrder(Order.asc("nomeFantasia"));
 		return criteria.list();
 	}
 

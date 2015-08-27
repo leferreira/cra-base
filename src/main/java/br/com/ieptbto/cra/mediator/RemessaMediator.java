@@ -229,4 +229,8 @@ public class RemessaMediator {
 	public List<Remessa> buscarRemessasPorArquivo(Instituicao instituicao, Arquivo arquivo) {
 		return remessaDao.buscarRemessasPorArquivo(instituicao, arquivo);
 	}
+
+	public List<Remessa> confirmacoesPendentes(Instituicao instituicao) {
+		return remessaDao.confirmacoesPendentes(instituicao);
+	}
 }

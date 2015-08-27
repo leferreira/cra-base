@@ -247,17 +247,41 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 	}
 
 	public void marcarComoEnviadoParaCRA(List<TituloFiliado> listaTitulosConvenios) {
+		Transaction transaction = getBeginTransation();
 		try {
 			for (TituloFiliado tituloFiliado : listaTitulosConvenios) {
-				Transaction transaction = getBeginTransation();
 				tituloFiliado.setSituacaoTituloConvenio(SituacaoTituloConvenio.EM_PROCESSO);
 				update(tituloFiliado);
-				transaction.commit();
 				logger.info("Titulo Filiado enviado para o cartório com sucesso {" + tituloFiliado.getId() + "}");
 			}
+			transaction.commit();
 		} catch (Exception ex) {
 			logger.error(ex.getMessage());
 			new InfraException(ex.getMessage(), ex.getCause());
 		}
+	}
+
+	public int quatidadeTitulosPendentesEnvioFiliados(Filiado filiado, LocalDate dataInicio, LocalDate dataFim) {
+		Criteria criteria = getCriteria(TituloFiliado.class);
+		criteria.add(Restrictions.eq("filiado", filiado));
+		criteria.add(Restrictions.eq("situacaoTituloConvenio", SituacaoTituloConvenio.AGUARDANDO));
+		criteria.add(Restrictions.between("dataEnvioCRA", dataInicio, dataFim));
+		return criteria.list().size();
+	}
+
+	public int quatidadeTitulosEmProcessoFiliados(Filiado filiado, LocalDate dataInicio, LocalDate dataFim) {
+		Criteria criteria = getCriteria(TituloFiliado.class);
+		criteria.add(Restrictions.eq("filiado", filiado));
+		criteria.add(Restrictions.or(Restrictions.eq("situacaoTituloConvenio", SituacaoTituloConvenio.EM_PROCESSO),Restrictions.eq("situacaoTituloConvenio", SituacaoTituloConvenio.ENVIADO)));
+		criteria.add(Restrictions.between("dataEnvioCRA", dataInicio, dataFim));
+		return criteria.list().size();
+	}
+
+	public int quatidadeTitulosFnalizados(Filiado filiado, LocalDate dataInicio, LocalDate dataFim) {
+		Criteria criteria = getCriteria(TituloFiliado.class);
+		criteria.add(Restrictions.eq("filiado", filiado));
+		criteria.add(Restrictions.eq("situacaoTituloConvenio", SituacaoTituloConvenio.FINALIZADO));
+		criteria.add(Restrictions.between("dataEnvioCRA", dataInicio, dataFim));
+		return criteria.list().size();
 	}
 }
