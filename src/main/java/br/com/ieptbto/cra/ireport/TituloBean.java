@@ -9,7 +9,7 @@ import br.com.ieptbto.cra.util.DataUtil;
  * @author Thasso Araújo
  *
  */
-public class TituloJRDataSource {
+public class TituloBean {
 
 	private String nossoNumero;
 	private String nomeDevedor;

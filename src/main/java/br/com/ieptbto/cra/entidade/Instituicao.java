@@ -43,6 +43,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	private String bancoContaCorrente;
 	private String agenciaContaCorrente;
 	private String numeroContaCorrente;
+	private String codigoCartorio;
 	private boolean situacao;
 
 	private TipoInstituicao tipoInstituicao;
@@ -152,6 +153,15 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	@JoinColumn(name = "MUNICIPIO_ID", columnDefinition = "integer NULL")
 	public Municipio getMunicipio() {
 		return municipio;
+	}
+	
+	@Column(name="CODIGO_CARTORIO", length=2, nullable=true)
+	public String getCodigoCartorio() {
+		return codigoCartorio;
+	}
+	
+	public void setCodigoCartorio(String codigoCartorio) {
+		this.codigoCartorio = codigoCartorio;
 	}
 
 	public void setId(int id) {

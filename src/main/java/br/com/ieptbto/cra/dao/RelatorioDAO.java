@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.ireport.SinteticoJRDataSource;
+import br.com.ieptbto.cra.ireport.RelatorioSinteticoBean;
 
 /**
  * @author Thasso Araújo
@@ -22,7 +22,7 @@ import br.com.ieptbto.cra.ireport.SinteticoJRDataSource;
 @Repository
 public class RelatorioDAO extends AbstractBaseDAO {
 
-	public List<SinteticoJRDataSource> relatorioDeRemessaSintetico(Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) {
+	public List<RelatorioSinteticoBean> relatorioDeRemessaSintetico(Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) {
 		Query query = createSQLQuery("select m.nome_municipio," + " count(titulo.id_titulo) AS total_titulos,"
 		        + " sum (titulo.valor_titulo) AS valor_titulo," + " sum (titulo.valor_saldo_titulo) AS valor_saldo"
 		        + " from tb_remessa AS r" + " inner join tb_titulo AS titulo ON titulo.remessa_id=r.id_remessa"
@@ -31,10 +31,10 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		        + " inner join tb_instituicao AS i on r.instituicao_origem_id=i.id_instituicao"
 		        + " INNER JOIN tb_municipio AS m ON i.municipio_id = m.id_municipio" + "	WHERE r.instituicao_origem_id = "
 		        + bancoPortador.getId() + " GROUP BY m.nome_municipio");
-		List<SinteticoJRDataSource> lista = new ArrayList<>();
+		List<RelatorioSinteticoBean> lista = new ArrayList<>();
 		Iterator iterator = query.list().iterator();
 		while (iterator.hasNext()) {
-			SinteticoJRDataSource bean = new SinteticoJRDataSource();
+			RelatorioSinteticoBean bean = new RelatorioSinteticoBean();
 			Object[] posicao = (Object[]) iterator.next();
 			bean.setNomeMunicipio((String) posicao[0]);
 			bean.setTotalTitulos(BigInteger.class.cast(posicao[1]));
@@ -45,7 +45,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return lista;
 	}
 
-	public List<SinteticoJRDataSource> relatorioDeConfirmacaoSintetico(Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) {
+	public List<RelatorioSinteticoBean> relatorioDeConfirmacaoSintetico(Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) {
 		Query query = createSQLQuery("select m.nome_municipio," + " Count (titulo.id_titulo) AS total_titulos,"
 		        + " sum (CASE WHEN conf.numero_protocolo_cartorio<>'' THEN 1 ELSE 0 END) AS apontados,"
 		        + " sum (CASE WHEN conf.tipo_ocorrencia='5' THEN 1 ELSE 0 END) AS devolvidos,"
@@ -57,10 +57,10 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		        + " inner join tb_instituicao AS i on r.instituicao_origem_id=i.id_instituicao"
 		        + " INNER JOIN tb_municipio AS m ON i.municipio_id = m.id_municipio" + " WHERE r.instituicao_destino_id = "
 		        + bancoPortador.getId() + " GROUP BY m.nome_municipio");
-		List<SinteticoJRDataSource> lista = new ArrayList<>();
+		List<RelatorioSinteticoBean> lista = new ArrayList<>();
 		Iterator iterator = query.list().iterator();
 		while (iterator.hasNext()) {
-			SinteticoJRDataSource bean = new SinteticoJRDataSource();
+			RelatorioSinteticoBean bean = new RelatorioSinteticoBean();
 			Object[] posicao = (Object[]) iterator.next();
 			bean.setNomeMunicipio((String) posicao[0]);
 			bean.setTotalTitulos(BigInteger.class.cast(posicao[1]));
@@ -73,7 +73,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return lista;
 	}
 
-	public List<SinteticoJRDataSource> relatorioDeRetornoSintetico(Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) {
+	public List<RelatorioSinteticoBean> relatorioDeRetornoSintetico(Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) {
 		Query query = createSQLQuery("select m.nome_municipio AS nome_municipio,"
 		        + " Count (titulo.id_titulo) AS total_titulos,"
 		        + " sum (CASE WHEN ret.tipo_ocorrencia='5' THEN 1 ELSE 0 END) AS irregulares,"
@@ -91,10 +91,10 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		        + " INNER JOIN tb_instituicao AS i ON r.instituicao_origem_id=i.id_instituicao"
 		        + " INNER JOIN tb_municipio AS m ON i.municipio_id=m.id_municipio" + " WHERE r.instituicao_destino_id="
 		        + bancoPortador.getId() + " GROUP BY m.nome_municipio");
-		List<SinteticoJRDataSource> lista = new ArrayList<>();
+		List<RelatorioSinteticoBean> lista = new ArrayList<>();
 		Iterator iterator = query.list().iterator();
 		while (iterator.hasNext()) {
-			SinteticoJRDataSource bean = new SinteticoJRDataSource();
+			RelatorioSinteticoBean bean = new RelatorioSinteticoBean();
 			Object[] posicao = (Object[]) iterator.next();
 			bean.setNomeMunicipio((String) posicao[0]);
 			bean.setTotalTitulos(BigInteger.class.cast(posicao[1]));
@@ -112,7 +112,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return lista;
 	}
 
-	public List<SinteticoJRDataSource> relatorioDeRemessaSinteticoPorMunicipio(Municipio pracaProtesto, LocalDate dataInicio,
+	public List<RelatorioSinteticoBean> relatorioDeRemessaSinteticoPorMunicipio(Municipio pracaProtesto, LocalDate dataInicio,
 	        LocalDate dataFim) {
 		Query query = createSQLQuery("select i.nome_fantasia," + " Count (titulo.id_titulo) AS total_titulos,"
 		        + " sum (CASE WHEN conf.numero_protocolo_cartorio<>'' THEN 1 ELSE 0 END) AS apontados,"
@@ -125,10 +125,10 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		        + " inner join tb_instituicao AS i on r.instituicao_destino_id=i.id_instituicao"
 		        + " INNER JOIN tb_municipio AS m ON i.municipio_id = m.id_municipio" + " WHERE m.id_municipio = " + pracaProtesto.getId()
 		        + " GROUP BY i.nome_fantasia");
-		List<SinteticoJRDataSource> lista = new ArrayList<>();
+		List<RelatorioSinteticoBean> lista = new ArrayList<>();
 		Iterator iterator = query.list().iterator();
 		while (iterator.hasNext()) {
-			SinteticoJRDataSource bean = new SinteticoJRDataSource();
+			RelatorioSinteticoBean bean = new RelatorioSinteticoBean();
 			Object[] posicao = (Object[]) iterator.next();
 			bean.setInstituicao((String) posicao[0]);
 			bean.setTotalTitulos(BigInteger.class.cast(posicao[1]));
@@ -141,7 +141,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return lista;
 	}
 
-	public List<SinteticoJRDataSource> relatorioDeConfirmacaoSinteticoPorMunicipio(Municipio pracaProtesto, LocalDate dataInicio,
+	public List<RelatorioSinteticoBean> relatorioDeConfirmacaoSinteticoPorMunicipio(Municipio pracaProtesto, LocalDate dataInicio,
 	        LocalDate dataFim) {
 		Query query = createSQLQuery("select i.nome_fantasia," + " Count (titulo.id_titulo) AS total_titulos,"
 		        + " sum (CASE WHEN conf.numero_protocolo_cartorio<>'' THEN 1 ELSE 0 END) AS apontados,"
@@ -154,10 +154,10 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		        + " inner join tb_instituicao AS i on r.instituicao_destino_id=i.id_instituicao"
 		        + " INNER JOIN tb_municipio AS m ON i.municipio_id = m.id_municipio" + " WHERE m.id_municipio = " + pracaProtesto.getId()
 		        + " GROUP BY i.nome_fantasia");
-		List<SinteticoJRDataSource> lista = new ArrayList<>();
+		List<RelatorioSinteticoBean> lista = new ArrayList<>();
 		Iterator iterator = query.list().iterator();
 		while (iterator.hasNext()) {
-			SinteticoJRDataSource bean = new SinteticoJRDataSource();
+			RelatorioSinteticoBean bean = new RelatorioSinteticoBean();
 			Object[] posicao = (Object[]) iterator.next();
 			bean.setInstituicao((String) posicao[0]);
 			bean.setTotalTitulos(BigInteger.class.cast(posicao[1]));
@@ -170,7 +170,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return lista;
 	}
 
-	public List<SinteticoJRDataSource> relatorioDeRetornoSinteticoPorMunicipio(Municipio pracaProtesto, LocalDate dataInicio,
+	public List<RelatorioSinteticoBean> relatorioDeRetornoSinteticoPorMunicipio(Municipio pracaProtesto, LocalDate dataInicio,
 	        LocalDate dataFim) {
 		Query query = createSQLQuery("select i.nome_fantasia,"
 		        + " Count (titulo.id_titulo) AS total_titulos,"
@@ -189,10 +189,10 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		        + " INNER JOIN tb_instituicao AS i ON r.instituicao_destino_id=i.id_instituicao"
 		        + " INNER JOIN tb_municipio AS m ON i.municipio_id=m.id_municipio" + " WHERE m.id_municipio = " + pracaProtesto.getId()
 		        + " GROUP BY i.nome_fantasia");
-		List<SinteticoJRDataSource> lista = new ArrayList<>();
+		List<RelatorioSinteticoBean> lista = new ArrayList<>();
 		Iterator iterator = query.list().iterator();
 		while (iterator.hasNext()) {
-			SinteticoJRDataSource bean = new SinteticoJRDataSource();
+			RelatorioSinteticoBean bean = new RelatorioSinteticoBean();
 			Object[] posicao = (Object[]) iterator.next();
 			bean.setInstituicao((String) posicao[0]);
 			bean.setTotalTitulos(BigInteger.class.cast(posicao[1]));

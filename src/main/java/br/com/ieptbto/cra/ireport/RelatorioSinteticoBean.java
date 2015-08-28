@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class SinteticoJRDataSource implements Serializable{
+public class RelatorioSinteticoBean implements Serializable{
 
 	/***/
 	private static final long serialVersionUID = 1L;
@@ -23,7 +23,7 @@ public class SinteticoJRDataSource implements Serializable{
 	private BigDecimal valorCusta;
 	private BigDecimal valorDemaisDespesas;
 	
-	public SinteticoJRDataSource() {
+	public RelatorioSinteticoBean() {
 		// TODO Auto-generated constructor stub
 	}
 

@@ -2,6 +2,8 @@ package br.com.ieptbto.cra.ireport;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.util.DataUtil;
@@ -10,7 +12,7 @@ import br.com.ieptbto.cra.util.DataUtil;
  * @author Thasso Araújo
  *
  */
-public class EtiquetasJRDataSource implements Serializable {
+public class SlipEtiquetaBean implements Serializable, Comparable<SlipEtiquetaBean> {
 
 	/***/
 	private static final long serialVersionUID = 1L;
@@ -33,6 +35,9 @@ public class EtiquetasJRDataSource implements Serializable {
 	private String codigoCedente; //
 	private String codigoAgencia; //
 	private String nomeAgencia; //
+	
+	public SlipEtiquetaBean() {
+	}
 
 	public void parseToTituloRemessa(TituloRemessa titulo){
 		this.setRazaoSocialPortador(titulo.getRemessa().getInstituicaoOrigem().getRazaoSocial());
@@ -184,5 +189,42 @@ public class EtiquetasJRDataSource implements Serializable {
 
 	public void setPracaProtesto(String pracaProtesto) {
 		this.pracaProtesto = pracaProtesto;
+	}
+
+	@Override
+	public int compareTo(SlipEtiquetaBean outraEtiqueta) {
+		int comparatePortador = this.razaoSocialPortador.compareToIgnoreCase(outraEtiqueta.getRazaoSocialPortador());
+		int comparateMunicipio = this.pracaProtesto.compareToIgnoreCase(outraEtiqueta.getPracaProtesto());
+		
+		if (comparatePortador < -1) {
+            return -1;
+        } else if (comparatePortador > 1) {
+            return 1;
+        } else if (!this.getRazaoSocialPortador().equalsIgnoreCase(outraEtiqueta.getRazaoSocialPortador())) {
+        	String[] apresentantes = new String[]{this.getRazaoSocialPortador(), outraEtiqueta.getRazaoSocialPortador()};
+        	Arrays.sort(apresentantes);
+        	List<String> bancos = Arrays.asList(apresentantes);
+        	if(this.getRazaoSocialPortador().equals(bancos.get(0))) {
+        		return -1;
+        	}
+        	return 1;
+        } else if (comparateMunicipio < -1) {
+            return -1;
+        } else if (comparateMunicipio > 1) {
+            return 1;
+        } else if (!this.getPracaProtesto().equalsIgnoreCase(outraEtiqueta.getPracaProtesto())) {
+        	String[] municipios = new String[]{this.getPracaProtesto(), outraEtiqueta.getPracaProtesto()};
+        	Arrays.sort(municipios);
+        	List<String> cidades = Arrays.asList(municipios);
+        	if(this.getPracaProtesto().equals(cidades.get(0))) {
+        		return -1;
+        	}
+        	return 1;
+        } else if (Integer.parseInt(numeroProtocolo) < Integer.parseInt(outraEtiqueta.getNumeroProtocolo())) {
+            return -1;
+        } else if (Integer.parseInt(numeroProtocolo) > Integer.parseInt(outraEtiqueta.getNumeroProtocolo())) {
+            return 1;
+        }
+		return 0;
 	}
 }

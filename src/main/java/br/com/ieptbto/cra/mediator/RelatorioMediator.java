@@ -25,7 +25,7 @@ import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoRelatorio;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.ireport.RelatorioUtil;
-import br.com.ieptbto.cra.ireport.SinteticoJRDataSource;
+import br.com.ieptbto.cra.ireport.RelatorioSinteticoBean;
 
 /**
  * @author Thasso Araújo
@@ -64,7 +64,7 @@ public class RelatorioMediator {
 	}
 
 	private JasperPrint chamarRelatorioSinteticoPorTipoArquivo(TipoArquivoEnum tipoArquivo) throws JRException, IOException {
-		List<SinteticoJRDataSource> beans = new ArrayList<SinteticoJRDataSource>();
+		List<RelatorioSinteticoBean> beans = new ArrayList<RelatorioSinteticoBean>();
 		JasperPrint jasperPrint = null;
 
 		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA)) {
@@ -85,7 +85,7 @@ public class RelatorioMediator {
 	}
 
 	private JasperPrint chamarRelatorioSinteticoPorTipoArquivoDeMunicipios(TipoArquivoEnum tipoArquivo) throws JRException, IOException {
-		List<SinteticoJRDataSource> beans = new ArrayList<SinteticoJRDataSource>();
+		List<RelatorioSinteticoBean> beans = new ArrayList<RelatorioSinteticoBean>();
 		JasperPrint jasperPrint = null;
 
 		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA)) {

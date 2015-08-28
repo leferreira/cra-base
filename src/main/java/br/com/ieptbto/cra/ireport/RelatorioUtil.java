@@ -25,7 +25,7 @@ public class RelatorioUtil {
 
 	private static HashMap<String, Object> parametros = new HashMap<String, Object>();
 	
-	public static JasperPrint relatorioSinteticoDeRemessa(List<SinteticoJRDataSource> beans, Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) throws JRException{
+	public static JasperPrint relatorioSinteticoDeRemessa(List<RelatorioSinteticoBean> beans, Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) throws JRException{
 		parametros.put("BANCO", bancoPortador.getNomeFantasia());
 		parametros.put("DATA_INICIO", DataUtil.localDateToString(dataInicio));
 		parametros.put("DATA_FIM", DataUtil.localDateToString(dataFim));
@@ -35,7 +35,7 @@ public class RelatorioUtil {
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 
-	public static JasperPrint relatorioSinteticoDeConfirmacao(List<SinteticoJRDataSource> beans, Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) throws JRException {
+	public static JasperPrint relatorioSinteticoDeConfirmacao(List<RelatorioSinteticoBean> beans, Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) throws JRException {
 		parametros.put("BANCO", bancoPortador.getNomeFantasia());
 		parametros.put("DATA_INICIO", DataUtil.localDateToString(dataInicio));
 		parametros.put("DATA_FIM", DataUtil.localDateToString(dataFim));
@@ -45,7 +45,7 @@ public class RelatorioUtil {
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 
-	public static JasperPrint relatorioSinteticoDeRetorno(List<SinteticoJRDataSource> beans, Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) throws JRException, IOException{
+	public static JasperPrint relatorioSinteticoDeRetorno(List<RelatorioSinteticoBean> beans, Instituicao bancoPortador, LocalDate dataInicio, LocalDate dataFim) throws JRException, IOException{
 		parametros.put("BANCO", bancoPortador.getNomeFantasia());
 		parametros.put("DATA_INICIO", DataUtil.localDateToString(dataInicio));
 		parametros.put("DATA_FIM", DataUtil.localDateToString(dataFim));
@@ -55,7 +55,7 @@ public class RelatorioUtil {
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 	
-	public static JasperPrint relatorioSinteticoDeRemessaPorMunicipio(List<SinteticoJRDataSource> beans, Municipio pracaProtesto,
+	public static JasperPrint relatorioSinteticoDeRemessaPorMunicipio(List<RelatorioSinteticoBean> beans, Municipio pracaProtesto,
 			LocalDate dataInicio, LocalDate dataFim) throws JRException {
 		parametros.put("MUNICIPIO", pracaProtesto.getNomeMunicipio());
 		parametros.put("DATA_INICIO", DataUtil.localDateToString(dataInicio));
@@ -66,7 +66,7 @@ public class RelatorioUtil {
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 	
-	public static JasperPrint relatorioSinteticoDeConfirmacaoPorMunicipio(List<SinteticoJRDataSource> beans, Municipio pracaProtesto,LocalDate dataInicio, LocalDate dataFim) throws JRException {
+	public static JasperPrint relatorioSinteticoDeConfirmacaoPorMunicipio(List<RelatorioSinteticoBean> beans, Municipio pracaProtesto,LocalDate dataInicio, LocalDate dataFim) throws JRException {
 		parametros.put("MUNICIPIO", pracaProtesto.getNomeMunicipio());
 		parametros.put("DATA_INICIO", DataUtil.localDateToString(dataInicio));
 		parametros.put("DATA_FIM", DataUtil.localDateToString(dataFim));
@@ -76,7 +76,7 @@ public class RelatorioUtil {
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 
-	public static JasperPrint relatorioSinteticoDeRetornoPorMunicipio(List<SinteticoJRDataSource> beans, Municipio pracaProtesto,LocalDate dataInicio, LocalDate dataFim) throws JRException {
+	public static JasperPrint relatorioSinteticoDeRetornoPorMunicipio(List<RelatorioSinteticoBean> beans, Municipio pracaProtesto,LocalDate dataInicio, LocalDate dataFim) throws JRException {
 		parametros.put("MUNICIPIO", pracaProtesto.getNomeMunicipio());
 		parametros.put("DATA_INICIO", DataUtil.localDateToString(dataInicio));
 		parametros.put("DATA_FIM", DataUtil.localDateToString(dataFim));

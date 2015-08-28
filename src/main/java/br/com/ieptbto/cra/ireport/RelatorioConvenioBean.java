@@ -8,7 +8,7 @@ import br.com.ieptbto.cra.entidade.Filiado;
  * @author Thasso Araújo
  *
  */
-public class ConvenioJRDataSource implements Serializable {
+public class RelatorioConvenioBean implements Serializable {
 
 	/***/
 	private static final long serialVersionUID = 1L;

@@ -52,8 +52,7 @@ public class InstituicaoMediator {
 	}
 
 	public List<Instituicao> getCartorios() {
-		List<Instituicao> lista = instituicaoDAO.getCartorios();
-		return lista;
+		return instituicaoDAO.getCartorios();
 	}
 
 	public Instituicao getCartorioPorCodigoIBGE(String codigoMunicipio) {

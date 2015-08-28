@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.dao;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
@@ -18,6 +19,8 @@ import br.com.ieptbto.cra.entidade.InstrumentoProtesto;
 @Repository
 public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 
+	private static final Logger logger = Logger.getLogger(InstrumentoProtestoDAO.class);
+	
 	public InstrumentoProtesto salvarInstrumento(InstrumentoProtesto instrumento) {
 		InstrumentoProtesto instrumentoSalvo = new InstrumentoProtesto();
 		Transaction transaction = getBeginTransation();
@@ -28,7 +31,7 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 
 		} catch (Exception ex) {
 			transaction.rollback();
-			System.out.println(ex.getMessage());
+			logger.info(ex.getMessage());
 		}
 		return instrumentoSalvo;
 	}

@@ -30,6 +30,7 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
+import br.com.ieptbto.cra.enumeration.SituacaoConfirmacao;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -50,6 +51,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	InstituicaoDAO instituicaoDAO;
 	@Autowired
 	RemessaDAO remessaDAO;
+	
+	private List<Remessa> remessasConfirmacoesRecebidas;
 
 	public List<Arquivo> buscarTodosArquivos() {
 		Criteria criteria = getCriteria(Arquivo.class);
@@ -72,17 +75,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					remessa.setArquivo(arquivoSalvo);
 					remessa.setCabecalho(save(remessa.getCabecalho()));
 					remessa.setRodape(save(remessa.getRodape()));
-					/**
-					 * @TODO gambiarra gigante pra funcionar gerar confirmacao e
-					 *       retorno [feito pelo Thasso] - corrigir o quanto
-					 *       antes.
-					 */
 					remessa.setArquivoGeradoProBanco(arquivoSalvo);
 					remessa.setDataRecebimento(remessa.getCabecalho().getDataMovimento());
 					remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
 					setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
 					setSituacaoRemessa(arquivo, remessa);
-//					setSituacaoConfirmacao(arquivo, remessa);
+					setConfirmacaoRecebida(arquivo, remessa, transaction);
 					save(remessa);
 					for (Titulo titulo : remessa.getTitulos()) {
 						titulo.setRemessa(remessa);
@@ -109,7 +107,6 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 						remessa.setCabecalho(save(remessa.getCabecalho()));
 						remessa.setRodape(save(remessa.getRodape()));
-
 					}
 				}
 			} else if (arquivo.getRemessaDesistenciaProtesto() != null) {
@@ -171,16 +168,17 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 	}
 
-//	private void setSituacaoConfirmacao(Arquivo arquivo, Remessa confirmacao) {
-//		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
-//			confirmacao.setSituacaoConfirmacao(SituacaoConfirmacao.AGUARDANDO);
-//		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
-//			Remessa arquivoRemessa = remessaDAO.buscarRemessaDaConfirmacao(confirmacao);
-//			if (arquivoRemessa != null) {
-//				arquivoRemessa.setSituacaoConfirmacao(SituacaoConfirmacao.RECEBIDO);
-//			}
-//		}
-//	}
+	private void setConfirmacaoRecebida(Arquivo arquivo, Remessa confirmacao, Transaction transaction) {
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
+			confirmacao.setSituacaoConfirmacao(SituacaoConfirmacao.AGUARDANDO);
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
+			Remessa arquivoRemessa = remessaDAO.buscarRemessaDaConfirmacao(confirmacao);
+			if (arquivoRemessa != null) {
+				arquivoRemessa.setSituacaoConfirmacao(SituacaoConfirmacao.RECEBIDO);
+				update(arquivoRemessa);
+			}
+		}
+	}
 	
 	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Instituicao instituicao, ArrayList<TipoArquivoEnum> tipoArquivos, Municipio municipio,
 	        LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
@@ -302,5 +300,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 		criteria.add(Restrictions.ilike("nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
 		return criteria.list();
+	}
+
+	public List<Remessa> getRemessasConfirmacoesRecebidas() {
+		if (remessasConfirmacoesRecebidas == null) {
+			remessasConfirmacoesRecebidas = new ArrayList<Remessa>();
+		}
+		return remessasConfirmacoesRecebidas;
 	}
 }
