@@ -104,6 +104,7 @@ public class FabricaDeArquivo {
 			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO));
 
 		} catch (JAXBException e) {
+			System.out.println(e.getMessage());
 			logger.error(e.getMessage(), e.getCause());
 			throw new InfraException(CodigoErro.ARQUIVO_CORROMPIDO.getDescricao());
 		} catch (IOException e) {
@@ -239,7 +240,7 @@ public class FabricaDeArquivo {
 	public void processarArquivoPersistente(Remessa remessa, File remessaTXT, List<Exception> erros) {
 		fabricaDeArquivoTXT.fabricaTXT(remessaTXT, remessa, erros).converterParaTXT();
 	}
-	
+
 	public void processarArquivoPersistente(List<Remessa> remessas, File arquivoTXT, List<Exception> erros) {
 		fabricaDeArquivoTXT.fabricaArquivoTXT(arquivoTXT, remessas, erros).converterParaArquivoTXT();
 	}

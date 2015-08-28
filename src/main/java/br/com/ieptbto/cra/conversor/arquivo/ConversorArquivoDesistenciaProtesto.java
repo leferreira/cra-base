@@ -5,9 +5,11 @@ import java.util.List;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.conversor.ConversorArquivoDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.vo.ArquivoDesistenciaProtestoVO;
+import br.com.ieptbto.cra.entidade.vo.RemessaDesistenciaProtestoVO;
 
 /**
  * 
@@ -28,8 +30,10 @@ public class ConversorArquivoDesistenciaProtesto {
 	}
 
 	private RemessaDesistenciaProtesto getRemessaDesistenciaProtesto(ArquivoDesistenciaProtestoVO arquivoVO) {
-		// TODO Auto-generated method stub
-		return null;
+		RemessaDesistenciaProtesto remessa = new RemessaDesistenciaProtesto();
+		RemessaDesistenciaProtestoVO remessaVo = ConversorArquivoDesistenciaProtestoVO.converterParaRemessaVO(arquivoVO);
+
+		return remessa;
 	}
 
 }

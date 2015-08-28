@@ -1,6 +1,9 @@
 package br.com.ieptbto.cra.entidade.vo;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -11,6 +14,8 @@ import br.com.ieptbto.cra.annotations.IAtributoArquivo;
  * @author Lefer
  *
  */
+@XmlRootElement(name = "tr")
+@XmlAccessorType(XmlAccessType.NONE)
 public class RegistroDesistenciaProtestoVO extends AbstractArquivoVO {
 	private static final long serialVersionUID = 4806576818944343466L;
 
@@ -42,7 +47,7 @@ public class RegistroDesistenciaProtestoVO extends AbstractArquivoVO {
 	@XmlAttribute(name = "t07")
 	private String solicitacaoCancelamentoSustacao;
 
-	@IAtributoArquivo(ordem = 8, posicao = 91, tamanho = 12, descricao = "agência conta", obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 8, posicao = 91, tamanho = 12, descricao = "agencia conta", obrigatoriedade = true)
 	@XmlAttribute(name = "t08")
 	private String agenciaConta;
 
@@ -109,10 +114,10 @@ public class RegistroDesistenciaProtestoVO extends AbstractArquivoVO {
 	}
 
 	public String getAgenciaConta() {
-		if (agenciaConta == null) {
-			agenciaConta = StringUtils.EMPTY;
+		if (this.agenciaConta == null) {
+			this.agenciaConta = StringUtils.EMPTY;
 		}
-		return agenciaConta.trim();
+		return this.agenciaConta.trim();
 	}
 
 	public String getCarteiraNossoNumero() {
