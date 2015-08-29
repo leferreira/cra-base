@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
 public class Descricao {
 
 	public static String XML_UPLOAD_REMESSA = "XML_UPLOAD_REMESSA";
+	public static String XML_UPLOAD_SUSTACAO = "XML_UPLOAD_SUSTACAO";
 
 	@XmlElement(name = "dataEnvio")
 	private String dataEnvio;
