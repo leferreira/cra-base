@@ -298,15 +298,17 @@ public class TituloDAO extends AbstractBaseDAO {
 		}
 		
 		if (situacaoTitulos.equals(TipoRelatorio.GERAL)) {
-		} else if (situacaoTitulos.equals(TipoRelatorio.PENDENTES)) {
-			criteria.add(Restrictions.isNull("retorno"));
-		} else if (situacaoTitulos.equals(TipoRelatorio.EM_ABERTO)) {
+		} else if (situacaoTitulos.equals(TipoRelatorio.SEM_CONFIRMACAO)) {
+			
+		} else if (situacaoTitulos.equals(TipoRelatorio.COM_CONFIRMACAO)) {
 			criteria.createAlias("confirmacao", "confirmacao");
-			criteria.add(Restrictions.isNull("confirmacao"));
+			criteria.add(Restrictions.isNotNull("confirmacao"));
 			criteria.add(Restrictions.ne("confirmacao.tipoOcorrencia", TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante()));
-		} else {
+		} else if (situacaoTitulos.equals(TipoRelatorio.SEM_RETORNO)) {
+			
+		} else if (situacaoTitulos.equals(TipoRelatorio.COM_RETORNO)) { 
 			criteria.createAlias("retorno", "retorno");
-			criteria.add(Restrictions.eq("retorno.tipoOcorrencia", situacaoTitulos.getTipoOcorrencia().getConstante()));
+			criteria.add(Restrictions.isNotNull("retorno"));
 		}
 		
 		criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));

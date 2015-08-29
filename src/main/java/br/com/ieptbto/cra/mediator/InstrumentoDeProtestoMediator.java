@@ -15,6 +15,7 @@ import br.com.ieptbto.cra.entidade.InstrumentoProtesto;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.ireport.SlipEnvelopeBean;
 import br.com.ieptbto.cra.ireport.SlipEtiquetaBean;
+import br.com.ieptbto.cra.slip.regra.RegraAgenciaDestino;
 
 /**
  * @author Thasso Araújo
@@ -29,6 +30,7 @@ public class InstrumentoDeProtestoMediator {
 	TituloDAO tituloDao;
 	@Autowired
 	InstrumentoProtestoDAO instrumentoDao;
+	private RegraAgenciaDestino regraAgenciaDestino;
 	private List<Retorno> titulosProtestados;
 	private List<SlipEtiquetaBean> etiquetas;
 	
@@ -66,7 +68,10 @@ public class InstrumentoDeProtestoMediator {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void gerarEtiqueta(InstrumentoProtesto instrumento) {
+		RegraAgenciaDestino regra = regraAgenciaDestino.regraAgenciaDestino(instrumento.getTitulo());
+		
 		SlipEtiquetaBean novaEtiqueta = new SlipEtiquetaBean();
 		novaEtiqueta.parseToTituloRemessa(instrumento.getTitulo());
 		getEtiquetas().add(novaEtiqueta);

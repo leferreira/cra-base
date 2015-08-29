@@ -8,6 +8,9 @@ import br.com.ieptbto.cra.arquivoDePara.ArquivoBancoDoBrasil;
 import br.com.ieptbto.cra.arquivoDePara.ArquivoBradesco;
 import br.com.ieptbto.cra.arquivoDePara.ArquivoCAF;
 import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
+import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
+import br.com.ieptbto.cra.entidade.AgenciaBradesco;
+import br.com.ieptbto.cra.entidade.AgenciaCAF;
 import br.com.ieptbto.cra.enumeration.PadraoArquivoDePara;
 import br.com.ieptbto.cra.exception.InfraException;
 
@@ -32,5 +35,17 @@ public class ArquivoDeParaMediator {
 		} else {
 			new InfraException("Não foi possível definir o modelo do arquivo de/para ! Entre em contato com a CRA !");
 		}
+	}
+	
+	public AgenciaBancoDoBrasil buscarAgenciaArquivoBancoDoBrasil() {
+		return deParaDAO.buscarAgenciaArquivoBancoDoBrasil();
+	}
+	
+	public AgenciaBradesco buscarAgenciaArquivoDeParaBradesco() {
+		return deParaDAO.buscarAgenciaArquivoDeParaBradesco();
+	}
+	
+	public AgenciaCAF buscarAgenciaArquivoCAF502() {
+		return deParaDAO.buscarAgenciaArquivoCAF502();
 	}
 }

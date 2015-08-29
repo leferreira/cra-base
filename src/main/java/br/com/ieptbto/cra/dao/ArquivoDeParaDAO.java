@@ -70,4 +70,19 @@ public class ArquivoDeParaDAO extends AbstractBaseDAO{
 			throw new InfraException("Não foi possível inserir esse arquivo Bradesco na base de dados.");
 		}
 	}
+
+	public AgenciaBancoDoBrasil buscarAgenciaArquivoBancoDoBrasil() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public AgenciaBradesco buscarAgenciaArquivoDeParaBradesco() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public AgenciaCAF buscarAgenciaArquivoCAF502() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

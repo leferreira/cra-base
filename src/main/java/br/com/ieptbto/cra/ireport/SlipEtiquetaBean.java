@@ -35,9 +35,6 @@ public class SlipEtiquetaBean implements Serializable, Comparable<SlipEtiquetaBe
 	private String codigoCedente; //
 	private String codigoAgencia; //
 	private String nomeAgencia; //
-	
-	public SlipEtiquetaBean() {
-	}
 
 	public void parseToTituloRemessa(TituloRemessa titulo){
 		this.setRazaoSocialPortador(titulo.getRemessa().getInstituicaoOrigem().getRazaoSocial());

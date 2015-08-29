@@ -9,11 +9,10 @@ package br.com.ieptbto.cra.enumeration;
 public enum TipoRelatorio {
 
 	GERAL("Todos", null),
-	EM_ABERTO("Em Aberto", TipoOcorrencia.EM_ABERTO),
-	PENDENTES("Pendentes", null),
-	TITULOS_PAGOS("Pagos", TipoOcorrencia.PAGO),
-	TITULOS_PROTESTADOS("Protestados",TipoOcorrencia.PROTESTADO),
-	TITULOS_DEVOLVIDOS("Devolvidos", TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS),
+	SEM_CONFIRMACAO("S/ CONFIRMAÇÃO", null),
+	COM_CONFIRMACAO("C/ CONFIRMAÇÃO", null),
+	SEM_RETORNO("S/ RETORNO", null),
+	COM_RETORNO("C/ RETORNO", null),
 	TITULOS_CANCELADOS("Cancelados",TipoOcorrencia.DESISTENCIA_DO_PROTESTO);
 	
 	private String label;

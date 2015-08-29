@@ -224,7 +224,9 @@ public class RemessaDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", instituicao), Restrictions.eq("instituicaoOrigem", instituicao)));
 		}
 		criteria.add(Restrictions.eq("situacaoConfirmacao", SituacaoConfirmacao.AGUARDANDO));
-		criteria.addOrder(Order.asc("instituicaoDestino")).addOrder(Order.desc("dataRecebimento"));
+		criteria.createAlias("instituicaoDestino", "instituicaoDestino");
+		criteria.createAlias("instituicaoDestino.municipio", "municipio");
+		criteria.addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.desc("dataRecebimento"));
 		return criteria.list();
 	}
 
