@@ -16,35 +16,35 @@ import org.joda.time.LocalDate;
  */
 @Entity
 @Audited
-@Table(name = "TB_CABECALHO_ARQUIVO_DP_CP")
-@org.hibernate.annotations.Table(appliesTo = "TB_CABECALHO_ARQUIVO_DP_CP")
+@Table(name = "TB_CABECALHO_ARQUIVO_DP")
+@org.hibernate.annotations.Table(appliesTo = "TB_CABECALHO_ARQUIVO_DP")
 public class CabecalhoArquivo extends CabecalhoDesistenciaCancelamento<CabecalhoArquivo> {
 
 	/****/
 	private static final long serialVersionUID = 1L;
 
 	private int id;
-	private String codigoAprensentante;
-	private String nomeAprensentante;
+	private String codigoApresentante;
+	private String nomeApresentante;
 	private LocalDate dataMovimento;
-	private int quantidadeRegistrosTipoDois;
+	private int quantidadeRegistro;
 
 	@Override
 	@Id
-	@Column(name = "ID_CABECALHO_ARQUIVO_DP_CP", columnDefinition = "serial")
+	@Column(name = "ID_CABECALHO_ARQUIVO_DP", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getId() {
 		return id;
 	}
 
 	@Column(name = "CODIGO_APRESENTANTE", length = 3)
-	public String getCodigoAprensentante() {
-		return codigoAprensentante;
+	public String getCodigoApresentante() {
+		return codigoApresentante;
 	}
 
-	@Column(name = "NOME_APRENSETANTE", length = 45)
-	public String getNomeAprensentante() {
-		return nomeAprensentante;
+	@Column(name = "NOME_APRESENTANTE", length = 45)
+	public String getNomeApresentante() {
+		return nomeApresentante;
 	}
 
 	@Column(name = "DATA_MOVIMENTO")
@@ -52,29 +52,29 @@ public class CabecalhoArquivo extends CabecalhoDesistenciaCancelamento<Cabecalho
 		return dataMovimento;
 	}
 
-	@Column(name = "QUANTIDADE_REGISTROS_TIPO_2")
-	public int getQuantidadeRegistrosTipoDois() {
-		return quantidadeRegistrosTipoDois;
+	@Column(name = "QUANTIDADE_REGISTRO")
+	public int getQuantidadeRegistro() {
+		return quantidadeRegistro;
 	}
 
 	public void setId(int id) {
 		this.id = id;
 	}
 
-	public void setCodigoAprensentante(String codigoAprensentante) {
-		this.codigoAprensentante = codigoAprensentante;
+	public void setCodigoApresentante(String codigoApresentante) {
+		this.codigoApresentante = codigoApresentante;
 	}
 
-	public void setNomeAprensentante(String nomeAprensentante) {
-		this.nomeAprensentante = nomeAprensentante;
+	public void setNomeApresentante(String nomeApresentante) {
+		this.nomeApresentante = nomeApresentante;
 	}
 
 	public void setDataMovimento(LocalDate dataMovimento) {
 		this.dataMovimento = dataMovimento;
 	}
 
-	public void setQuantidadeRegistrosTipoDois(int quantidadeRegistrosTipoDois) {
-		this.quantidadeRegistrosTipoDois = quantidadeRegistrosTipoDois;
+	public void setQuantidadeRegistro(int quantidadeRegistro) {
+		this.quantidadeRegistro = quantidadeRegistro;
 	}
 
 	@Override

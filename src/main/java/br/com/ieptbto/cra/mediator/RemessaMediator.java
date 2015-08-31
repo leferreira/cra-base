@@ -179,7 +179,7 @@ public class RemessaMediator {
 
 	}
 
-	private Arquivo salvarArquivo(Arquivo arquivo, Usuario usuario) {
+	public Arquivo salvarArquivo(Arquivo arquivo, Usuario usuario) {
 		return arquivoDAO.salvar(arquivo, usuario);
 	}
 
@@ -195,8 +195,8 @@ public class RemessaMediator {
 	}
 
 	public File baixarRemessaTXT(Instituicao instituicao, Remessa remessa) {
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA) && 
-				!remessa.getStatusRemessa().equals(StatusRemessa.ENVIADO)) {
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
+		        && !remessa.getStatusRemessa().equals(StatusRemessa.ENVIADO)) {
 			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
 			remessaDao.alterarSituacaoRemessa(remessa);
 		}
@@ -205,14 +205,14 @@ public class RemessaMediator {
 	}
 
 	public File baixarArquivoTXT(Instituicao instituicao, Arquivo arquivo) {
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA) && 
-				!arquivo.getStatusArquivo().getSituacaoArquivo().equals(SituacaoArquivo.ENVIADO)){
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
+		        && !arquivo.getStatusArquivo().getSituacaoArquivo().equals(SituacaoArquivo.ENVIADO)) {
 			arquivo.setStatusArquivo(gerarStatusArquivoRecebido());
 			arquivoDAO.alterarSituacaoArquivo(arquivo);
 		}
-		
+
 		List<Remessa> remessas = arquivoDAO.buscarRemessasArquivo(instituicao, arquivo);
-		return processadorArquivo.processarArquivoTXT(arquivo ,remessas);
+		return processadorArquivo.processarArquivoTXT(arquivo, remessas);
 	}
 
 	private StatusArquivo gerarStatusArquivoRecebido() {

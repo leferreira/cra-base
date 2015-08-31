@@ -15,9 +15,9 @@ import org.hibernate.envers.Audited;
  */
 @Entity
 @Audited
-@Table(name = "TB_RODAPE_CARTORIO_DP_CP")
-@org.hibernate.annotations.Table(appliesTo = "TB_RODAPE_CARTORIO_DP_CP")
-public class RodapeCartorio extends	RodapeDesistenciaCancelamento<RodapeCartorio> {
+@Table(name = "TB_RODAPE_CARTORIO_DP")
+@org.hibernate.annotations.Table(appliesTo = "TB_RODAPE_CARTORIO_DP")
+public class RodapeCartorio extends RodapeDesistenciaCancelamento<RodapeCartorio> {
 
 	/**/
 	private static final long serialVersionUID = 1L;
@@ -27,7 +27,7 @@ public class RodapeCartorio extends	RodapeDesistenciaCancelamento<RodapeCartorio
 
 	@Override
 	@Id
-	@Column(name = "ID_RODAPE_CARTORIO_DP_CP", columnDefinition = "serial")
+	@Column(name = "ID_RODAPE_CARTORIO_DP", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getId() {
 		return id;

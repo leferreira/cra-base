@@ -34,10 +34,11 @@ public class ConversorArquivoDesistenciaProtestoVO {
 
 		for (int i = 0; i < cabecalhoCartorio.size(); i++) {
 			DesistenciaProtestoVO dp = new DesistenciaProtestoVO();
+			dp.setRegistroDesistenciaProtesto(new ArrayList<RegistroDesistenciaProtestoVO>());
 			dp.setCabecalhoCartorio(cabecalhoCartorio.get(i));
 			dp.setRodapeCartorio(rodapeCartorio.get(i));
-			dp.setRegistroDesistenciaProtesto(desistenciaProtesto.subList(0,
-			        Integer.parseInt(cabecalhoCartorio.get(i).getQuantidadeDesistencia())));
+			dp.getRegistroDesistenciaProtesto().addAll(
+			        desistenciaProtesto.subList(0, Integer.parseInt(cabecalhoCartorio.get(i).getQuantidadeDesistencia())));
 			desistenciaProtesto.removeAll(desistenciaProtesto.subList(0,
 			        Integer.parseInt(cabecalhoCartorio.get(i).getQuantidadeDesistencia())));
 			remessa.getPedidoDesistencias().add(dp);

@@ -18,10 +18,10 @@ public abstract class CabecalhoDesistenciaCancelamento<T> extends AbstractEntida
 	/***/
 	private static final long serialVersionUID = 1L;
 	private TipoRegistroDesistenciaProtesto TipoRegistroDesistenciaCancelamento;
-	private int quantidadeCancelamentoDesistencia;
+	private Integer quantidadeDesistencia;
 	private String reservado;
-	private String sequencialRegistro;
-	
+	private String numeroSequencialRegistroArquivo;
+
 	@Override
 	public abstract int getId();
 
@@ -32,8 +32,8 @@ public abstract class CabecalhoDesistenciaCancelamento<T> extends AbstractEntida
 	}
 
 	@Column(name = "QUANTIDADE_CANCELAMENTO_DESISTENCIA")
-	public int getQuantidadeCancelamentoDesistencia() {
-		return quantidadeCancelamentoDesistencia;
+	public Integer getQuantidadeDesistencia() {
+		return quantidadeDesistencia;
 	}
 
 	@Column(name = "RESERVADO")
@@ -42,8 +42,8 @@ public abstract class CabecalhoDesistenciaCancelamento<T> extends AbstractEntida
 	}
 
 	@Column(name = "SEQUENCIAL_REGISTRO", length = 5)
-	public String getSequencialRegistro() {
-		return sequencialRegistro;
+	public String getNumeroSequencialRegistroArquivo() {
+		return numeroSequencialRegistroArquivo;
 	}
 
 	public void setTipoRegistroDesistenciaCancelamento(TipoRegistroDesistenciaProtesto TipoRegistroDesistenciaCancelamento) {
@@ -54,13 +54,11 @@ public abstract class CabecalhoDesistenciaCancelamento<T> extends AbstractEntida
 		this.reservado = reservado;
 	}
 
-	public void setSequencialRegistro(String sequencialRegistro) {
-		this.sequencialRegistro = sequencialRegistro;
+	public void setNumeroSequencialRegistroArquivo(String sequencialRegistro) {
+		this.numeroSequencialRegistroArquivo = sequencialRegistro;
 	}
 
-
-	public void setQuantidadeCancelamentoDesistencia(
-			int quantidadeCancelamentoDesistencia) {
-		this.quantidadeCancelamentoDesistencia = quantidadeCancelamentoDesistencia;
+	public void setQuantidadeDesistencia(Integer quantidadeDesistencia) {
+		this.quantidadeDesistencia = quantidadeDesistencia;
 	}
 }

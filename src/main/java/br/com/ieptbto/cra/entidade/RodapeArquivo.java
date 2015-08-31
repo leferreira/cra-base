@@ -18,13 +18,13 @@ import org.joda.time.LocalDate;
  */
 @Entity
 @Audited
-@Table(name = "TB_RODAPE_ARQUIVO_DP_CP")
-@org.hibernate.annotations.Table(appliesTo = "TB_RODAPE_ARQUIVO_DP_CP")
+@Table(name = "TB_RODAPE_ARQUIVO_DP")
+@org.hibernate.annotations.Table(appliesTo = "TB_RODAPE_ARQUIVO_DP")
 public class RodapeArquivo extends RodapeDesistenciaCancelamento<RodapeArquivo> {
 
 	/***/
 	private static final long serialVersionUID = 1L;
-	
+
 	private int id;
 	private String codigoApresentante;
 	private String nomeAprensentate;
@@ -33,7 +33,7 @@ public class RodapeArquivo extends RodapeDesistenciaCancelamento<RodapeArquivo> 
 
 	@Override
 	@Id
-	@Column(name = "ID_RODAPE_ARQUIVO_DP_CP", columnDefinition = "serial")
+	@Column(name = "ID_RODAPE_ARQUIVO_DP", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getId() {
 		return id;
@@ -54,7 +54,7 @@ public class RodapeArquivo extends RodapeDesistenciaCancelamento<RodapeArquivo> 
 		return dataMovimento;
 	}
 
-	@Column(name = "SOMATORIO_VALOR_TITULO", precision = 14, scale = 2 )
+	@Column(name = "SOMATORIO_VALOR_TITULO", precision = 14, scale = 2)
 	public BigDecimal getSomatorioValorTitulo() {
 		return somatorioValorTitulo;
 	}

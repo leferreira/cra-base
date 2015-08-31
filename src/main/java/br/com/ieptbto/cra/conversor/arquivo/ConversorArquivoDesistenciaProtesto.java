@@ -39,7 +39,7 @@ public class ConversorArquivoDesistenciaProtesto {
 	}
 
 	private RemessaDesistenciaProtesto getRemessaDesistenciaProtesto(ArquivoDesistenciaProtestoVO arquivoVO) {
-		DesistenciaProtesto desistenciaProtesto;
+		DesistenciaProtesto desistenciaProtesto = new DesistenciaProtesto();
 		RemessaDesistenciaProtesto remessa = new RemessaDesistenciaProtesto();
 		RemessaDesistenciaProtestoVO remessaVo = ConversorArquivoDesistenciaProtestoVO.converterParaRemessaVO(arquivoVO);
 
@@ -54,6 +54,7 @@ public class ConversorArquivoDesistenciaProtesto {
 		remessa.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
 		for (DesistenciaProtestoVO pedidoDesistencia : remessaVo.getPedidoDesistencias()) {
 			desistenciaProtesto = new DesistenciaProtesto();
+			desistenciaProtesto.setDesistencias(new ArrayList<PedidoDesistenciaCancelamento>());
 			desistenciaProtesto.setCabecalhoCartorio(new CabecalhoCartorioDesistenciaProtestoConversor().converter(CabecalhoCartorio.class,
 			        pedidoDesistencia.getCabecalhoCartorio()));
 			desistenciaProtesto.setRodapeCartorio(new RodapeCartorioDesistenciaProtestoConversor().converter(RodapeCartorio.class,

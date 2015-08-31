@@ -15,8 +15,8 @@ import org.hibernate.envers.Audited;
  */
 @Entity
 @Audited
-@Table(name = "TB_CABECALHO_CARTORIO_DP_CP")
-@org.hibernate.annotations.Table(appliesTo = "TB_CABECALHO_CARTORIO_DP_CP")
+@Table(name = "TB_CABECALHO_CARTORIO_DP")
+@org.hibernate.annotations.Table(appliesTo = "TB_CABECALHO_CARTORIO_DP")
 public class CabecalhoCartorio extends CabecalhoDesistenciaCancelamento<CabecalhoCartorio> {
 
 	/****/
@@ -28,7 +28,7 @@ public class CabecalhoCartorio extends CabecalhoDesistenciaCancelamento<Cabecalh
 
 	@Override
 	@Id
-	@Column(name = "ID_CABECALHO_CARTORIO_DP_CP", columnDefinition = "serial")
+	@Column(name = "ID_CABECALHO_CARTORIO_DP", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getId() {
 		return id;

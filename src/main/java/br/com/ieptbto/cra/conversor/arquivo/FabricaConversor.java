@@ -32,6 +32,7 @@ public class FabricaConversor {
 		map.put(List.class, ListConversor.class);
 		map.put(BigDecimal.class, BigDecimalConversor.class);
 		map.put(Enum.class, EnumConversor.class);
+		map.put(int.class, IntConversor.class);
 		CONVERSORES = Collections.unmodifiableMap(map);
 	}
 
