@@ -10,7 +10,6 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
@@ -170,7 +169,6 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		return Instituicao.class.cast(criteria.uniqueResult());
 	}
 
-	@Transactional(readOnly = true)
 	public Instituicao getInstituicao(String codigoMunicipio) {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.createAlias("municipio", "municipio");
@@ -180,7 +178,6 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		return Instituicao.class.cast(criteria.uniqueResult());
 	}
 
-	@Transactional(readOnly = true)
 	public Instituicao getInstituicaoPorCodigo(String codigoCompensacao) {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.add(Restrictions.eq("codigoCompensacao", codigoCompensacao));

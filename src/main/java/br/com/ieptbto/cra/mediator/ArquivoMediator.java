@@ -102,7 +102,6 @@ public class ArquivoMediator {
 	}
 
 	private ProcessadorMigracaoCRA processarArquivoMigracao(Arquivo arquivo, Usuario usuario) {
-		this.processadorArquivoMigracao = new ProcessadorMigracaoCRA();
 		return processadorArquivoMigracao.processarArquivoMigracao(arquivo, usuario);
 	}
 

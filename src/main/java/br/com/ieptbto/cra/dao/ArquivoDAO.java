@@ -15,6 +15,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
@@ -168,6 +169,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	private void setConfirmacaoRecebida(Arquivo arquivo, Remessa confirmacao, Transaction transaction) {
 		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
 			confirmacao.setSituacaoConfirmacao(SituacaoConfirmacao.AGUARDANDO);
