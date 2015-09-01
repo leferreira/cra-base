@@ -7,6 +7,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
@@ -61,28 +62,34 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 
 	@Column(name = "CODIGO_PORTADOR", length = 3, nullable = false)
 	public String getCodigoPortador() {
-		return codigoPortador;
+		if (codigoPortador == null) {
+			codigoPortador = StringUtils.EMPTY;
+		}
+		return codigoPortador.trim();
 	}
 
 	@Column(name = "NOSSO_NUMERO", nullable = false)
 	public String getNossoNumero() {
-		if (nossoNumero != null) {
-			return nossoNumero.trim();
+		if (nossoNumero == null) {
+			nossoNumero = StringUtils.EMPTY;
 		}
-		return nossoNumero;
+		return nossoNumero.trim();
 	}
 
 	@Column(name = "NUMERO_TITULO", nullable = false)
 	public String getNumeroTitulo() {
-		if (numeroTitulo != null) {
-			return numeroTitulo.trim();
+		if (numeroTitulo == null) {
+			numeroTitulo = StringUtils.EMPTY;
 		}
-		return numeroTitulo;
+		return numeroTitulo.trim();
 	}
 
 	@Column(name = "AGENCIA_CODIGO_CEDENTE")
 	public String getAgenciaCodigoCedente() {
-		return agenciaCodigoCedente;
+		if (agenciaCodigoCedente == null) {
+			agenciaCodigoCedente = StringUtils.EMPTY;
+		}
+		return agenciaCodigoCedente.trim();
 	}
 
 	@Column(name = "VALOR_SALDO_TITULO")
