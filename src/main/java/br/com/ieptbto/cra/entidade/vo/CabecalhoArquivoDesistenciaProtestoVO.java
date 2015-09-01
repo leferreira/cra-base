@@ -48,7 +48,7 @@ public class CabecalhoArquivoDesistenciaProtestoVO extends AbstractArquivoVO {
 
 	@XmlAttribute(name = "h08")
 	@IAtributoArquivo(ordem = 8, posicao = 123, tamanho = 5, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Constante 0001. Sempre reiniciar a contagem do lote de registros para as praças implantadas no processo de centralização.", obrigatoriedade = true, validacao = "00001")
-	private String numeroSequencialRegistroArquivo;
+	private String sequencialRegistro;
 
 	@Override
 	public String getIdentificacaoRegistro() {
@@ -79,8 +79,8 @@ public class CabecalhoArquivoDesistenciaProtestoVO extends AbstractArquivoVO {
 		return reservado;
 	}
 
-	public String getNumeroSequencialRegistroArquivo() {
-		return numeroSequencialRegistroArquivo;
+	public String getSequencialRegistro() {
+		return sequencialRegistro;
 	}
 
 	public void setIdentificacaoRegistro(String identificacaoRegistro) {
@@ -111,8 +111,8 @@ public class CabecalhoArquivoDesistenciaProtestoVO extends AbstractArquivoVO {
 		this.reservado = reservado;
 	}
 
-	public void setNumeroSequencialRegistroArquivo(String numeroSequencialRegistroArquivo) {
-		this.numeroSequencialRegistroArquivo = numeroSequencialRegistroArquivo;
+	public void setSequencialRegistro(String sequencialRegistro) {
+		this.sequencialRegistro = sequencialRegistro;
 	}
 
 }

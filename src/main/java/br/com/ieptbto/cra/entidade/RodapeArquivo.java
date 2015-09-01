@@ -27,9 +27,10 @@ public class RodapeArquivo extends RodapeDesistenciaCancelamento<RodapeArquivo> 
 
 	private int id;
 	private String codigoApresentante;
-	private String nomeAprensentate;
+	private String nomeApresentante;
 	private LocalDate dataMovimento;
 	private BigDecimal somatorioValorTitulo;
+	private Integer quantidadeDesistencia;
 
 	@Override
 	@Id
@@ -45,8 +46,8 @@ public class RodapeArquivo extends RodapeDesistenciaCancelamento<RodapeArquivo> 
 	}
 
 	@Column(name = "NOME_APRENSETANTE", length = 45)
-	public String getNomeAprensentate() {
-		return nomeAprensentate;
+	public String getNomeApresentante() {
+		return nomeApresentante;
 	}
 
 	@Column(name = "DATA_MOVIMENTO")
@@ -59,6 +60,15 @@ public class RodapeArquivo extends RodapeDesistenciaCancelamento<RodapeArquivo> 
 		return somatorioValorTitulo;
 	}
 
+	@Column(name = "QUANTIDADE_DESISTENCIA")
+	public Integer getQuantidadeDesistencia() {
+		return quantidadeDesistencia;
+	}
+
+	public void setQuantidadeDesistencia(Integer quantidadeDesistencia) {
+		this.quantidadeDesistencia = quantidadeDesistencia;
+	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -67,8 +77,8 @@ public class RodapeArquivo extends RodapeDesistenciaCancelamento<RodapeArquivo> 
 		this.codigoApresentante = codigoApresentante;
 	}
 
-	public void setNomeAprensentate(String nomeAprensentate) {
-		this.nomeAprensentate = nomeAprensentate;
+	public void setNomeApresentante(String nomeApresentante) {
+		this.nomeApresentante = nomeApresentante;
 	}
 
 	public void setDataMovimento(LocalDate dataMovimento) {

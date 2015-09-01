@@ -21,7 +21,7 @@ public class RegistroDesistenciaProtestoVO extends AbstractArquivoVO {
 
 	@XmlAttribute(name = "t01")
 	@IAtributoArquivo(ordem = 1, posicao = 1, tamanho = 1, descricao = "Identificar o Registro Transação no arquivo. Constante 2", obrigatoriedade = true, validacao = "2", tipo = Integer.class)
-	private String tipoRegistro;
+	private String identificacaoRegistro;
 
 	@XmlAttribute(name = "t02")
 	@IAtributoArquivo(ordem = 2, posicao = 2, tamanho = 10, descricao = "Número do protocolo", obrigatoriedade = true, tipo = String.class)
@@ -67,11 +67,12 @@ public class RegistroDesistenciaProtestoVO extends AbstractArquivoVO {
 	@XmlAttribute(name = "t12")
 	private String sequenciaRegistro;
 
-	public String getTipoRegistro() {
-		if (tipoRegistro == null) {
-			tipoRegistro = StringUtils.EMPTY;
+	@Override
+	public String getIdentificacaoRegistro() {
+		if (identificacaoRegistro == null) {
+			identificacaoRegistro = StringUtils.EMPTY;
 		}
-		return tipoRegistro.trim();
+		return identificacaoRegistro.trim();
 	}
 
 	public String getNumeroProtocolo() {
@@ -148,8 +149,8 @@ public class RegistroDesistenciaProtestoVO extends AbstractArquivoVO {
 		return sequenciaRegistro.trim();
 	}
 
-	public void setTipoRegistro(String tipoRegistro) {
-		this.tipoRegistro = tipoRegistro;
+	public void setIdentificacaoRegistro(String identificacaoRegistro) {
+		this.identificacaoRegistro = identificacaoRegistro;
 	}
 
 	public void setNumeroProtocolo(String numeroProtocolo) {
@@ -194,11 +195,6 @@ public class RegistroDesistenciaProtestoVO extends AbstractArquivoVO {
 
 	public void setSequenciaRegistro(String sequenciaRegistro) {
 		this.sequenciaRegistro = sequenciaRegistro;
-	}
-
-	@Override
-	public String getIdentificacaoRegistro() {
-		return tipoRegistro;
 	}
 
 }

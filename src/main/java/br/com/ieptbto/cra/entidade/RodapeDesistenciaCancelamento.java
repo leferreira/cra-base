@@ -17,8 +17,8 @@ public abstract class RodapeDesistenciaCancelamento<T> extends AbstractEntidade<
 
 	/***/
 	private static final long serialVersionUID = 1L;
-	private TipoRegistroDesistenciaProtesto tipoRegistroDesistenciaCancelamento;
-	private int somaTotalCancelamentoDesistencia;
+	private TipoRegistroDesistenciaProtesto identificacaoRegistro;
+	private Integer somaTotalCancelamentoDesistencia;
 	private String reservado;
 	private String sequencialRegistro;
 
@@ -27,12 +27,12 @@ public abstract class RodapeDesistenciaCancelamento<T> extends AbstractEntidade<
 
 	@Column(name = "TIPO_REGISTO", length = 30)
 	@Enumerated(EnumType.STRING)
-	public TipoRegistroDesistenciaProtesto getTipoRegistroDesistenciaCancelamento() {
-		return tipoRegistroDesistenciaCancelamento;
+	public TipoRegistroDesistenciaProtesto getIdentificacaoRegistro() {
+		return identificacaoRegistro;
 	}
 
 	@Column(name = "SOMA_TOTAL_REGISTROS")
-	public int getSomaTotalCancelamentoDesistencia() {
+	public Integer getSomaTotalCancelamentoDesistencia() {
 		return somaTotalCancelamentoDesistencia;
 	}
 
@@ -46,12 +46,11 @@ public abstract class RodapeDesistenciaCancelamento<T> extends AbstractEntidade<
 		return sequencialRegistro;
 	}
 
-	public void setTipoRegistroDesistenciaCancelamento(TipoRegistroDesistenciaProtesto tipoRegistroDesistenciaCancelamento) {
-		this.tipoRegistroDesistenciaCancelamento = tipoRegistroDesistenciaCancelamento;
+	public void setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto identificacaoRegistro) {
+		this.identificacaoRegistro = identificacaoRegistro;
 	}
 
-	public void setSomaTotalCancelamentoDesistencia(
-			int somaTotalCancelamentoDesistencia) {
+	public void setSomaTotalCancelamentoDesistencia(Integer somaTotalCancelamentoDesistencia) {
 		this.somaTotalCancelamentoDesistencia = somaTotalCancelamentoDesistencia;
 	}
 

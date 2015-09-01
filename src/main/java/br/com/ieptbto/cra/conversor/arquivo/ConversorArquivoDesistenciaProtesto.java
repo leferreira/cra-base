@@ -34,7 +34,7 @@ public class ConversorArquivoDesistenciaProtesto {
 		arquivo.setDataEnvio(new LocalDate());
 		arquivo.setTipoArquivo(arquivoVO.getTipoArquivo());
 		arquivo.setRemessaDesistenciaProtesto(getRemessaDesistenciaProtesto(arquivoVO));
-
+		arquivo.getRemessaDesistenciaProtesto().setArquivo(arquivo);
 		return arquivo;
 	}
 

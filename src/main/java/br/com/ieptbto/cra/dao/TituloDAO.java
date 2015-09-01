@@ -41,9 +41,10 @@ public class TituloDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 		if (!instituicaoUsuario.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem",instituicaoUsuario),Restrictions.eq("remessa.instituicaoDestino", instituicaoUsuario)));
+			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoUsuario),
+			        Restrictions.eq("remessa.instituicaoDestino", instituicaoUsuario)));
 		}
-		
+
 		if (titulo.getCodigoPortador() != null)
 			criteria.add(Restrictions.ilike("codigoPortador", titulo.getCodigoPortador(), MatchMode.ANYWHERE));
 
@@ -60,7 +61,7 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		if (titulo.getDocumentoDevedor() != null)
 			criteria.add(Restrictions.ilike("documentoSacador", titulo.getDocumentoSacador(), MatchMode.ANYWHERE));
-		
+
 		if (titulo.getNomeDevedor() != null)
 			criteria.add(Restrictions.ilike("nomeDevedor", titulo.getNomeDevedor(), MatchMode.ANYWHERE));
 
@@ -96,19 +97,20 @@ public class TituloDAO extends AbstractBaseDAO {
 			criteria.createAlias("retorno", "retorno");
 			criteria.add(Restrictions.eq("retorno.remessa", remessa));
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)) {
-			
+
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
-			
+
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
-			
+
 		}
 
 		if (!instituicaoCorrente.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem",instituicaoCorrente),Restrictions.eq("remessa.instituicaoDestino", instituicaoCorrente)));
+			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoCorrente),
+			        Restrictions.eq("remessa.instituicaoDestino", instituicaoCorrente)));
 		}
 		return criteria.list();
 	}
-	
+
 	public List<TituloRemessa> buscarTitulosPorRemessa(Remessa remessa, Instituicao instituicaoOrigem, Instituicao instituicaoDestino) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
@@ -122,30 +124,32 @@ public class TituloDAO extends AbstractBaseDAO {
 			criteria.createAlias("retorno", "retorno");
 			criteria.add(Restrictions.eq("retorno.remessa", remessa));
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)) {
-			
+
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
-			
+
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
-			
+
 		}
 
-		criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoOrigem),Restrictions.eq("remessa.instituicaoDestino", instituicaoDestino)));
+		criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoOrigem),
+		        Restrictions.eq("remessa.instituicaoDestino", instituicaoDestino)));
 		criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("nomeDevedor"));
 		return criteria.list();
 	}
-	
+
 	@Transactional(readOnly = true)
 	public List<TituloRemessa> buscarTitulosPorArquivo(Arquivo arquivo, Instituicao instituicao) {
 		Criteria criteria = getCriteria(Remessa.class);
 		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem",instituicao),Restrictions.eq("instituicaoDestino", instituicao)));
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem", instituicao),
+			        Restrictions.eq("instituicaoDestino", instituicao)));
 		}
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA) ||
-				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO) ||
-				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO) ) {
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)
+		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)
+		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
 			criteria.add(Restrictions.eq("arquivo", arquivo));
-		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO) ||
-				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)
+		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
 			criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
 		}
 		List<TituloRemessa> listaTitulos = new ArrayList<TituloRemessa>();
@@ -164,13 +168,13 @@ public class TituloDAO extends AbstractBaseDAO {
 				criteriaTitulo.createAlias("retorno", "retorno");
 				criteriaTitulo.add(Restrictions.eq("retorno.remessa", remessa));
 			}
-			if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA) || 
-					instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
+			if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)
+			        || instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
 				criteria.addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("nomeDevedor"));
 			} else {
 				criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("nomeDevedor"));
 			}
-			
+
 			titulos = criteriaTitulo.list();
 			listaTitulos.addAll(titulos);
 		}
@@ -187,7 +191,7 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		TituloRemessa tituloRemessa = TituloRemessa.class.cast(criteria.uniqueResult());
 		if (tituloRemessa == null)
-			throw new InfraException("O Título [ Nosso Número : "+titulo.getNossoNumero()+" ] não existe na CRA !");
+			throw new InfraException("O Título [ Nosso Número : " + titulo.getNossoNumero() + " ] não existe na CRA !");
 		return tituloRemessa;
 	}
 
@@ -229,8 +233,9 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	public TituloRemessa buscaTituloRetornoSalvo(Retorno tituloRetorno) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("confirmacao","confirmacao");
-		criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", tituloRetorno.getNumeroProtocoloCartorio().trim(), MatchMode.EXACT));
+		criteria.createAlias("confirmacao", "confirmacao");
+		criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", tituloRetorno.getNumeroProtocoloCartorio().trim(),
+		        MatchMode.EXACT));
 		criteria.add(Restrictions.eq("codigoPortador", tituloRetorno.getCodigoPortador().trim()));
 		criteria.add(Restrictions.eq("nossoNumero", tituloRetorno.getNossoNumero().trim()));
 		criteria.add(Restrictions.eq("agenciaCodigoCedente", tituloRetorno.getAgenciaCodigoCedente().trim()));
@@ -238,7 +243,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
 
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao) {
 		TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao);
 
@@ -261,10 +266,10 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	public TituloRemessa buscaTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.add(Restrictions.eq("dataCadastro", tituloConfirmacao.getRemessa().getCabecalho().getDataMovimento().toDate()));
 		criteria.add(Restrictions.eq("codigoPortador", tituloConfirmacao.getCodigoPortador().trim()));
 		criteria.add(Restrictions.eq("nossoNumero", tituloConfirmacao.getNossoNumero().trim()));
 		criteria.add(Restrictions.eq("numeroTitulo", tituloConfirmacao.getNumeroTitulo().trim()));
+		criteria.addOrder(Order.desc("id"));
 
 		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
@@ -281,41 +286,46 @@ public class TituloDAO extends AbstractBaseDAO {
 			} else {
 				transaction.rollback();
 				logger.error(ex.getMessage(), ex.getCause());
-				throw new InfraException("O Título número: " + tituloRemessa.getNumeroTitulo() + " não pode ser inserido ! O Título já existe na base ou está duplicado no arquivo !");
+				throw new InfraException("O Título número: " + tituloRemessa.getNumeroTitulo()
+				        + " não pode ser inserido ! O Título já existe na base ou está duplicado no arquivo !");
 			}
 		}
 	}
 
-	public List<TituloRemessa> buscarTitulosParaRelatorio(Instituicao instituicao, TipoRelatorio situacaoTitulos, LocalDate dataInicio,LocalDate dataFim, Usuario usuarioCorrente) {
+	public List<TituloRemessa> buscarTitulosParaRelatorio(Instituicao instituicao, TipoRelatorio situacaoTitulos, LocalDate dataInicio,
+	        LocalDate dataFim, Usuario usuarioCorrente) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 
 		if (instituicao != null) {
-			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem",instituicao),Restrictions.eq("remessa.instituicaoDestino", instituicao)));
-		} 
+			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicao),
+			        Restrictions.eq("remessa.instituicaoDestino", instituicao)));
+		}
 
 		if (!usuarioCorrente.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem",usuarioCorrente.getInstituicao()),Restrictions.eq("remessa.instituicaoDestino", usuarioCorrente.getInstituicao())));
+			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", usuarioCorrente.getInstituicao()),
+			        Restrictions.eq("remessa.instituicaoDestino", usuarioCorrente.getInstituicao())));
 		}
-		
+
 		if (situacaoTitulos.equals(TipoRelatorio.GERAL)) {
 		} else if (situacaoTitulos.equals(TipoRelatorio.SEM_CONFIRMACAO)) {
-			
+
 		} else if (situacaoTitulos.equals(TipoRelatorio.COM_CONFIRMACAO)) {
 			criteria.createAlias("confirmacao", "confirmacao");
 			criteria.add(Restrictions.isNotNull("confirmacao"));
-			criteria.add(Restrictions.ne("confirmacao.tipoOcorrencia", TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante()));
+			criteria.add(Restrictions.ne("confirmacao.tipoOcorrencia",
+			        TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante()));
 		} else if (situacaoTitulos.equals(TipoRelatorio.SEM_RETORNO)) {
-			
-		} else if (situacaoTitulos.equals(TipoRelatorio.COM_RETORNO)) { 
+
+		} else if (situacaoTitulos.equals(TipoRelatorio.COM_RETORNO)) {
 			criteria.createAlias("retorno", "retorno");
 			criteria.add(Restrictions.isNotNull("retorno"));
 		}
-		
+
 		criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
-		
-		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA) || 
-				instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
+
+		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)
+		        || instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
 			criteria.addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("nomeDevedor"));
 		} else {
 			criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("nomeDevedor"));

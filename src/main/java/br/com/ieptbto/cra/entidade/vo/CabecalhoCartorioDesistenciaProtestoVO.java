@@ -40,7 +40,7 @@ public class CabecalhoCartorioDesistenciaProtestoVO extends AbstractArquivoVO {
 
 	@XmlAttribute(name = "h06")
 	@IAtributoArquivo(ordem = 6, posicao = 123, tamanho = 5, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Sequência do Registro.", obrigatoriedade = true)
-	private String numeroSequencialRegistroArquivo;
+	private String sequencialRegistro;
 
 	public String getIdentificacaoRegistro() {
 		return identificacaoRegistro;
@@ -62,8 +62,8 @@ public class CabecalhoCartorioDesistenciaProtestoVO extends AbstractArquivoVO {
 		return reservado;
 	}
 
-	public String getNumeroSequencialRegistroArquivo() {
-		return numeroSequencialRegistroArquivo;
+	public String getSequencialRegistro() {
+		return sequencialRegistro;
 	}
 
 	public void setIdentificacaoRegistro(String identificacaoRegistro) {
@@ -86,7 +86,7 @@ public class CabecalhoCartorioDesistenciaProtestoVO extends AbstractArquivoVO {
 		this.reservado = reservado;
 	}
 
-	public void setNumeroSequencialRegistroArquivo(String numeroSequencialRegistroArquivo) {
-		this.numeroSequencialRegistroArquivo = numeroSequencialRegistroArquivo;
+	public void setSequencialRegistro(String sequencialRegistro) {
+		this.sequencialRegistro = sequencialRegistro;
 	}
 }

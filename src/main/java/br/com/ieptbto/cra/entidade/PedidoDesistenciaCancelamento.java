@@ -35,7 +35,7 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 	private static final long serialVersionUID = 4806576818944343466L;
 
 	private int id;
-	private TipoRegistroDesistenciaProtesto tipoRegistro;
+	private TipoRegistroDesistenciaProtesto identificacaoRegistro;
 	private String numeroProtocolo;
 	private LocalDate dataProtocolagem;
 	private String numeroTitulo;
@@ -60,8 +60,8 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 
 	@Column(name = "TIPO_REGISTO")
 	@Enumerated(EnumType.STRING)
-	public TipoRegistroDesistenciaProtesto getTipoRegistro() {
-		return tipoRegistro;
+	public TipoRegistroDesistenciaProtesto getIdentificacaoRegistro() {
+		return identificacaoRegistro;
 	}
 
 	@Column(name = "NUMERO_PROTOCOLO", length = 10)
@@ -170,8 +170,8 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 		this.id = id;
 	}
 
-	public void setTipoRegistro(TipoRegistroDesistenciaProtesto tipoRegistro) {
-		this.tipoRegistro = tipoRegistro;
+	public void setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto tipoRegistro) {
+		this.identificacaoRegistro = tipoRegistro;
 	}
 
 	public void setNumeroProtocolo(String numeroProtocolo) {

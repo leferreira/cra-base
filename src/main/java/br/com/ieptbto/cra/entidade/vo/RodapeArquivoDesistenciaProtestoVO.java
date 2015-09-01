@@ -14,41 +14,41 @@ import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
  *
  */
 @SuppressWarnings("serial")
-@XmlRootElement(name = "hdb")
+@XmlRootElement(name = "tlb")
 @XmlAccessorType(XmlAccessType.NONE)
 public class RodapeArquivoDesistenciaProtestoVO extends AbstractArquivoVO {
 
-	@XmlAttribute(name = "h01")
+	@XmlAttribute(name = "t01")
 	@IAtributoArquivo(ordem = 1, posicao = 1, tamanho = 1, descricao = "Identificar tipo registro Cabeçalho Arquivo Desistência Protesto. Constante 9.", obrigatoriedade = true, validacao = "9", tipo = Integer.class)
 	private String identificacaoRegistro;
 
-	@XmlAttribute(name = "h02")
-	@IAtributoArquivo(ordem = 2, posicao = 2, tamanho = 3, descricao = "Identificar o código do banco/portador. Preencher com o código compensação do Banco ou número de identificação do portador.", obrigatoriedade = true, tipo  = String.class)
+	@XmlAttribute(name = "t02")
+	@IAtributoArquivo(ordem = 2, posicao = 2, tamanho = 3, descricao = "Identificar o código do banco/portador. Preencher com o código compensação do Banco ou número de identificação do portador.", obrigatoriedade = true, tipo = String.class)
 	private String codigoApresentante;
-	
-	@XmlAttribute(name = "h03")
+
+	@XmlAttribute(name = "t03")
 	@IAtributoArquivo(ordem = 3, posicao = 5, tamanho = 45, descricao = "Identificar o nome do banco/portador. Preencher com o nome do portador. ('Razão Social')", obrigatoriedade = true, tipo = String.class)
 	private String nomeApresentante;
-	
-	@XmlAttribute(name = "h04")
+
+	@XmlAttribute(name = "t04")
 	@IAtributoArquivo(ordem = 4, posicao = 50, tamanho = 8, formato = "", descricao = "Identificar a data de envio da Remessa ao serviço de distribuição, no formato DDMMAAAA.", obrigatoriedade = true)
 	private String dataMovimento;
-	
-	@XmlAttribute(name = "h05")
+
+	@XmlAttribute(name = "t05")
 	@IAtributoArquivo(ordem = 5, posicao = 58, tamanho = 5, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Quantidade de Desistencias. Informada no Cabeçalho.", obrigatoriedade = true)
 	private String quantidadeDesistencia;
 
-	@XmlAttribute(name = "h06")
+	@XmlAttribute(name = "t06")
 	@IAtributoArquivo(ordem = 6, posicao = 63, tamanho = 14, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Somatorio Valor Titulos.", obrigatoriedade = true)
 	private String somatorioValorTitulo;
-	
-	@XmlAttribute(name = "h07")
+
+	@XmlAttribute(name = "t07")
 	@IAtributoArquivo(ordem = 7, posicao = 77, tamanho = 46, formato = "", descricao = "", obrigatoriedade = true)
 	private String reservado;
-	
-	@XmlAttribute(name = "h08")
+
+	@XmlAttribute(name = "t08")
 	@IAtributoArquivo(ordem = 8, posicao = 123, tamanho = 5, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Constante 0001. Sempre reiniciar a contagem do lote de registros para as praças implantadas no processo de centralização.", obrigatoriedade = true, validacao = "00001")
-	private String numeroSequencialRegistroArquivo;
+	private String sequencialRegistro;
 
 	public String getIdentificacaoRegistro() {
 		return identificacaoRegistro;
@@ -78,8 +78,8 @@ public class RodapeArquivoDesistenciaProtestoVO extends AbstractArquivoVO {
 		return reservado;
 	}
 
-	public String getNumeroSequencialRegistroArquivo() {
-		return numeroSequencialRegistroArquivo;
+	public String getSequencialRegistro() {
+		return sequencialRegistro;
 	}
 
 	public void setIdentificacaoRegistro(String identificacaoRegistro) {
@@ -110,9 +110,8 @@ public class RodapeArquivoDesistenciaProtestoVO extends AbstractArquivoVO {
 		this.reservado = reservado;
 	}
 
-	public void setNumeroSequencialRegistroArquivo(
-			String numeroSequencialRegistroArquivo) {
-		this.numeroSequencialRegistroArquivo = numeroSequencialRegistroArquivo;
+	public void setSequencialRegistro(String SequencialRegistro) {
+		this.sequencialRegistro = SequencialRegistro;
 	}
 
 }
