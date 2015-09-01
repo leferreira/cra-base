@@ -238,6 +238,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
 
+	@Transactional(readOnly=true)
 	private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao) {
 		TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao);
 

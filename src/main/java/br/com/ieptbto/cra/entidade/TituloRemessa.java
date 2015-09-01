@@ -86,7 +86,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	@Override
 	public int getId() {
 		return this.id;
-	}
+	} 
 
 	@OneToOne(optional = true, mappedBy = "titulo")
 	public Confirmacao getConfirmacao() {

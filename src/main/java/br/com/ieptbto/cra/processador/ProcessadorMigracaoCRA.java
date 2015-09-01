@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
+import br.com.ieptbto.cra.dao.MigracaoDAO;
 import br.com.ieptbto.cra.dao.RemessaDAO;
 import br.com.ieptbto.cra.dao.TipoArquivoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
@@ -41,6 +42,8 @@ public class ProcessadorMigracaoCRA extends Processador {
 	@Autowired
 	ArquivoDAO arquivoDAO;
 	@Autowired
+	MigracaoDAO migracaoDAO;
+	@Autowired
 	RemessaDAO remessaDAO;
 	
 	private HashMap<chaveArquivo, Arquivo> arquivosMigrados;
@@ -64,7 +67,7 @@ public class ProcessadorMigracaoCRA extends Processador {
 	private void salvarNovosArquivos() {
 		for (Arquivo novoArquivo : getNovosArquivos()){
 			if (arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(novoArquivo.getInstituicaoEnvio(), novoArquivo.getNomeArquivo()) == null) {
-				arquivoDAO.salvar(novoArquivo, getUsuario());
+				migracaoDAO.salvar(novoArquivo, getUsuario());
 			}
 			logger.info("Arquivo " + getArquivo().getNomeArquivo() + " salvo !");
 		}

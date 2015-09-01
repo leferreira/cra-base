@@ -150,7 +150,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 		remessa.setTitulos(criteriaTitulo.list());
 		return remessa;
 	}
-
+	
 	public Remessa alterarSituacaoRemessa(Remessa remessa) {
 		Transaction transaction = getBeginTransation();
 		
