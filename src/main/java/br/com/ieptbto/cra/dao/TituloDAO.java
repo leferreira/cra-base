@@ -236,7 +236,8 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("codigoPortador", tituloRetorno.getCodigoPortador().trim()));
 		criteria.add(Restrictions.eq("nossoNumero", tituloRetorno.getNossoNumero().trim()));
 		criteria.add(Restrictions.eq("agenciaCodigoCedente", tituloRetorno.getAgenciaCodigoCedente().trim()));
-		criteria.add(Restrictions.isNotEmpty("confirmacao"));
+		criteria.createAlias("confirmacao","confirmacao");
+		criteria.add(Restrictions.eq("confirmacao.numeroProtocoloCartorio", tituloRetorno.getNumeroProtocoloCartorio()));
 
 		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
@@ -306,16 +307,16 @@ public class TituloDAO extends AbstractBaseDAO {
 			        Restrictions.eq("remessa.instituicaoDestino", usuarioCorrente.getInstituicao())));
 		}
 
-		if (situacaoTitulos.equals(TipoRelatorio.GERAL)) {
-		} else if (situacaoTitulos.equals(TipoRelatorio.SEM_CONFIRMACAO)) {
-
+		if (situacaoTitulos.equals(TipoRelatorio.SEM_CONFIRMACAO)) {
 		} else if (situacaoTitulos.equals(TipoRelatorio.COM_CONFIRMACAO)) {
 			criteria.createAlias("confirmacao", "confirmacao");
-			criteria.add(Restrictions.isNotNull("confirmacao"));
+			criteria.add(Restrictions.isNotEmpty("confirmacao"));
+		} else if (situacaoTitulos.equals(TipoRelatorio.SEM_RETORNO)) {
+			criteria.add(Restrictions.isEmpty("retorno"));
+			criteria.createAlias("confirmacao", "confirmacao");
+			criteria.add(Restrictions.isNotEmpty("confirmacao"));
 			criteria.add(Restrictions.ne("confirmacao.tipoOcorrencia",
 			        TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante()));
-		} else if (situacaoTitulos.equals(TipoRelatorio.SEM_RETORNO)) {
-
 		} else if (situacaoTitulos.equals(TipoRelatorio.COM_RETORNO)) {
 			criteria.createAlias("retorno", "retorno");
 			criteria.add(Restrictions.isNotNull("retorno"));

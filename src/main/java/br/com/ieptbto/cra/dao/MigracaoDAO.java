@@ -1,8 +1,6 @@
 package br.com.ieptbto.cra.dao;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -11,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Historico;
-import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.TipoInstituicao;
@@ -89,23 +85,7 @@ public class MigracaoDAO extends AbstractBaseDAO {
 						remessa.setRodape(save(remessa.getRodape()));
 					}
 				}
-			} else if (arquivo.getRemessaDesistenciaProtesto() != null) {
-				arquivo.getRemessaDesistenciaProtesto().setCabecalho(save(arquivo.getRemessaDesistenciaProtesto().getCabecalho()));
-				arquivo.getRemessaDesistenciaProtesto().setRodape(save(arquivo.getRemessaDesistenciaProtesto().getRodape()));
-				save(arquivo.getRemessaDesistenciaProtesto());
-
-				for (DesistenciaProtesto desistenciaProtestos : arquivo.getRemessaDesistenciaProtesto().getDesistenciaProtesto()) {
-					desistenciaProtestos.setCabecalhoCartorio(save(desistenciaProtestos.getCabecalhoCartorio()));
-					desistenciaProtestos.setRodapeCartorio(save(desistenciaProtestos.getRodapeCartorio()));
-					List<PedidoDesistenciaCancelamento> pedidosDesistencia = desistenciaProtestos.getDesistencias();
-					desistenciaProtestos.setDesistencias(new ArrayList<PedidoDesistenciaCancelamento>());
-					for (PedidoDesistenciaCancelamento pedido : pedidosDesistencia) {
-						desistenciaProtestos.getDesistencias().add(save(pedido));
-					}
-					save(desistenciaProtestos);
-				}
-
-			}
+			} 
 			transaction.commit();
 			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
 			        + " foi inserido na base ");
