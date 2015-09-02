@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.dao;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -237,7 +236,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("codigoPortador", tituloRetorno.getCodigoPortador().trim()));
 		criteria.add(Restrictions.eq("nossoNumero", tituloRetorno.getNossoNumero().trim()));
 		criteria.add(Restrictions.eq("agenciaCodigoCedente", tituloRetorno.getAgenciaCodigoCedente().trim()));
-		criteria.createAlias("confirmacao", "confirmacao");
+		criteria.createAlias("confirmacao","confirmacao");
 		criteria.add(Restrictions.eq("confirmacao.numeroProtocoloCartorio", tituloRetorno.getNumeroProtocoloCartorio()));
 
 		return TituloRemessa.class.cast(criteria.uniqueResult());
@@ -362,20 +361,5 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("codigoPortador", titulo.getCodigoPortador()));
 		criteria.add(Restrictions.eq("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor()));
 		return TituloRemessa.class.cast(criteria.uniqueResult());
-	}
-
-	public TituloRemessa buscarTituloDesistenciaProtesto(String numeroProtocolo, String numeroTitulo, LocalDate dataProtocolagem,
-	        BigDecimal valorTitulo) {
-		Criteria criteria = getCriteria(Confirmacao.class);
-		criteria.add(Restrictions.eq("numeroTitulo", numeroTitulo));
-		criteria.add(Restrictions.eq("numeroProtocoloCartorio", numeroProtocolo));
-		criteria.add(Restrictions.eq("dataProtocolo", dataProtocolagem));
-		criteria.createAlias("titulo", "titulo");
-		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
-
-		if (confirmacao == null) {
-			return null;
-		}
-		return confirmacao.getTitulo();
 	}
 }
