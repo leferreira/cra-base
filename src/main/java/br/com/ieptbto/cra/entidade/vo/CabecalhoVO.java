@@ -115,6 +115,9 @@ public class CabecalhoVO extends AbstractArquivoVO {
 	}
 
 	public String getNumeroSequencialRemessa() {
+		if (numeroSequencialRemessa == null) {
+			numeroSequencialRemessa = StringUtils.EMPTY;
+		}
 		return numeroSequencialRemessa;
 	}
 
