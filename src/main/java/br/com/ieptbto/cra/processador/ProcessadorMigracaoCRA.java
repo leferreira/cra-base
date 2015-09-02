@@ -52,6 +52,7 @@ public class ProcessadorMigracaoCRA extends Processador {
 	private Usuario usuario;
 		
 	public ProcessadorMigracaoCRA processarArquivoMigracao(Arquivo arquivo, Usuario usuarioEnvio) {
+		this.novosArquivos = new ArrayList<Arquivo>();
 		setArquivo(arquivo);
 		setUsuario(usuarioEnvio);
 		
@@ -182,9 +183,6 @@ public class ProcessadorMigracaoCRA extends Processador {
 	}
 
 	public List<Arquivo> getNovosArquivos() {
-		if (novosArquivos == null) {
-			novosArquivos = new ArrayList<Arquivo>();
-		}
 		return novosArquivos;
 	}
 
