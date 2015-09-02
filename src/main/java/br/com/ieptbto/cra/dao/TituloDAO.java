@@ -268,10 +268,10 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	public TituloRemessa buscaTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.add(Restrictions.eq("codigoPortador", tituloConfirmacao.getCodigoPortador().trim()));
+		criteria.add(Restrictions.like("codigoPortador", tituloConfirmacao.getCodigoPortador().trim()));
 		criteria.add(Restrictions.eq("nossoNumero", tituloConfirmacao.getNossoNumero().trim()));
-		criteria.add(Restrictions.eq("numeroTitulo", tituloConfirmacao.getNumeroTitulo().trim()));
-		criteria.add(Restrictions.eq("agenciaCodigoCedente", tituloConfirmacao.getAgenciaCodigoCedente().trim()));
+		criteria.add(Restrictions.eq("numeroTitulo", tituloConfirmacao.getNumeroTitulo()));
+		criteria.add(Restrictions.eq("agenciaCodigoCedente", tituloConfirmacao.getAgenciaCodigoCedente()));
 		criteria.addOrder(Order.desc("id"));
 
 		return TituloRemessa.class.cast(criteria.uniqueResult());
