@@ -180,7 +180,7 @@ public class RemessaMediator {
 	}
 
 	public Arquivo salvarArquivo(Arquivo arquivo, Usuario usuario) {
-		return arquivoDAO.salvar(arquivo, usuario);
+		return arquivoDAO.salvar(arquivo, usuario, new ArrayList<Exception>());
 	}
 
 	public List<Exception> getErros() {

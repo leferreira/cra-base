@@ -51,7 +51,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	InstituicaoDAO instituicaoDAO;
 	@Autowired
 	RemessaDAO remessaDAO;
-	
+
 	private List<Remessa> remessasConfirmacoesRecebidas;
 
 	public List<Arquivo> buscarTodosArquivos() {
@@ -60,7 +60,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public Arquivo salvar(Arquivo arquivo, Usuario usuarioAcao) {
+	public Arquivo salvar(Arquivo arquivo, Usuario usuarioAcao, List<Exception> erros) {
 		Arquivo arquivoSalvo = new Arquivo();
 		Session session = getSession();
 		Transaction transaction = session.beginTransaction();
@@ -119,10 +119,20 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					desistenciaProtestos.setRodapeCartorio(save(desistenciaProtestos.getRodapeCartorio()));
 					List<PedidoDesistenciaCancelamento> pedidosDesistencia = desistenciaProtestos.getDesistencias();
 					desistenciaProtestos.setDesistencias(new ArrayList<PedidoDesistenciaCancelamento>());
-					for (PedidoDesistenciaCancelamento pedido : pedidosDesistencia) {
-						desistenciaProtestos.getDesistencias().add(save(pedido));
-					}
+					desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
 					save(desistenciaProtestos);
+					for (PedidoDesistenciaCancelamento pedido : pedidosDesistencia) {
+						pedido.setDesistenciaProtesto(desistenciaProtestos);
+						pedido.setTitulo(getTituloDesistenciaProtesto(pedido));
+						if (pedido.getTitulo() != null) {
+							desistenciaProtestos.getDesistencias().add(save(pedido));
+						} else {
+							erros.add(new InfraException("Não existe um título para o título nº " + pedido.getNumeroTitulo() + " da "
+							        + arquivo.getNomeArquivo()));
+
+						}
+
+					}
 				}
 
 			}
@@ -140,6 +150,11 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 		return arquivoSalvo;
 
+	}
+
+	private TituloRemessa getTituloDesistenciaProtesto(PedidoDesistenciaCancelamento pedido) {
+		return tituloDAO.buscarTituloDesistenciaProtesto(pedido.getNumeroProtocolo(), pedido.getNumeroTitulo(),
+		        pedido.getDataProtocolagem(), pedido.getValorTitulo());
 	}
 
 	private void verificaInstituicaoRecebe(Arquivo arquivo) {
@@ -179,15 +194,16 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			}
 		}
 	}
-	
-	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Instituicao instituicao, ArrayList<TipoArquivoEnum> tipoArquivos, Municipio municipio,
-	        LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
+
+	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Instituicao instituicao, ArrayList<TipoArquivoEnum> tipoArquivos,
+	        Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		Criteria criteria = getCriteria(Arquivo.class);
 
 		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", instituicao), Restrictions.eq("instituicaoRecebe", instituicao)));
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", instituicao),
+			        Restrictions.eq("instituicaoRecebe", instituicao)));
 		}
-		
+
 		if (!situacoes.isEmpty()) {
 			Disjunction disjunction = Restrictions.disjunction();
 			criteria.createAlias("statusArquivo", "statusArquivo");
@@ -201,7 +217,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		if (arquivo.getNomeArquivo() != null) {
 			criteria.add(Restrictions.ilike("nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
 		}
-		
+
 		if (!tipoArquivos.isEmpty()) {
 			criteria.createAlias("tipoArquivo", "tipoArquivo");
 			Disjunction disjunction = Restrictions.disjunction();
@@ -228,15 +244,15 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 		return Arquivo.class.cast(criteria.uniqueResult());
 	}
-	
+
 	public Arquivo alterarSituacaoArquivo(Arquivo arquivo) {
 		Transaction transaction = getBeginTransation();
-		
+
 		try {
 			StatusArquivo statusArquivo = save(arquivo.getStatusArquivo());
 			arquivo.setStatusArquivo(statusArquivo);
 			update(arquivo);
-		
+
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
@@ -246,19 +262,18 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return arquivo;
 	}
 
-	public List<Remessa> buscarRemessasArquivo(Instituicao instituicao,
-			Arquivo arquivo) {
+	public List<Remessa> buscarRemessasArquivo(Instituicao instituicao, Arquivo arquivo) {
 		Criteria criteria = getCriteria(Remessa.class);
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA) ||
-				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO) ||
-				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO) ) {
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)
+		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)
+		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
 			criteria.add(Restrictions.eq("arquivo", arquivo));
-		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO) ||
-				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)
+		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
 			criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
 		}
 		List<Remessa> remessas = criteria.list();
-		
+
 		for (Remessa remessa : remessas) {
 			Criteria criteriaTitulo = getCriteria(Titulo.class);
 			List<Titulo> titulos = new ArrayList<Titulo>();
@@ -272,15 +287,15 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 		return remessas;
 	}
-	
+
 	public List<Remessa> getRemessasArquivo(Arquivo arquivo, Instituicao instituicao) {
 		Criteria criteria = getCriteria(Remessa.class);
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA) ||
-				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO) ||
-				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO) ) {
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)
+		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)
+		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
 			criteria.add(Restrictions.eq("arquivo", arquivo));
-		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO) ||
-				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)
+		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
 			criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
 		}
 		return criteria.list();
@@ -292,11 +307,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));
 		return Arquivo.class.cast(criteria.uniqueResult());
 	}
-	
+
 	public List<Arquivo> buscarArquivosPorNome(Instituicao instituicao, Arquivo arquivo) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", instituicao), Restrictions.eq("instituicaoRecebe", instituicao)));
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", instituicao),
+			        Restrictions.eq("instituicaoRecebe", instituicao)));
 		}
 		criteria.add(Restrictions.ilike("nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
 		return criteria.list();

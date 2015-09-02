@@ -1,5 +1,6 @@
 package br.com.ieptbto.cra.mediator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -35,8 +36,8 @@ public class ConvenioMediator {
 
 	public void gerarRemessas(Usuario usuario, List<TituloFiliado> listaTitulosConvenios) {
 		List<Arquivo> arquivos = processadorRemessaConveniada.processar(listaTitulosConvenios, usuario);
-		for (Arquivo arquivo: arquivos) {
-			arquivoDAO.salvar(arquivo, usuario);
+		for (Arquivo arquivo : arquivos) {
+			arquivoDAO.salvar(arquivo, usuario, new ArrayList<Exception>());
 		}
 		tituloFiliadoDAO.marcarComoEnviadoParaCRA(listaTitulosConvenios);
 	}

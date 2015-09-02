@@ -55,7 +55,7 @@ public class ProcessadorArquivo extends Processador {
 	private String pathInstituicaoTemp;
 	private String pathUsuarioTemp;
 
-	public void processarArquivo(FileUpload uploadedFile, Arquivo arquivo, List<Exception> erros) {
+	public Arquivo processarArquivo(FileUpload uploadedFile, Arquivo arquivo, List<Exception> erros) {
 		this.file = uploadedFile;
 		this.usuario = arquivo.getUsuarioEnvio();
 		this.arquivo = arquivo;
@@ -70,8 +70,10 @@ public class ProcessadorArquivo extends Processador {
 			converterArquivo();
 			validarArquivo();
 			copiarArquivoEapagarTemporario();
-
+			getArquivo().setNomeArquivo(getFile().getClientFileName());
 			logger.info("Fim do processamento do arquivoFisico " + getFile().getClientFileName() + " do usuário " + getUsuario().getLogin());
+
+			return getArquivo();
 
 		} else {
 			throw new InfraException("O arquivoFisico " + getFile().getClientFileName() + "enviado não pode ser processado.");
@@ -109,7 +111,7 @@ public class ProcessadorArquivo extends Processador {
 
 		return getArquivoFisico();
 	}
-	
+
 	public File processarArquivoTXT(Arquivo arquivo, List<Remessa> remessas) {
 		this.arquivo = arquivo;
 		this.usuario = getArquivo().getUsuarioEnvio();
@@ -119,14 +121,14 @@ public class ProcessadorArquivo extends Processador {
 		verificaDiretorio();
 		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + getArquivo().getNomeArquivo()));
 		fabricaDeArquivo.processarArquivoPersistente(remessas, getArquivoFisico(), getErros());
-		
+
 		logger.info("Fim da criação de Arquivo TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 
 		return getArquivoFisico();
 	}
-	
+
 	private void converterArquivo() {
-		fabricaDeArquivo.processarArquivoFisico(getArquivoFisico(), getArquivo(), getErros());
+		setArquivo(fabricaDeArquivo.processarArquivoFisico(getArquivoFisico(), getArquivo(), getErros()));
 	}
 
 	private void salvarXMLTemporario(List<RemessaVO> arquivoRecebido) {

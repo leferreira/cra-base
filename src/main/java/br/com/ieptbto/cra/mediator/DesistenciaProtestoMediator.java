@@ -67,12 +67,12 @@ public class DesistenciaProtestoMediator {
 	@Transactional
 	public Arquivo processar(Arquivo arquivo, String dados, List<Exception> erros, Usuario usuario) {
 		arquivo = conversorArquivoDesistenciaProtesto.converter(converterStringParaVO(dados), erros);
-		arquivo = salvarArquivo(arquivo, usuario);
+		arquivo = salvarArquivo(arquivo, usuario, erros);
 		return arquivo;
 	}
 
-	private Arquivo salvarArquivo(Arquivo arquivo, Usuario usuario) {
-		return arquivoDAO.salvar(arquivo, usuario);
+	private Arquivo salvarArquivo(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+		return arquivoDAO.salvar(arquivo, usuario, erros);
 	}
 
 }

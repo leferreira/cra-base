@@ -45,29 +45,31 @@ public class ArquivoMediator {
 	private List<Exception> erros;
 	private Arquivo arquivo;
 
-
 	public ArquivoMediator salvar(Arquivo arquivo, FileUpload uploadedFile, Usuario usuario) {
-		arquivo.setTipoArquivo(getTipoArquivo(arquivo));
-		arquivo.setStatusArquivo(setStatusArquivo());
 		if (verificarPermissaoDeEnvio(usuario, arquivo)) {
 			throw new InfraException("O usuário " + usuario.getNome() + " não pode enviar arquivos " + arquivo.getNomeArquivo());
 		}
 
-		processarArquivo(arquivo, uploadedFile);
-		
-		/** 
-		 * @TODO Processador para receber os arquivos de Confirmacao e Retorno, gerados pela CRA ANTIGA.
-		 * Arquivos com mais de uma praça de protesto. Para fins de migração do sistema apenas!
+		arquivo.setTipoArquivo(getTipoArquivo(arquivo));
+		arquivo = processarArquivo(arquivo, uploadedFile);
+		arquivo.setStatusArquivo(setStatusArquivo());
+		arquivo.setUsuarioEnvio(usuario);
+		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
+
+		/**
+		 * @TODO Processador para receber os arquivos de Confirmacao e Retorno,
+		 *       gerados pela CRA ANTIGA. Arquivos com mais de uma praça de
+		 *       protesto. Para fins de migração do sistema apenas!
 		 */
 		if (isArquivoMigracao(arquivo)) {
 			setArquivo(processarArquivoMigracao(arquivo, usuario).getArquivo());
 		} else {
 			arquivo.setInstituicaoEnvio(setInstituicaoEnvio(arquivo));
-			setArquivo(arquivoDAO.salvar(arquivo, usuario));
+			setArquivo(arquivoDAO.salvar(arquivo, usuario, getErros()));
 		}
 		return this;
 	}
-	
+
 	private boolean verificarPermissaoDeEnvio(Usuario user, Arquivo arquivo) {
 		String nome = arquivo.getNomeArquivo().substring(1, 4);
 		if (arquivo.getNomeArquivo().length() == 13) {
@@ -84,17 +86,17 @@ public class ArquivoMediator {
 
 		return true;
 	}
-	
+
 	private Instituicao setInstituicaoEnvio(Arquivo arquivo) {
 
 		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
-			return instituicaoMediator.getInstituicaoPorCodigoPortador(arquivo.getNomeArquivo().substring(1, 4));			
+			return instituicaoMediator.getInstituicaoPorCodigoPortador(arquivo.getNomeArquivo().substring(1, 4));
 		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)
-				|| arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
+		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
 			return instituicaoMediator.getInstituicaoPorCodigoPortador(arquivo.getNomeArquivo().substring(2, 5));
-		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO) 
-				|| arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)
-				|| arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)
+		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)
+		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
 			return instituicaoMediator.getCartorioPorCodigoIBGE(arquivo.getRemessas().get(0).getCabecalho().getCodigoMunicipio());
 		} else {
 			throw new InfraException("Tipo Do arquivo [" + arquivo.getTipoArquivo().getTipoArquivo().getLabel() + "] inválido");
@@ -106,18 +108,18 @@ public class ArquivoMediator {
 	}
 
 	private boolean isArquivoMigracao(Arquivo arquivo) {
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO) ||
-				arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-			
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)
+		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+
 			if (verificarSeTemMaisDeUmaPraca(arquivo))
 				return true;
 		}
 		return false;
 	}
-	
+
 	private boolean verificarSeTemMaisDeUmaPraca(Arquivo arquivo) {
 		List<String> pracasProtesto = new ArrayList<String>();
-		
+
 		for (Remessa remessa : arquivo.getRemessas()) {
 			if (!pracasProtesto.contains(remessa.getCabecalho().getCodigoMunicipio())) {
 				pracasProtesto.add(remessa.getCabecalho().getCodigoMunicipio());
@@ -128,7 +130,7 @@ public class ArquivoMediator {
 		}
 		return false;
 	}
-	
+
 	private StatusArquivo setStatusArquivo() {
 		StatusArquivo status = new StatusArquivo();
 		status.setData(new LocalDateTime());
@@ -140,8 +142,8 @@ public class ArquivoMediator {
 		return tipoArquivoDAO.buscarTipoArquivo(arquivo);
 	}
 
-	private void processarArquivo(Arquivo arquivo, FileUpload uploadedFile) throws InfraException {
-		processadorArquivo.processarArquivo(uploadedFile, arquivo, getErros());
+	private Arquivo processarArquivo(Arquivo arquivo, FileUpload uploadedFile) throws InfraException {
+		return processadorArquivo.processarArquivo(uploadedFile, arquivo, getErros());
 	}
 
 	public List<Arquivo> buscarArquivos() {
@@ -166,7 +168,7 @@ public class ArquivoMediator {
 	public Arquivo getArquivo() {
 		return arquivo;
 	}
-	
+
 	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Instituicao instituicao, ArrayList<TipoArquivoEnum> tipoArquivos,
 	        Municipio pracaProtesto, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		return arquivoDAO.buscarArquivosAvancado(arquivo, instituicao, tipoArquivos, pracaProtesto, dataInicio, dataFim, situacoes);
@@ -176,7 +178,7 @@ public class ArquivoMediator {
 		return arquivoDAO.buscarArquivoPorNome(instituicao, nomeArquivo);
 	}
 
-	public List<Arquivo> buscarArquivosPorNome(Instituicao instituicao,	Arquivo arquivo) {
+	public List<Arquivo> buscarArquivosPorNome(Instituicao instituicao, Arquivo arquivo) {
 		return arquivoDAO.buscarArquivosPorNome(instituicao, arquivo);
 	}
 }
