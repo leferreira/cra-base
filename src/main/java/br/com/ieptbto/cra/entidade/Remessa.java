@@ -20,7 +20,6 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
-import br.com.ieptbto.cra.enumeration.SituacaoConfirmacao;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 
 /**
@@ -49,7 +48,6 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	private List<Historico> historicos;
 	private List<Titulo> titulos;
 	private StatusRemessa statusRemessa;
-	private SituacaoConfirmacao situacaoConfirmacao;
 	private Boolean situacaoBatimento;
 	private Boolean situacao; // confirmacoes e retornos
 
@@ -121,12 +119,6 @@ public class Remessa extends AbstractRemessa<Remessa> {
 		return situacao;
 	}
 	
-	@Column(name = "SITUACAO_CONFIRMACAO")
-	@Enumerated(EnumType.STRING)
-	public SituacaoConfirmacao getSituacaoConfirmacao() {
-		return situacaoConfirmacao;
-	}
-
 	public void setSituacao(Boolean situacao) {
 		this.situacao = situacao;
 	}
@@ -199,14 +191,5 @@ public class Remessa extends AbstractRemessa<Remessa> {
 
 	public void setStatusRemessa(StatusRemessa statusRemessa) {
 		this.statusRemessa = statusRemessa;
-	}
-
-	public void setSituacaoConfirmacao(SituacaoConfirmacao situacaoConfirmacao) {
-		this.situacaoConfirmacao = situacaoConfirmacao;
-	}
-
-	public Remessa buscarRemessaDaConfirmacao(Instituicao instituicaoEnvio, Remessa remessa) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

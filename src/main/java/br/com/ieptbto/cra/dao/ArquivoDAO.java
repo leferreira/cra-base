@@ -31,7 +31,6 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
-import br.com.ieptbto.cra.enumeration.SituacaoConfirmacao;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -81,7 +80,6 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
 					setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
 					setSituacaoRemessa(arquivo, remessa);
-					setConfirmacaoRecebida(arquivo, remessa, transaction);
 					save(remessa);
 					for (Titulo titulo : remessa.getTitulos()) {
 						titulo.setRemessa(remessa);
@@ -180,18 +178,6 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			remessa.setSituacao(false);
 			if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
 				remessa.setSituacaoBatimento(false);
-			}
-		}
-	}
-
-	private void setConfirmacaoRecebida(Arquivo arquivo, Remessa confirmacao, Transaction transaction) {
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
-			confirmacao.setSituacaoConfirmacao(SituacaoConfirmacao.AGUARDANDO);
-		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
-			Remessa arquivoRemessa = remessaDAO.buscarRemessaDaConfirmacao(confirmacao);
-			if (arquivoRemessa != null) {
-				arquivoRemessa.setSituacaoConfirmacao(SituacaoConfirmacao.RECEBIDO);
-				update(arquivoRemessa);
 			}
 		}
 	}

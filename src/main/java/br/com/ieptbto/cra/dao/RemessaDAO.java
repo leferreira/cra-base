@@ -21,7 +21,6 @@ import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.SituacaoConfirmacao;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -219,15 +218,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 	}
 
 	public List<Remessa> confirmacoesPendentes(Instituicao instituicao) {
-		Criteria criteria = getCriteria(Remessa.class);
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", instituicao), Restrictions.eq("instituicaoOrigem", instituicao)));
-		}
-		criteria.add(Restrictions.eq("situacaoConfirmacao", SituacaoConfirmacao.AGUARDANDO));
-		criteria.createAlias("instituicaoDestino", "instituicaoDestino");
-		criteria.createAlias("instituicaoDestino.municipio", "municipio");
-		criteria.addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.desc("dataRecebimento"));
-		return criteria.list();
+		return new ArrayList<Remessa>();
 	}
 
 	public Remessa buscarRemessaDaConfirmacao(Remessa confirmacao) {
