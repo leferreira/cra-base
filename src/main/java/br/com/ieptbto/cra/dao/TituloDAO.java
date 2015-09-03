@@ -96,9 +96,11 @@ public class TituloDAO extends AbstractBaseDAO {
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
 			criteria.createAlias("confirmacao", "confirmacao");
 			criteria.add(Restrictions.eq("confirmacao.remessa", remessa));
+			criteria.addOrder(Order.asc("confirmacao.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
 			criteria.createAlias("retorno", "retorno");
 			criteria.add(Restrictions.eq("retorno.remessa", remessa));
+			criteria.addOrder(Order.asc("retorno.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)) {
 
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
@@ -134,8 +136,8 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		}
 
-		criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoOrigem),
-		        Restrictions.eq("remessa.instituicaoDestino", instituicaoDestino)));
+		criteria.add(Restrictions.eq("remessa.instituicaoOrigem", instituicaoOrigem));
+		criteria.add(Restrictions.eq("remessa.instituicaoDestino", instituicaoDestino));
 		criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("nomeDevedor"));
 		return criteria.list();
 	}

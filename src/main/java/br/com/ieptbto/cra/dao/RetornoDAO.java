@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -75,6 +76,19 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PAGO.getConstante()));
 		criteria.add(Restrictions.eq("remessa", retorno));
 		criteria.setProjection(Projections.sum("saldoTitulo"));
+		return BigDecimal.class.cast(criteria.uniqueResult());
+	}
+	
+	public BigDecimal buscarValorDeCustasCartorio(Remessa retorno){
+		Criteria criteria = getCriteria(Retorno.class);
+		
+		Disjunction disj = Restrictions.disjunction();
+		disj.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PROTESTADO.getConstante()));
+		disj.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.RETIRADO.getConstante()));
+		disj.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_COM_CUSTAS.getConstante()));
+		criteria.add(disj);
+		criteria.add(Restrictions.eq("remessa", retorno));
+		criteria.setProjection(Projections.sum("valorCustaCartorio"));
 		return BigDecimal.class.cast(criteria.uniqueResult());
 	}
 	

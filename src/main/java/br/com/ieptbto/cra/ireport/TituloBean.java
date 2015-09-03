@@ -19,6 +19,7 @@ public class TituloBean {
 	private String numeroTitulo;
 	private BigDecimal valorTitulo;
 	private BigDecimal saldoTitulo;
+	private BigDecimal valorCustaCartorio;
 	private String pracaProtesto;
 	private String situacaoTitulo;
 	private String numeroProtocoloCartorio;
@@ -35,15 +36,19 @@ public class TituloBean {
 		this.setSaldoTitulo(titulo.getSaldoTitulo());
 		this.setPracaProtesto(titulo.getPracaProtesto());
 		this.setSituacaoTitulo(titulo.getSituacaoTitulo());
+		this.setValorCustaCartorio(titulo.getValorCustaCartorio());
 		
 		this.setNumeroProtocoloCartorio("");
 		this.setDataOcorrencia("");
 		if (titulo.getConfirmacao() != null) {
 			this.setNumeroProtocoloCartorio(titulo.getConfirmacao().getNumeroProtocoloCartorio());
 			this.setDataOcorrencia(DataUtil.localDateToString(titulo.getConfirmacao().getDataProtocolo()));
-		} else if (titulo.getRetorno() != null) {
+			this.setValorCustaCartorio(titulo.getConfirmacao().getValorCustaCartorio());
+		}
+		if (titulo.getRetorno() != null) {
 			this.setNumeroProtocoloCartorio(titulo.getRetorno().getNumeroProtocoloCartorio());
 			this.setDataOcorrencia(DataUtil.localDateToString(titulo.getRetorno().getDataOcorrencia()));
+			this.setValorCustaCartorio(titulo.getRetorno().getValorCustaCartorio());
 		}
 	}
 	
@@ -141,5 +146,13 @@ public class TituloBean {
 
 	public void setDataOcorrencia(String dataOcorrencia) {
 		this.dataOcorrencia = dataOcorrencia;
+	}
+
+	public BigDecimal getValorCustaCartorio() {
+		return valorCustaCartorio;
+	}
+
+	public void setValorCustaCartorio(BigDecimal valorCustaCartorio) {
+		this.valorCustaCartorio = valorCustaCartorio;
 	}
 }

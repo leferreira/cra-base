@@ -56,6 +56,13 @@ public class RetornoMediator {
 		return retornoDao.buscarValorDeTitulosPagos(retorno);
 	}
 	
+	public BigDecimal buscarValorDeCustasCartorio(Remessa retorno){
+		if (!retorno.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)){
+			throw new InfraException("O arquivo não é um arquivo de RETORNO válido.");
+		} 
+		return retornoDao.buscarValorDeCustasCartorio(retorno);
+	}
+	
 	public void confirmarBatimentos(List<Remessa> retornos){
 		retornoDao.confirmarBatimento(retornos);
 	}
