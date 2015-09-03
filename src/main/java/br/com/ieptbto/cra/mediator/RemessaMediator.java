@@ -16,9 +16,11 @@ import br.com.ieptbto.cra.conversor.arquivo.ConversorRemessaArquivo;
 import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.RemessaDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
@@ -230,7 +232,24 @@ public class RemessaMediator {
 		return remessaDao.buscarRemessasPorArquivo(instituicao, arquivo);
 	}
 
-	public List<Remessa> confirmacoesPendentes(Instituicao instituicao) {
+	public Arquivo confirmacoesPendentes(Instituicao instituicao) {
+		List<Remessa> remessas = remessaDao.confirmacoesPendentes(instituicao);
+		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
+		List<DesistenciaProtesto> desistenciaProtesto = remessaDao.buscarRemessaDesistenciaProtesto(instituicao);
+		remessaDesistenciaProtesto.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>(desistenciaProtesto));
+		Arquivo arquivo = new Arquivo();
+		arquivo.setRemessas(remessas);
+		arquivo.setRemessaDesistenciaProtesto(remessaDesistenciaProtesto);
+
+		return arquivo;
+	}
+
+	public List<Remessa> confirmacoesPendentesRelatorio(Instituicao instituicao) {
 		return remessaDao.confirmacoesPendentes(instituicao);
+	}
+
+	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtesto(Arquivo arquivo, LocalDate dataInicio, LocalDate dataFim,
+	        ArrayList<TipoArquivoEnum> tiposArquivo, Instituicao portador, Usuario usuario) {
+		return remessaDao.buscarRemessaDesistenciaProtesto(arquivo, dataInicio, dataFim, tiposArquivo, portador, usuario);
 	}
 }

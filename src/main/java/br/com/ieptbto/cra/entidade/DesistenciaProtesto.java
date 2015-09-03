@@ -33,6 +33,7 @@ public class DesistenciaProtesto extends AbstractEntidade<DesistenciaProtesto> {
 	private List<PedidoDesistenciaCancelamento> desistencias;
 	private RodapeCartorio rodapeCartorio;
 	private RemessaDesistenciaProtesto remessaDesistenciaProtesto;
+	private Boolean download;
 
 	@Id
 	@Column(name = "ID_DESISTENCIA_PROTESTO", columnDefinition = "serial")
@@ -62,6 +63,15 @@ public class DesistenciaProtesto extends AbstractEntidade<DesistenciaProtesto> {
 	@JoinColumn(name = "REMESSA_DESISTENCIA_PROTESTO_ID")
 	public RemessaDesistenciaProtesto getRemessaDesistenciaProtesto() {
 		return remessaDesistenciaProtesto;
+	}
+
+	@Column(name = "DOWNLOAD_REALIZADO", columnDefinition = "boolean")
+	public Boolean getDownload() {
+		return download;
+	}
+
+	public void setDownload(Boolean download) {
+		this.download = download;
 	}
 
 	public void setRemessaDesistenciaProtesto(RemessaDesistenciaProtesto remessaDesistenciaProtesto) {

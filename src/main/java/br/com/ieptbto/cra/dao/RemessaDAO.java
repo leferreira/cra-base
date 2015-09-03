@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
@@ -255,5 +257,58 @@ public class RemessaDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", confirmacao.getCabecalho().getCodigoMunicipio()));
 		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.REMESSA));
 		return Remessa.class.cast(criteria.uniqueResult());
+	}
+
+	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtesto(Arquivo arquivo, LocalDate dataInicio, LocalDate dataFim,
+	        ArrayList<TipoArquivoEnum> tiposArquivo, Instituicao portador, Usuario usuario) {
+
+		Criteria criteria = getCriteria(DesistenciaProtesto.class);
+		criteria.createAlias("remessaDesistenciaProtesto", "remessa");
+		criteria.createAlias("remessa.arquivo", "arquivo");
+		criteria.createAlias("cabecalhoCartorio", "cabecalho");
+		if (arquivo != null && arquivo.getNomeArquivo() != null) {
+			criteria.add(Restrictions.ilike("arquivo.nomeArquivo", arquivo.getNomeArquivo()));
+		} else if (tiposArquivo != null && !tiposArquivo.isEmpty()) {
+			criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
+			for (TipoArquivoEnum tipoArquivoEnum : tiposArquivo) {
+				criteria.add((Restrictions.eq("tipoArquivo.tipoArquivo", tipoArquivoEnum)));
+			}
+		}
+
+		if (dataInicio != null) {
+			if (dataFim == null) {
+				dataFim = new LocalDate(9999 - 01 - 01);
+			}
+			criteria.add((Restrictions.between("arquivo.dataEnvio", dataInicio, dataFim)));
+		}
+
+		if (dataInicio == null && dataFim != null) {
+			dataInicio = new LocalDate(1901 - 01 - 01);
+			criteria.add((Restrictions.between("arquivo.dataEnvio", dataInicio, dataFim)));
+		}
+
+		if (portador != null) {
+			criteria.add(Restrictions.eq("cabecalho.numeroCodigoPortador", portador));
+		}
+
+		if (TipoInstituicaoCRA.CARTORIO.equals(usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao())) {
+			Hibernate.initialize(usuario.getInstituicao());
+			Hibernate.initialize(usuario.getInstituicao().getMunicipio());
+			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", usuario.getInstituicao().getMunicipio().getCodigoIBGE()));
+		} else if (TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA.equals(usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao())) {
+			criteria.createAlias("arquivo", "arquivo");
+			criteria.add(Restrictions.eq("arquivo.instituicaoEnvio", usuario.getInstituicao()));
+		}
+
+		return criteria.list();
+	}
+
+	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtesto(Instituicao instituicao) {
+		Criteria criteria = getCriteria(DesistenciaProtesto.class);
+		criteria.createAlias("cabecalhoCartorio", "cabecalho");
+		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", instituicao.getMunicipio().getCodigoIBGE()));
+		criteria.add(Restrictions.eq("download", false));
+
+		return criteria.list();
 	}
 }

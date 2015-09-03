@@ -3,7 +3,6 @@ package br.com.ieptbto.cra.entidade;
 import java.math.BigDecimal;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -149,17 +148,17 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		return listaUsuarios;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "MUNICIPIO_ID", columnDefinition = "integer NULL")
+	@OneToOne
+	@JoinColumn(name = "MUNICIPIO_ID")
 	public Municipio getMunicipio() {
 		return municipio;
 	}
-	
-	@Column(name="CODIGO_CARTORIO", length=2, nullable=true)
+
+	@Column(name = "CODIGO_CARTORIO", length = 2, nullable = true)
 	public String getCodigoCartorio() {
 		return codigoCartorio;
 	}
-	
+
 	public void setCodigoCartorio(String codigoCartorio) {
 		this.codigoCartorio = codigoCartorio;
 	}
@@ -256,7 +255,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		if (getId() == 0) {
@@ -264,7 +263,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		}
 		return getId();
 	}
-	
+
 	@Override
 	public int compareTo(Instituicao entidade) {
 		CompareToBuilder compareTo = new CompareToBuilder();
@@ -275,7 +274,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	public String getStatus() {
 		if (isSituacao() == true) {
 			return "Ativo";
-		} 
+		}
 		return "Não Ativo";
 	}
 
