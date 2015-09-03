@@ -50,7 +50,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (titulo.getCodigoPortador() != StringUtils.EMPTY) {
 			criteria.add(Restrictions.ilike("codigoPortador", titulo.getCodigoPortador(), MatchMode.ANYWHERE));
 		}
-			
+
 		if (titulo.getNumeroProtocoloCartorio() != null && titulo.getNumeroProtocoloCartorio() != StringUtils.EMPTY) {
 			criteria.createAlias("confirmacao", "confirmacao");
 			criteria.add(Restrictions.ilike("confirmacao.numeroProtocoloCartorio", titulo.getNumeroProtocoloCartorio(), MatchMode.ANYWHERE));
@@ -236,9 +236,9 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	public TituloRemessa buscaTituloRetornoSalvo(Retorno tituloRetorno) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.add(Restrictions.eq("codigoPortador", tituloRetorno.getCodigoPortador().trim()));
-		criteria.add(Restrictions.eq("nossoNumero", tituloRetorno.getNossoNumero().trim()));
-		criteria.add(Restrictions.eq("agenciaCodigoCedente", tituloRetorno.getAgenciaCodigoCedente().trim()));
+		criteria.add(Restrictions.ilike("codigoPortador", tituloRetorno.getCodigoPortador(), MatchMode.EXACT));
+		criteria.add(Restrictions.ilike("numeroTitulo", tituloRetorno.getNumeroTitulo(), MatchMode.EXACT));
+		criteria.add(Restrictions.eq("codigoPortador", tituloRetorno.getCodigoPortador()));
 		criteria.createAlias("confirmacao", "confirmacao");
 		criteria.add(Restrictions.eq("confirmacao.numeroProtocoloCartorio", tituloRetorno.getNumeroProtocoloCartorio()));
 
@@ -271,7 +271,8 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.like("codigoPortador", tituloConfirmacao.getCodigoPortador().trim(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("nossoNumero", tituloConfirmacao.getNossoNumero(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("numeroTitulo", tituloConfirmacao.getNumeroTitulo(), MatchMode.EXACT));
-		criteria.add(Restrictions.like("agenciaCodigoCedente", tituloConfirmacao.getAgenciaCodigoCedente(), MatchMode.EXACT));;
+		criteria.add(Restrictions.like("agenciaCodigoCedente", tituloConfirmacao.getAgenciaCodigoCedente(), MatchMode.EXACT));
+		;
 		criteria.addOrder(Order.desc("id"));
 		criteria.setMaxResults(1);
 		return TituloRemessa.class.cast(criteria.uniqueResult());

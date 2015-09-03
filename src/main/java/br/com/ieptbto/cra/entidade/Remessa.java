@@ -58,7 +58,7 @@ public class Remessa extends AbstractRemessa<Remessa> {
 		return id;
 	}
 
-	@OneToMany(mappedBy = "remessa")
+	@OneToMany(mappedBy = "remessa", fetch = FetchType.LAZY)
 	public List<Historico> getHistoricos() {
 		return historicos;
 	}
@@ -118,7 +118,7 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	public Boolean getSituacao() {
 		return situacao;
 	}
-	
+
 	public void setSituacao(Boolean situacao) {
 		this.situacao = situacao;
 	}

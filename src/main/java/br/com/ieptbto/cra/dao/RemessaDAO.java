@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
@@ -39,39 +40,42 @@ public class RemessaDAO extends AbstractBaseDAO {
 	@Autowired
 	InstituicaoDAO instituicaoDAO;
 
-	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio,LocalDate dataInicio, LocalDate dataFim, Usuario usuarioCorrente,
-			ArrayList<TipoArquivoEnum> tiposArquivo, ArrayList<StatusRemessa> situacoes) {
+	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
+	        Usuario usuarioCorrente, ArrayList<TipoArquivoEnum> tiposArquivo, ArrayList<StatusRemessa> situacoes) {
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "a");
 
 		if (!usuarioCorrente.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", usuarioCorrente.getInstituicao()), Restrictions.eq("instituicaoOrigem", usuarioCorrente.getInstituicao())));
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", usuarioCorrente.getInstituicao()),
+			        Restrictions.eq("instituicaoOrigem", usuarioCorrente.getInstituicao())));
 		}
-		
+
 		if (StringUtils.isNotBlank(arquivo.getNomeArquivo()))
 			criteria.add(Restrictions.ilike("a.nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
 
 		if (!tiposArquivo.isEmpty()) {
 			criteria.createAlias("a.tipoArquivo", "tipoArquivo");
 			criteria.add(filtrarRemessaPorTipoArquivo(tiposArquivo));
-		} 
-		
+		}
+
 		if (!situacoes.isEmpty()) {
 			criteria.add(filtrarSituacaoRemessa(situacoes));
 		}
-		
+
 		if (arquivo.getInstituicaoEnvio() != null) {
-			criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem", arquivo.getInstituicaoEnvio()), Restrictions.eq("instituicaoDestino", arquivo.getInstituicaoEnvio())));
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem", arquivo.getInstituicaoEnvio()),
+			        Restrictions.eq("instituicaoDestino", arquivo.getInstituicaoEnvio())));
 		}
 
 		if (municipio != null) {
 			Instituicao cartorioProtesto = instituicaoDAO.buscarCartorioPorMunicipio(municipio.getNomeMunicipio());
-			criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem", cartorioProtesto), Restrictions.eq("instituicaoDestino", cartorioProtesto)));
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem", cartorioProtesto),
+			        Restrictions.eq("instituicaoDestino", cartorioProtesto)));
 		}
 
 		if (dataInicio != null)
 			criteria.add(Restrictions.between("dataRecebimento", dataInicio, dataFim));
-		
+
 		criteria.addOrder(Order.desc("dataRecebimento"));
 		return criteria.list();
 	}
@@ -83,7 +87,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 		}
 		return disjunction;
 	}
-	
+
 	private Disjunction filtrarSituacaoRemessa(ArrayList<StatusRemessa> situacoesRemessa) {
 		Disjunction disjunction = Restrictions.disjunction();
 		for (StatusRemessa status : situacoesRemessa) {
@@ -115,7 +119,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 
 		return remessa;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Transactional(readOnly = true)
 	public Remessa buscarRemessaParaCartorio(Instituicao cartorio, String nomeArquivo) {
@@ -149,13 +153,13 @@ public class RemessaDAO extends AbstractBaseDAO {
 		remessa.setTitulos(criteriaTitulo.list());
 		return remessa;
 	}
-	
+
 	public Remessa alterarSituacaoRemessa(Remessa remessa) {
 		Transaction transaction = getBeginTransation();
-		
+
 		try {
 			update(remessa);
-		
+
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
@@ -164,8 +168,8 @@ public class RemessaDAO extends AbstractBaseDAO {
 		}
 		return remessa;
 	}
-	
-	public Remessa isRemessaEnviada(String nomeArquivo, Instituicao instituicaoOrigem){
+
+	public Remessa isRemessaEnviada(String nomeArquivo, Instituicao instituicaoOrigem) {
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "arquivo");
 		criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
@@ -205,11 +209,11 @@ public class RemessaDAO extends AbstractBaseDAO {
 		return true;
 	}
 
-	public List<Remessa> buscarRemessasPorArquivo(Instituicao instituicao,
-			Arquivo arquivo) {
+	public List<Remessa> buscarRemessasPorArquivo(Instituicao instituicao, Arquivo arquivo) {
 		Criteria criteria = getCriteria(Remessa.class);
 		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", instituicao), Restrictions.eq("instituicaoOrigem", instituicao)));
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", instituicao),
+			        Restrictions.eq("instituicaoOrigem", instituicao)));
 		}
 		criteria.createAlias("arquivo", "arquivo");
 		criteria.add(Restrictions.ilike("arquivo.nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
@@ -218,7 +222,26 @@ public class RemessaDAO extends AbstractBaseDAO {
 	}
 
 	public List<Remessa> confirmacoesPendentes(Instituicao instituicao) {
-		return new ArrayList<Remessa>();
+		List<Remessa> remessas = new ArrayList<Remessa>();
+		String q = "select tit.remessa_id from TB_TITULO tit " + "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
+		        + " INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
+		        + " where con.titulo_id IS NULL and rem.instituicao_destino_id = " + instituicao.getId() + " group by tit.remessa_id ";
+
+		Query query = getSession().createSQLQuery(q);
+		query.getQueryString();
+		List<Integer> result = query.list();
+		if (result.isEmpty()) {
+			return new ArrayList<Remessa>();
+		}
+
+		for (Integer id : result) {
+			Criteria criteria = getCriteria(Remessa.class);
+			criteria.add(Restrictions.eq("id", id));
+			remessas.add(Remessa.class.cast(criteria.uniqueResult()));
+
+		}
+
+		return remessas;
 	}
 
 	public Remessa buscarRemessaDaConfirmacao(Remessa confirmacao) {
