@@ -272,7 +272,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.like("nossoNumero", tituloConfirmacao.getNossoNumero(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("numeroTitulo", tituloConfirmacao.getNumeroTitulo(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("agenciaCodigoCedente", tituloConfirmacao.getAgenciaCodigoCedente(), MatchMode.EXACT));
-		;
+
 		criteria.addOrder(Order.desc("id"));
 		criteria.setMaxResults(1);
 		return TituloRemessa.class.cast(criteria.uniqueResult());
