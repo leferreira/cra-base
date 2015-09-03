@@ -198,6 +198,18 @@ public class RemessaMediator {
 		this.erros = erros;
 	}
 
+	public File baixarRemessaTXT(Usuario usuario, RemessaDesistenciaProtesto remessa) {
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			for (DesistenciaProtesto desistenciaProtesto : remessa.getDesistenciaProtesto()) {
+				desistenciaProtesto.setDownload(true);
+				remessaDao.alterarSituacaoDesistenciaProtesto(desistenciaProtesto);
+			}
+		}
+		remessa = remessaDao.buscarRemessaDesistenciaProtesto(remessa);
+		return processadorArquivo.processarRemessaDesistenciaProtestoTXT(remessa, usuario);
+
+	}
+
 	public File baixarRemessaTXT(Instituicao instituicao, Remessa remessa) {
 		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
 		        && !remessa.getStatusRemessa().equals(StatusRemessa.ENVIADO)) {

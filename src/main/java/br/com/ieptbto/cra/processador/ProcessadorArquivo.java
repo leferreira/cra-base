@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import br.com.ieptbto.cra.conversor.arquivo.FabricaDeArquivo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.error.CodigoErro;
@@ -110,6 +111,12 @@ public class ProcessadorArquivo extends Processador {
 		logger.info("Fim da criação de Arquivo TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 
 		return getArquivoFisico();
+	}
+
+	public File processarRemessaDesistenciaProtestoTXT(RemessaDesistenciaProtesto remessa, Usuario usuario) {
+		this.arquivo = remessa.getArquivo();
+		this.usuario = usuario;
+		return null;
 	}
 
 	public File processarArquivoTXT(Arquivo arquivo, List<Remessa> remessas) {
@@ -306,4 +313,5 @@ public class ProcessadorArquivo extends Processador {
 	public String getPathUsuario() {
 		return pathUsuario;
 	}
+
 }

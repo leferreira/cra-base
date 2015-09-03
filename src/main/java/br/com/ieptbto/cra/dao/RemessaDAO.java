@@ -22,6 +22,7 @@ import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
@@ -310,5 +311,30 @@ public class RemessaDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("download", false));
 
 		return criteria.list();
+	}
+
+	public DesistenciaProtesto alterarSituacaoDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto) {
+		Transaction transaction = getBeginTransation();
+
+		try {
+			update(desistenciaProtesto);
+
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível atualizar o estatus da DP.");
+		}
+		return desistenciaProtesto;
+
+	}
+
+	public RemessaDesistenciaProtesto buscarRemessaDesistenciaProtesto(RemessaDesistenciaProtesto entidade) {
+		RemessaDesistenciaProtesto remessa = super.buscarPorPK(entidade);
+		Criteria criteriaTitulo = getCriteria(DesistenciaProtesto.class);
+		criteriaTitulo.createAlias("desistenciaProtesto", "desistenciaProtesto");
+		criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+		remessa.setDesistenciaProtesto(criteriaTitulo.list());
+		return remessa;
 	}
 }
