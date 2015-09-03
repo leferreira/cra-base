@@ -71,6 +71,8 @@ public class RemessaMediator {
 		return remessaDao.buscarPorPK(remessa);
 	}
 
+	// ==============================================================================================
+
 	public ArquivoVO buscarArquivos(String nome) {
 		Remessa remessa = remessaDao.buscarArquivosPorNome(nome);
 		if (remessa == null) {
@@ -251,5 +253,14 @@ public class RemessaMediator {
 	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtesto(Arquivo arquivo, LocalDate dataInicio, LocalDate dataFim,
 	        ArrayList<TipoArquivoEnum> tiposArquivo, Instituicao portador, Usuario usuario) {
 		return remessaDao.buscarRemessaDesistenciaProtesto(arquivo, dataInicio, dataFim, tiposArquivo, portador, usuario);
+	}
+
+	public List<RemessaVO> buscarArquivos(String nomeArquivo, Instituicao instituicao) {
+		if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
+			List<Arquivo> arquivos = arquivoDAO.buscarArquivosAvancadoConfirmacao(nomeArquivo, instituicao);
+			return conversorRemessaArquivo.converter(arquivos);
+		}
+
+		return null;
 	}
 }

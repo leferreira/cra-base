@@ -44,6 +44,7 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	private TipoArquivo tipoArquivo;
 	private Usuario usuarioEnvio;
 	private StatusArquivo statusArquivo;
+	private List<Remessa> remessaBanco;
 
 	@Id
 	@Column(name = "ID_ARQUIVO", columnDefinition = "serial")
@@ -75,6 +76,11 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	@OneToMany(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	public List<Remessa> getRemessas() {
 		return remessas;
+	}
+
+	@OneToMany(mappedBy = "arquivoGeradoProBanco", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	public List<Remessa> getRemessaBanco() {
+		return remessaBanco;
 	}
 
 	@OneToOne(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
@@ -110,6 +116,10 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	@JoinColumn(name = "STATUS_ARQUIVO_ID", nullable = false)
 	public StatusArquivo getStatusArquivo() {
 		return statusArquivo;
+	}
+
+	public void setRemessaBanco(List<Remessa> remessaBanco) {
+		this.remessaBanco = remessaBanco;
 	}
 
 	public void setId(int id) {

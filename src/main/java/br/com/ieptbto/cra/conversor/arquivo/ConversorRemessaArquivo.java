@@ -82,4 +82,21 @@ public class ConversorRemessaArquivo {
 
 		return arquivo;
 	}
+
+	public List<RemessaVO> converter(List<Arquivo> arquivos) {
+		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
+
+		for (Arquivo arquivo : arquivos) {
+			for (Remessa remessa : arquivo.getRemessaBanco()) {
+				RemessaVO remessaVO = new RemessaVO();
+				remessaVO.setTitulos(new ArrayList<TituloVO>());
+				remessaVO.setCabecalho(CabecalhoVO.parseCabecalho(remessa.getCabecalho()));
+				remessaVO.getTitulos().addAll(converterTitulos(remessa.getTitulos()));
+				remessaVO.setRodapes(RodapeVO.parseRodape(remessa.getRodape()));
+				remessasVO.add(remessaVO);
+			}
+		}
+
+		return remessasVO;
+	}
 }

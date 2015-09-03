@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
@@ -16,6 +17,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
@@ -180,6 +182,35 @@ public class ArquivoDAO extends AbstractBaseDAO {
 				remessa.setSituacaoBatimento(false);
 			}
 		}
+	}
+
+	@Transactional(readOnly = true)
+	public List<Arquivo> buscarArquivosAvancadoConfirmacao(String nomeArquivo, Instituicao instituicao) {
+		Criteria criteria = getCriteria(Arquivo.class);
+
+		criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
+		criteria.createAlias("statusArquivo", "statusArquivo");
+		criteria.add(Restrictions.eq("statusArquivo.situacaoArquivo", SituacaoArquivo.AGUARDANDO));
+
+		List<Arquivo> arquivos = criteria.list();
+		if (arquivos != null) {
+			for (Arquivo arquivo : arquivos) {
+				Hibernate.initialize(arquivo);
+				for (Remessa remessa : arquivo.getRemessaBanco()) {
+					remessa.setTitulos(buscarTituloConfirmacaoBanco(remessa));
+				}
+			}
+		}
+
+		return arquivos;
+	}
+
+	private List<Titulo> buscarTituloConfirmacaoBanco(Remessa remessa) {
+		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.createAlias("confirmacao", "confirmacao");
+		criteria.add(Restrictions.eq("confirmacao.remessa", remessa));
+
+		return criteria.list();
 	}
 
 	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Instituicao instituicao, ArrayList<TipoArquivoEnum> tipoArquivos,
