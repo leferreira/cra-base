@@ -225,7 +225,8 @@ public class RemessaDAO extends AbstractBaseDAO {
 		List<Remessa> remessas = new ArrayList<Remessa>();
 		String q = "select tit.remessa_id from TB_TITULO tit " + "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
 		        + " INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
-		        + " where con.titulo_id IS NULL and rem.instituicao_destino_id = " + instituicao.getId() + " group by tit.remessa_id ";
+		        + " where con.titulo_id IS NULL and rem.instituicao_destino_id = " + instituicao.getId()
+		        + " and tit.id_titulo > 37085 group by tit.remessa_id ";
 
 		Query query = getSession().createSQLQuery(q);
 		query.getQueryString();

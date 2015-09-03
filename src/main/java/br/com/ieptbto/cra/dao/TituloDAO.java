@@ -235,11 +235,12 @@ public class TituloDAO extends AbstractBaseDAO {
 	}
 
 	public TituloRemessa buscaTituloRetornoSalvo(Retorno tituloRetorno) {
+		Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio());
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.add(Restrictions.ilike("codigoPortador", tituloRetorno.getCodigoPortador(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("nossoNumero", tituloRetorno.getNossoNumero().trim(), MatchMode.EXACT));
 		criteria.createAlias("confirmacao", "confirmacao");
-		criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", tituloRetorno.getNumeroProtocoloCartorio(), MatchMode.ANYWHERE));
+		criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", numeroProtocolo.toString(), MatchMode.ANYWHERE));
 
 		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
@@ -337,11 +338,12 @@ public class TituloDAO extends AbstractBaseDAO {
 	}
 
 	public Retorno buscarTituloProtestado(String numeroProtocolo, String codigoIBGE) {
+		Integer numProtocolo = Integer.parseInt(numeroProtocolo);
 		Criteria criteria = getCriteria(Retorno.class);
 		criteria.createAlias("titulo", "titulo");
 		criteria.createAlias("cabecalho", "cabecalho");
 		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", codigoIBGE));
-		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numeroProtocolo, MatchMode.EXACT));
+		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 		criteria.setMaxResults(1);
 		return Retorno.class.cast(criteria.uniqueResult());
 	}
@@ -368,9 +370,11 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	public TituloRemessa buscarTituloDesistenciaProtesto(String numeroProtocolo, String numeroTitulo, LocalDate dataProtocolagem,
 	        BigDecimal valorTitulo) {
+		Integer numProtocolo = Integer.parseInt(numeroProtocolo);
+
 		Criteria criteria = getCriteria(Confirmacao.class);
-		criteria.add(Restrictions.eq("numeroTitulo", numeroTitulo));
-		criteria.add(Restrictions.eq("numeroProtocoloCartorio", numeroProtocolo));
+		criteria.add(Restrictions.ilike("numeroTitulo", numeroTitulo, MatchMode.EXACT));
+		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 		criteria.add(Restrictions.eq("dataProtocolo", dataProtocolagem));
 		criteria.createAlias("titulo", "titulo");
 		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());

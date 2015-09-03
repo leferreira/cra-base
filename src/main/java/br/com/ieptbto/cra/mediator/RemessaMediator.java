@@ -231,7 +231,6 @@ public class RemessaMediator {
 	}
 
 	public List<Remessa> confirmacoesPendentes(Instituicao instituicao) {
-//		return remessaDao.confirmacoesPendentes(instituicao);
-		return new ArrayList<Remessa>();
+		return remessaDao.confirmacoesPendentes(instituicao);
 	}
 }
