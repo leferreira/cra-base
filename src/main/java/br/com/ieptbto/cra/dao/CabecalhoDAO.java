@@ -26,7 +26,9 @@ public class CabecalhoDAO extends AbstractBaseDAO {
 
 		criteria.add(Restrictions.eq("codigoMunicipio", cabecalhoRemessa.getCodigoMunicipio()));
 		criteria.add(Restrictions.eq("numeroCodigoPortador", cabecalhoRemessa.getNumeroCodigoPortador()));
+		criteria.add(Restrictions.eq("numeroCodigoPortador", cabecalhoRemessa.getNumeroCodigoPortador()));
 		criteria.add(Restrictions.eq("numeroSequencialRemessa", cabecalhoRemessa.getNumeroSequencialRemessa()));
+		criteria.add(Restrictions.eq("identificacaoTransacaoTipo", cabecalhoRemessa.getIdentificacaoTransacaoTipo()));
 
 		if (criteria.uniqueResult() == null || criteria.list().isEmpty()) {
 			return true;
