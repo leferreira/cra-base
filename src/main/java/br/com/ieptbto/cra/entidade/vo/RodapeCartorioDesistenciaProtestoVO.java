@@ -28,7 +28,7 @@ public class RodapeCartorioDesistenciaProtestoVO extends AbstractArquivoVO {
 
 	@XmlAttribute(name = "t03")
 	@IAtributoArquivo(ordem = 3, posicao = 4, tamanho = 5, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Quantidade de Desistencias.", obrigatoriedade = true)
-	private String quantidadeDesistencias;
+	private String somaTotalCancelamentoDesistencia;
 
 	@XmlAttribute(name = "t04")
 	@IAtributoArquivo(ordem = 4, posicao = 9, tamanho = 114, formato = "", descricao = "Reservado.", obrigatoriedade = true)
@@ -46,8 +46,11 @@ public class RodapeCartorioDesistenciaProtestoVO extends AbstractArquivoVO {
 		return codigoCartorio;
 	}
 
-	public String getQuantidadeDesistencias() {
-		return quantidadeDesistencias;
+	public String getSomaTotalCancelamentoDesistencia() {
+		if (somaTotalCancelamentoDesistencia == null) {
+			somaTotalCancelamentoDesistencia = "0";
+		}
+		return somaTotalCancelamentoDesistencia;
 	}
 
 	public String getReservado() {
@@ -66,8 +69,8 @@ public class RodapeCartorioDesistenciaProtestoVO extends AbstractArquivoVO {
 		this.codigoCartorio = codigoCartorio;
 	}
 
-	public void setQuantidadeDesistencias(String quantidadeDesistencias) {
-		this.quantidadeDesistencias = quantidadeDesistencias;
+	public void setSomaTotalCancelamentoDesistencia(String somaTotalCancelamentoDesistencia) {
+		this.somaTotalCancelamentoDesistencia = somaTotalCancelamentoDesistencia;
 	}
 
 	public void setReservado(String reservado) {

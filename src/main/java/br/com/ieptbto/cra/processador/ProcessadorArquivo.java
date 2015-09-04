@@ -116,7 +116,15 @@ public class ProcessadorArquivo extends Processador {
 	public File processarRemessaDesistenciaProtestoTXT(RemessaDesistenciaProtesto remessa, Usuario usuario) {
 		this.arquivo = remessa.getArquivo();
 		this.usuario = usuario;
-		return null;
+
+		logger.info("Início do criação de Arquivo DP TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+		verificaDiretorio();
+		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + getArquivo().getNomeArquivo()));
+		fabricaDeArquivo.processarArquivoPersistenteDesistenciaProtesto(remessa, getArquivoFisico(), getErros());
+
+		logger.info("Fim da criação de Arquivo DP TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+
+		return getArquivoFisico();
 	}
 
 	public File processarArquivoTXT(Arquivo arquivo, List<Remessa> remessas) {

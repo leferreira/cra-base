@@ -16,9 +16,13 @@ import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.RodapeArquivo;
 import br.com.ieptbto.cra.entidade.RodapeCartorio;
 import br.com.ieptbto.cra.entidade.vo.ArquivoDesistenciaProtestoVO;
+import br.com.ieptbto.cra.entidade.vo.CabecalhoArquivoDesistenciaProtestoVO;
+import br.com.ieptbto.cra.entidade.vo.CabecalhoCartorioDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.DesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.RegistroDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaDesistenciaProtestoVO;
+import br.com.ieptbto.cra.entidade.vo.RodapeArquivoDesistenciaProtestoVO;
+import br.com.ieptbto.cra.entidade.vo.RodapeCartorioDesistenciaProtestoVO;
 
 /**
  * 
@@ -70,4 +74,36 @@ public class ConversorArquivoDesistenciaProtesto {
 
 		return remessa;
 	}
+
+	public RemessaDesistenciaProtestoVO converter(RemessaDesistenciaProtesto remessaDesistenciaProtesto) {
+		RemessaDesistenciaProtestoVO remessaVO = new RemessaDesistenciaProtestoVO();
+		remessaVO.setPedidoDesistencias(new ArrayList<DesistenciaProtestoVO>());
+
+		remessaVO.setCabecalhoArquivo(new CabecalhoArquivoDesistenciaProtestoConversor().converter(
+		        remessaDesistenciaProtesto.getCabecalho(), CabecalhoArquivoDesistenciaProtestoVO.class));
+
+		remessaVO.setRodapeArquivo(new RodapeArquivoDeistenciaProtestoVOConversor().converter(remessaDesistenciaProtesto.getRodape(),
+		        RodapeArquivoDesistenciaProtestoVO.class));
+
+		for (DesistenciaProtesto desistencia : remessaDesistenciaProtesto.getDesistenciaProtesto()) {
+			DesistenciaProtestoVO desistenciaVO = new DesistenciaProtestoVO();
+			desistenciaVO.setRegistroDesistenciaProtesto(new ArrayList<RegistroDesistenciaProtestoVO>());
+			desistenciaVO.setRegistroDesistenciaProtesto(new ArrayList<RegistroDesistenciaProtestoVO>());
+			desistenciaVO.setCabecalhoCartorio(new CabecalhoCartorioDesistenciaProtestoConversor().converter(
+			        desistencia.getCabecalhoCartorio(), CabecalhoCartorioDesistenciaProtestoVO.class));
+
+			for (PedidoDesistenciaCancelamento pedido : desistencia.getDesistencias()) {
+				RegistroDesistenciaProtestoVO registro = new RegistroDesistenciaProtestoConversor().converter(pedido,
+				        RegistroDesistenciaProtestoVO.class);
+				desistenciaVO.getRegistroDesistenciaProtesto().add(registro);
+			}
+
+			desistenciaVO.setRodapeCartorio(new RodapeCartorioDesistenciaProtestoConversor().converter(desistencia.getRodapeCartorio(),
+			        RodapeCartorioDesistenciaProtestoVO.class));
+			remessaVO.getPedidoDesistencias().add(desistenciaVO);
+		}
+
+		return remessaVO;
+	}
+
 }

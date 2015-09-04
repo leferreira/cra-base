@@ -67,10 +67,13 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	private GeradorDeArquivosTXT geradorDeArquivosTXT;
 	@Autowired
 	private TituloDAO tituloDAO;
+	@Autowired
+	private ConversorArquivoDesistenciaProtesto conversorArquivoDesistenciaProtesto;
 	private List<Exception> errosCabecalho;
 	private Remessa remessa;
 	private List<Remessa> remessas;
 	private DesistenciaProtesto desistenciaProtesto;
+	private RemessaDesistenciaProtesto remessaDesistenciaProtesto;
 
 	public FabricaDeArquivoTXT fabrica(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
 		this.arquivoFisico = arquivoFisico;
@@ -91,7 +94,22 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 		return this;
 	}
-	
+
+	public File fabricaArquivoDesistenciaProtestoTXT(File arquivoFisico, RemessaDesistenciaProtesto remessa, List<Exception> erros) {
+		this.arquivoFisico = arquivoFisico;
+		this.erros = erros;
+		this.remessaDesistenciaProtesto = remessa;
+		return gerarArquivoDesistenciaProtesto();
+	}
+
+	private File gerarArquivoDesistenciaProtesto() {
+		List<Arquivo> arquivos = new ArrayList<Arquivo>();
+		arquivos.add(getArquivo());
+
+		return geradorDeArquivosTXT.gerar(conversorArquivoDesistenciaProtesto.converter(this.remessaDesistenciaProtesto),
+		        getArquivoFisico());
+	}
+
 	public FabricaDeArquivoTXT fabricaArquivoTXT(File arquivoTXT, List<Remessa> remessas, List<Exception> erros) {
 		this.arquivoFisico = arquivoTXT;
 		this.erros = erros;
@@ -136,10 +154,10 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		gerarTXT(remessaVO);
 
 	}
-	
+
 	public void converterParaArquivoTXT() {
 		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
-		
+
 		for (Remessa remessa : getRemessas()) {
 			setArquivo(remessa.getArquivo());
 			RemessaVO remessaVO = new RemessaVO();
@@ -148,7 +166,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 			remessaVO.setCabecalho(new CabecalhoConversor().converter(remessa.getCabecalho(), CabecalhoVO.class));
 			remessaVO.setRodapes(new RodapeConversor().converter(remessa.getRodape(), RodapeVO.class));
-			
+
 			int contSequencial = 2;
 			for (Titulo titulo : remessa.getTitulos()) {
 				TituloVO tituloVO = new TituloVO();
@@ -172,7 +190,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 			remessaVO.setIdentificacaoRegistro(remessa.getCabecalho().getIdentificacaoRegistro().getConstante());
 			remessaVO.setTipoArquivo(remessa.getArquivo().getTipoArquivo());
 			remessaVO.getRodape().setNumeroSequencialRegistroArquivo(String.valueOf(contSequencial));
-			
+
 			remessasVO.add(remessaVO);
 		}
 
@@ -182,7 +200,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	private void gerarTXT(RemessaVO remessaVO) {
 		geradorDeArquivosTXT.gerar(remessaVO, getArquivoFisico());
 	}
-	
+
 	private void gerarTXT(List<RemessaVO> remessasVO) {
 		geradorDeArquivosTXT.gerar(remessasVO, getArquivoFisico());
 	}

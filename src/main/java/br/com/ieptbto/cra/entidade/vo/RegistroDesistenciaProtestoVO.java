@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.StringUtils;
 
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
+import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
 
 /**
  * 
@@ -63,7 +64,7 @@ public class RegistroDesistenciaProtestoVO extends AbstractArquivoVO {
 	@XmlAttribute(name = "t11")
 	private String numeroControleRecebimento;
 
-	@IAtributoArquivo(ordem = 12, posicao = 123, tamanho = 5, descricao = "sequencia do registro", obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 12, posicao = 123, tamanho = 5, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Sequência do Registro.", obrigatoriedade = true)
 	@XmlAttribute(name = "t12")
 	private String sequenciaRegistro;
 

@@ -64,7 +64,7 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 		return identificacaoRegistro;
 	}
 
-	@Column(name = "NUMERO_PROTOCOLO", length = 10)
+	@Column(name = "NUMERO_PROTOCOLO", length = 11)
 	public String getNumeroProtocolo() {
 		if (numeroProtocolo == null) {
 			numeroProtocolo = StringUtils.EMPTY;
@@ -77,7 +77,7 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 		return dataProtocolagem;
 	}
 
-	@Column(name = "NUMERO_TITULO", length = 10)
+	@Column(name = "NUMERO_TITULO", length = 11)
 	public String getNumeroTitulo() {
 		if (numeroTitulo == null) {
 			numeroTitulo = StringUtils.EMPTY;

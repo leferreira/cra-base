@@ -71,8 +71,6 @@ public class RemessaMediator {
 		return remessaDao.buscarPorPK(remessa);
 	}
 
-	// ==============================================================================================
-
 	public ArquivoVO buscarArquivos(String nome) {
 		Remessa remessa = remessaDao.buscarArquivosPorNome(nome);
 		if (remessa == null) {
@@ -198,14 +196,20 @@ public class RemessaMediator {
 		this.erros = erros;
 	}
 
-	public File baixarRemessaTXT(Usuario usuario, RemessaDesistenciaProtesto remessa) {
+	public File baixarRemessaTXT(Usuario usuario, DesistenciaProtesto desistenciaProtesto) {
 		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			for (DesistenciaProtesto desistenciaProtesto : remessa.getDesistenciaProtesto()) {
-				desistenciaProtesto.setDownload(true);
-				remessaDao.alterarSituacaoDesistenciaProtesto(desistenciaProtesto);
-			}
+			// remessaDao.alterarSituacaoDesistenciaProtesto(desistenciaProtesto,
+			// true);
 		}
-		remessa = remessaDao.buscarRemessaDesistenciaProtesto(remessa);
+
+		desistenciaProtesto = remessaDao.buscarRemessaDesistenciaProtesto(desistenciaProtesto);
+
+		RemessaDesistenciaProtesto remessa = new RemessaDesistenciaProtesto();
+		remessa.setCabecalho(desistenciaProtesto.getRemessaDesistenciaProtesto().getCabecalho());
+		remessa.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
+		remessa.getDesistenciaProtesto().add(desistenciaProtesto);
+		remessa.setRodape(desistenciaProtesto.getRemessaDesistenciaProtesto().getRodape());
+		remessa.setArquivo(desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo());
 		return processadorArquivo.processarRemessaDesistenciaProtestoTXT(remessa, usuario);
 
 	}

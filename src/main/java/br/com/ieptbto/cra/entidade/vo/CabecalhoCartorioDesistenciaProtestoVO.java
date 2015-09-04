@@ -23,7 +23,7 @@ public class CabecalhoCartorioDesistenciaProtestoVO extends AbstractArquivoVO {
 	private String identificacaoRegistro;
 
 	@XmlAttribute(name = "h02")
-	@IAtributoArquivo(ordem = 2, posicao = 2, tamanho = 2, descricao = "Identificar o código do cartório.", obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 2, posicao = 2, tamanho = 2, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Identificar o código do cartório.", obrigatoriedade = true)
 	private String codigoCartorio;
 
 	@XmlAttribute(name = "h03")

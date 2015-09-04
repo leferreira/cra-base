@@ -22,7 +22,6 @@ import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
@@ -313,15 +312,18 @@ public class RemessaDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public DesistenciaProtesto alterarSituacaoDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto) {
-		Transaction transaction = getBeginTransation();
-
+	public DesistenciaProtesto alterarSituacaoDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto, boolean download) {
 		try {
-			update(desistenciaProtesto);
+			Criteria criteria = getCriteria(DesistenciaProtesto.class);
+			criteria.add(Restrictions.eq("id", desistenciaProtesto.getId()));
 
-			transaction.commit();
+			desistenciaProtesto = DesistenciaProtesto.class.cast(criteria.uniqueResult());
+			Hibernate.initialize(desistenciaProtesto.getCabecalhoCartorio());
+			Hibernate.initialize(desistenciaProtesto.getRodapeCartorio());
+
+			desistenciaProtesto.setDownload(download);
+			update(desistenciaProtesto);
 		} catch (Exception ex) {
-			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
 			throw new InfraException("Não foi possível atualizar o estatus da DP.");
 		}
@@ -329,12 +331,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 
 	}
 
-	public RemessaDesistenciaProtesto buscarRemessaDesistenciaProtesto(RemessaDesistenciaProtesto entidade) {
-		RemessaDesistenciaProtesto remessa = super.buscarPorPK(entidade);
-		Criteria criteriaTitulo = getCriteria(DesistenciaProtesto.class);
-		criteriaTitulo.createAlias("desistenciaProtesto", "desistenciaProtesto");
-		criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-		remessa.setDesistenciaProtesto(criteriaTitulo.list());
-		return remessa;
+	public DesistenciaProtesto buscarRemessaDesistenciaProtesto(DesistenciaProtesto entidade) {
+		return super.buscarPorPK(entidade);
 	}
 }

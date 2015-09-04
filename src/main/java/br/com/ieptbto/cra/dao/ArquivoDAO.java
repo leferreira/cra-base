@@ -121,6 +121,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					List<PedidoDesistenciaCancelamento> pedidosDesistencia = desistenciaProtestos.getDesistencias();
 					desistenciaProtestos.setDesistencias(new ArrayList<PedidoDesistenciaCancelamento>());
 					desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
+					desistenciaProtestos.setDownload(false);
 					save(desistenciaProtestos);
 					for (PedidoDesistenciaCancelamento pedido : pedidosDesistencia) {
 						pedido.setDesistenciaProtesto(desistenciaProtestos);
