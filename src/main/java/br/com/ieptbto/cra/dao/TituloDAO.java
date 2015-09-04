@@ -240,9 +240,12 @@ public class TituloDAO extends AbstractBaseDAO {
 		Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio());
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.add(Restrictions.ilike("codigoPortador", tituloRetorno.getCodigoPortador(), MatchMode.EXACT));
+		criteria.add(Restrictions.ilike("agenciaCodigoCedente", tituloRetorno.getAgenciaCodigoCedente(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("nossoNumero", tituloRetorno.getNossoNumero().trim(), MatchMode.EXACT));
 		criteria.createAlias("confirmacao", "confirmacao");
 		criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", numeroProtocolo.toString(), MatchMode.ANYWHERE));
+
+		criteria.setMaxResults(1);
 
 		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
