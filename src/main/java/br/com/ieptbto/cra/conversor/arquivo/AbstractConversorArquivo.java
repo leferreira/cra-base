@@ -64,6 +64,7 @@ public abstract class AbstractConversorArquivo<R extends AbstractArquivoVO, E ex
 		PropertyDescriptor[] propertyDescriptorsVO = propertyAccessEntidadeVO.getPropertyDescriptors();
 		for (PropertyDescriptor propertyDescriptorVO : propertyDescriptorsVO) {
 			String propertyName = propertyDescriptorVO.getName();
+			System.out.println(propertyName);
 			if (propertyAccessEntidadeVO.isReadableProperty(propertyName) && propertyAccessEntidade.isWritableProperty(propertyName)) {
 				String valor = String.class.cast(propertyAccessEntidadeVO.getPropertyValue(propertyName));
 				Class<?> propertyType = propertyAccessEntidade.getPropertyType(propertyName);

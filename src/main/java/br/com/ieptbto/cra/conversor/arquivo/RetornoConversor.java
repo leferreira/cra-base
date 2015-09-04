@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.conversor.arquivo;
 
 import java.beans.PropertyDescriptor;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
@@ -41,6 +42,39 @@ public class RetornoConversor extends AbstractConversorArquivo<TituloVO, Retorno
 			}
 
 		}
+		
+		/*
+		 * #TODO GAMBIARRA PARA NÃO TER OS CAMPOS DO RETORNO
+		 * **/
+		tituloVO.setNomeCedenteFavorecido(StringUtils.leftPad(" ", 45));
+		tituloVO.setNomeSacadorVendedor(StringUtils.leftPad(" ", 45));
+		tituloVO.setDocumentoSacador(StringUtils.leftPad(" ", 14));
+		tituloVO.setEnderecoSacadorVendedor(StringUtils.leftPad(" ", 45));
+		tituloVO.setCepSacadorVendedor(StringUtils.leftPad(" ", 8));
+		tituloVO.setCidadeSacadorVendedor(StringUtils.leftPad(" ", 20));
+		tituloVO.setUfSacadorVendedor(StringUtils.leftPad(" ", 2));
+		tituloVO.setEspecieTitulo(StringUtils.leftPad(" ", 3));
+		tituloVO.setNumeroTitulo(StringUtils.leftPad(" ", 11));
+		tituloVO.setDataEmissaoTitulo(StringUtils.leftPad(" ", 8));
+		tituloVO.setDataVencimentoTitulo(StringUtils.leftPad(" ", 8));
+		tituloVO.setPracaProtesto(StringUtils.leftPad(" ", 20));
+		tituloVO.setTipoEndoso(StringUtils.leftPad(" ", 1));
+		tituloVO.setInformacaoSobreAceite(StringUtils.leftPad(" ", 1));
+		tituloVO.setNumeroControleDevedor(StringUtils.leftPad(" ", 1));
+		tituloVO.setNomeDevedor(StringUtils.leftPad(" ", 45));
+		tituloVO.setTipoIdentificacaoDevedor(StringUtils.leftPad(" ", 3));
+		tituloVO.setNumeroIdentificacaoDevedor(StringUtils.leftPad(" ", 14));
+		tituloVO.setDocumentoDevedor(StringUtils.leftPad(" ", 11));
+		tituloVO.setEnderecoDevedor(StringUtils.leftPad(" ", 45));
+		tituloVO.setCepDevedor(StringUtils.leftPad(" ", 8));
+		tituloVO.setCidadeDevedor(StringUtils.leftPad(" ", 20));
+		tituloVO.setUfDevedor(StringUtils.leftPad(" ", 2));
+		tituloVO.setNumeroOperacaoBanco(StringUtils.leftPad(" ", 5));
+		tituloVO.setNumeroContratoBanco(StringUtils.leftPad(" ", 15));
+		tituloVO.setNumeroParcelaContrato(StringUtils.leftPad(" ", 3));
+		tituloVO.setTipoLetraCambio(StringUtils.leftPad(" ", 1));
+		tituloVO.setProtestoMotivoFalencia(StringUtils.leftPad(" ", 1));
+		tituloVO.setInstrumentoProtesto(StringUtils.leftPad(" ", 1));
 
 		tituloVO.setValorCustaCartorio(new BigDecimalConversor().getValorConvertidoParaString(entidade.getValorCustaCartorio()));
 		tituloVO.setTipoOcorrencia(entidade.getTipoOcorrencia());

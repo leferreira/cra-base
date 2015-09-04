@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
@@ -397,6 +398,9 @@ public class TituloVO extends AbstractArquivoVO {
 	}
 
 	public String getValorCustasCartorioDistribuidor() {
+		if (this.getTipoOcorrencia().equals(StringUtils.EMPTY) || this.getTipoOcorrencia().equals("")) {
+			valorCustasCartorioDistribuidor = "0000000000";
+		}
 		return valorCustasCartorioDistribuidor;
 	}
 
