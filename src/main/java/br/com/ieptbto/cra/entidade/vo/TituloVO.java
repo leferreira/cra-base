@@ -383,8 +383,8 @@ public class TituloVO extends AbstractArquivoVO {
 	}
 
 	public String getDataOcorrencia() {
-		if (this.getTipoOcorrencia().equals(" ") || this.getTipoOcorrencia().equals("0")) {
-			dataOcorrencia = "00000000";
+		if (dataOcorrencia == null) {
+			dataOcorrencia = StringUtils.EMPTY;
 		}
 		return dataOcorrencia;
 	}
@@ -398,8 +398,8 @@ public class TituloVO extends AbstractArquivoVO {
 	}
 
 	public String getValorCustasCartorioDistribuidor() {
-		if (this.getTipoOcorrencia().equals(StringUtils.EMPTY) || this.getTipoOcorrencia().equals("")) {
-			valorCustasCartorioDistribuidor = "0000000000";
+		if (valorCustasCartorioDistribuidor == null) {
+			valorCustasCartorioDistribuidor = StringUtils.EMPTY;
 		}
 		return valorCustasCartorioDistribuidor;
 	}
