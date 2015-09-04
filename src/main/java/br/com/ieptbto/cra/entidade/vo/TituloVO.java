@@ -382,6 +382,9 @@ public class TituloVO extends AbstractArquivoVO {
 	}
 
 	public String getDataOcorrencia() {
+		if (this.getTipoOcorrencia().equals(" ") || this.getTipoOcorrencia().equals("0")) {
+			dataOcorrencia = "00000000";
+		}
 		return dataOcorrencia;
 	}
 

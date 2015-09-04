@@ -54,9 +54,7 @@ public class GeradorDeArquivosTXT extends Gerador {
 	}
 	
 	public void gerar(List<RemessaVO> remessasVO, File arquivoTXT) {
-//		HashMap<Integer, String> mapTitulos = new HashMap<Integer, String>();
 		try {
-//			Map<Integer, String> titulos = new HashMap<Integer, String>();
 			BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivoTXT));
 
 			for (RemessaVO remessaVO : remessasVO) {
