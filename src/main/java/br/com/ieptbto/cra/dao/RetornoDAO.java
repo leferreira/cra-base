@@ -42,21 +42,23 @@ public class RetornoDAO extends AbstractBaseDAO {
 	public List<Remessa> buscarRetornosParaBatimento(){
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "arquivo");
+		criteria.createAlias("instituicaoDestino", "instituicaoDestino");
 		criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
 		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.RETORNO));
 		criteria.add(Restrictions.eq("situacaoBatimento", false));
-		criteria.addOrder(Order.asc("instituicaoDestino"));
+		criteria.addOrder(Order.asc("instituicaoDestino.nomeFantasia"));
 		return criteria.list();
 	}
 
 	public List<Remessa> buscarRetornosConfirmados(){
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "arquivo");
+		criteria.createAlias("instituicaoDestino", "instituicaoDestino");
 		criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
 		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.RETORNO));
 		criteria.add(Restrictions.eq("situacaoBatimento", true));
 		criteria.add(Restrictions.eq("situacao", false));
-		criteria.addOrder(Order.asc("instituicaoDestino"));
+		criteria.addOrder(Order.asc("instituicaoDestino.nomeFantasia"));
 		return criteria.list();
 	}
 	

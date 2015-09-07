@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.dao;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -223,21 +224,50 @@ public class RemessaDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
+	@SuppressWarnings("rawtypes")
 	public List<Remessa> confirmacoesPendentes(Instituicao instituicao) {
 		List<Remessa> remessas = new ArrayList<Remessa>();
-		String q = "select tit.remessa_id from TB_TITULO tit " + "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
-		        + " INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
-		        + " where con.titulo_id IS NULL and rem.instituicao_destino_id = " + instituicao.getId()
-		        + " and tit.id_titulo > 37085 group by tit.remessa_id ";
-
-		Query query = getSession().createSQLQuery(q);
-		query.getQueryString();
-		List<Integer> result = query.list();
-		if (result.isEmpty()) {
-			return new ArrayList<Remessa>();
+		String q = "";
+		
+		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			q = "select mun.nome_municipio,t.remessa_id "
+					+ "from TB_TITULO t "
+					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
+					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_destino_id=ins.id_instituicao "
+					+ "INNER JOIN tb_instituicao AS org ON rem.instituicao_origem_id=org.id_instituicao "
+					+ "INNER JOIN tb_municipio AS mun ON ins.municipio_id=mun.id_municipio "
+					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) "
+					+ "from TB_TITULO tit "
+					+ "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
+					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
+					+ "where con.titulo_id IS NULL "
+					+ "and tit.id_titulo > 37085) "
+					+ "AND org.tipo_instituicao_id<>4 "
+					+ "GROUP BY mun.nome_municipio,t.remessa_id "
+					+ "ORDER BY mun.nome_municipio";
+		} else {
+			q = "select ins.nome_fantasia,t.remessa_id "
+					+ "from TB_TITULO t "
+					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
+					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_origem_id=ins.id_instituicao "
+					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) "
+					+ "from TB_TITULO tit "
+					+ "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
+					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
+					+ "where con.titulo_id IS NULL "
+					+ "and tit.id_titulo > 37085 "
+					+ "AND rem.instituicao_destino_id="+ instituicao.getId() +") "
+					+ "AND ins.tipo_instituicao_id<>4 "
+					+ "GROUP BY ins.nome_fantasia, t.remessa_id "
+					+ "ORDER BY ins.nome_fantasia";
 		}
+		
+		Query query = getSession().createSQLQuery(q);
+		Iterator iterator = query.list().iterator();
 
-		for (Integer id : result) {
+		while (iterator.hasNext()) {
+			Object[] posicao = (Object[]) iterator.next();
+			Integer id = Integer.class.cast(posicao[1]);
 			Criteria criteria = getCriteria(Remessa.class);
 			criteria.add(Restrictions.eq("id", id));
 			remessas.add(Remessa.class.cast(criteria.uniqueResult()));
