@@ -23,7 +23,6 @@ public class GrupoUsuarioMediator {
 	}
 
 	public List<GrupoUsuario> listaDeGrupos() {
-		List<GrupoUsuario> lista = grupoUsuarioDAO.getAll(GrupoUsuario.class);
-		return lista;
+		return grupoUsuarioDAO.listarGrupos();
 	}
 }

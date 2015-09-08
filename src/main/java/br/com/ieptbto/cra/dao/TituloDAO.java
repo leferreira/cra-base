@@ -93,14 +93,15 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
 			criteria.add(Restrictions.eq("remessa", remessa));
+			criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("nomeDevedor"));
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
 			criteria.createAlias("confirmacao", "confirmacao");
 			criteria.add(Restrictions.eq("confirmacao.remessa", remessa));
-			criteria.addOrder(Order.asc("confirmacao.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
+			criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("confirmacao.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
 			criteria.createAlias("retorno", "retorno");
 			criteria.add(Restrictions.eq("retorno.remessa", remessa));
-			criteria.addOrder(Order.asc("retorno.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
+			criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("retorno.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
 		} 
 
 		if (!instituicaoCorrente.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {

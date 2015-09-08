@@ -8,26 +8,17 @@
 	<parameter name="DATA_ENVIO" class="java.lang.String"/>
 	<parameter name="INSTITUICAO" class="java.lang.String"/>
 	<parameter name="TOTAL_TITULOS" class="java.lang.Integer"/>
-	<parameter name="TOTAL_PAGOS" class="java.math.BigDecimal"/>
-	<parameter name="TOTAL_CUSTAS" class="java.math.BigDecimal"/>
-	<parameter name="QTD_PAGOS" class="java.lang.Integer"/>
-	<parameter name="QTD_PROTESTADOS_RETIRADOS" class="java.lang.Integer"/>
+	<parameter name="VALOR_TOTAL" class="java.math.BigDecimal"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
 	<field name="nossoNumero" class="java.lang.String"/>
 	<field name="nomeDevedor" class="java.lang.String"/>
-	<field name="documentoDevedor" class="java.lang.String"/>
 	<field name="nomeSacadorVendedor" class="java.lang.String"/>
-	<field name="documentoSacador" class="java.lang.String"/>
 	<field name="numeroTitulo" class="java.lang.String"/>
 	<field name="valorTitulo" class="java.math.BigDecimal"/>
 	<field name="saldoTitulo" class="java.math.BigDecimal"/>
 	<field name="pracaProtesto" class="java.lang.String"/>
-	<field name="situacaoTitulo" class="java.lang.String"/>
-	<field name="numeroProtocoloCartorio" class="java.lang.String"/>
-	<field name="dataOcorrencia" class="java.lang.String"/>
-	<field name="valorCustaCartorio" class="java.math.BigDecimal"/>
 	<background>
 		<band/>
 	</background>
@@ -40,7 +31,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font size="16" isBold="true"/>
 				</textElement>
-				<text><![CDATA[RELATÓRIO DE CONFIRMAÇÃO]]></text>
+				<text><![CDATA[RELATÓRIO DE REMESSA]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="378" y="30" width="422" height="30" uuid="4cf31aab-7879-475e-8d24-61d0da5de42e"/>
@@ -49,6 +40,10 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{INSTITUICAO}]]></textFieldExpression>
 			</textField>
+			<image>
+				<reportElement x="0" y="0" width="378" height="60" uuid="1293df19-89f6-43bd-ba90-ee5e2cf8c8d5"/>
+				<imageExpression><![CDATA["//usr//share//tomcat//webapps//img//ieptb.gif"]]></imageExpression>
+			</image>
 		</band>
 	</title>
 	<pageHeader>
@@ -87,7 +82,7 @@
 				</reportElement>
 			</rectangle>
 			<staticText>
-				<reportElement x="102" y="0" width="81" height="25" uuid="c9ca20fc-d999-4def-84d5-b2bbc87aade5">
+				<reportElement x="1" y="0" width="81" height="25" uuid="c9ca20fc-d999-4def-84d5-b2bbc87aade5">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="local_mesure_unitwidth" value="pixel"/>
@@ -99,7 +94,7 @@
 				<text><![CDATA[N. NÚMERO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="250" y="0" width="192" height="25" uuid="9d497a38-e669-47ea-9f13-499c17eb7153">
+				<reportElement x="149" y="0" width="185" height="25" uuid="9d497a38-e669-47ea-9f13-499c17eb7153">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="local_mesure_unitwidth" value="pixel"/>
@@ -111,22 +106,7 @@
 				<text><![CDATA[DEVEDOR]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="442" y="0" width="81" height="25" uuid="b09695a9-6dee-4932-bdad-e5a004a68e2b">
-					<property name="local_mesure_unitheight" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="local_mesure_unity" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<property name="local_mesure_unitx" value="pixel"/>
-					<property name="local_mesure_unitwidth" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[PROTOCOLO]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="183" y="0" width="65" height="25" uuid="c9d06403-069f-42cc-a31c-b863ecf5a362">
+				<reportElement x="83" y="0" width="65" height="25" uuid="c9d06403-069f-42cc-a31c-b863ecf5a362">
 					<property name="local_mesure_unitheight" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="local_mesure_unity" value="pixel"/>
@@ -141,32 +121,37 @@
 				<text><![CDATA[Nº TÍTULO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="707" y="0" width="93" height="24" uuid="1ac1dc20-0259-4ca1-8ccd-d24ef9a58d72"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[VALOR CUSTAS]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="613" y="0" width="83" height="24" uuid="dcae449f-0313-46c0-8f0b-ec33c038e2c4"/>
+				<reportElement x="717" y="0" width="83" height="24" uuid="dcae449f-0313-46c0-8f0b-ec33c038e2c4"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[VALOR SALDO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="526" y="0" width="72" height="24" uuid="71dc46ed-4e1b-4467-afd8-e72aa88cf5b4"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="338" y="0" width="175" height="25" uuid="5893c9be-79ad-49b1-b3cc-e0c4808fc388">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[DATA SITUAÇÃO]]></text>
+				<text><![CDATA[SACADOR]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="5" y="-1" width="87" height="25" uuid="3b6ebd01-c98c-45fc-afee-648e7abcb520"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="635" y="0" width="83" height="24" uuid="f24277e1-44a7-4671-ad8e-1e08a66cf6e0"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[SITUAÇÃO]]></text>
+				<text><![CDATA[VALOR TÍTULO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="520" y="1" width="114" height="24" uuid="ae4303af-b34d-400a-b03c-f32950382d72"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PRAÇA ]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -185,7 +170,7 @@
 				</reportElement>
 			</rectangle>
 			<textField>
-				<reportElement x="102" y="0" width="81" height="20" uuid="fef96574-8c53-4ac0-92bf-dd84a8d61cae">
+				<reportElement x="1" y="0" width="81" height="20" uuid="fef96574-8c53-4ac0-92bf-dd84a8d61cae">
 					<property name="local_mesure_unity" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -196,7 +181,7 @@
 				<textFieldExpression><![CDATA[$F{nossoNumero}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="250" y="0" width="192" height="20" uuid="61db1e44-0bc4-4f38-b3e7-4d6a0cb6a32e">
+				<reportElement x="149" y="0" width="185" height="20" uuid="61db1e44-0bc4-4f38-b3e7-4d6a0cb6a32e">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="local_mesure_unitwidth" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -207,7 +192,7 @@
 				<textFieldExpression><![CDATA[$F{nomeDevedor}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="183" y="0" width="65" height="18" uuid="9b12c6c7-3367-4f93-abda-b9f4027e16f8">
+				<reportElement x="83" y="0" width="65" height="18" uuid="9b12c6c7-3367-4f93-abda-b9f4027e16f8">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="local_mesure_unitwidth" value="pixel"/>
@@ -217,17 +202,8 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{numeroTitulo}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="442" y="0" width="81" height="20" uuid="bf7786f4-d868-41bc-95ff-8190536417ef">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="SansSerif" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{numeroProtocoloCartorio}]]></textFieldExpression>
-			</textField>
 			<textField pattern="¤#,##0.00;¤-#,##0.00">
-				<reportElement stretchType="RelativeToBandHeight" x="613" y="0" width="83" height="20" uuid="c2032795-f7af-4a80-8be8-79331206b8f7">
+				<reportElement stretchType="RelativeToBandHeight" x="717" y="0" width="83" height="20" uuid="c2032795-f7af-4a80-8be8-79331206b8f7">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="local_mesure_unitwidth" value="pixel"/>
@@ -239,25 +215,25 @@
 				<textFieldExpression><![CDATA[$F{saldoTitulo}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="5" y="1" width="87" height="19" uuid="145ac96d-3fed-4e04-9f57-939bd21efdd8"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="SansSerif" size="8"/>
+				<reportElement x="338" y="0" width="175" height="20" uuid="ab965c55-cc3f-461f-83ca-0766f18c32a3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{situacaoTitulo}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="526" y="0" width="72" height="19" uuid="59617022-5ee3-4305-b2a0-bd192688e9b8"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="SansSerif" size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{dataOcorrencia}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{nomeSacadorVendedor}]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,##0.00">
-				<reportElement x="707" y="0" width="92" height="20" uuid="1a947020-a771-46af-aad2-da9b9884fa5b"/>
+				<reportElement x="635" y="0" width="83" height="20" uuid="4d0e6f6e-a318-4fd6-890b-2278134a9e66"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{valorCustaCartorio}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{valorTitulo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="520" y="0" width="114" height="20" uuid="eee6e9d7-6dc1-4bb3-9ea9-f302cba9441d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pracaProtesto}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -291,18 +267,11 @@
 				<text><![CDATA[TOTAL :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="579" y="0" width="117" height="22" uuid="11f6e201-d059-4802-8974-dfc7428c6388"/>
+				<reportElement x="695" y="0" width="106" height="22" uuid="2e79d4b9-9865-4797-95fd-4c9700edc877"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<text><![CDATA[VALOR APONTADOS]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="696" y="0" width="106" height="22" uuid="2e79d4b9-9865-4797-95fd-4c9700edc877"/>
-				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[SALDO APONTADOS]]></text>
+				<text><![CDATA[VALOR SALDO]]></text>
 			</staticText>
 			<textField pattern="###0">
 				<reportElement x="102" y="20" width="81" height="22" uuid="bf1ec87d-9f16-43ad-b223-dfb825f29093"/>
@@ -311,19 +280,12 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{TOTAL_TITULOS}]]></textFieldExpression>
 			</textField>
-			<textField pattern="¤ #,##0.00">
-				<reportElement x="613" y="22" width="83" height="20" uuid="464f110c-e992-4f8f-9b70-13a2f670d52a"/>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="716" y="23" width="83" height="20" uuid="464f110c-e992-4f8f-9b70-13a2f670d52a"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font size="10" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{TOTAL_PAGOS}]]></textFieldExpression>
-			</textField>
-			<textField pattern="¤ #,##0.00" isBlankWhenNull="false">
-				<reportElement x="711" y="22" width="88" height="20" uuid="0a37e9ad-146d-4efc-8b07-21ea63eb05b9"/>
-				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{TOTAL_CUSTAS}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{VALOR_TOTAL}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="102" y="1" width="81" height="22" uuid="b437ed54-3945-45c1-8e99-6ee71d185851"/>
@@ -332,34 +294,6 @@
 				</textElement>
 				<text><![CDATA[QTD. TÍTULOS]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="183" y="1" width="65" height="22" uuid="3c9ef87f-1738-453b-a6b1-d8216fd72547"/>
-				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[APONTADOS]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="250" y="1" width="82" height="22" uuid="15211c11-ccb2-44a8-bc27-dade6ec82f66"/>
-				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[DEVOLVIDOS]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="183" y="23" width="65" height="20" uuid="92659513-c7e5-4e8f-84aa-447171fb73fd"/>
-				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{QTD_PAGOS}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="250" y="23" width="82" height="20" uuid="93c73a1e-ec6d-4fcd-9c02-43aa8ec2e0f0"/>
-				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{QTD_PROTESTADOS_RETIRADOS}]]></textFieldExpression>
-			</textField>
 		</band>
 	</summary>
 </jasperReport>

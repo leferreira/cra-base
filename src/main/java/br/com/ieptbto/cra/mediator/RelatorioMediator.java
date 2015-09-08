@@ -64,7 +64,7 @@ public class RelatorioMediator {
 		for (TituloRemessa tituloRemessa : titulos) {
 			TituloBean tituloJR = new TituloBean();
 			tituloJR.parseToTituloRemessa(tituloRemessa);
-			valorTotal.add(tituloRemessa.getSaldoTitulo());
+			valorTotal = valorTotal.add(tituloRemessa.getSaldoTitulo());
 			titulosJR.add(tituloJR);
 		}
 		parametros.put("NOME_ARQUIVO", remessa.getArquivo().getNomeArquivo());
@@ -78,7 +78,7 @@ public class RelatorioMediator {
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 	
-	public JasperPrint relatorioRemessa(Arquivo arquivo) {
+	public JasperPrint relatorioRemessa(Arquivo arquivo, Instituicao instituicaoCorrente) {
 		return null;
 	}
 	
@@ -93,28 +93,28 @@ public class RelatorioMediator {
 		for (TituloRemessa tituloRemessa : titulos) {
 			TituloBean tituloJR = new TituloBean();
 			tituloJR.parseToTituloRemessa(tituloRemessa);
-			if (TipoOcorrencia.getTipoOcorrencia(tituloRemessa.getRetorno().getTipoOcorrencia()).equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS)) {
+			if (tituloRemessa.getConfirmacao().getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
 				numeroDevolvidos = numeroDevolvidos + 1;
 			} else {
 				numeroApontados = numeroApontados + 1;
-				valorTotal.add(tituloRemessa.getSaldoTitulo());
+				valorTotal = valorTotal.add(tituloRemessa.getSaldoTitulo());
 			}
 			titulosJR.add(tituloJR);
 		}
 		parametros.put("NOME_ARQUIVO", remessa.getArquivo().getNomeArquivo());
 		parametros.put("DATA_ENVIO", DataUtil.localDateToString(remessa.getDataRecebimento()));
 		parametros.put("INSTITUICAO", remessa.getInstituicaoOrigem().getNomeFantasia().toUpperCase());
-		parametros.put("TOTAL_TITULOS", Integer.class.cast(titulosJR.size()));
+		parametros.put("QTD_TITULOS", Integer.class.cast(titulosJR.size()));
 		parametros.put("QTD_APONTADOS", numeroApontados);
 		parametros.put("QTD_DEVOLVIDOS", numeroDevolvidos);
-		parametros.put("VALOR_APONTADOS", valorTotal);
+		parametros.put("TOTAL_APONTADOS", valorTotal);
 		
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(titulosJR);
 		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("../relatorio/RelatorioConfirmação.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 	
-	public JasperPrint relatorioConfirmacao(Arquivo arquivo) {
+	public JasperPrint relatorioConfirmacao(Arquivo arquivo, Instituicao instituicaoCorrente) {
 		return null;
 	}
 	
@@ -151,7 +151,7 @@ public class RelatorioMediator {
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 
-	public JasperPrint relatorioRetorno(Arquivo arquivo) {
+	public JasperPrint relatorioRetorno(Arquivo arquivo, Instituicao instituicaoCorrente) {
 		return null;
 	}
 	

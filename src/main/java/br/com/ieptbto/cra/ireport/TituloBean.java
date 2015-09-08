@@ -2,7 +2,10 @@ package br.com.ieptbto.cra.ireport;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang.StringUtils;
+
 import br.com.ieptbto.cra.entidade.TituloRemessa;
+import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -44,6 +47,13 @@ public class TituloBean {
 			this.setNumeroProtocoloCartorio(titulo.getConfirmacao().getNumeroProtocoloCartorio());
 			this.setDataOcorrencia(DataUtil.localDateToString(titulo.getConfirmacao().getDataProtocolo()));
 			this.setValorCustaCartorio(titulo.getConfirmacao().getValorCustaCartorio());
+			
+			if (titulo.getConfirmacao().getTipoOcorrencia() != null) {
+				if (!titulo.getConfirmacao().getTipoOcorrencia().trim().equals(StringUtils.EMPTY) ||
+						titulo.getConfirmacao().getNumeroProtocoloCartorio().equals("0")) {
+					this.setSituacaoTitulo(TipoOcorrencia.getTipoOcorrencia(titulo.getConfirmacao().getTipoOcorrencia()).getLabel());
+				}
+			}
 		}
 		if (titulo.getRetorno() != null) {
 			this.setNumeroProtocoloCartorio(titulo.getRetorno().getNumeroProtocoloCartorio());
