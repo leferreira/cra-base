@@ -399,7 +399,7 @@ public class TituloVO extends AbstractArquivoVO {
 
 	public String getValorCustasCartorioDistribuidor() {
 		if (valorCustasCartorioDistribuidor == null) {
-			valorCustasCartorioDistribuidor = StringUtils.EMPTY;
+			valorCustasCartorioDistribuidor = "0";
 		}
 		return valorCustasCartorioDistribuidor;
 	}
