@@ -217,11 +217,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Instituicao instituicao, ArrayList<TipoArquivoEnum> tipoArquivos,
 	        Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		Criteria criteria = getCriteria(Arquivo.class);
-
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", instituicao),
-			        Restrictions.eq("instituicaoRecebe", instituicao)));
-		}
+		criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", instituicao), Restrictions.eq("instituicaoRecebe", instituicao)));
 
 		if (!situacoes.isEmpty()) {
 			Disjunction disjunction = Restrictions.disjunction();
