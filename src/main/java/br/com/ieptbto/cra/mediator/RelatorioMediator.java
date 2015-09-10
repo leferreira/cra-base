@@ -55,7 +55,7 @@ public class RelatorioMediator {
 	private Instituicao instituicao;
 	private Municipio pracaProtesto;
 	
-	public JasperPrint relatorioRemessa(Remessa remessa, Instituicao instituicaoCorrente) throws JRException {
+	public JasperPrint relatorioRemessa(JasperReport jasperReport, Remessa remessa, Instituicao instituicaoCorrente) throws JRException {
 		List<TituloRemessa> titulos = tituloDAO.buscarTitulosPorRemessa(remessa, remessa.getInstituicaoOrigem());
 		if (titulos.isEmpty())
 			throw new InfraException("Não foi possível gerar o relatório. O arquivo não contém titulos !");
@@ -74,7 +74,6 @@ public class RelatorioMediator {
 		parametros.put("VALOR_TOTAL", valorTotal);
 		
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(titulosJR);
-		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("../relatorio/RelatorioRemessa.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 	
@@ -82,7 +81,7 @@ public class RelatorioMediator {
 		return null;
 	}
 	
-	public JasperPrint relatorioConfirmacao(Remessa remessa, Instituicao instituicaoCorrente) throws JRException {
+	public JasperPrint relatorioConfirmacao(JasperReport jasperReport, Remessa remessa, Instituicao instituicaoCorrente) throws JRException {
 		List<TituloRemessa> titulos = tituloDAO.buscarTitulosPorRemessa(remessa, instituicaoCorrente);
 		if (titulos.isEmpty())
 			throw new InfraException("Não foi possível gerar o relatório. O arquivo não contém titulos !");
@@ -110,7 +109,6 @@ public class RelatorioMediator {
 		parametros.put("TOTAL_APONTADOS", valorTotal);
 		
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(titulosJR);
-		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("../relatorio/RelatorioConfirmação.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 	
@@ -118,7 +116,7 @@ public class RelatorioMediator {
 		return null;
 	}
 	
-	public JasperPrint relatorioRetorno(Remessa remessa, Instituicao instituicaoCorrente) throws JRException {
+	public JasperPrint relatorioRetorno(JasperReport jasperReport, Remessa remessa, Instituicao instituicaoCorrente) throws JRException {
 		List<TituloRemessa> titulos = tituloDAO.buscarTitulosPorRemessa(remessa, instituicaoCorrente);
 		if (titulos.isEmpty())
 			throw new InfraException("Não foi possível gerar o relatório. O arquivo não contém titulos !");
@@ -147,7 +145,6 @@ public class RelatorioMediator {
 		parametros.put("QTD_PROTESTADOS_RETIRADOS", numeroProtestadosRetirados);
 
 		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(titulosJR);
-		JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("../relatorio/RelatorioRetorno.jrxml"));
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 
