@@ -51,6 +51,7 @@ public class ArquivoMediator {
 		}
 
 		arquivo.setTipoArquivo(getTipoArquivo(arquivo));
+//		arquivo.setHoraEnvio(new LocalTime()); 
 		arquivo = processarArquivo(arquivo, uploadedFile);
 		arquivo.setStatusArquivo(setStatusArquivo());
 		arquivo.setUsuarioEnvio(usuario);

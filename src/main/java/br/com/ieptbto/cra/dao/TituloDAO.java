@@ -235,7 +235,6 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", numeroProtocolo.toString(), MatchMode.ANYWHERE));
 
 		criteria.setMaxResults(1);
-
 		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
 

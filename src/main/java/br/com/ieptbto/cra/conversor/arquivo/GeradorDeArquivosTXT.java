@@ -106,18 +106,13 @@ public class GeradorDeArquivosTXT extends Gerador {
 
 	public void gerar(List<RemessaVO> remessasVO, File arquivoTXT) {
 		try {
-			Map<Integer, String> titulos = new HashMap<Integer, String>();
 			BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivoTXT));
 
 			for (RemessaVO remessaVO : remessasVO) {
 				bWrite.write(gerarLinha(remessaVO.getCabecalho()));
 				bWrite.newLine();
 				for (TituloVO tituloVO : remessaVO.getTitulos()) {
-					titulos.put(Integer.parseInt(tituloVO.getNumeroSequencialArquivo()), gerarLinhaTitulo(tituloVO));
-				}
-
-				for (int i = 2; i < titulos.keySet().size() + 2; i++) {
-					bWrite.write(titulos.get(i));
+					bWrite.write(gerarLinhaTitulo(tituloVO));
 					bWrite.newLine();
 				}
 

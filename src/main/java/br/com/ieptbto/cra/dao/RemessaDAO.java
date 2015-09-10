@@ -245,7 +245,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 					+ "AND org.tipo_instituicao_id<>4 "
 					+ "GROUP BY mun.nome_municipio,t.remessa_id "
 					+ "ORDER BY mun.nome_municipio";
-		} else {
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
 			q = "select ins.nome_fantasia,t.remessa_id "
 					+ "from TB_TITULO t "
 					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
@@ -260,6 +260,8 @@ public class RemessaDAO extends AbstractBaseDAO {
 					+ "AND ins.tipo_instituicao_id<>4 "
 					+ "GROUP BY ins.nome_fantasia, t.remessa_id "
 					+ "ORDER BY ins.nome_fantasia";
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
+			
 		}
 		
 		Query query = getSession().createSQLQuery(q);

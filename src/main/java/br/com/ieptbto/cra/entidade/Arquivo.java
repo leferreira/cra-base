@@ -37,6 +37,7 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	private String comentario;
 	private String path;
 	private LocalDate dataEnvio;
+//	private LocalTime horaEnvio;
 	private List<Remessa> remessas;
 	private RemessaDesistenciaProtesto remessaDesistenciaProtesto;
 	private Instituicao instituicaoRecebe;
@@ -117,6 +118,15 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	public StatusArquivo getStatusArquivo() {
 		return statusArquivo;
 	}
+	
+//	@Column(name = "HORA_ENVIO")
+//	public LocalTime getHoraEnvio() {
+//		return horaEnvio;
+//	}
+//
+//	public void setHoraEnvio(LocalTime horaEnvio) {
+//		this.horaEnvio = horaEnvio;
+//	}
 
 	public void setRemessaBanco(List<Remessa> remessaBanco) {
 		this.remessaBanco = remessaBanco;
