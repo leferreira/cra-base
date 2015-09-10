@@ -175,7 +175,7 @@ public class TituloVO extends AbstractArquivoVO {
 	private String declaracaoPortador;
 
 	@XmlAttribute(name = "t37")
-	@IAtributoArquivo(ordem = 37, posicao = 478, tamanho = 8, descricao = "", obrigatoriedade = false)
+	@IAtributoArquivo(ordem = 37, posicao = 478, tamanho = 8, formato = "0", descricao = "", obrigatoriedade = false)
 	private String dataOcorrencia;
 
 	@XmlAttribute(name = "t38")
