@@ -66,12 +66,10 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 
 	@Column(name = "NUMERO_PROTOCOLO", length = 11)
 	public String getNumeroProtocolo() {
-		if (numeroProtocolo == null) {
-			numeroProtocolo = StringUtils.EMPTY;
-		} else {
+		if (numeroProtocolo != null) {
 			numeroProtocolo = String.valueOf(Integer.parseInt(numeroProtocolo));
 		}
-		return numeroProtocolo.trim();
+		return numeroProtocolo;
 	}
 
 	@Column(name = "DATA_PROTOCOLAGEM")
