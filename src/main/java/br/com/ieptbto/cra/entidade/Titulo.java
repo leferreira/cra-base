@@ -111,10 +111,12 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 
 	@Column(name = "NUMERO_PROTOCOLO_CARTORIO")
 	public String getNumeroProtocoloCartorio() {
-		if (numeroProtocoloCartorio != null) {
-			return numeroProtocoloCartorio.trim();
+		if (numeroProtocoloCartorio == null) {
+			return numeroProtocoloCartorio = "";
+		} else {
+			numeroProtocoloCartorio = String.valueOf(Integer.parseInt(numeroProtocoloCartorio));
 		}
-		return numeroProtocoloCartorio;
+		return numeroProtocoloCartorio.trim();
 	}
 
 	@Column(name = "TIPO_OCORRENCIA")
