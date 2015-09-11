@@ -50,6 +50,14 @@ public class ConfirmacaoConversor extends AbstractConversorArquivo<TituloVO, Con
 		tituloVO.setDataOcorrencia(DataUtil.localDateToStringddMMyyyy(entidade.getDataOcorrencia()));
 		tituloVO.setCodigoIrregularidade(entidade.getCodigoIrregularidade());
 
+		if (entidade.getTipoOcorrencia() != null) {
+			if (entidade.getTipoOcorrencia().trim().equals("") || 
+					entidade.getTipoOcorrencia().equals("0")) {
+				tituloVO.setDataOcorrencia("00000000");
+				tituloVO.setCodigoIrregularidade("00");
+			}
+		}
+		
 		return tituloVO;
 	}
 
