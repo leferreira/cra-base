@@ -67,6 +67,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		Session session = getSession();
 		Transaction transaction = session.beginTransaction();
 		BigDecimal valorTotalSaldo = BigDecimal.ZERO;
+
 		try {
 			arquivo.setStatusArquivo(save(arquivo.getStatusArquivo()));
 			verificaInstituicaoRecebe(arquivo);
@@ -111,23 +112,29 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					}
 				}
 			} else if (arquivo.getRemessaDesistenciaProtesto() != null) {
-				arquivo.getRemessaDesistenciaProtesto().setCabecalho(save(arquivo.getRemessaDesistenciaProtesto().getCabecalho()));
-				arquivo.getRemessaDesistenciaProtesto().setRodape(save(arquivo.getRemessaDesistenciaProtesto().getRodape()));
-				save(arquivo.getRemessaDesistenciaProtesto());
+				List<DesistenciaProtesto> desistenciasProtesto = new ArrayList<DesistenciaProtesto>();
+				BigDecimal valorTotalDesistenciaProtesto = BigDecimal.ZERO;
+				int totalDesistenciaProtesto = 0;
+				int totalRegistroDesistenciaProtesto = 0;
 
 				for (DesistenciaProtesto desistenciaProtestos : arquivo.getRemessaDesistenciaProtesto().getDesistenciaProtesto()) {
-					desistenciaProtestos.setCabecalhoCartorio(save(desistenciaProtestos.getCabecalhoCartorio()));
-					desistenciaProtestos.setRodapeCartorio(save(desistenciaProtestos.getRodapeCartorio()));
-					List<PedidoDesistenciaCancelamento> pedidosDesistencia = desistenciaProtestos.getDesistencias();
-					desistenciaProtestos.setDesistencias(new ArrayList<PedidoDesistenciaCancelamento>());
+					List<PedidoDesistenciaCancelamento> pedidos = new ArrayList<PedidoDesistenciaCancelamento>();
+
 					desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
 					desistenciaProtestos.setDownload(false);
-					save(desistenciaProtestos);
-					for (PedidoDesistenciaCancelamento pedido : pedidosDesistencia) {
+
+					for (PedidoDesistenciaCancelamento pedido : desistenciaProtestos.getDesistencias()) {
 						pedido.setDesistenciaProtesto(desistenciaProtestos);
 						pedido.setTitulo(getTituloDesistenciaProtesto(pedido));
 						if (pedido.getTitulo() != null) {
-							desistenciaProtestos.getDesistencias().add(save(pedido));
+							if (pedido.getTitulo().getPedidoDesistencia() == null) {
+								pedidos.add(pedido);
+								valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
+								totalRegistroDesistenciaProtesto++;
+							} else {
+								erros.add(new InfraException("O título nº " + pedido.getNumeroTitulo() + " da " + arquivo.getNomeArquivo()
+								        + " já foi enviado."));
+							}
 						} else {
 							erros.add(new InfraException("Não existe um título para o título nº " + pedido.getNumeroTitulo() + " da "
 							        + arquivo.getNomeArquivo()));
@@ -135,9 +142,42 @@ public class ArquivoDAO extends AbstractBaseDAO {
 						}
 
 					}
+					if (!pedidos.isEmpty()) {
+						desistenciaProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(pedidos.size());
+						desistenciaProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(pedidos.size());
+						desistenciaProtestos.setDesistencias(pedidos);
+						desistenciasProtesto.add(desistenciaProtestos);
+						totalDesistenciaProtesto++;
+					}
+
+				}
+				arquivo.getRemessaDesistenciaProtesto().getCabecalho().setQuantidadeDesistencia(totalDesistenciaProtesto);
+				arquivo.getRemessaDesistenciaProtesto().getCabecalho().setQuantidadeRegistro(totalRegistroDesistenciaProtesto);
+				arquivo.getRemessaDesistenciaProtesto().getRodape().setQuantidadeDesistencia(totalDesistenciaProtesto);
+				arquivo.getRemessaDesistenciaProtesto().getRodape().setSomatorioValorTitulo(valorTotalDesistenciaProtesto);
+				arquivo.getRemessaDesistenciaProtesto().setDesistenciaProtesto(desistenciasProtesto);
+
+				arquivo.getRemessaDesistenciaProtesto().setCabecalho(save(arquivo.getRemessaDesistenciaProtesto().getCabecalho()));
+				arquivo.getRemessaDesistenciaProtesto().setRodape(save(arquivo.getRemessaDesistenciaProtesto().getRodape()));
+				save(arquivo.getRemessaDesistenciaProtesto());
+
+				for (DesistenciaProtesto desistenciaProtestos : desistenciasProtesto) {
+					desistenciaProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(desistenciaProtestos.getDesistencias().size());
+					desistenciaProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(
+					        desistenciaProtestos.getDesistencias().size());
+
+					desistenciaProtestos.setCabecalhoCartorio(save(desistenciaProtestos.getCabecalhoCartorio()));
+					desistenciaProtestos.setRodapeCartorio(save(desistenciaProtestos.getRodapeCartorio()));
+					desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
+
+					save(desistenciaProtestos);
+					for (PedidoDesistenciaCancelamento pedido : desistenciaProtestos.getDesistencias()) {
+						save(pedido);
+					}
 				}
 
 			}
+
 			transaction.commit();
 			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
 			        + " foi inserido na base ");

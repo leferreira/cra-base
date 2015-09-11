@@ -46,6 +46,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	private List<Historico> historicos;
 	private Confirmacao confirmacao;
 	private Retorno retorno;
+	private PedidoDesistenciaCancelamento pedidoDesistencia;
 
 	private String nomeCedenteFavorecido;
 	private String nomeSacadorVendedor;
@@ -91,6 +92,11 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
 	public Confirmacao getConfirmacao() {
 		return confirmacao;
+	}
+
+	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
+	public PedidoDesistenciaCancelamento getPedidoDesistencia() {
+		return pedidoDesistencia;
 	}
 
 	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
@@ -269,6 +275,10 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 
 	public void setConfirmacao(Confirmacao confirmacao) {
 		this.confirmacao = confirmacao;
+	}
+
+	public void setPedidoDesistencia(PedidoDesistenciaCancelamento pedidoDesistencia) {
+		this.pedidoDesistencia = pedidoDesistencia;
 	}
 
 	public void setHistoricos(List<Historico> historicos) {

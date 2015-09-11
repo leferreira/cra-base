@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.mediator;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
@@ -204,11 +206,22 @@ public class RemessaMediator {
 
 		desistenciaProtesto = remessaDao.buscarRemessaDesistenciaProtesto(desistenciaProtesto);
 
+		BigDecimal valorTotal = BigDecimal.ZERO;
+		int totalRegistro = 0;
+		for (PedidoDesistenciaCancelamento pedido : desistenciaProtesto.getDesistencias()) {
+			valorTotal = valorTotal.add(pedido.getValorTitulo());
+			totalRegistro++;
+		}
+
 		RemessaDesistenciaProtesto remessa = new RemessaDesistenciaProtesto();
 		remessa.setCabecalho(desistenciaProtesto.getRemessaDesistenciaProtesto().getCabecalho());
+		remessa.getCabecalho().setQuantidadeDesistencia(1);
+		remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
 		remessa.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
 		remessa.getDesistenciaProtesto().add(desistenciaProtesto);
 		remessa.setRodape(desistenciaProtesto.getRemessaDesistenciaProtesto().getRodape());
+		remessa.getRodape().setQuantidadeDesistencia(1);
+		remessa.getRodape().setSomatorioValorTitulo(valorTotal);
 		remessa.setArquivo(desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo());
 		return processadorArquivo.processarRemessaDesistenciaProtestoTXT(remessa, usuario);
 

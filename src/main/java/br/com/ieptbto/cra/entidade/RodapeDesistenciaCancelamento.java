@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 
@@ -23,6 +24,7 @@ public abstract class RodapeDesistenciaCancelamento<T> extends AbstractEntidade<
 	private String sequencialRegistro;
 
 	@Override
+	@Transient
 	public abstract int getId();
 
 	@Column(name = "TIPO_REGISTO", length = 30)

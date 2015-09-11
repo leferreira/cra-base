@@ -97,12 +97,14 @@ public class TituloDAO extends AbstractBaseDAO {
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
 			criteria.createAlias("confirmacao", "confirmacao");
 			criteria.add(Restrictions.eq("confirmacao.remessa", remessa));
-			criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("confirmacao.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
+			criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto"))
+			        .addOrder(Order.asc("confirmacao.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
 			criteria.createAlias("retorno", "retorno");
 			criteria.add(Restrictions.eq("retorno.remessa", remessa));
-			criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("retorno.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
-		} 
+			criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto"))
+			        .addOrder(Order.asc("retorno.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
+		}
 
 		if (!instituicaoCorrente.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoCorrente),
@@ -123,7 +125,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
 			criteria.createAlias("retorno", "retorno");
 			criteria.add(Restrictions.eq("retorno.remessa", remessa));
-		} 
+		}
 
 		criteria.add(Restrictions.eq("remessa.instituicaoOrigem", instituicaoOrigem));
 		criteria.add(Restrictions.eq("remessa.instituicaoDestino", instituicaoDestino));
@@ -375,6 +377,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (confirmacao == null) {
 			return null;
 		}
+
 		return confirmacao.getTitulo();
 	}
 }

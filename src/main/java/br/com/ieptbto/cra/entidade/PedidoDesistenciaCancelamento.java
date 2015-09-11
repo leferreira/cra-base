@@ -68,6 +68,8 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 	public String getNumeroProtocolo() {
 		if (numeroProtocolo == null) {
 			numeroProtocolo = StringUtils.EMPTY;
+		} else {
+			numeroProtocolo = String.valueOf(Integer.parseInt(numeroProtocolo));
 		}
 		return numeroProtocolo.trim();
 	}
