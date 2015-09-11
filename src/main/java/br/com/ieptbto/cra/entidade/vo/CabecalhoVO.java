@@ -11,6 +11,7 @@ import br.com.ieptbto.cra.annotations.IAtributoArquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
 import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.util.RemoveAcentosUtil;
 
 /**
  * 
@@ -95,6 +96,9 @@ public class CabecalhoVO extends AbstractArquivoVO {
 	}
 
 	public String getNomePortador() {
+		if (nomePortador != null) {
+			nomePortador = RemoveAcentosUtil.removeAcentos(nomePortador);
+		}
 		return nomePortador;
 	}
 
