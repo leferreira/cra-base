@@ -1,5 +1,6 @@
 package br.com.ieptbto.cra.entidade;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
@@ -47,6 +48,7 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 	private Remessa remessa;
 
 	@Override
+	@Transient
 	public abstract int getId();
 
 	@ManyToOne
