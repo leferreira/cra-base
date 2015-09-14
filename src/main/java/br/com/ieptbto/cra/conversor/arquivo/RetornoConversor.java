@@ -43,9 +43,6 @@ public class RetornoConversor extends AbstractConversorArquivo<TituloVO, Retorno
 
 		}
 		
-		/*
-		 * #TODO GAMBIARRA PARA NÃO TER OS CAMPOS DO RETORNO
-		 * **/
 		tituloVO.setNomeCedenteFavorecido(StringUtils.leftPad(" ", 45));
 		tituloVO.setNomeSacadorVendedor(StringUtils.leftPad(" ", 45));
 		tituloVO.setDocumentoSacador(StringUtils.leftPad(" ", 14));
@@ -83,6 +80,8 @@ public class RetornoConversor extends AbstractConversorArquivo<TituloVO, Retorno
 		tituloVO.setCodigoCartorio(entidade.getCodigoCartorio().toString());
 		tituloVO.setNumeroProtocoloCartorio(entidade.getNumeroProtocoloCartorio());
 		tituloVO.setDataProtocolo(DataUtil.localDateToStringddMMyyyy(entidade.getDataProtocolo()));
+		
+		tituloVO.setValorDemaisDespesas(new BigDecimalConversor().getValorConvertidoParaString(entidade.getValorDemaisDespesas()));			
 		tituloVO.setNumeroSequencialArquivo(entidade.getNumeroSequencialArquivo());
 		tituloVO.setDeclaracaoPortador(" ");
 

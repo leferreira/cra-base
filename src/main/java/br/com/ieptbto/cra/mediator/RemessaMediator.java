@@ -200,8 +200,7 @@ public class RemessaMediator {
 
 	public File baixarRemessaTXT(Usuario usuario, DesistenciaProtesto desistenciaProtesto) {
 		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			// remessaDao.alterarSituacaoDesistenciaProtesto(desistenciaProtesto,
-			// true);
+			 remessaDao.alterarSituacaoDesistenciaProtesto(desistenciaProtesto, true);
 		}
 
 		desistenciaProtesto = remessaDao.buscarRemessaDesistenciaProtesto(desistenciaProtesto);
@@ -266,7 +265,7 @@ public class RemessaMediator {
 	public Arquivo confirmacoesPendentes(Instituicao instituicao) {
 		List<Remessa> remessas = remessaDao.confirmacoesPendentes(instituicao);
 		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
-		List<DesistenciaProtesto> desistenciaProtesto = remessaDao.buscarRemessaDesistenciaProtesto(instituicao);
+		List<DesistenciaProtesto> desistenciaProtesto = remessaDao.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
 		remessaDesistenciaProtesto.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>(desistenciaProtesto));
 		Arquivo arquivo = new Arquivo();
 		arquivo.setRemessas(remessas);

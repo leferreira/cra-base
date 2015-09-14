@@ -317,7 +317,9 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return arquivo;
 	}
 
+	@Transactional(readOnly=true)
 	public List<Remessa> buscarRemessasArquivo(Instituicao instituicao, Arquivo arquivo) {
+		Arquivo arquivoBuscado = buscarPorPK(arquivo);
 		Criteria criteria = getCriteria(Remessa.class);
 		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)
 		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)
@@ -338,6 +340,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			titulos = criteriaTitulo.list();
 
 			remessa.setTitulos(new ArrayList<Titulo>());
+			
+			if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
+				for (Titulo titulo : titulos) {
+					titulo.setValorGravacaoEletronica(arquivoBuscado.getInstituicaoRecebe().getValorConfirmacao());
+				}
+			}
 			remessa.getTitulos().addAll(titulos);
 		}
 		return remessas;

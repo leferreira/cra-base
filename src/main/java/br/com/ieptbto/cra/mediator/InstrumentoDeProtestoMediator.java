@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.mediator;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -33,26 +34,41 @@ public class InstrumentoDeProtestoMediator {
 	private RegraAgenciaDestino regraAgenciaDestino;
 	private List<Retorno> titulosProtestados;
 	private List<SlipEtiquetaBean> etiquetas;
-	
+	private List<SlipEnvelopeBean> envelopes;
+
 	public InstrumentoDeProtestoMediator processarInstrumentos(List<Retorno> listaRetorno) {
 		this.titulosProtestados = listaRetorno;
 		logger.info("Gerando " + listaRetorno.size() +" instrumentos de protesto.");
 
 		gerarInstrumentos();
 		ordenarEtiquetasInstrumentos();
+		gerarEnvelopes();
 		
 		logger.info("Instrumentos de protesto processados e etiquetas geradas.");
 		return this;
 	}
 
-	public List<SlipEnvelopeBean> gerarEnvelopes(List<Retorno> titulosProtestados) {
-		this.titulosProtestados = titulosProtestados;
-		List<SlipEnvelopeBean> envelopes = new ArrayList<SlipEnvelopeBean>();
+	public void gerarEnvelopes() {
+		HashMap<String, SlipEnvelopeBean> mapaEnvelopes = new HashMap<String, SlipEnvelopeBean>();
 
 		logger.info("Gerando envelopes.");
-		
-		logger.info("Finalizando geração dos envelopes.");
-		return envelopes;
+		for (SlipEtiquetaBean etiqueta : getEtiquetas()) {
+			if (mapaEnvelopes.containsKey(etiqueta.getCodigoAgencia())) {
+				SlipEnvelopeBean envelope = mapaEnvelopes.get(etiqueta.getCodigoAgencia());
+				envelope.setQuantidadeInstrumentos(envelope.getQuantidadeInstrumentos()+1);
+			} else {
+				SlipEnvelopeBean envelope = new SlipEnvelopeBean();
+				envelope.setNomeApresentante(etiqueta.getRazaoSocialPortador());
+				envelope.setNumeroAgencia(etiqueta.getCodigoAgencia());
+				envelope.setMunicipio(etiqueta.getMunicipioAgencia());
+				envelope.setUf(etiqueta.getUfAgencia());
+				envelope.setQuantidadeInstrumentos(1);
+				mapaEnvelopes.put(etiqueta.getCodigoAgencia(), envelope);
+				
+				getEnvelopes().add(envelope);
+			}
+		}
+		logger.info("Envelopes gerados.");
 	}
 
 	private void gerarInstrumentos() {
@@ -68,12 +84,14 @@ public class InstrumentoDeProtestoMediator {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void gerarEtiqueta(InstrumentoProtesto instrumento) {
 		RegraAgenciaDestino regra = regraAgenciaDestino.regraAgenciaDestino(instrumento.getTitulo());
 		
 		SlipEtiquetaBean novaEtiqueta = new SlipEtiquetaBean();
 		novaEtiqueta.parseToTituloRemessa(instrumento.getTitulo());
+		novaEtiqueta.setCodigoAgencia(regra.getAgenciaDestino());
+		novaEtiqueta.setMunicipioAgencia(regra.getMunicipioDestino());
+		novaEtiqueta.setUfAgencia(regra.getUfDestino());
 		getEtiquetas().add(novaEtiqueta);
 
 		logger.info("Etiqueta SLIP - Nosso Número: " +novaEtiqueta.getNossoNumero() + " gerada!");
@@ -96,5 +114,16 @@ public class InstrumentoDeProtestoMediator {
 
 	public Retorno buscarTituloProtestado(String numeroProtocolo, String codigoIBGE) {
 		return tituloDao.buscarTituloProtestado(numeroProtocolo, codigoIBGE);
+	}
+
+	public List<SlipEnvelopeBean> getEnvelopes() {
+		if (envelopes == null) {
+			envelopes = new ArrayList<SlipEnvelopeBean>();
+		}
+		return envelopes;
+	}
+
+	public void setEnvelopes(List<SlipEnvelopeBean> envelopes) {
+		this.envelopes = envelopes;
 	}
 }

@@ -228,7 +228,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	}
 
 	public TituloRemessa buscaTituloRetornoSalvo(Retorno tituloRetorno) {
-		Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio());
+		Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio().trim());
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.add(Restrictions.ilike("codigoPortador", tituloRetorno.getCodigoPortador(), MatchMode.EXACT));
 		criteria.add(Restrictions.ilike("agenciaCodigoCedente", tituloRetorno.getAgenciaCodigoCedente(), MatchMode.EXACT));

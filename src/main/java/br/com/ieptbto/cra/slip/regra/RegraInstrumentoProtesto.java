@@ -12,6 +12,6 @@ public abstract class RegraInstrumentoProtesto {
 
 	protected static final Logger logger = Logger.getLogger(RegraInstrumentoProtesto.class);
 
-	protected abstract void aplicarRegraBasica(BancoTipoRegraBasicaInstrumento bancoTipoRegra);
+	protected abstract String aplicarRegraBasica(BancoTipoRegraBasicaInstrumento bancoTipoRegra);
 
 }

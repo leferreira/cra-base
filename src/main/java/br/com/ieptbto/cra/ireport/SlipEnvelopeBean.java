@@ -5,7 +5,16 @@ public class SlipEnvelopeBean {
 	private String nomeApresentante;
 	private String numeroAgencia;
 	private String municipio;
+	private String uf;
 	private int quantidadeInstrumentos;
+	
+	public String getUf() {
+		return uf;
+	}
+
+	public void setUf(String uf) {
+		this.uf = uf;
+	}
 
 	public String getNomeApresentante() {
 		return nomeApresentante;

@@ -8,5 +8,15 @@ public abstract class RegraAgenciaBanco {
 
 	protected static final Logger logger = Logger.getLogger(RegraAgenciaBanco.class);
 	
-	protected abstract void aplicarRegraEspecifica(TituloRemessa titulo);
+	private String agencia;
+	
+	protected abstract String aplicarRegraEspecifica(TituloRemessa titulo);
+
+	public String getAgencia() {
+		return agencia;
+	}
+
+	public void setAgencia(String agencia) {
+		this.agencia = agencia;
+	}
 }

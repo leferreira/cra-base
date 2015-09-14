@@ -1,10 +1,14 @@
 package br.com.ieptbto.cra.slip.regra;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
+import br.com.ieptbto.cra.entidade.AgenciaBradesco;
+import br.com.ieptbto.cra.entidade.AgenciaCAF;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.BancoTipoRegraBasicaInstrumento;
 import br.com.ieptbto.cra.enumeration.TipoRegraInstrumento;
+import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.ArquivoDeParaMediator;
 
 /**
@@ -15,10 +19,11 @@ public class RegraAgenciaDestino extends RegraInstrumentoProtesto {
 
 	@SpringBean
 	ArquivoDeParaMediator arquivoDeParaMediator;
+	private TituloRemessa titulo;
+
 	private String agenciaDestino;
 	private String municipioDestino;
 	private String ufDestino;
-	private TituloRemessa titulo;
 	
 	public RegraAgenciaDestino regraAgenciaDestino(TituloRemessa titulo) {
 		this.setTitulo(titulo);
@@ -30,44 +35,105 @@ public class RegraAgenciaDestino extends RegraInstrumentoProtesto {
 	}
 	
 	private void processar() {
-		
 		BancoTipoRegraBasicaInstrumento bancoTipoRegra = BancoTipoRegraBasicaInstrumento.getBancoRegraBasicaInstrumento(getTitulo().getCodigoPortador());
+		
 		if (bancoTipoRegra != null) {
 			if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.ITAU)) {
-				new RegraItauAgencia().aplicarRegraEspecifica(getTitulo());
+				aplicarRegraItau();
 			} else if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BRADESCO)) {
-				new RegraBradescoAgencia().aplicarRegraEspecifica(getTitulo());
+				aplicarRegraBradesco();
 			} else if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BANCO_CENTRAL_DO_BRASIL)) {
-				new RegraBancoDoBrasilAgencia().aplicarRegraEspecifica(getTitulo());
+				aplicarRegraBB();
 			} else if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.SANTANDER) || 
 					bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.HSBC) ||
 					bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.MERCANTIL) ||
 					bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BRB) ||
 					bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BIC) ||
 					bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.SAFRA)) {
-				aplicarRegraBasica(bancoTipoRegra);
+				aplicarRegraOutros(bancoTipoRegra);
 			}
 		} else {
-			setAgenciaDestino(titulo.getAgenciaCodigoCedente().substring(0,3));
+			setAgenciaDestino(getTitulo().getAgenciaCodigoCedente().substring(0,3));
 		}
 	}
 
-	@Override
-	protected void aplicarRegraBasica(BancoTipoRegraBasicaInstrumento bancoTipoRegra) {
-		TipoRegraInstrumento tipoRegra = bancoTipoRegra.getTipoRegraBasicaInstrumento();
-		setAgenciaDestino(getTitulo().getAgenciaCodigoCedente().substring(tipoRegra.getPosicaoInicialCampo(), tipoRegra.getPosicaoFinalCampo()));
+	private void aplicarRegraItau() {
+		String agenciaItau = new RegraItauAgencia().aplicarRegraEspecifica(getTitulo());
+		if (agenciaItau == null) {
+			agenciaItau = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.ITAU);
+		}
 		
+		AgenciaCAF agenciaCAF = arquivoDeParaMediator.buscarAgenciaArquivoCAF(agenciaItau);
+		if (agenciaCAF != null) {
+			setAgenciaDestino(agenciaCAF.getCodigoAgencia());
+			setMunicipioDestino(agenciaCAF.getCidade());
+			setUfDestino(agenciaCAF.getUf());
+		} else {
+			throw new InfraException("Não foi possível identificar a agência de destino do título [Nosso Nº: " +getTitulo().getNossoNumero()+ "] .");
+		}
+	}
+	
+	private void aplicarRegraBradesco() {
+		String agenciaBradesco = new RegraBradescoAgencia().aplicarRegraEspecifica(getTitulo());
+		AgenciaBradesco agenciaDePara = arquivoDeParaMediator.buscarAgenciaArquivoDeParaBradesco(getTitulo());
+		
+		if (agenciaDePara != null) {
+			setAgenciaDestino(agenciaDePara.getAgenciaDestino());
+			
+		} else {
+			agenciaBradesco = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.BRADESCO);
+			AgenciaCAF agenciaCAF = arquivoDeParaMediator.buscarAgenciaArquivoCAF(agenciaBradesco);
+			
+			if (agenciaCAF == null) {
+				throw new InfraException("Não foi possível identificar a agência de destino do título [Nosso Nº: " +getTitulo().getNossoNumero()+ "] .");
+			}
+			setAgenciaDestino(agenciaCAF.getCodigoAgencia());
+			setMunicipioDestino(agenciaCAF.getCidade());
+			setUfDestino(agenciaCAF.getUf());
+		}
+	}
+	
+	private void aplicarRegraBB () {
+		this.agenciaDestino = new RegraBancoDoBrasilAgencia().aplicarRegraEspecifica(getTitulo());
+		aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.BANCO_CENTRAL_DO_BRASIL);
+	}
+	
+	private void aplicarRegraOutros(BancoTipoRegraBasicaInstrumento bancoTipoRegra) {
+		String agencia = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.ITAU);
+		AgenciaCAF agenciaCAF = arquivoDeParaMediator.buscarAgenciaArquivoCAF(agencia);
+		
+		if (agenciaCAF == null) {
+			throw new InfraException("Não foi possível identificar a agência de destino do título [Nosso Nº: " +getTitulo().getNossoNumero()+ "] .");
+		}
+		setAgenciaDestino(agenciaCAF.getCodigoAgencia());
+		setMunicipioDestino(agenciaCAF.getCidade());
+		setUfDestino(agenciaCAF.getUf());
+	}
+
+	@Override
+	protected String aplicarRegraBasica(BancoTipoRegraBasicaInstrumento bancoTipoRegra) {
+		TipoRegraInstrumento tipoRegra = bancoTipoRegra.getTipoRegraBasicaInstrumento();
+		return getTitulo().getAgenciaCodigoCedente().substring(tipoRegra.getPosicaoInicialCampo(), tipoRegra.getPosicaoFinalCampo());
 	}
 
 	public String getAgenciaDestino() {
+		if (agenciaDestino == null) {
+			agenciaDestino = StringUtils.EMPTY;
+		}
 		return agenciaDestino;
 	}
 
 	public String getMunicipioDestino() {
+		if (municipioDestino == null) {
+			municipioDestino = StringUtils.EMPTY;
+		}
 		return municipioDestino;
 	}
 
 	public String getUfDestino() {
+		if (ufDestino == null) {
+			ufDestino = StringUtils.EMPTY;
+		}
 		return ufDestino;
 	}
 

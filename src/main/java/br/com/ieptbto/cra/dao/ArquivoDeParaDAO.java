@@ -2,12 +2,16 @@ package br.com.ieptbto.cra.dao;
 
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
 import br.com.ieptbto.cra.entidade.AgenciaBradesco;
 import br.com.ieptbto.cra.entidade.AgenciaCAF;
+import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -76,13 +80,18 @@ public class ArquivoDeParaDAO extends AbstractBaseDAO{
 		return null;
 	}
 
-	public AgenciaBradesco buscarAgenciaArquivoDeParaBradesco() {
-		// TODO Auto-generated method stub
-		return null;
+	public AgenciaBradesco buscarAgenciaArquivoDeParaBradesco(TituloRemessa tituloRemessa) {
+		Criteria criteria = getCriteria(AgenciaBradesco.class);
+		criteria.add(Restrictions.like("cnpj", tituloRemessa.getDocumentoSacador(), MatchMode.EXACT));
+		criteria.add(Restrictions.like("codigoAgenciaCedente", tituloRemessa.getAgenciaCodigoCedente(), MatchMode.EXACT));
+		criteria.setMaxResults(1);
+		return AgenciaBradesco.class.cast(criteria.uniqueResult());
 	}
 
-	public AgenciaCAF buscarAgenciaArquivoCAF502() {
-		// TODO Auto-generated method stub
-		return null;
+	public AgenciaCAF buscarAgenciaArquivoCAF(String agencia) {
+		Criteria criteria = getCriteria(AgenciaCAF.class);
+		criteria.add(Restrictions.like("codigoAgencia", agencia, MatchMode.EXACT));
+		criteria.setMaxResults(1);
+		return AgenciaCAF.class.cast(criteria.uniqueResult());
 	}
 }

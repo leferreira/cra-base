@@ -79,7 +79,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 		if (dataInicio != null)
 			criteria.add(Restrictions.between("dataRecebimento", dataInicio, dataFim));
 
-		criteria.addOrder(Order.desc("dataRecebimento"));
+		criteria.addOrder(Order.desc("a.dataEnvio"));
 		return criteria.list();
 	}
 
@@ -241,7 +241,8 @@ public class RemessaDAO extends AbstractBaseDAO {
 					+ "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
 					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
 					+ "where con.titulo_id IS NULL "
-					+ "and tit.id_titulo > 37085) "
+					+ "and tit.id_titulo > 37085) OR "
+					+ ""
 					+ "AND org.tipo_instituicao_id<>4 "
 					+ "GROUP BY mun.nome_municipio,t.remessa_id "
 					+ "ORDER BY mun.nome_municipio";
@@ -333,7 +334,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtesto(Instituicao instituicao) {
+	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtestoPendenteDownload(Instituicao instituicao) {
 		Criteria criteria = getCriteria(DesistenciaProtesto.class);
 		criteria.createAlias("cabecalhoCartorio", "cabecalho");
 		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", instituicao.getMunicipio().getCodigoIBGE()));
@@ -355,7 +356,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 			update(desistenciaProtesto);
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível atualizar o estatus da DP.");
+			throw new InfraException("Não foi possível atualizar o status da DP.");
 		}
 		return desistenciaProtesto;
 
