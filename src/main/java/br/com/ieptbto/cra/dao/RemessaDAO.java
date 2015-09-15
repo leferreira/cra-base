@@ -241,8 +241,8 @@ public class RemessaDAO extends AbstractBaseDAO {
 					+ "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
 					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
 					+ "where con.titulo_id IS NULL "
-					+ "and tit.id_titulo > 37085) OR "
-					+ ""
+					+ "and tit.id_titulo > 37085) "
+					+ "OR rem.status_remessa LIKE 'AGUARDANDO'"
 					+ "AND org.tipo_instituicao_id<>4 "
 					+ "GROUP BY mun.nome_municipio,t.remessa_id "
 					+ "ORDER BY mun.nome_municipio";
@@ -257,6 +257,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
 					+ "where con.titulo_id IS NULL "
 					+ "and tit.id_titulo > 37085 "
+					+ "OR rem.status_remessa LIKE 'AGUARDANDO'"
 					+ "AND rem.instituicao_destino_id="+ instituicao.getId() +") "
 					+ "AND ins.tipo_instituicao_id<>4 "
 					+ "GROUP BY ins.nome_fantasia, t.remessa_id "
