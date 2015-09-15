@@ -240,29 +240,46 @@ public class RemessaDAO extends AbstractBaseDAO {
 					+ "from TB_TITULO tit "
 					+ "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
 					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
-					+ "where con.titulo_id IS NULL "
-					+ "and tit.id_titulo > 37085) "
-					+ "OR rem.status_remessa LIKE 'AGUARDANDO'"
+					+ "where con.titulo_id IS NULL and tit.id_titulo > 37085) "
 					+ "AND org.tipo_instituicao_id<>4 "
-					+ "GROUP BY mun.nome_municipio,t.remessa_id "
-					+ "ORDER BY mun.nome_municipio";
-		} else {
-			q = "select ins.nome_fantasia,t.remessa_id "
-					+ "from TB_TITULO t "
+					+ "OR rem.status_remessa LIKE 'AGUARDANDO' "
+					+ "AND org.tipo_instituicao_id<>4 "
+					+ "GROUP BY mun.nome_municipio,t.remessa_id ORDER BY mun.nome_municipio";
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
+			q = "select ins.nome_fantasia,t.remessa_id from TB_TITULO t "
 					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
 					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_origem_id=ins.id_instituicao "
+					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) "
+					+ "from TB_TITULO tit LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
+					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
+					+ "where con.titulo_id IS NULL and tit.id_titulo > 37085 )"
+					+ "AND rem.instituicao_destino_id=" + instituicao.getId() + " "
+					+ "AND ins.tipo_instituicao_id<>4 "
+					+ "OR rem.status_remessa LIKE 'AGUARDANDO' "
+					+ "AND rem.instituicao_destino_id=" + instituicao.getId() + " "
+					+ "AND ins.tipo_instituicao_id<>4 "
+					+ "GROUP BY ins.nome_fantasia, t.remessa_id ORDER BY ins.nome_fantasia";
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
+			q = "select mun.nome_municipio,t.remessa_id "
+					+ "from TB_TITULO t "
+					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
+					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_destino_id=ins.id_instituicao "
+					+ "INNER JOIN tb_instituicao AS org ON rem.instituicao_origem_id=org.id_instituicao "
+					+ "INNER JOIN tb_municipio AS mun ON ins.municipio_id=mun.id_municipio "
 					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) "
 					+ "from TB_TITULO tit "
 					+ "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
 					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
 					+ "where con.titulo_id IS NULL "
-					+ "and tit.id_titulo > 37085 "
-					+ "OR rem.status_remessa LIKE 'AGUARDANDO'"
-					+ "AND rem.instituicao_destino_id="+ instituicao.getId() +") "
-					+ "AND ins.tipo_instituicao_id<>4 "
-					+ "GROUP BY ins.nome_fantasia, t.remessa_id "
-					+ "ORDER BY ins.nome_fantasia";
-		} 
+					+ "and tit.id_titulo > 37085) "
+					+ "AND org.tipo_instituicao_id<>4 "
+					+ "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
+					+ "OR rem.status_remessa LIKE 'AGUARDANDO' "
+					+ "AND org.tipo_instituicao_id<>4 "
+					+ "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
+					+ "GROUP BY mun.nome_municipio,t.remessa_id "
+					+ "ORDER BY mun.nome_municipio";
+		}
 		
 		Query query = getSession().createSQLQuery(q);
 		Iterator iterator = query.list().iterator();
@@ -298,29 +315,22 @@ public class RemessaDAO extends AbstractBaseDAO {
 		criteria.createAlias("remessaDesistenciaProtesto", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
 		criteria.createAlias("cabecalhoCartorio", "cabecalho");
-		if (arquivo != null && arquivo.getNomeArquivo() != null) {
-			criteria.add(Restrictions.ilike("arquivo.nomeArquivo", arquivo.getNomeArquivo()));
-		} else if (tiposArquivo != null && !tiposArquivo.isEmpty()) {
+
+		if (StringUtils.isNotBlank(arquivo.getNomeArquivo())) {
+			criteria.add(Restrictions.ilike("arquivo.nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
+		} 
+		
+		if (tiposArquivo != null && !tiposArquivo.isEmpty()) {
 			criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
-			for (TipoArquivoEnum tipoArquivoEnum : tiposArquivo) {
-				criteria.add((Restrictions.eq("tipoArquivo.tipoArquivo", tipoArquivoEnum)));
-			}
+			criteria.add(filtrarRemessaPorTipoArquivo(tiposArquivo));
 		}
-
-		if (dataInicio != null) {
-			if (dataFim == null) {
-				dataFim = new LocalDate(9999 - 01 - 01);
-			}
-			criteria.add((Restrictions.between("arquivo.dataEnvio", dataInicio, dataFim)));
-		}
-
-		if (dataInicio == null && dataFim != null) {
-			dataInicio = new LocalDate(1901 - 01 - 01);
+		
+		if (dataInicio != null && dataFim != null) {
 			criteria.add((Restrictions.between("arquivo.dataEnvio", dataInicio, dataFim)));
 		}
 
 		if (portador != null) {
-			criteria.add(Restrictions.eq("cabecalho.numeroCodigoPortador", portador));
+			criteria.add(Restrictions.eq("cabecalho.numeroCodigoPortador", portador.getCodigoCompensacao()));
 		}
 
 		if (TipoInstituicaoCRA.CARTORIO.equals(usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao())) {
@@ -345,17 +355,14 @@ public class RemessaDAO extends AbstractBaseDAO {
 	}
 
 	public DesistenciaProtesto alterarSituacaoDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto, boolean download) {
+		Transaction transaction = getBeginTransation();
+
 		try {
-			Criteria criteria = getCriteria(DesistenciaProtesto.class);
-			criteria.add(Restrictions.eq("id", desistenciaProtesto.getId()));
-
-			desistenciaProtesto = DesistenciaProtesto.class.cast(criteria.uniqueResult());
-			Hibernate.initialize(desistenciaProtesto.getCabecalhoCartorio());
-			Hibernate.initialize(desistenciaProtesto.getRodapeCartorio());
-
 			desistenciaProtesto.setDownload(download);
 			update(desistenciaProtesto);
+			transaction.commit();
 		} catch (Exception ex) {
+			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
 			throw new InfraException("Não foi possível atualizar o status da DP.");
 		}

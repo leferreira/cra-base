@@ -236,8 +236,15 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.createAlias("confirmacao", "confirmacao");
 		criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", numeroProtocolo.toString(), MatchMode.ANYWHERE));
 
-		criteria.setMaxResults(1);
-		return TituloRemessa.class.cast(criteria.uniqueResult());
+		List<TituloRemessa> titulos = criteria.list();
+		for (TituloRemessa titulo : titulos) {
+			if (titulo.getRetorno() == null) {
+				return titulo;
+			} else {
+				logger.error(new InfraException("Titulo nº" + titulo.getNumeroTitulo() + " já tem retorno"));
+			}
+		}
+		return null;
 	}
 
 	@Transactional(readOnly = true)

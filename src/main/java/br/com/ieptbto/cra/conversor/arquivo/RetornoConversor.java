@@ -84,7 +84,8 @@ public class RetornoConversor extends AbstractConversorArquivo<TituloVO, Retorno
 		tituloVO.setValorDemaisDespesas(new BigDecimalConversor().getValorConvertidoParaString(entidade.getValorDemaisDespesas()));			
 		tituloVO.setNumeroSequencialArquivo(entidade.getNumeroSequencialArquivo());
 		tituloVO.setDeclaracaoPortador(" ");
-
+		tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoParaString(entidade.getValorGravacaoEletronica()));
+		
 		return tituloVO;
 	}
 }

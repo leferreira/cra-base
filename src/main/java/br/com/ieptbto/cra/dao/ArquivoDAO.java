@@ -31,6 +31,7 @@ import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoInstituicao;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
+import br.com.ieptbto.cra.entidade.TituloSemTaxaCRA;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
@@ -53,6 +54,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	InstituicaoDAO instituicaoDAO;
 	@Autowired
 	RemessaDAO remessaDAO;
+	@Autowired
+	TituloSemTaxaCraDAO tituloSemTaxaCraDAO;
 
 	private List<Remessa> remessasConfirmacoesRecebidas;
 
@@ -340,10 +343,31 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			titulos = criteriaTitulo.list();
 
 			remessa.setTitulos(new ArrayList<Titulo>());
-			
 			if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
 				for (Titulo titulo : titulos) {
-					titulo.setValorGravacaoEletronica(arquivoBuscado.getInstituicaoRecebe().getValorConfirmacao());
+					if (titulo.getTipoOcorrencia() != null) {
+						if (titulo.getTipoOcorrencia().equals("5") ) {
+							titulo.setValorGravacaoEletronica(BigDecimal.ZERO);
+						} else {
+							titulo.setValorGravacaoEletronica(arquivoBuscado.getInstituicaoRecebe().getValorConfirmacao());
+						}
+					}
+				}
+			}
+			if (arquivoBuscado.getInstituicaoRecebe().getCodigoCompensacao().equals("237")) { // SOMENTE PARA BRADESCO
+				if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+					for (Titulo titulo : titulos) {
+						TituloSemTaxaCRA tituloSemTaxa = tituloSemTaxaCraDAO.verificarTituloEnviadoSemTaxa(titulo);
+						if (tituloSemTaxa != null) {
+							if (titulo.getTipoOcorrencia() != null) {
+								if (titulo.getTipoOcorrencia().equals("5") || tituloSemTaxa.getProtocolo().equals("0") ) {
+									titulo.setValorGravacaoEletronica(BigDecimal.ZERO);
+								} else {
+									titulo.setValorGravacaoEletronica(arquivoBuscado.getInstituicaoRecebe().getValorConfirmacao());
+								}
+							}	
+						}
+					}
 				}
 			}
 			remessa.getTitulos().addAll(titulos);

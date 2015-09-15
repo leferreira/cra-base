@@ -94,5 +94,4 @@ public class InstituicaoMediator {
 		instituicao.setNomeFantasia("CRA");
 		return instituicaoDAO.buscarInstituicao(instituicao);
 	}
-
 }
