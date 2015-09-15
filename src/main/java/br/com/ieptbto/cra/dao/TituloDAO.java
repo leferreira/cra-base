@@ -12,6 +12,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.postgresql.util.PSQLException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +37,10 @@ import br.com.ieptbto.cra.exception.InfraException;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @Repository
 public class TituloDAO extends AbstractBaseDAO {
+
+	private static final String DEVOLVIDO = "5";
+	@Autowired
+	TituloSemTaxaCraDAO tituloSemTaxaCraDAO;
 
 	public List<TituloRemessa> buscarListaTitulos(TituloRemessa titulo, Usuario user) {
 		Instituicao instituicaoUsuario = user.getInstituicao();
@@ -250,6 +255,14 @@ public class TituloDAO extends AbstractBaseDAO {
 	@Transactional(readOnly = true)
 	private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao) {
 		TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao);
+
+		if (tituloConfirmacao.getTipoOcorrencia() != null) {
+			if (tituloConfirmacao.getTipoOcorrencia().equals(DEVOLVIDO)) {
+				tituloConfirmacao.setValorGravacaoEletronica(BigDecimal.ZERO);
+			} else {
+				tituloConfirmacao.setValorGravacaoEletronica(tituloConfirmacao.getRemessa().getInstituicaoDestino().getValorConfirmacao());
+			}
+		}
 
 		if (titulo == null) {
 			throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero()
