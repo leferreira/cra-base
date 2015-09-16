@@ -18,6 +18,7 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 /**
  * 
@@ -37,7 +38,7 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	private String comentario;
 	private String path;
 	private LocalDate dataEnvio;
-//	private LocalTime horaEnvio;
+	private LocalTime horaEnvio;
 	private List<Remessa> remessas;
 	private RemessaDesistenciaProtesto remessaDesistenciaProtesto;
 	private Instituicao instituicaoRecebe;
@@ -119,14 +120,14 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 		return statusArquivo;
 	}
 	
-//	@Column(name = "HORA_ENVIO")
-//	public LocalTime getHoraEnvio() {
-//		return horaEnvio;
-//	}
-//
-//	public void setHoraEnvio(LocalTime horaEnvio) {
-//		this.horaEnvio = horaEnvio;
-//	}
+	@Column(name = "HORA_ENVIO", nullable=true)
+	public LocalTime getHoraEnvio() {
+		return horaEnvio;
+	}
+
+	public void setHoraEnvio(LocalTime horaEnvio) {
+		this.horaEnvio = horaEnvio;
+	}
 
 	public void setRemessaBanco(List<Remessa> remessaBanco) {
 		this.remessaBanco = remessaBanco;

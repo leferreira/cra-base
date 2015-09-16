@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +52,7 @@ public class ArquivoMediator {
 		}
 
 		arquivo.setTipoArquivo(getTipoArquivo(arquivo));
-//		arquivo.setHoraEnvio(new LocalTime()); 
+		arquivo.setHoraEnvio(new LocalTime()); 
 		arquivo = processarArquivo(arquivo, uploadedFile);
 		arquivo.setStatusArquivo(setStatusArquivo());
 		arquivo.setUsuarioEnvio(usuario);

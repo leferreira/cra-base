@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
@@ -308,13 +307,12 @@ public class RemessaDAO extends AbstractBaseDAO {
 		return Remessa.class.cast(criteria.uniqueResult());
 	}
 
-	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtesto(Arquivo arquivo, LocalDate dataInicio, LocalDate dataFim,
-	        ArrayList<TipoArquivoEnum> tiposArquivo, Instituicao portador, Usuario usuario) {
+	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
+	        ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 
 		Criteria criteria = getCriteria(DesistenciaProtesto.class);
 		criteria.createAlias("remessaDesistenciaProtesto", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
-		criteria.createAlias("cabecalhoCartorio", "cabecalho");
 
 		if (StringUtils.isNotBlank(arquivo.getNomeArquivo())) {
 			criteria.add(Restrictions.ilike("arquivo.nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
@@ -330,18 +328,22 @@ public class RemessaDAO extends AbstractBaseDAO {
 		}
 
 		if (portador != null) {
-			criteria.add(Restrictions.eq("cabecalho.numeroCodigoPortador", portador.getCodigoCompensacao()));
+			criteria.createAlias("remessa.cabecalho", "cabecalhoArquivo");
+			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", portador.getCodigoCompensacao()));
+		}
+		
+		if (municipio != null) {
+			criteria.createAlias("cabecalhoCartorio", "cabecalho");
+			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", municipio.getCodigoIBGE()));
 		}
 
-		if (TipoInstituicaoCRA.CARTORIO.equals(usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao())) {
-			Hibernate.initialize(usuario.getInstituicao());
-			Hibernate.initialize(usuario.getInstituicao().getMunicipio());
+		if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
+			criteria.createAlias("cabecalhoCartorio", "cabecalho");
 			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", usuario.getInstituicao().getMunicipio().getCodigoIBGE()));
-		} else if (TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA.equals(usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao())) {
-			criteria.createAlias("arquivo", "arquivo");
-			criteria.add(Restrictions.eq("arquivo.instituicaoEnvio", usuario.getInstituicao()));
+		} else if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
+			criteria.createAlias("remessa.cabecalho", "cabecalhoArquivo");
+			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", usuario.getInstituicao().getCodigoCompensacao()));
 		}
-
 		return criteria.list();
 	}
 

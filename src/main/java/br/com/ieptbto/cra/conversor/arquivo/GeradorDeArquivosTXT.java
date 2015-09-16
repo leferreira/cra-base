@@ -28,7 +28,7 @@ import br.com.ieptbto.cra.processador.FabricaDeRegistroTXT;
  */
 @Service
 public class GeradorDeArquivosTXT extends Gerador {
-
+	
 	public File gerar(RemessaDesistenciaProtestoVO remessaVO, File arquivoFisico) {
 		try {
 			BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivoFisico));
@@ -38,32 +38,32 @@ public class GeradorDeArquivosTXT extends Gerador {
 			remessaVO.getCabecalhoArquivo().setSequencialRegistro(linha.toString());
 			linha++;
 			bWrite.write(gerarLinhaDesistenciaProtesto(remessaVO.getCabecalhoArquivo()));
-			bWrite.newLine();
+			bWrite.write(NEW_LINE);
 
 			for (DesistenciaProtestoVO pedido : remessaVO.getPedidoDesistencias()) {
 				pedido.getCabecalhoCartorio().setSequencialRegistro(linha.toString());
 				linha++;
 				bWrite.write(gerarLinhaDesistenciaProtesto(pedido.getCabecalhoCartorio()));
-				bWrite.newLine();
+				bWrite.write(NEW_LINE);
 
 				for (RegistroDesistenciaProtestoVO registro : pedido.getRegistroDesistenciaProtesto()) {
 					registro.setSequenciaRegistro(linha.toString());
 					linha++;
 					bWrite.write(gerarLinhaDesistenciaProtesto(registro));
-					bWrite.newLine();
+					bWrite.write(NEW_LINE);
 				}
 
 				// Rodape do Cartório DP
 				pedido.getRodapeCartorio().setSequencialRegistro(linha.toString());
 				linha++;
 				bWrite.write(gerarLinhaDesistenciaProtesto(pedido.getRodapeCartorio()));
-				bWrite.newLine();
+				bWrite.write(NEW_LINE);
 			}
 			remessaVO.getRodapeArquivo().setSequencialRegistro(linha.toString());
 			linha++;
 			// Rodapé do Arquivo DP
 			bWrite.write(gerarLinhaDesistenciaProtesto(remessaVO.getRodapeArquivo()));
-			bWrite.newLine();
+			bWrite.write(NEW_LINE);
 
 			bWrite.flush();
 			bWrite.close();
@@ -79,21 +79,21 @@ public class GeradorDeArquivosTXT extends Gerador {
 		try {
 			Map<Integer, String> titulos = new HashMap<Integer, String>();
 			BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivoTXT));
-
+			
 			bWrite.write(gerarLinha(remessaVO.getCabecalho()));
-			bWrite.newLine();
+			bWrite.write(NEW_LINE);
 			for (TituloVO tituloVO : remessaVO.getTitulos()) {
 				titulos.put(Integer.parseInt(tituloVO.getNumeroSequencialArquivo()), gerarLinhaTitulo(tituloVO));
 			}
 
 			for (int i = 2; i < titulos.keySet().size() + 2; i++) {
 				bWrite.write(titulos.get(i));
-				bWrite.newLine();
+				bWrite.write(NEW_LINE);
 			}
 
 			bWrite.write(gerarLinhaRodape(remessaVO.getRodape()));
-			bWrite.newLine();
-
+			bWrite.write(NEW_LINE);
+			
 			bWrite.flush();
 			bWrite.close();
 
@@ -110,14 +110,14 @@ public class GeradorDeArquivosTXT extends Gerador {
 
 			for (RemessaVO remessaVO : remessasVO) {
 				bWrite.write(gerarLinha(remessaVO.getCabecalho()));
-				bWrite.newLine();
+				bWrite.write(NEW_LINE);
 				for (TituloVO tituloVO : remessaVO.getTitulos()) {
 					bWrite.write(gerarLinhaTitulo(tituloVO));
-					bWrite.newLine();
+					bWrite.write(NEW_LINE);
 				}
 
 				bWrite.write(gerarLinhaRodape(remessaVO.getRodape()));
-				bWrite.newLine();
+				bWrite.write(NEW_LINE);
 			}
 
 			bWrite.flush();

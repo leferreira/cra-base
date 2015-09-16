@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -119,6 +120,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private Arquivo criarArquivo(Remessa remessa) {
 		Arquivo arquivo = new Arquivo();
 		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setHoraEnvio(new LocalTime());
 		arquivo.setInstituicaoEnvio(remessa.getInstituicaoOrigem());
 		arquivo.setInstituicaoRecebe(instituicaoMediator.buscarCRA());
 		arquivo.setNomeArquivo(gerarNomeArquivo(remessa.getInstituicaoOrigem()));

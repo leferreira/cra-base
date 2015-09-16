@@ -263,12 +263,12 @@ public class RemessaMediator {
 	}
 
 	public Arquivo confirmacoesPendentes(Instituicao instituicao) {
-		List<Remessa> remessas = remessaDao.confirmacoesPendentes(instituicao);
+//		List<Remessa> remessas = remessaDao.confirmacoesPendentes(instituicao);
 		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
 		List<DesistenciaProtesto> desistenciaProtesto = remessaDao.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
 		remessaDesistenciaProtesto.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>(desistenciaProtesto));
 		Arquivo arquivo = new Arquivo();
-		arquivo.setRemessas(remessas);
+//		arquivo.setRemessas(remessas);
 		arquivo.setRemessaDesistenciaProtesto(remessaDesistenciaProtesto);
 
 		return arquivo;
@@ -278,9 +278,9 @@ public class RemessaMediator {
 		return remessaDao.confirmacoesPendentes(instituicao);
 	}
 
-	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtesto(Arquivo arquivo, LocalDate dataInicio, LocalDate dataFim,
-	        ArrayList<TipoArquivoEnum> tiposArquivo, Instituicao portador, Usuario usuario) {
-		return remessaDao.buscarRemessaDesistenciaProtesto(arquivo, dataInicio, dataFim, tiposArquivo, portador, usuario);
+	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
+	        ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+		return remessaDao.buscarRemessaDesistenciaProtesto(arquivo, portador, municipio,dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
 	public List<RemessaVO> buscarArquivos(String nomeArquivo, Instituicao instituicao) {

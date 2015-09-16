@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -102,6 +103,7 @@ public class RetornoMediator {
 		getArquivo().setInstituicaoRecebe(destino);
 		getArquivo().setInstituicaoEnvio(getCra());
 		getArquivo().setDataEnvio(new LocalDate());
+		getArquivo().setHoraEnvio(new LocalTime());
 	}
 	
 	private String gerarNomeArquivoRetorno(Remessa retorno) {
