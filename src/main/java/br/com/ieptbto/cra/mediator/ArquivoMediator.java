@@ -115,9 +115,9 @@ public class ArquivoMediator {
 		return arquivo;
 	}
 
-	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Instituicao instituicao, ArrayList<TipoArquivoEnum> tipoArquivos,
+	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos,
 	        Municipio pracaProtesto, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
-		return arquivoDAO.buscarArquivosAvancado(arquivo, instituicao, tipoArquivos, pracaProtesto, dataInicio, dataFim, situacoes);
+		return arquivoDAO.buscarArquivosAvancado(arquivo, usuario, tipoArquivos, pracaProtesto, dataInicio, dataFim, situacoes);
 	}
 
 	public Arquivo buscarArquivoPorNome(Instituicao instituicao, String nomeArquivo) {

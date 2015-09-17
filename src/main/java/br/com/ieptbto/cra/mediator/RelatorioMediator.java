@@ -140,6 +140,7 @@ public class RelatorioMediator {
 		parametros.put("INSTITUICAO", remessa.getInstituicaoOrigem().getNomeFantasia().toUpperCase());
 		parametros.put("TOTAL_TITULOS", Integer.class.cast(titulosJR.size()));
 		parametros.put("TOTAL_PAGOS", retornoDAO.buscarValorDeTitulosPagos(remessa));
+		parametros.put("TOTAL_DEMAIS_DESPESAS", retornoDAO.buscarValorDemaisDespesas(remessa));
 		parametros.put("TOTAL_CUSTAS", retornoDAO.buscarValorDeCustasCartorio(remessa));
 		parametros.put("QTD_PAGOS", numeroPagos);
 		parametros.put("QTD_PROTESTADOS_RETIRADOS", numeroProtestadosRetirados);

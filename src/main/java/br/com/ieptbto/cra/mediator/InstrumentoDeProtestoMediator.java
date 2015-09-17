@@ -31,6 +31,7 @@ public class InstrumentoDeProtestoMediator {
 	TituloDAO tituloDao;
 	@Autowired
 	InstrumentoProtestoDAO instrumentoDao;
+	
 	RegraAgenciaDestino regraAgenciaDestino;
 	private List<Retorno> titulosProtestados;
 	private List<SlipEtiquetaBean> etiquetas;

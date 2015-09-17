@@ -257,11 +257,19 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Instituicao instituicao, ArrayList<TipoArquivoEnum> tipoArquivos,
+	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos,
 	        Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		Criteria criteria = getCriteria(Arquivo.class);
-		criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", instituicao), Restrictions.eq("instituicaoRecebe", instituicao)));
+		criteria.createAlias("instituicaoEnvio", "instituicaoEnvio");
+		criteria.createAlias("tipoArquivo", "tipoArquivo");
+		criteria.createAlias("instituicaoEnvio.tipoInstituicao", "tipoInstituicao");
+		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
+		criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", usuario.getInstituicao()), Restrictions.eq("instituicaoRecebe", usuario.getInstituicao())));
 
+		if (arquivo.getInstituicaoEnvio() != null) {
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", arquivo.getInstituicaoEnvio()), Restrictions.eq("instituicaoRecebe", arquivo.getInstituicaoEnvio())));
+		}
+		
 		if (!situacoes.isEmpty()) {
 			Disjunction disjunction = Restrictions.disjunction();
 			criteria.createAlias("statusArquivo", "statusArquivo");
@@ -277,13 +285,19 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 
 		if (!tipoArquivos.isEmpty()) {
-			criteria.createAlias("tipoArquivo", "tipoArquivo");
 			Disjunction disjunction = Restrictions.disjunction();
 			for (TipoArquivoEnum tipoArquivo : tipoArquivos) {
 				disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipoArquivo));
 			}
 			criteria.add(disjunction);
 		}
+		
+		if (dataInicio != null) {
+			criteria.add(Restrictions.between("dataEnvio", dataInicio, dataFim));
+		}
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO));
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO));
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO));
 		criteria.addOrder(Order.desc("dataEnvio"));
 		return criteria.list();
 	}

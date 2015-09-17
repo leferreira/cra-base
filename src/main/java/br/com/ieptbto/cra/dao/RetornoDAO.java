@@ -81,6 +81,13 @@ public class RetornoDAO extends AbstractBaseDAO {
 		return BigDecimal.class.cast(criteria.uniqueResult());
 	}
 	
+	public BigDecimal buscarValorDemaisDespesas(Remessa retorno){
+		Criteria criteria = getCriteria(Retorno.class);
+		criteria.add(Restrictions.eq("remessa", retorno));
+		criteria.setProjection(Projections.sum("valorDemaisDespesas"));
+		return BigDecimal.class.cast(criteria.uniqueResult());
+	}
+	
 	public BigDecimal buscarValorDeCustasCartorio(Remessa retorno){
 		Criteria criteria = getCriteria(Retorno.class);
 		

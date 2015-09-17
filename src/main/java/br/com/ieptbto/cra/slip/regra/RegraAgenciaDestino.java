@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.slip.regra;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
 import br.com.ieptbto.cra.entidade.AgenciaBradesco;
@@ -15,6 +16,7 @@ import br.com.ieptbto.cra.exception.InfraException;
  * @author Thasso Araújo
  *
  */
+@Service
 public class RegraAgenciaDestino extends RegraInstrumentoProtesto {
 
 	@Autowired
