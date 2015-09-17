@@ -11,6 +11,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -31,6 +32,9 @@ public class DataUtil implements Serializable {
 
 	/** Pattern padrao para formatacao de data/hora. */
 	public static final String PADRAO_FORMATACAO_DATAHORA = "dd/MM/yyyy HH:mm";
+	
+	/** Pattern padrao para formatacao de hora. */
+	public static final String PADRAO_FORMATACAO_HORA = "HH:mm";
 
 	/** Pattern padrao para formatacao de data. */
 	public static final String PADRAO_FORMATACAO_DATA = "dd/MM/yyyy";
@@ -109,6 +113,13 @@ public class DataUtil implements Serializable {
 			return null;
 		}
 		return localDate.toString(getDateTimeFormatter(PADRAO_FORMATACAO_DATA));
+	}
+	
+	public static String localTimeToString(LocalTime localTime) {
+		if (localTime == null) {
+			return null;
+		}
+		return localTime.toString(getDateTimeFormatter(PADRAO_FORMATACAO_HORA));
 	}
 
 	/**

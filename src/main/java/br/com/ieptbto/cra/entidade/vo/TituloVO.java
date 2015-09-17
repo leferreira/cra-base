@@ -263,6 +263,11 @@ public class TituloVO extends AbstractArquivoVO {
 	}
 
 	public String getEnderecoSacadorVendedor() {
+		if (enderecoSacadorVendedor != null) {
+			if (enderecoSacadorVendedor.length() > 45) {
+				enderecoSacadorVendedor = enderecoSacadorVendedor.substring(0,44);
+			}
+		}
 		return enderecoSacadorVendedor;
 	}
 

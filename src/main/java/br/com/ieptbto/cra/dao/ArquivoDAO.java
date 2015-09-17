@@ -354,8 +354,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					}
 				}
 			}
-			if (arquivoBuscado.getInstituicaoRecebe().getCodigoCompensacao().equals("237")) { // SOMENTE PARA BRADESCO
-				if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+			if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+				if (arquivoBuscado.getInstituicaoRecebe().getCodigoCompensacao().equals("237")) { // SOMENTE PARA BRADESCO
 					for (Titulo titulo : titulos) {
 						TituloSemTaxaCRA tituloSemTaxa = tituloSemTaxaCraDAO.verificarTituloEnviadoSemTaxa(titulo);
 						if (tituloSemTaxa != null) {
