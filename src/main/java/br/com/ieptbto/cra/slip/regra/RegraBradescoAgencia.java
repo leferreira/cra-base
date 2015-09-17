@@ -9,7 +9,7 @@ import br.com.ieptbto.cra.entidade.TituloRemessa;
 public class RegraBradescoAgencia extends RegraAgenciaBanco {
 
 	@Override
-	protected String aplicarRegraEspecifica(TituloRemessa titulo) {
+	public String aplicarRegraEspecifica(TituloRemessa titulo) {
 		// TODO Auto-generated method stub
 		return null;
 	}

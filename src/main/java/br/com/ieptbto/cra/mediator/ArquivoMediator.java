@@ -23,7 +23,6 @@ import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
-import br.com.ieptbto.cra.processador.ProcessadorMigracaoCRA;
 
 /**
  * @author Thasso Araújo
@@ -38,8 +37,6 @@ public class ArquivoMediator {
 	private TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
 	private ProcessadorArquivo processadorArquivo;
-	@Autowired
-	private ProcessadorMigracaoCRA processadorArquivoMigracao;
 	@Autowired
 	private ArquivoDAO arquivoDAO;
 	private List<Exception> erros;

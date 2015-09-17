@@ -46,7 +46,7 @@ public class SlipEtiquetaBean implements Serializable, Comparable<SlipEtiquetaBe
 		this.setNumeroTitulo(titulo.getNumeroTitulo());
 		this.setDataVencimento(DataUtil.localDateToString(titulo.getDataVencimentoTitulo()));
 		this.setValorSaldoTitulo(titulo.getSaldoTitulo());
-		this.setNumeroProtocolo(titulo.getNumeroProtocoloCartorio());
+		this.setNumeroProtocolo(titulo.getRetorno().getNumeroProtocoloCartorio());
 		this.setPracaProtesto(titulo.getPracaProtesto());
 		this.setAgenciaCentralizadora(titulo.getRemessa().getCabecalho().getAgenciaCentralizadora());
 	}
@@ -206,9 +206,9 @@ public class SlipEtiquetaBean implements Serializable, Comparable<SlipEtiquetaBe
         		return -1;
         	}
         	return 1;
-        } else if (Integer.parseInt(numeroProtocolo) < Integer.parseInt(outraEtiqueta.getNumeroProtocolo())) {
+        } else if (Integer.parseInt(this.getNumeroProtocolo()) < Integer.parseInt(outraEtiqueta.getNumeroProtocolo())) {
             return -1;
-        } else if (Integer.parseInt(numeroProtocolo) > Integer.parseInt(outraEtiqueta.getNumeroProtocolo())) {
+        } else if (Integer.parseInt(this.getNumeroProtocolo()) > Integer.parseInt(outraEtiqueta.getNumeroProtocolo())) {
             return 1;
         }
 		return 0;

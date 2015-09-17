@@ -1,14 +1,28 @@
 package br.com.ieptbto.cra.dao;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
+import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 
 @Repository
 public class AdministracaoDAO extends AbstractBaseDAO {
@@ -161,5 +175,47 @@ public class AdministracaoDAO extends AbstractBaseDAO {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Arquivo> buscarArquivosRemover(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tiposArquivo, Municipio municipio,
+			LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacaoArquivos) {
+		Criteria criteria = getCriteria(Arquivo.class);
+
+		if (arquivo.getInstituicaoEnvio() != null) {
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", arquivo.getInstituicaoEnvio()), Restrictions.eq("instituicaoRecebe", arquivo.getInstituicaoEnvio())));
+		}
+		
+		if (!situacaoArquivos.isEmpty()) {
+			Disjunction disjunction = Restrictions.disjunction();
+			criteria.createAlias("statusArquivo", "statusArquivo");
+			Disjunction disj = Restrictions.disjunction();
+			for (SituacaoArquivo status : situacaoArquivos) {
+				disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", status));
+			}
+			criteria.add(disj);
+		}
+
+		if (arquivo.getNomeArquivo() != null && arquivo.getNomeArquivo() != StringUtils.EMPTY) {
+			criteria.add(Restrictions.ilike("nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
+		}
+
+		if (!tiposArquivo.isEmpty()) {
+			Disjunction disjunction = Restrictions.disjunction();
+			for (TipoArquivoEnum tipoArquivo : tiposArquivo) {
+				disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipoArquivo));
+			}
+			criteria.add(disjunction);
+		}
+		
+		if (dataInicio != null) {
+			criteria.add(Restrictions.between("dataEnvio", dataInicio, dataFim));
+		}
+		criteria.createAlias("tipoArquivo", "tipoArquivo");
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO));
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO));
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO));
+		criteria.addOrder(Order.desc("dataEnvio"));
+		return criteria.list();
 	}
 }

@@ -26,6 +26,9 @@ public class SlipEnvelopeBean {
 	}
 
 	public String getMunicipio() {
+		if (municipio != null) {
+			municipio = municipio.trim();
+		}
 		return municipio;
 	}
 

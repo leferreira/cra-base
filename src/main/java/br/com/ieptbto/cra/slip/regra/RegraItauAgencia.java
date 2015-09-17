@@ -10,7 +10,7 @@ import br.com.ieptbto.cra.enumeration.AgenciasEspeciaisItau;
 public class RegraItauAgencia extends RegraAgenciaBanco {
 
 	@Override
-	protected String aplicarRegraEspecifica(TituloRemessa titulo) {
+	public String aplicarRegraEspecifica(TituloRemessa titulo) {
 		
 		return aplicarRegraAgencia0933(titulo);
 	}
