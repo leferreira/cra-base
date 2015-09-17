@@ -1,15 +1,15 @@
 package br.com.ieptbto.cra.slip.regra;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
 import br.com.ieptbto.cra.entidade.AgenciaBradesco;
 import br.com.ieptbto.cra.entidade.AgenciaCAF;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.BancoTipoRegraBasicaInstrumento;
 import br.com.ieptbto.cra.enumeration.TipoRegraInstrumento;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.mediator.ArquivoDeParaMediator;
 
 /**
  * @author Thasso Araújo
@@ -17,10 +17,10 @@ import br.com.ieptbto.cra.mediator.ArquivoDeParaMediator;
  */
 public class RegraAgenciaDestino extends RegraInstrumentoProtesto {
 
-	@SpringBean
-	ArquivoDeParaMediator arquivoDeParaMediator;
+	@Autowired
+	ArquivoDeParaDAO arquivoDeParaDAO;
+	
 	private TituloRemessa titulo;
-
 	private String agenciaDestino;
 	private String municipioDestino;
 	private String ufDestino;
@@ -63,7 +63,7 @@ public class RegraAgenciaDestino extends RegraInstrumentoProtesto {
 			agenciaItau = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.ITAU);
 		}
 		
-		AgenciaCAF agenciaCAF = arquivoDeParaMediator.buscarAgenciaArquivoCAF(agenciaItau);
+		AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaItau);
 		if (agenciaCAF != null) {
 			setAgenciaDestino(agenciaCAF.getCodigoAgencia());
 			setMunicipioDestino(agenciaCAF.getCidade());
@@ -75,14 +75,14 @@ public class RegraAgenciaDestino extends RegraInstrumentoProtesto {
 	
 	private void aplicarRegraBradesco() {
 		String agenciaBradesco = new RegraBradescoAgencia().aplicarRegraEspecifica(getTitulo());
-		AgenciaBradesco agenciaDePara = arquivoDeParaMediator.buscarAgenciaArquivoDeParaBradesco(getTitulo());
+		AgenciaBradesco agenciaDePara = arquivoDeParaDAO.buscarAgenciaArquivoDeParaBradesco(getTitulo());
 		
 		if (agenciaDePara != null) {
 			setAgenciaDestino(agenciaDePara.getAgenciaDestino());
 			
 		} else {
 			agenciaBradesco = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.BRADESCO);
-			AgenciaCAF agenciaCAF = arquivoDeParaMediator.buscarAgenciaArquivoCAF(agenciaBradesco);
+			AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaBradesco);
 			
 			if (agenciaCAF == null) {
 				throw new InfraException("Não foi possível identificar a agência de destino do título [Nosso Nº: " +getTitulo().getNossoNumero()+ "] .");
@@ -100,7 +100,7 @@ public class RegraAgenciaDestino extends RegraInstrumentoProtesto {
 	
 	private void aplicarRegraOutros(BancoTipoRegraBasicaInstrumento bancoTipoRegra) {
 		String agencia = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.ITAU);
-		AgenciaCAF agenciaCAF = arquivoDeParaMediator.buscarAgenciaArquivoCAF(agencia);
+		AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agencia);
 		
 		if (agenciaCAF == null) {
 			throw new InfraException("Não foi possível identificar a agência de destino do título [Nosso Nº: " +getTitulo().getNossoNumero()+ "] .");

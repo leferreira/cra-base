@@ -6,6 +6,7 @@ public class SlipEnvelopeBean {
 	private String numeroAgencia;
 	private String municipio;
 	private String uf;
+	private String codeBar;
 	private int quantidadeInstrumentos;
 	
 	public String getUf() {
@@ -46,6 +47,14 @@ public class SlipEnvelopeBean {
 
 	public void setQuantidadeInstrumentos(int quantidadeInstrumentos) {
 		this.quantidadeInstrumentos = quantidadeInstrumentos;
+	}
+
+	public String getCodeBar() {
+		return codeBar;
+	}
+
+	public void setCodeBar(String codeBar) {
+		this.codeBar = codeBar;
 	}
 
 }

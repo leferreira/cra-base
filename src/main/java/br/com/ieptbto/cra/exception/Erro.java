@@ -21,7 +21,11 @@ public enum Erro {
 	NOME_DO_ARQUIVO_INVALIDO("0009", "O nome do arquivo inválido."), //
 	TAMANHO_LINHA_FORA_DO_PADRAO("0010", "O tamanho da linha difere do padrão " + ConfiguracaoBase.TAMANHO_PADRAO_LINHA), //
 	CODIGO_IBGE_NAO_CADASTRADO("0011", "Código IBGE não cadastrado"), //
-	NUMERO_SEQUENCIAL_CABECALHO_INVALDIO("0012", "Número sequencial do Cabecalho inválido"); //
+	NUMERO_SEQUENCIAL_CABECALHO_INVALDIO("0012", "Número sequencial do Cabecalho inválido"), //
+	TAMANHO_NOME_ARQUIVO_INVALIDO("", "Quantidade de caracteres informada no nome do arquivo é inválida"), //
+	DATA_NOME_ARQUIVO_INVALIDA("", "A data informada no nome do arquivo é inválida"), //
+	EXTENSAO_NOME_ARQUIVO_INVALIDA("", "Extensão do nome do arquivo inválida"); //
+	
 
 	private String codigoErro;
 	private String mensagem;

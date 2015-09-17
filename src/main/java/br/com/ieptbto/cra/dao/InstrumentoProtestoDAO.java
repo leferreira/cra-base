@@ -47,4 +47,11 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
+	public InstrumentoProtesto carregarTituloInstrumento(InstrumentoProtesto instrumento) {
+		Criteria criteria = getCriteria(InstrumentoProtesto.class);
+		criteria.add(Restrictions.eq("id", instrumento.getId()));
+		criteria.createAlias("titulo", "titulo");
+		return InstrumentoProtesto.class.cast(criteria.uniqueResult());
+	}
+
 }

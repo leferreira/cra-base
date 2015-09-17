@@ -18,6 +18,7 @@ public class SlipEtiquetaBean implements Serializable, Comparable<SlipEtiquetaBe
 	private static final long serialVersionUID = 1L;
 	
 	private String razaoSocialPortador;
+	private String agenciaCodigoCedente;
 	private String dataOcorrencia;
 	private String nomeCedente;
 	private String nomeSacador;
@@ -35,8 +36,8 @@ public class SlipEtiquetaBean implements Serializable, Comparable<SlipEtiquetaBe
 	private String ufAgencia; //
 
 	public void parseToTituloRemessa(TituloRemessa titulo){
-		this.setRazaoSocialPortador(titulo.getRemessa().getInstituicaoOrigem().getRazaoSocial());
-
+		this.setRazaoSocialPortador(titulo.getRemessa().getInstituicaoOrigem().getRazaoSocial().toUpperCase());
+		this.setAgenciaCodigoCedente(titulo.getAgenciaCodigoCedente());
 		this.setDataOcorrencia(DataUtil.localDateToString(titulo.getRetorno().getDataOcorrencia()));
 		this.setNomeCedente(titulo.getNomeCedenteFavorecido());
 		this.setNomeSacador(titulo.getNomeSacadorVendedor());
@@ -155,6 +156,9 @@ public class SlipEtiquetaBean implements Serializable, Comparable<SlipEtiquetaBe
 	}
 	
 	public String getMunicipioAgencia() {
+		if (municipioAgencia != null) {
+			municipioAgencia = municipioAgencia.toUpperCase();
+		}
 		return municipioAgencia;
 	}
 
@@ -163,6 +167,9 @@ public class SlipEtiquetaBean implements Serializable, Comparable<SlipEtiquetaBe
 	}
 
 	public String getUfAgencia() {
+		if (ufAgencia != null) {
+			ufAgencia = ufAgencia.toUpperCase();
+		}
 		return ufAgencia;
 	}
 
@@ -205,5 +212,13 @@ public class SlipEtiquetaBean implements Serializable, Comparable<SlipEtiquetaBe
             return 1;
         }
 		return 0;
+	}
+
+	public String getAgenciaCodigoCedente() {
+		return agenciaCodigoCedente;
+	}
+
+	public void setAgenciaCodigoCedente(String agenciaCodigoCedente) {
+		this.agenciaCodigoCedente = agenciaCodigoCedente;
 	}
 }

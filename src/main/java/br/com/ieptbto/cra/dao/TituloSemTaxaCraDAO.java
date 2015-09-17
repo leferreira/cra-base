@@ -20,10 +20,14 @@ public class TituloSemTaxaCraDAO extends AbstractBaseDAO {
 
 	@SuppressWarnings("rawtypes")
 	public TituloSemTaxaCRA verificarTituloEnviadoSemTaxa(Titulo titulo) {
+		String protocolo = titulo.getNumeroProtocoloCartorio();
+		if (titulo.getNumeroProtocoloCartorio() != null && !titulo.getNumeroProtocoloCartorio().equals("0")) {
+			Integer numeroProtocolo = Integer.parseInt(titulo.getNumeroProtocoloCartorio().trim());
+			protocolo = numeroProtocolo.toString();
+		}
 		Criteria criteria = getCriteria(TituloSemTaxaCRA.class);
-		criteria.add(Restrictions.like("agenciaCodigoCedente", titulo.getAgenciaCodigoCedente().trim()));
-		criteria.add(Restrictions.like("protocolo", titulo.getNumeroProtocoloCartorio().trim()));
-		criteria.add(Restrictions.like("codigoIBGE", titulo.getRemessa().getCabecalho().getCodigoMunicipio().trim()));
+		criteria.add(Restrictions.eq("protocolo", protocolo));
+		criteria.add(Restrictions.eq("codigoIBGE", titulo.getRemessa().getCabecalho().getCodigoMunicipio().trim()));
 		return TituloSemTaxaCRA.class.cast(criteria.uniqueResult());
 	}
 	
