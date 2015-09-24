@@ -25,7 +25,7 @@ public class RegistroDesistenciaProtestoVO extends AbstractArquivoVO {
 	private String identificacaoRegistro;
 
 	@XmlAttribute(name = "t02")
-	@IAtributoArquivo(ordem = 2, posicao = 2, tamanho = 10, descricao = "Número do protocolo", obrigatoriedade = true, tipo = String.class)
+	@IAtributoArquivo(ordem = 2, posicao = 2, tamanho = 10, formato=" ", posicaoCampoVazio=PosicaoCampoVazio.ESQUERDO,descricao = "Número do protocolo", obrigatoriedade = true, tipo = String.class)
 	private String numeroProtocolo;
 
 	@IAtributoArquivo(ordem = 3, posicao = 12, tamanho = 8, descricao = "data da Protocolagem DDMMAAA", obrigatoriedade = true)

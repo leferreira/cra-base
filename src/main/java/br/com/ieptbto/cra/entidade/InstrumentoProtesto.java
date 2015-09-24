@@ -27,11 +27,8 @@ public class InstrumentoProtesto extends AbstractEntidade<InstrumentoProtesto> {
 	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
-	private TituloRemessa titulo;
+	private Retorno tituloRetorno;
 	private LocalDate dataDeEntrada;
-	private LocalDate dataSlip;
-	private LocalDate dataEnvio;
-	private boolean situacao;
 	
 	@Id
 	@Column(name = "ID_INSTRUMENTO_PROTESTO", columnDefinition = "serial")
@@ -45,13 +42,13 @@ public class InstrumentoProtesto extends AbstractEntidade<InstrumentoProtesto> {
 	}
 
 	@OneToOne
-	@JoinColumn(name="TITULO_ID")
-	public TituloRemessa getTitulo() {
-		return titulo;
+	@JoinColumn(name="RETORNO_ID")
+	public Retorno getTituloRetorno() {
+		return tituloRetorno;
 	}
 
-	public void setTitulo(TituloRemessa titulo) {
-		this.titulo = titulo;
+	public void setTituloRetorno(Retorno tituloRetorno) {
+		this.tituloRetorno = tituloRetorno;
 	}
 
 	@Column(name = "DATA_ENTRADA")
@@ -63,40 +60,12 @@ public class InstrumentoProtesto extends AbstractEntidade<InstrumentoProtesto> {
 		this.dataDeEntrada = dataDeEntrada;
 	}
 
-	@Column(name = "DATA_SLIP")
-	public LocalDate getDataSlip() {
-		return dataSlip;
-	}
-
-	public void setDataSlip(LocalDate dataSlip) {
-		this.dataSlip = dataSlip;
-	}
-
-	@Column(name = "DATA_ENVIO")
-	public LocalDate getDataEnvio() {
-		return dataEnvio;
-	}
-
-	public void setDataEnvio(LocalDate dataEnvio) {
-		this.dataEnvio = dataEnvio;
-	}
-
-	@Column(name = "SITUACAO")
-	public boolean isSituacao() {
-		return situacao;
-	}
-
-	public void setSituacao(boolean situacao) {
-		this.situacao = situacao;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof InstrumentoProtesto) {
 			InstrumentoProtesto modalidade = InstrumentoProtesto.class.cast(obj);
 			EqualsBuilder equalsBuilder = new EqualsBuilder();
 			equalsBuilder.append(this.getId(), modalidade.getId());
-			equalsBuilder.append(this.getTitulo(), modalidade.getTitulo());
 			equalsBuilder.append(this.getDataDeEntrada(), modalidade.getDataDeEntrada());
 			return equalsBuilder.isEquals();
 		}
