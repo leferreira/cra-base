@@ -1,4 +1,4 @@
-package br.com.ieptbto.cra.ireport;
+package br.com.ieptbto.cra.bean;
 
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.util.DataUtil;

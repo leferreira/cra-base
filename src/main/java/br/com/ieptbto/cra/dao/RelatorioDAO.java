@@ -10,9 +10,9 @@ import org.hibernate.Query;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
+import br.com.ieptbto.cra.bean.RelatorioSinteticoBean;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.ireport.RelatorioSinteticoBean;
 
 /**
  * @author Thasso Araújo

@@ -43,6 +43,8 @@ public class InstrumentoDeProtestoMediator {
 
 	public InstrumentoDeProtestoMediator processarInstrumentos(List<Retorno> listaRetorno) {
 		this.titulosProtestados = listaRetorno;
+		this.etiquetas = null;
+		this.envelopes = null;
 		logger.info("Gerando " + listaRetorno.size() + " instrumentos de protesto.");
 
 		gerarInstrumentos();

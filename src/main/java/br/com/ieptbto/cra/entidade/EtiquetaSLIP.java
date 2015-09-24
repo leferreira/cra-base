@@ -17,7 +17,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
-import org.joda.time.LocalDate;
 
 /**
  * @author Thasso
@@ -42,7 +41,7 @@ public class EtiquetaSLIP extends AbstractEntidade<EtiquetaSLIP> {
 	private String documentoSacador;
 	private String nossoNumero;
 	private String numeroTitulo; 
-	private LocalDate dataOcorrencia;
+	private Date dataProtocolo;
 	private Date dataVencimento;
 	private BigDecimal valorSaldoTitulo;
 	private String numeroProtocoloCartorio;
@@ -124,9 +123,10 @@ public class EtiquetaSLIP extends AbstractEntidade<EtiquetaSLIP> {
 		return numeroTitulo;
 	}
 
-	@Column(name="DATA_OCORRENCIA")
-	public LocalDate getDataOcorrencia() {
-		return dataOcorrencia;
+	@Column(name="DATA_PROTOCOLO")
+	@Type(type = "date")
+	public Date getDataProtocolo() {
+		return dataProtocolo;
 	}
 
 	@Column(name="DATA_VENCIMENTO")
@@ -211,8 +211,8 @@ public class EtiquetaSLIP extends AbstractEntidade<EtiquetaSLIP> {
 	}
 
 
-	public void setDataOcorrencia(LocalDate dataOcorrencia) {
-		this.dataOcorrencia = dataOcorrencia;
+	public void setDataProtocolo(Date dataProtocolo) {
+		this.dataProtocolo = dataProtocolo;
 	}
 
 
@@ -253,7 +253,7 @@ public class EtiquetaSLIP extends AbstractEntidade<EtiquetaSLIP> {
 		this.setBanco(retorno.getTitulo().getRemessa().getCabecalho().getNomePortador().toUpperCase());
 		
 		this.setAgenciaCodigoCedente(retorno.getTitulo().getAgenciaCodigoCedente());
-		this.setDataOcorrencia(retorno.getDataOcorrencia());
+		this.setDataProtocolo(retorno.getTitulo().getConfirmacao().getDataProtocolo().toDate());
 		this.setNomeCedenteFavorecido(retorno.getTitulo().getNomeCedenteFavorecido());
 		this.setNomeSacadorVendedor(retorno.getTitulo().getNomeSacadorVendedor());
 		this.setDocumentoSacador(retorno.getTitulo().getDocumentoSacador());

@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import org.apache.commons.lang.StringUtils;
 
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
+import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
 
 @SuppressWarnings("serial")
 public class RegistroCancelamentoProtestoVO extends AbstractArquivoVO {
@@ -14,7 +15,7 @@ public class RegistroCancelamentoProtestoVO extends AbstractArquivoVO {
 	private String tipoRegistro;
 
 	@XmlAttribute(name = "t02")
-	@IAtributoArquivo(ordem = 2, posicao = 2, tamanho = 10, descricao = "Número do protocolo", obrigatoriedade = true, tipo = String.class)
+	@IAtributoArquivo(ordem = 2, posicao = 2, formato=" ", posicaoCampoVazio=PosicaoCampoVazio.ESQUERDO, tamanho = 10, descricao = "Número do protocolo", obrigatoriedade = true, tipo = String.class)
 	private String numeroProtocolo;
 
 	@IAtributoArquivo(ordem = 3, posicao = 12, tamanho = 8, descricao = "data da Protocolagem DDMMAAA", obrigatoriedade = true)

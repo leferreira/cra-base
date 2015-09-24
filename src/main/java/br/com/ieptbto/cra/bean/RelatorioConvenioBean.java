@@ -1,4 +1,4 @@
-package br.com.ieptbto.cra.ireport;
+package br.com.ieptbto.cra.bean;
 
 import java.io.Serializable;
 

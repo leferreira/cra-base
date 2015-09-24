@@ -426,10 +426,16 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 
 	@Transient
 	public String getSituacaoTitulo() {
+		this.situacaoTitulo = "EM ABERTO";
+		
 		if (this.confirmacao == null) {
 			this.situacaoTitulo = "S/CONFIRMAÇÃO";
-		} else if (this.retorno == null) {
-			this.situacaoTitulo = "EM ABERTO";
+		} else if (this.confirmacao != null && this.retorno == null) {
+			if (this.confirmacao.getTipoOcorrencia() != null) {
+				if (!this.confirmacao.getTipoOcorrencia().equals(" ")) {
+					this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.confirmacao.getTipoOcorrencia()).getLabel();
+				} 
+			} 
 		} else {
 			this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.retorno.getTipoOcorrencia()).getLabel();
 		}

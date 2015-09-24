@@ -249,14 +249,14 @@ public class RemessaDAO extends AbstractBaseDAO {
 					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
 					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_origem_id=ins.id_instituicao "
 					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) "
-					+ "from TB_TITULO tit LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
+					+ "from TB_TITULO tit LEFT JOIN tb_confirmacao con ON tit.id_	titulo = con.titulo_id "
 					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
 					+ "where con.titulo_id IS NULL and tit.id_titulo > 37085 )"
 					+ "AND rem.instituicao_destino_id=" + instituicao.getId() + " "
-//					+ "AND ins.tipo_instituicao_id<>4 "
+					+ "AND ins.tipo_instituicao_id<>4 "
 					+ "OR rem.status_remessa LIKE 'AGUARDANDO' "
 					+ "AND rem.instituicao_destino_id=" + instituicao.getId() + " "
-//					+ "AND ins.tipo_instituicao_id<>4 "
+					+ "AND ins.tipo_instituicao_id<>4 "
 					+ "GROUP BY ins.nome_fantasia, t.remessa_id ORDER BY ins.nome_fantasia";
 		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
 			q = "select mun.nome_municipio,t.remessa_id "

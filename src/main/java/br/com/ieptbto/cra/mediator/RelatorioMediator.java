@@ -19,6 +19,8 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.bean.RelatorioSinteticoBean;
+import br.com.ieptbto.cra.bean.TituloBean;
 import br.com.ieptbto.cra.dao.RelatorioDAO;
 import br.com.ieptbto.cra.dao.RetornoDAO;
 import br.com.ieptbto.cra.dao.TituloDAO;
@@ -32,8 +34,6 @@ import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.enumeration.TipoRelatorio;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.ireport.RelatorioSinteticoBean;
-import br.com.ieptbto.cra.ireport.TituloBean;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**

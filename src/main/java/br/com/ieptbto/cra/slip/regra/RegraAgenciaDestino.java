@@ -32,7 +32,10 @@ public class RegraAgenciaDestino {
 	private String ufDestino;
 	
 	public RegraAgenciaDestino regraAgenciaDestino(TituloRemessa titulo) {
-		this.setTitulo(titulo);
+		this.agenciaDestino = StringUtils.EMPTY;
+		this.municipioDestino = StringUtils.EMPTY;
+		this.ufDestino = StringUtils.EMPTY;
+		this.titulo = titulo;
 		
 		logger.info("Aplicando regra de agência destino");
 		processar();
