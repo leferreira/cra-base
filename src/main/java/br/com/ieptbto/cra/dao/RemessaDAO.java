@@ -249,7 +249,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
 					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_origem_id=ins.id_instituicao "
 					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) "
-					+ "from TB_TITULO tit LEFT JOIN tb_confirmacao con ON tit.id_	titulo = con.titulo_id "
+					+ "from TB_TITULO tit LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
 					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
 					+ "where con.titulo_id IS NULL and tit.id_titulo > 37085 )"
 					+ "AND rem.instituicao_destino_id=" + instituicao.getId() + " "

@@ -60,7 +60,7 @@ public class InstrumentoDeProtestoMediator {
 
 		for (Retorno retorno : getTitulosProtestados()) {
 			Retorno tituloRetorno = instrumentoDao.carregarRetorno(retorno);
-			
+
 			InstrumentoProtesto instrumento = new InstrumentoProtesto();
 			instrumento.setDataDeEntrada(new LocalDate());
 			instrumento.setTituloRetorno(tituloRetorno);
@@ -156,5 +156,9 @@ public class InstrumentoDeProtestoMediator {
 
 	public void alterarEnvelopesParaEnviado(List<EnvelopeSLIP> envelopesLiberados) {
 		instrumentoDao.alterarEnvelopesParaEnviado(envelopesLiberados);
+	}
+
+	public InstrumentoProtesto isTituloJaFoiGeradoInstrumento(Retorno tituloProtestado) {
+		return instrumentoDao.isTituloJaFoiGeradoInstrumento(tituloProtestado);
 	}
 }

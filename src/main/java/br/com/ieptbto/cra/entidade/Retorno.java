@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
 import br.com.ieptbto.cra.conversor.arquivo.RetornoConversor;
@@ -69,8 +71,24 @@ public class Retorno extends Titulo<Retorno> {
 
 	@Override
 	public int compareTo(Retorno entidade) {
-		// TODO Auto-generated method stub
-		return 0;
+		CompareToBuilder compareToBuilder = new CompareToBuilder();
+		compareToBuilder.append(this.getId(), entidade.getId());
+		compareToBuilder.append(this.getNossoNumero(), entidade.getNossoNumero());
+		compareToBuilder.append(this.getNumeroProtocoloCartorio(), getNumeroProtocoloCartorio());
+
+		return compareToBuilder.toComparison();
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Retorno) {
+			Retorno modalidade = Retorno.class.cast(obj);
+			EqualsBuilder equalsBuilder = new EqualsBuilder();
+			equalsBuilder.append(this.getId(), modalidade.getId());
+			equalsBuilder.append(this.getNossoNumero(), modalidade.getNossoNumero());
+			equalsBuilder.append(this.getNumeroProtocoloCartorio(), modalidade.getNumeroProtocoloCartorio());
+			return equalsBuilder.isEquals();
+		}
+		return false;
+	}
 }

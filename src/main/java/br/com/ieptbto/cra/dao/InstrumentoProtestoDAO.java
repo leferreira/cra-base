@@ -113,4 +113,11 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", retorno.getCabecalho().getCodigoMunicipio()));
 		return Retorno.class.cast(criteria.uniqueResult());
 	}
+
+
+	public InstrumentoProtesto isTituloJaFoiGeradoInstrumento(Retorno tituloRetorno) {
+		Criteria criteria = getCriteria(InstrumentoProtesto.class);
+		criteria.add(Restrictions.eq("tituloRetorno", tituloRetorno));
+		return InstrumentoProtesto.class.cast(criteria.uniqueResult());
+	}
 }
