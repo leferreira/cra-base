@@ -255,15 +255,15 @@ public class EtiquetaSLIP extends AbstractEntidade<EtiquetaSLIP> {
 		this.setAgenciaCodigoCedente(retorno.getTitulo().getAgenciaCodigoCedente());
 		this.setDataProtocolo(retorno.getTitulo().getConfirmacao().getDataProtocolo().toDate());
 		this.setNomeCedenteFavorecido(retorno.getTitulo().getNomeCedenteFavorecido());
-		this.setNomeSacadorVendedor(retorno.getTitulo().getNomeSacadorVendedor());
-		this.setDocumentoSacador(retorno.getTitulo().getDocumentoSacador());
+		this.setNomeSacadorVendedor(retorno.getTitulo().getNomeDevedor());
+		this.setDocumentoSacador(retorno.getTitulo().getNumeroIdentificacaoDevedor());
 		this.setNossoNumero(retorno.getTitulo().getNossoNumero());
 		this.setNumeroTitulo(retorno.getTitulo().getNumeroTitulo());
 		this.setDataVencimento(retorno.getTitulo().getDataVencimentoTitulo().toDate());
 		this.setValorSaldoTitulo(retorno.getTitulo().getSaldoTitulo());
 		this.setNumeroProtocoloCartorio(retorno.getNumeroProtocoloCartorio());
 		this.setPracaProtesto(retorno.getTitulo().getPracaProtesto());
-		this.setAgenciaCentralizadora(retorno.getTitulo().getRemessa().getCabecalho().getAgenciaCentralizadora());
+		this.setAgenciaCentralizadora(retorno.getRemessa().getCabecalho().getAgenciaCentralizadora());
 	}
 	
 	@Override

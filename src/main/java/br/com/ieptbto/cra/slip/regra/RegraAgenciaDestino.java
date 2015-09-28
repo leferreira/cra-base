@@ -72,10 +72,10 @@ public class RegraAgenciaDestino {
 			agenciaItau = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.ITAU);
 		}
 		
-		AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaItau);
+		AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaItau, BancoTipoRegraBasicaInstrumento.ITAU);
 		if (agenciaCAF != null) {
 			setAgenciaDestino(agenciaCAF.getCodigoAgencia());
-			setMunicipioDestino(agenciaCAF.getCidade());
+			setMunicipioDestino(agenciaCAF.getNomeAgencia());
 			setUfDestino(agenciaCAF.getUf());
 		} else {
 			throw new InfraException("Não foi possível identificar a agência de destino do título [Nosso Nº: " +getTitulo().getNossoNumero()+ "] .");
@@ -90,14 +90,14 @@ public class RegraAgenciaDestino {
 			setAgenciaDestino(agenciaDePara.getAgenciaDestino());
 			
 		} else {
-			agenciaBradesco = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.BRADESCO);
-			AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaBradesco);
+			agenciaBradesco = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.BRADESCO); 
+			AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaBradesco, BancoTipoRegraBasicaInstrumento.BRADESCO);
 			
 			if (agenciaCAF == null) {
 				throw new InfraException("Não foi possível identificar a agência de destino do título [Nosso Nº: " +getTitulo().getNossoNumero()+ "] .");
 			}
 			setAgenciaDestino(agenciaCAF.getCodigoAgencia());
-			setMunicipioDestino(agenciaCAF.getCidade());
+			setMunicipioDestino(agenciaCAF.getNomeAgencia());
 			setUfDestino(agenciaCAF.getUf());
 		}
 	}
@@ -108,8 +108,8 @@ public class RegraAgenciaDestino {
 	}
 	
 	private void aplicarRegraOutros(BancoTipoRegraBasicaInstrumento bancoTipoRegra) {
-		String agencia = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.ITAU);
-		AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agencia);
+		String agencia = aplicarRegraBasica(bancoTipoRegra);
+		AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agencia, bancoTipoRegra);
 		
 		if (agenciaCAF == null) {
 			throw new InfraException("Não foi possível identificar a agência de destino do título [Nosso Nº: " +getTitulo().getNossoNumero()+ "] .");

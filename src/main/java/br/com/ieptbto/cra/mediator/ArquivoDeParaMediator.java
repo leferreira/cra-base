@@ -12,6 +12,7 @@ import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
 import br.com.ieptbto.cra.entidade.AgenciaBradesco;
 import br.com.ieptbto.cra.entidade.AgenciaCAF;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
+import br.com.ieptbto.cra.enumeration.BancoTipoRegraBasicaInstrumento;
 import br.com.ieptbto.cra.enumeration.PadraoArquivoDePara;
 import br.com.ieptbto.cra.exception.InfraException;
 
@@ -46,7 +47,7 @@ public class ArquivoDeParaMediator {
 		return deParaDAO.buscarAgenciaArquivoDeParaBradesco(tituloRemessa);
 	}
 	
-	public AgenciaCAF buscarAgenciaArquivoCAF(String agencia) {
-		return deParaDAO.buscarAgenciaArquivoCAF(agencia);
+	public AgenciaCAF buscarAgenciaArquivoCAF(String agencia, BancoTipoRegraBasicaInstrumento bancoTipo) {
+		return deParaDAO.buscarAgenciaArquivoCAF(agencia, bancoTipo);
 	}
 }

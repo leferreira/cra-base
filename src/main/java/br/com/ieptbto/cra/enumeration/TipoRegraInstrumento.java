@@ -6,8 +6,8 @@ package br.com.ieptbto.cra.enumeration;
  */
 public enum TipoRegraInstrumento {
 
-	POSICAO_5_A_8_AGENCIA_CODIGO_CEDENTE(4,8),
-	POSICAO_7_A_10_AGENCIA_CODIGO_CEDENTE(6,10);
+	POSICAO_5_A_8_AGENCIA_CODIGO_CEDENTE(0,4),
+	POSICAO_7_A_10_AGENCIA_CODIGO_CEDENTE(2,6);
 
 	private Integer posicaoInicialCampo;
 	private Integer posicaoFinalCampo;

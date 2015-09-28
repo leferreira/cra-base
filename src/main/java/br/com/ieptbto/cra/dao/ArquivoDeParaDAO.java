@@ -12,6 +12,7 @@ import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
 import br.com.ieptbto.cra.entidade.AgenciaBradesco;
 import br.com.ieptbto.cra.entidade.AgenciaCAF;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
+import br.com.ieptbto.cra.enumeration.BancoTipoRegraBasicaInstrumento;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -88,8 +89,9 @@ public class ArquivoDeParaDAO extends AbstractBaseDAO{
 		return AgenciaBradesco.class.cast(criteria.uniqueResult());
 	}
 
-	public AgenciaCAF buscarAgenciaArquivoCAF(String agencia) {
+	public AgenciaCAF buscarAgenciaArquivoCAF(String agencia, BancoTipoRegraBasicaInstrumento banco) {
 		Criteria criteria = getCriteria(AgenciaCAF.class);
+		criteria.add(Restrictions.eq("banco", banco.getCodigoPortador()));
 		criteria.add(Restrictions.like("codigoAgencia", agencia, MatchMode.EXACT));
 		criteria.setMaxResults(1);
 		return AgenciaCAF.class.cast(criteria.uniqueResult());
