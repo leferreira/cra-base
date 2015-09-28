@@ -432,8 +432,12 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 			this.situacaoTitulo = "S/CONFIRMAÇÃO";
 		} else if (this.confirmacao != null && this.retorno == null) {
 			if (this.confirmacao.getTipoOcorrencia() != null) {
-				if (!this.confirmacao.getTipoOcorrencia().equals(" ")) {
-					this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.confirmacao.getTipoOcorrencia()).getLabel();
+				if (!this.confirmacao.getTipoOcorrencia().equals(" ") || StringUtils.isNotBlank(this.confirmacao.getTipoOcorrencia())) {
+					if (this.confirmacao.getTipoOcorrencia().equals("")) {
+						
+					} else {
+						this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.confirmacao.getTipoOcorrencia()).getLabel();
+					}
 				} 
 			} 
 		} else {
