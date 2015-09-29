@@ -40,7 +40,7 @@ public enum CodigoErro {
 	        "Arquivo corrompido. Número sequencial do registro no trailler (XXX) não está contínuo. Faltou registro (XXX)."), //
 	ARQUIVO_CORROMPIDO_SOMA_DE_REGISTROS_DE_TRANSACAO_EXISTENTES_NO_ARQUIVO_NAO_CONFERE_COM_TOTAL_INFORMADO_NO_HEADER(" 2122",
 	        "Arquivo corrompido. Soma de registros de transação existentes no arquivo (XXX) não confere com total informado no header (XXX)."), //
-	ARQUIVO_CORROMPIDO_SOMATÓRIO_DO_SALDO_NO_TRAILLER_NAO_CONFERE_COM_SOMATORIO_DOS_SALDOS_DOS_TITULOS(" 2123",
+	ARQUIVO_CORROMPIDO_SOMATÓRIO_DO_SALDO_NO_TRAILLER_NAO_CONFERE_COM_SOMATORIO_DOS_SALDOS_DOS_TITULOS(" 2123", 
 	        "Arquivo corrompido. Somatório do saldo no trailler (XXX) não confere com somatório dos saldos dos títulos (XXX)."), //
 	ARQUIVO_CORROMPIDO_NUMERO_SEQUENCIAL_DO_REGISTRO_NO_HEADER_DO_CARTORIO_NAO_ESTA_CONTINUO_FALTOU_REGISTRO(" 2124",
 	        "Arquivo corrompido. Número sequencial do registro no header do cartório (XXX) não está contínuo. Faltou registro (XXX)."), //

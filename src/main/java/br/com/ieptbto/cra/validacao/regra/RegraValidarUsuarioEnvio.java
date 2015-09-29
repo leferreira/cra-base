@@ -49,7 +49,7 @@ public class RegraValidarUsuarioEnvio extends RegrasDeEntrada {
 	 * Verifica se a instituição do usuário de envio tem permissão para envio do
 	 * arquivo.
 	 */
-	private void verificaInstituicaoDoUsuario() {
+	private void verificaInstituicaoDoUsuario() { 
 		if (instituicaoMediator.isInstituicaoNaoExiste(getUsuario().getInstituicao())) {
 			throw new InfraException(Erro.INSTITUICAO_NAO_CADASTRADA.getMensagemErro());
 		}
