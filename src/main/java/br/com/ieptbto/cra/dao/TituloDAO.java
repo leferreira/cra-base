@@ -95,6 +95,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	public List<TituloRemessa> buscarTitulosPorRemessa(Remessa remessa, Instituicao instituicaoCorrente) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
+		criteria.createAlias("remessa.arquivo", "arquivo");
 
 		if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
 			criteria.add(Restrictions.eq("remessa", remessa));

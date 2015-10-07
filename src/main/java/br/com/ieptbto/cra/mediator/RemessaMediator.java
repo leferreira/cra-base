@@ -264,7 +264,6 @@ public class RemessaMediator {
 
 	public Arquivo confirmacoesPendentes(Instituicao instituicao) {
 		List<Remessa> remessas = remessaDao.confirmacoesPendentes(instituicao);
-//		List<Remessa> remessas = new ArrayList<Remessa>();
 		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
 		List<DesistenciaProtesto> desistenciaProtesto = remessaDao.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
 		remessaDesistenciaProtesto.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>(desistenciaProtesto));

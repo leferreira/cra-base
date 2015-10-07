@@ -37,6 +37,8 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 				envelopeSalvo = save(envelope);
 				
 				for (EtiquetaSLIP etiqueta : envelope.getEtiquetas()) {
+					Retorno tituloRetorno = carregarRetorno(etiqueta.getInstrumentoProtesto().getTituloRetorno());
+					etiqueta.getInstrumentoProtesto().setTituloRetorno(tituloRetorno);
 					
 					etiqueta.setInstrumentoProtesto(save(etiqueta.getInstrumentoProtesto()));
 					etiqueta.setEnvelope(envelopeSalvo);

@@ -103,7 +103,7 @@ public class Remessa extends AbstractRemessa<Remessa> {
 		return rodape;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "INSTITUICAO_ORIGEM_ID")
 	public Instituicao getInstituicaoOrigem() {
 		return instituicaoOrigem;

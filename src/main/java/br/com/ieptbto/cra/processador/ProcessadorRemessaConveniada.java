@@ -59,16 +59,21 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private TituloFiliadoMediator tituloFiliadoMediator;
 	@Autowired
 	private AvalistaMediator avalistaMediator;
-	private Map<chaveTitulo, TituloFiliado> mapaTitulos;
-	private Map<String, Arquivo> mapaArquivos;
-	private List<TituloFiliado> listTitulosFiliado;
 	private Usuario usuario;
-	private List<Remessa> remessas;
-	private List<Arquivo> arquivos;
+	private Map<chaveTitulo, TituloFiliado> mapaTitulos = null;
+	private Map<String, Arquivo> mapaArquivos = null;
+	private List<TituloFiliado> listTitulosFiliado = null;
+	private List<Remessa> remessas = null;
+	private List<Arquivo> arquivos = null;
 
 	public List<Arquivo> processar(List<TituloFiliado> listaTitulosConvenios, Usuario usuario) {
 		this.listTitulosFiliado = listaTitulosConvenios;
 		this.usuario = usuario;
+		this.mapaTitulos = null;
+		this.mapaArquivos = null;
+		this.listTitulosFiliado = null;
+		this.remessas = null;
+		this.arquivos = null;
 		agruparTitulosFiliado();
 		gerarRemessas();
 		criarArquivos();
@@ -283,16 +288,6 @@ public class ProcessadorRemessaConveniada extends Processador {
 		return Integer.parseInt(StringUtils.leftPad(Integer.toString(quantidadeAtual + 1), 5, "0"));
 	}
 	
-	public Map<chaveTitulo, TituloFiliado> getMapaTitulos() {
-		if (mapaTitulos == null) {
-			mapaTitulos = new HashMap<chaveTitulo, TituloFiliado>();
-		}
-		return mapaTitulos;
-	}
-
-	public List<TituloFiliado> getListTitulosFiliado() {
-		return listTitulosFiliado;
-	}
 
 	public Usuario getUsuario() {
 		return usuario;
@@ -310,12 +305,34 @@ public class ProcessadorRemessaConveniada extends Processador {
 		this.usuario = usuario;
 	}
 
-	public List<Remessa> getRemessas() {
-		return remessas;
-	}
-
 	public void setRemessas(List<Remessa> remessas) {
 		this.remessas = remessas;
+	}
+
+
+	public void setMapaArquivos(Map<String, Arquivo> mapaArquivos) {
+		this.mapaArquivos = mapaArquivos;
+	}
+	
+	public Map<chaveTitulo, TituloFiliado> getMapaTitulos() {
+		if (mapaTitulos == null) {
+			mapaTitulos = new HashMap<chaveTitulo, TituloFiliado>();
+		}
+		return mapaTitulos;
+	}
+	
+	public List<TituloFiliado> getListTitulosFiliado() {
+		if (listTitulosFiliado == null) {
+			listTitulosFiliado = new ArrayList<TituloFiliado>();
+		}
+		return listTitulosFiliado;
+	}
+
+	public List<Remessa> getRemessas() {
+		if (remessas == null) {
+			remessas = new ArrayList<Remessa>();
+		}
+		return remessas;
 	}
 
 	public Map<String, Arquivo> getMapaArquivos() {
@@ -323,10 +340,6 @@ public class ProcessadorRemessaConveniada extends Processador {
 			mapaArquivos = new HashMap<String, Arquivo>();
 		}
 		return mapaArquivos;
-	}
-
-	public void setMapaArquivos(Map<String, Arquivo> mapaArquivos) {
-		this.mapaArquivos = mapaArquivos;
 	}
 
 	public List<Arquivo> getArquivos() {

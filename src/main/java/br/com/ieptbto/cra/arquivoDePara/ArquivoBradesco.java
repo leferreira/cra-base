@@ -56,7 +56,7 @@ public class ArquivoBradesco extends AbstractDePara {
 	public List<AgenciaBradesco> converterArquivoDeParaBradesco() {
 		
 		try {
-			File file = new File(ConfiguracaoBase.DIRETORIO_BASE_DE_PARA_TEMP + getFile().getClientFileName());
+			File file = new File(ConfiguracaoBase.DIRETORIO_BASE_DE_PARA_TEMP + ConfiguracaoBase.BARRA + getFile().getClientFileName());
 			file.createNewFile();
 			FileOutputStream fileOut = new FileOutputStream(file);
 			fileOut.write(getFile().getBytes());
@@ -124,7 +124,7 @@ public class ArquivoBradesco extends AbstractDePara {
 	}
 
 	private void copiarArquivoParaDiretorioDoUsuarioTemporario(String nomeArquivo) {
-		setArquivoFisico(new File(ConfiguracaoBase.DIRETORIO_BASE_DE_PARA_TEMP + nomeArquivo));
+		setArquivoFisico(new File(ConfiguracaoBase.DIRETORIO_BASE_DE_PARA_TEMP + ConfiguracaoBase.BARRA +  nomeArquivo));
 		try {
 			getFile().writeTo(getArquivoFisico());
 		} catch (IOException e) {
