@@ -32,8 +32,6 @@ import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 public class ArquivoMediator {
 
 	@Autowired
-	private InstituicaoMediator instituicaoMediator;
-	@Autowired
 	private TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
 	private ProcessadorArquivo processadorArquivo;
@@ -47,12 +45,12 @@ public class ArquivoMediator {
 			throw new InfraException("O usuário " + usuario.getNome() + " não pode enviar arquivos " + arquivo.getNomeArquivo());
 		}
 		arquivo.setTipoArquivo(getTipoArquivo(arquivo));
-		arquivo.setHoraEnvio(new LocalTime()); 
+		arquivo.setHoraEnvio(new LocalTime());
 		arquivo.setDataEnvio(new LocalDate());
 		arquivo.setStatusArquivo(setStatusArquivo());
 		arquivo.setUsuarioEnvio(usuario);
 		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
-		
+
 		arquivo = processarArquivo(arquivo, uploadedFile);
 		setArquivo(arquivoDAO.salvar(arquivo, usuario, getErros()));
 		return this;
@@ -73,7 +71,7 @@ public class ArquivoMediator {
 		}
 		return true;
 	}
-	
+
 	private StatusArquivo setStatusArquivo() {
 		StatusArquivo status = new StatusArquivo();
 		status.setData(new LocalDateTime());

@@ -13,7 +13,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoArquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoCartorio;
@@ -65,8 +64,6 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	private ValidarCabecalhoRemessa validarCabecalhoRemessa;
 	@Autowired
 	private GeradorDeArquivosTXT geradorDeArquivosTXT;
-	@Autowired
-	private TituloDAO tituloDAO;
 	@Autowired
 	private ConversorArquivoDesistenciaProtesto conversorArquivoDesistenciaProtesto;
 	private List<Exception> errosCabecalho;
@@ -277,8 +274,8 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 		} else if (TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			RegistroDesistenciaProtestoVO tituloDesistenciaProtesto = RegistroDesistenciaProtestoVO.class.cast(registro);
-			PedidoDesistenciaCancelamento pedidoDesistencia = new RegistroDesistenciaProtestoConversor().converter(
-			        PedidoDesistenciaCancelamento.class, tituloDesistenciaProtesto);
+			PedidoDesistenciaCancelamento pedidoDesistencia = new RegistroDesistenciaProtestoConversor()
+			        .converter(PedidoDesistenciaCancelamento.class, tituloDesistenciaProtesto);
 			desistenciaProtesto.getDesistencias().add(pedidoDesistencia);
 			pedidoDesistencia.setDesistenciaProtesto(desistenciaProtesto);
 
