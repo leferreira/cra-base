@@ -38,6 +38,7 @@ import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.util.DataUtil;
 
 /**
  * 
@@ -135,13 +136,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 								valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
 								totalRegistroDesistenciaProtesto++;
 							} else {
-								erros.add(new InfraException("O título nº " + pedido.getNumeroTitulo() + " da " + arquivo.getNomeArquivo()
-								        + " já foi enviado."));
+								erros.add(new InfraException("O título [ Nº TÌTULO: " + pedido.getNumeroTitulo() +" ] com o protocolo "+ pedido.getNumeroProtocolo() +
+										" da data "+ DataUtil.localDateToString(pedido.getDataProtocolagem()) +" não foi localizado na CRA. Verifique os dados do arquivo!"));
 							}
 						} else {
-							erros.add(new InfraException("Não existe um título para o título nº " + pedido.getNumeroTitulo() + " da "
-							        + arquivo.getNomeArquivo()));
-
+							erros.add(new InfraException("O título [ Nº TÌTULO: " + pedido.getNumeroTitulo() +" ] com o protocolo "+ pedido.getNumeroProtocolo() +
+									" da data "+ DataUtil.localDateToString(pedido.getDataProtocolagem()) +" já foi enviado anteriormente em outra desistência!"));
 						}
 
 					}

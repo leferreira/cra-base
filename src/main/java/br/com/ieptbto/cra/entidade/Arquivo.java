@@ -90,13 +90,13 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 		return remessaDesistenciaProtesto;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "INSTITUICAO_ENVIO_ID")
 	public Instituicao getInstituicaoEnvio() {
 		return instituicaoEnvio;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "INSTITUICAO_RECEBE_ID")
 	public Instituicao getInstituicaoRecebe() {
 		return instituicaoRecebe;

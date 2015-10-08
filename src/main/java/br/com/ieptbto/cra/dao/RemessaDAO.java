@@ -350,9 +350,15 @@ public class RemessaDAO extends AbstractBaseDAO {
 	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtestoPendenteDownload(Instituicao instituicao) {
 		Criteria criteria = getCriteria(DesistenciaProtesto.class);
 		criteria.createAlias("cabecalhoCartorio", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", instituicao.getMunicipio().getCodigoIBGE()));
+		
+		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
+			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", instituicao.getMunicipio().getCodigoIBGE()));
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
+			criteria.createAlias("remessaDesistenciaProtesto", "remessaDesistenciaProtesto");
+			criteria.createAlias("remessaDesistenciaProtesto.cabecalho", "cabecalho");
+			criteria.add(Restrictions.eq("cabecalho.codigoApresentante", instituicao.getCodigoCompensacao()));
+		}
 		criteria.add(Restrictions.eq("download", false));
-
 		return criteria.list();
 	}
 
