@@ -50,6 +50,7 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	private StatusRemessa statusRemessa;
 	private Boolean situacaoBatimento;
 	private Boolean situacao; // confirmacoes e retornos
+	private Boolean devolvidoPelaCRA;
 
 	@Id
 	@Column(name = "ID_REMESSA", columnDefinition = "serial")
@@ -191,5 +192,16 @@ public class Remessa extends AbstractRemessa<Remessa> {
 
 	public void setStatusRemessa(StatusRemessa statusRemessa) {
 		this.statusRemessa = statusRemessa;
+	}
+
+	public Boolean getDevolvidoPelaCRA() {
+		if (devolvidoPelaCRA == null) {
+			devolvidoPelaCRA = false;
+		}
+		return devolvidoPelaCRA;
+	}
+
+	public void setDevolvidoPelaCRA(Boolean devolvidoPelaCRA) {
+		this.devolvidoPelaCRA = devolvidoPelaCRA;
 	}
 }

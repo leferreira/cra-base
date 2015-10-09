@@ -443,6 +443,11 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		} else {
 			this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.retorno.getTipoOcorrencia()).getLabel();
 		}
+		
+		if (this.pedidoDesistencia != null) {
+			this.situacaoTitulo = TipoOcorrencia.RETIRADO.getLabel();
+		}
+		
 		return situacaoTitulo;
 	}
 

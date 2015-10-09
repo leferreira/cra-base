@@ -85,6 +85,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					remessa.setArquivoGeradoProBanco(arquivoSalvo);
 					remessa.setDataRecebimento(remessa.getCabecalho().getDataMovimento());
 					remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
+					setDevolvidoPelaCRA(remessa);
 					setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
 					setSituacaoRemessa(arquivo, remessa);
 					save(remessa);
@@ -136,14 +137,13 @@ public class ArquivoDAO extends AbstractBaseDAO {
 								valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
 								totalRegistroDesistenciaProtesto++;
 							} else {
-								erros.add(new InfraException("O título [ Nº TÌTULO: " + pedido.getNumeroTitulo() +" ] com o protocolo "+ pedido.getNumeroProtocolo() +
-										" da data "+ DataUtil.localDateToString(pedido.getDataProtocolagem()) +" não foi localizado na CRA. Verifique os dados do arquivo!"));
+								erros.add(new InfraException("O título de número "+ pedido.getNumeroTitulo() +",com o protocolo "+ pedido.getNumeroProtocolo() +
+										" do dia "+ DataUtil.localDateToString(pedido.getDataProtocolagem()) +", não foi localizado na CRA. Verifique os dados do arquivo!"));
 							}
 						} else {
-							erros.add(new InfraException("O título [ Nº TÌTULO: " + pedido.getNumeroTitulo() +" ] com o protocolo "+ pedido.getNumeroProtocolo() +
-									" da data "+ DataUtil.localDateToString(pedido.getDataProtocolagem()) +" já foi enviado anteriormente em outra desistência!"));
+							erros.add(new InfraException("O título de número "+ pedido.getNumeroTitulo() +", do protocolo "+ pedido.getNumeroProtocolo() +
+									" do dia "+ DataUtil.localDateToString(pedido.getDataProtocolagem()) +", já foi enviado anteriormente em outro arquivo de desistência!"));
 						}
-
 					}
 					if (!pedidos.isEmpty()) {
 						desistenciaProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(pedidos.size());
@@ -195,6 +195,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 		return arquivoSalvo;
 
+	}
+
+	private void setDevolvidoPelaCRA(Remessa remessa) {
+		if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
+			remessa.setDevolvidoPelaCRA(false);
+		}
 	}
 
 	private TituloRemessa getTituloDesistenciaProtesto(PedidoDesistenciaCancelamento pedido) {

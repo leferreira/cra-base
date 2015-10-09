@@ -31,6 +31,7 @@ import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.exception.XmlCraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 import br.com.ieptbto.cra.util.DataUtil;
@@ -232,6 +233,10 @@ public class RemessaMediator {
 			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
 			remessaDao.alterarSituacaoRemessa(remessa);
 		}
+		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO) &&
+				remessa.getDevolvidoPelaCRA().equals(true)) {
+			throw new InfraException("O arquivo "+ remessa.getArquivo().getNomeArquivo() +" já foi devolvido pela CRA !");
+		}
 		remessa = remessaDao.buscarPorPK(remessa);
 		return processadorArquivo.processarArquivoTXT(remessa);
 	}
@@ -290,5 +295,10 @@ public class RemessaMediator {
 		}
 
 		return null;
+	}
+
+	public void alterarParaDevolvidoPelaCRA(Remessa remessa) {
+		remessa.setDevolvidoPelaCRA(true);
+		remessaDao.update(remessa);
 	}
 }
