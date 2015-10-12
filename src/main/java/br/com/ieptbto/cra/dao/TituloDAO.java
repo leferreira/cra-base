@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Titulo;
@@ -42,7 +43,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	@Autowired
 	TituloSemTaxaCraDAO tituloSemTaxaCraDAO;
 
-	public List<TituloRemessa> buscarListaTitulos(TituloRemessa titulo, Usuario user) {
+	public List<TituloRemessa> buscarListaTitulos(TituloRemessa titulo, Municipio pracaProtesto, Usuario user) {
 		Instituicao instituicaoUsuario = user.getInstituicao();
 
 		Criteria criteria = getCriteria(TituloRemessa.class);
@@ -85,8 +86,10 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (titulo.getNossoNumero() != null && titulo.getNossoNumero() != StringUtils.EMPTY)
 			criteria.add(Restrictions.ilike("nossoNumero", titulo.getNossoNumero(), MatchMode.ANYWHERE));
 
-		if (titulo.getPracaProtesto() != null)
-			criteria.add(Restrictions.ilike("pracaProtesto", titulo.getPracaProtesto().toUpperCase(), MatchMode.ANYWHERE));
+		if (pracaProtesto != null) {
+			criteria.createAlias("remessa.cabecalho", "cabecalho");
+			criteria.add(Restrictions.ilike("cabecalho.codigoMunicipio", pracaProtesto.getCodigoIBGE()));
+		}
 
 		criteria.addOrder(Order.asc("nomeDevedor"));
 		return criteria.list();

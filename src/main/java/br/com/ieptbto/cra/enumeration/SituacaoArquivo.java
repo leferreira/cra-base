@@ -8,7 +8,7 @@ import br.com.ieptbto.cra.exception.InfraException;
  */
 public enum SituacaoArquivo implements CraEnum {
 	
-	AGUARDANDO("A","Aguardando"),ENVIADO("E","Enviado"),RECEBIDO("R","Recebido");
+	AGUARDANDO("A","Aguardando"),ENVIADO("E","Enviado"),RECEBIDO("R","Baixado");
 	
 	private String constante;
 	private String label;
