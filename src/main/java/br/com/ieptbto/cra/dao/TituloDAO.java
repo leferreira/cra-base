@@ -224,7 +224,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		} else {
 			if (titulo.getPedidoDesistencia() != null) {
 				if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
-					if (tituloRetorno.getDataOcorrencia().isBefore(titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento()) 
+					if (tituloRetorno.getDataOcorrencia().isAfter(titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento()) 
 							|| tituloRetorno.getDataOcorrencia().equals(titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento())) {
 						throw new InfraException("PROTESTO INDEVIDO ! O título "+ titulo.getNumeroTitulo() +" com o protocolo "+ tituloRetorno.getNumeroProtocoloCartorio() +" já contém um pedido de desistência. Faça o CANCELAMENTO!");
 					}

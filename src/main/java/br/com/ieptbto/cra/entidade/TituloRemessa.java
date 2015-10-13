@@ -442,7 +442,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 			} 
 		} else {
 			if (this.retorno != null && this.pedidoDesistencia != null) {
-				if (this.retorno.getDataOcorrencia().isBefore(this.pedidoDesistencia.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento()) 
+				if (this.retorno.getDataOcorrencia().isAfter(this.pedidoDesistencia.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento()) 
 						|| this.retorno.getDataOcorrencia().equals(this.pedidoDesistencia.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento())) {
 					this.situacaoTitulo = "PROTESTO INDEVIDO";
 				} else {
