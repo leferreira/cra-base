@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +27,9 @@ import br.com.ieptbto.cra.slip.regra.RegraAgenciaDestino;
  *
  */
 @Service
-public class InstrumentoDeProtestoMediator {
+public class InstrumentoProtestoMediator {
 
-	private static final Logger logger = Logger.getLogger(InstrumentoDeProtestoMediator.class);
+	private static final Logger logger = Logger.getLogger(InstrumentoProtestoMediator.class);
 
 	@Autowired
 	private TituloDAO tituloDao;
@@ -41,13 +42,28 @@ public class InstrumentoDeProtestoMediator {
 	private List<EtiquetaSLIP> etiquetas;
 	private List<EnvelopeSLIP> envelopes;
 
-	public InstrumentoDeProtestoMediator processarInstrumentos(List<Retorno> listaRetorno) {
+	public void salvarInstrumentoProtesto(List<Retorno> titulosProtestados) {
+		
+		for (Retorno retorno : titulosProtestados) {
+			Retorno tituloRetorno = instrumentoDao.carregarRetorno(retorno);
+
+			InstrumentoProtesto instrumento = new InstrumentoProtesto();
+			instrumento.setDataDeEntrada(new LocalDate());
+			instrumento.setHoraEntrada(new LocalTime());
+			instrumento.setTituloRetorno(tituloRetorno);
+			instrumento.setGerado(false);
+			
+			instrumentoDao.salvarInstrumentoProtesto(instrumento);
+		}
+	}
+	
+	public InstrumentoProtestoMediator processarInstrumentos(List<InstrumentoProtesto> instrumentos,List<Retorno> listaRetorno) {
 		this.titulosProtestados = listaRetorno;
 		this.etiquetas = null;
 		this.envelopes = null;
 		logger.info("Gerando " + listaRetorno.size() + " instrumentos de protesto.");
 
-		gerarInstrumentos();
+		gerarSLIP(instrumentos);
 		ordenarEtiquetasInstrumentos();
 		gerarEnvelopes();
 		salvarSLIP();
@@ -56,15 +72,9 @@ public class InstrumentoDeProtestoMediator {
 		return this;
 	}
 
-	private void gerarInstrumentos() {
+	private void gerarSLIP(List<InstrumentoProtesto> instrumentos) {
 
-		for (Retorno retorno : getTitulosProtestados()) {
-			Retorno tituloRetorno = instrumentoDao.carregarRetorno(retorno);
-
-			InstrumentoProtesto instrumento = new InstrumentoProtesto();
-			instrumento.setDataDeEntrada(new LocalDate());
-			instrumento.setTituloRetorno(tituloRetorno);
-
+		for (InstrumentoProtesto instrumento : instrumentos) {
 			gerarEtiqueta(instrumento);
 		}
 	}
@@ -160,5 +170,9 @@ public class InstrumentoDeProtestoMediator {
 
 	public InstrumentoProtesto isTituloJaFoiGeradoInstrumento(Retorno tituloProtestado) {
 		return instrumentoDao.isTituloJaFoiGeradoInstrumento(tituloProtestado);
+	}
+
+	public List<InstrumentoProtesto> buscarInstrumentosParaSlip() {
+		return instrumentoDao.buscarInstrumentosParaSlip();
 	}
 }

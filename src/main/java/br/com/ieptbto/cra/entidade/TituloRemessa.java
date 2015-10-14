@@ -441,10 +441,14 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 				} 
 			} 
 		} else {
-			if (this.retorno != null && this.pedidoDesistencia != null) {
-				if (this.retorno.getDataOcorrencia().isAfter(this.pedidoDesistencia.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento()) 
-						|| this.retorno.getDataOcorrencia().equals(this.pedidoDesistencia.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento())) {
-					this.situacaoTitulo = "PROTESTO INDEVIDO";
+			if (this.retorno != null && this.pedidoDesistencia != null) { 
+				if (this.retorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
+					if (this.retorno.getDataOcorrencia().isAfter(this.pedidoDesistencia.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento()) 
+							|| this.retorno.getDataOcorrencia().equals(this.pedidoDesistencia.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento())) {
+						this.situacaoTitulo = "PROTESTO INDEVIDO";
+					} else {
+						this.situacaoTitulo = TipoOcorrencia.PROTESTADO.getLabel();
+					}
 				} else {
 					this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.retorno.getTipoOcorrencia()).getLabel();	
 				}

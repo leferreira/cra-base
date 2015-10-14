@@ -14,6 +14,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 /**
  * @author Thasso Araújo
@@ -30,6 +31,8 @@ public class InstrumentoProtesto extends AbstractEntidade<InstrumentoProtesto> {
 	private int id;
 	private Retorno tituloRetorno;
 	private LocalDate dataDeEntrada;
+	private LocalTime horaEntrada;
+	private Boolean gerado;
 	
 	@Id
 	@Column(name = "ID_INSTRUMENTO_PROTESTO", columnDefinition = "serial")
@@ -85,6 +88,24 @@ public class InstrumentoProtesto extends AbstractEntidade<InstrumentoProtesto> {
 	public int compareTo(InstrumentoProtesto entidade) {
 		CompareToBuilder compareTo = new CompareToBuilder();
 		return compareTo.toComparison();
+	}
+
+	@Column(name = "GERADO")
+	public Boolean getGerado() {
+		return gerado;
+	}
+
+	public void setGerado(Boolean gerado) {
+		this.gerado = gerado;
+	}
+
+	@Column(name = "HORA_ENTRADA")
+	public LocalTime getHoraEntrada() {
+		return horaEntrada;
+	}
+
+	public void setHoraEntrada(LocalTime horaEntrada) {
+		this.horaEntrada = horaEntrada;
 	}
 
 }

@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
@@ -25,6 +24,19 @@ import br.com.ieptbto.cra.entidade.Retorno;
 public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 
 	private static final Logger logger = Logger.getLogger(InstrumentoProtestoDAO.class);
+	
+	public void salvarInstrumentoProtesto(InstrumentoProtesto instrumento) {
+		Transaction transaction = getBeginTransation();
+		
+		try {
+			save(instrumento);
+			
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.info(ex.getMessage());
+		}
+	}
 	
 	public void salvarSLIP(List<EnvelopeSLIP> envelopes) {
 		EnvelopeSLIP envelopeSalvo = new EnvelopeSLIP();
@@ -74,11 +86,8 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<InstrumentoProtesto> buscarInstrumentosParaSlip() {
 		Criteria criteria = getCriteria(InstrumentoProtesto.class);
-		criteria.createAlias("titulo", "titulo");
-		criteria.createAlias("titulo.remessa", "remessa");
-		criteria.add(Restrictions.eq("situacao", false));
-		criteria.addOrder(Order.asc("remessa.instituicaoOrigem"));
-		criteria.addOrder(Order.asc("titulo.agenciaCodigoCedente"));
+		criteria.createAlias("tituloRetorno", "tituloRetorno");
+		criteria.add(Restrictions.eq("gerado", false));
 		return criteria.list();
 	}
 

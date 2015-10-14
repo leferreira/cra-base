@@ -14,6 +14,7 @@ import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
+import br.com.ieptbto.cra.enumeration.AgenciaCentralizadora;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.util.DataUtil;
 
@@ -134,6 +135,11 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 	public String getAgenciaCentralizadora() {
 		if (agenciaCentralizadora == null) {
 			agenciaCentralizadora = StringUtils.EMPTY;
+		}
+		
+		AgenciaCentralizadora agencia = AgenciaCentralizadora.getAgenciaCentralizadoraEnum(this.numeroCodigoPortador);
+		if (agencia != null) {
+			agenciaCentralizadora = agencia.getAgenciaCentralizadora();
 		}
 		return agenciaCentralizadora.trim();
 	}
