@@ -18,17 +18,21 @@ public class FiliadoMediator {
 
 	@Autowired
 	FiliadoDAO filiadoDAO;
-	
-	public Filiado salvarFiliado(Filiado filiado){
+
+	public Filiado salvarFiliado(Filiado filiado) {
 		return filiadoDAO.salvar(filiado);
 	}
-	
+
 	public Filiado alterarFiliado(Filiado filiado) {
 		return filiadoDAO.alterar(filiado);
 	}
 
 	public List<Filiado> buscarListaFiliados(Instituicao instituicao) {
 		return filiadoDAO.buscarListaFiliadosPorConvenio(instituicao);
+	}
+
+	public List<Filiado> buscarTodosFiliados() {
+		return filiadoDAO.getAll(Filiado.class);
 	}
 
 }
