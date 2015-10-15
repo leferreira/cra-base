@@ -99,6 +99,7 @@ public class ProcessadorArquivo extends Processador {
 	}
 
 	public File processarArquivoTXT(Remessa remessa) {
+		this.arquivoFisico = null;
 		this.arquivo = remessa.getArquivo();
 		this.usuario = remessa.getArquivo().getUsuarioEnvio();
 

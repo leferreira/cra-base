@@ -30,6 +30,7 @@ import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.enumeration.TipoRelatorio;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.util.DataUtil;
 
 /**
  * @author Thasso Araújo
@@ -226,7 +227,8 @@ public class TituloDAO extends AbstractBaseDAO {
 				if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
 					if (tituloRetorno.getDataOcorrencia().isAfter(titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento()) 
 							|| tituloRetorno.getDataOcorrencia().equals(titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento())) {
-						throw new InfraException("PROTESTO INDEVIDO ! O título "+ titulo.getNumeroTitulo() +" com o protocolo "+ tituloRetorno.getNumeroProtocoloCartorio() +" já contém um pedido de desistência. Faça o CANCELAMENTO!");
+						throw new InfraException("PROTESTO INDEVIDO ! O título "+ titulo.getNumeroTitulo() +" com o protocolo "+ tituloRetorno.getNumeroProtocoloCartorio() +" protestado em "+ DataUtil.localDateToString(tituloRetorno.getDataOcorrencia()) +" ,já contém um pedido de desistência no arquivo "+ 
+						 titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo()	+". Faça o CANCELAMENTO!");
 					}
 				}
 			}

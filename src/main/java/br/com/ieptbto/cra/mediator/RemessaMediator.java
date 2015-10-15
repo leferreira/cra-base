@@ -227,18 +227,19 @@ public class RemessaMediator {
 
 	}
 
-	public File baixarRemessaTXT(Instituicao instituicao, Remessa remessa) {
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
+	public File baixarRemessaTXT(Usuario usuario, Remessa remessa) {
+		Remessa remesaParaBaixar = null;
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
 		        && !remessa.getStatusRemessa().equals(StatusRemessa.ENVIADO)) {
 			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
 			remessaDao.alterarSituacaoRemessa(remessa);
 		}
-		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO) &&
+		if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO) &&
 				remessa.getDevolvidoPelaCRA().equals(true)) {
 			throw new InfraException("O arquivo "+ remessa.getArquivo().getNomeArquivo() +" já foi devolvido pela CRA !");
 		}
-		remessa = remessaDao.buscarPorPK(remessa);
-		return processadorArquivo.processarArquivoTXT(remessa);
+		remesaParaBaixar = remessaDao.buscarPorPK(remessa);
+		return processadorArquivo.processarArquivoTXT(remesaParaBaixar); 
 	}
 
 	public File baixarArquivoTXT(Instituicao instituicao, Arquivo arquivo) {
@@ -299,6 +300,7 @@ public class RemessaMediator {
 
 	public void alterarParaDevolvidoPelaCRA(Remessa remessa) {
 		remessa.setDevolvidoPelaCRA(true);
+		remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
 		remessaDao.update(remessa);
 	}
 }
