@@ -69,4 +69,9 @@ public enum CampoLayout implements CraEnum {
 		return this.label;
 	}
 
+	@Override
+	public String toString() {
+		return this.label;
+	}
+
 }
