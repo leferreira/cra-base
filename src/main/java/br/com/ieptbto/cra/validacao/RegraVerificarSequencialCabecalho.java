@@ -34,7 +34,7 @@ public class RegraVerificarSequencialCabecalho extends RegraCabecalho {
 	@Override
 	protected void executar() {
 //		verificarNumeroSequencialRemessa();
-//		verificarNumeroSequencialConfirmacaoRetorno();
+		verificarNumeroSequencialConfirmacaoRetorno();
 	}
 
 	private void verificarNumeroSequencialRemessa() {
@@ -53,8 +53,16 @@ public class RegraVerificarSequencialCabecalho extends RegraCabecalho {
 				TipoArquivoEnum.RETORNO.equals(getCabecalhoRemessa().getRemessa().getArquivo().getTipoArquivo().getTipoArquivo())) {
 			Integer numeroSequencial = cabecalhoMediator.gerarSequencialConfirmacaoRetorno(getCabecalhoRemessa()); 
 			
-			if (numeroSequencial != null && numeroSequencial != 0) {
-				getCabecalhoRemessa().setNumeroSequencialRemessa(numeroSequencial + 1);
+			if (getCabecalhoRemessa().getNumeroSequencialRemessa() != null) {
+				if (numeroSequencial != null) {
+					if (numeroSequencial == 0) {
+						getCabecalhoRemessa().setNumeroSequencialRemessa(1);
+					} else {
+						getCabecalhoRemessa().setNumeroSequencialRemessa(numeroSequencial + 1);
+					}
+				} else {
+					getCabecalhoRemessa().setNumeroSequencialRemessa(1);
+				}
 			}
 		}
 	}
