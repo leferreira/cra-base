@@ -34,5 +34,4 @@ public class RegraVerificarCidadeAtiva extends RegraCabecalho {
 		}
 
 	}
-
 }

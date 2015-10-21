@@ -137,12 +137,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 								valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
 								totalRegistroDesistenciaProtesto++;
 							} else {
-								erros.add(new InfraException("O título de número "+ pedido.getNumeroTitulo() +",com o protocolo "+ pedido.getNumeroProtocolo() +
-										" do dia "+ DataUtil.localDateToString(pedido.getDataProtocolagem()) +", não foi localizado na CRA. Verifique os dados do arquivo!"));
+								erros.add(new InfraException("O título de número "+ pedido.getNumeroTitulo() +", do protocolo "+ pedido.getNumeroProtocolo() +
+										" do dia "+ DataUtil.localDateToString(pedido.getDataProtocolagem()) +", já foi enviado anteriormente em outro arquivo de desistência!"));
 							}
 						} else {
-							erros.add(new InfraException("O título de número "+ pedido.getNumeroTitulo() +", do protocolo "+ pedido.getNumeroProtocolo() +
-									" do dia "+ DataUtil.localDateToString(pedido.getDataProtocolagem()) +", já foi enviado anteriormente em outro arquivo de desistência!"));
+							erros.add(new InfraException("O título de número "+ pedido.getNumeroTitulo() +",com o protocolo "+ pedido.getNumeroProtocolo() +
+									" do dia "+ DataUtil.localDateToString(pedido.getDataProtocolagem()) +", não foi localizado na CRA. Verifique os dados do arquivo!"));
 						}
 					}
 					if (!pedidos.isEmpty()) {

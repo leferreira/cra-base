@@ -41,6 +41,7 @@ public class InstrumentoProtestoMediator {
 	private List<Retorno> titulosProtestados;
 	private List<EtiquetaSLIP> etiquetas;
 	private List<EnvelopeSLIP> envelopes;
+	private List<InstrumentoProtesto> instrumentosProtesto;
 
 	public void salvarInstrumentoProtesto(List<Retorno> titulosProtestados) {
 		
@@ -58,6 +59,7 @@ public class InstrumentoProtestoMediator {
 	}
 	
 	public InstrumentoProtestoMediator processarInstrumentos(List<InstrumentoProtesto> instrumentos,List<Retorno> listaRetorno) {
+		this.setInstrumentosProtesto(instrumentos);
 		this.titulosProtestados = listaRetorno;
 		this.etiquetas = null;
 		this.envelopes = null;
@@ -66,7 +68,8 @@ public class InstrumentoProtestoMediator {
 		gerarSLIP(instrumentos);
 		ordenarEtiquetasInstrumentos();
 		gerarEnvelopes();
-		salvarSLIP();
+		salvarEnvelopesEtiquetas();
+		marcarComoInstrumentosGerados();
 
 		logger.info("Instrumentos de protesto processados e etiquetas geradas.");
 		return this;
@@ -131,8 +134,12 @@ public class InstrumentoProtestoMediator {
 		Collections.sort(getEtiquetas());
 	}
 
-	private void salvarSLIP() {
-		instrumentoDao.salvarSLIP(getEnvelopes());
+	private void salvarEnvelopesEtiquetas() {
+		instrumentoDao.salvarEnvelopesEtiquetas(getEnvelopes());
+	}
+	
+	private void marcarComoInstrumentosGerados() {
+		instrumentoDao.marcarComoInstrumentosGerados(getInstrumentosProtesto());
 	}
 
 	public List<EtiquetaSLIP> getEtiquetas() {
@@ -174,5 +181,13 @@ public class InstrumentoProtestoMediator {
 
 	public List<InstrumentoProtesto> buscarInstrumentosParaSlip() {
 		return instrumentoDao.buscarInstrumentosParaSlip();
+	}
+
+	public List<InstrumentoProtesto> getInstrumentosProtesto() {
+		return instrumentosProtesto;
+	}
+
+	public void setInstrumentosProtesto(List<InstrumentoProtesto> instrumentosProtesto) {
+		this.instrumentosProtesto = instrumentosProtesto;
 	}
 }

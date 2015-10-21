@@ -28,7 +28,6 @@ import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
-import br.com.ieptbto.cra.enumeration.TipoRelatorio;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DataUtil;
 
@@ -120,26 +119,6 @@ public class TituloDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoCorrente),
 			        Restrictions.eq("remessa.instituicaoDestino", instituicaoCorrente)));
 		}
-		return criteria.list();
-	}
-
-	public List<TituloRemessa> buscarTitulosPorRemessa(Remessa remessa, Instituicao instituicaoOrigem, Instituicao instituicaoDestino) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("remessa", "remessa");
-
-		if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
-			criteria.add(Restrictions.eq("remessa", remessa));
-		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
-			criteria.createAlias("confirmacao", "confirmacao");
-			criteria.add(Restrictions.eq("confirmacao.remessa", remessa));
-		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-			criteria.createAlias("retorno", "retorno");
-			criteria.add(Restrictions.eq("retorno.remessa", remessa));
-		}
-
-		criteria.add(Restrictions.eq("remessa.instituicaoOrigem", instituicaoOrigem));
-		criteria.add(Restrictions.eq("remessa.instituicaoDestino", instituicaoDestino));
-		criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("nomeDevedor"));
 		return criteria.list();
 	}
 
@@ -330,47 +309,6 @@ public class TituloDAO extends AbstractBaseDAO {
 				        + " não pode ser inserido ! O Título já existe na base ou está duplicado no arquivo !");
 			}
 		}
-	}
-
-	public List<TituloRemessa> buscarTitulosParaRelatorio(Instituicao instituicao, TipoRelatorio situacaoTitulos, LocalDate dataInicio,
-	        LocalDate dataFim, Usuario usuarioCorrente) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("remessa", "remessa");
-
-		if (instituicao != null) {
-			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicao),
-			        Restrictions.eq("remessa.instituicaoDestino", instituicao)));
-		}
-
-		if (!usuarioCorrente.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", usuarioCorrente.getInstituicao()),
-			        Restrictions.eq("remessa.instituicaoDestino", usuarioCorrente.getInstituicao())));
-		}
-
-		if (situacaoTitulos.equals(TipoRelatorio.SEM_CONFIRMACAO)) {
-		} else if (situacaoTitulos.equals(TipoRelatorio.COM_CONFIRMACAO)) {
-			criteria.createAlias("confirmacao", "confirmacao");
-			criteria.add(Restrictions.isNotEmpty("confirmacao"));
-		} else if (situacaoTitulos.equals(TipoRelatorio.SEM_RETORNO)) {
-			criteria.add(Restrictions.isEmpty("retorno"));
-			criteria.createAlias("confirmacao", "confirmacao");
-			criteria.add(Restrictions.isNotEmpty("confirmacao"));
-			criteria.add(Restrictions.ne("confirmacao.tipoOcorrencia",
-			        TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante()));
-		} else if (situacaoTitulos.equals(TipoRelatorio.COM_RETORNO)) {
-			criteria.createAlias("retorno", "retorno");
-			criteria.add(Restrictions.isNotNull("retorno"));
-		}
-
-		criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
-
-		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)
-		        || instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
-			criteria.addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("nomeDevedor"));
-		} else {
-			criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("nomeDevedor"));
-		}
-		return criteria.list();
 	}
 
 	public Retorno buscarTituloProtestado(String numeroProtocolo, String codigoIBGE) {

@@ -31,10 +31,6 @@ public class TituloMediator {
 		return tituloDAO.buscarTitulosPorRemessa(remessa, instituicaoCorrente);
 	}
 	
-	public List<TituloRemessa> buscarTitulosPorRemessa(Remessa remessa, Instituicao instituicaoOrigem, Instituicao instituicaoDestino){
-		return tituloDAO.buscarTitulosPorRemessa(remessa, instituicaoOrigem, instituicaoDestino);
-	}
-	
 	public List<TituloRemessa> buscarTitulosPorArquivo(Arquivo arquivo, Instituicao instituicaoCorrente){
 		return tituloDAO.buscarTitulosPorArquivo(arquivo, instituicaoCorrente);
 	}

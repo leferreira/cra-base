@@ -81,9 +81,26 @@ public class RetornoDAO extends AbstractBaseDAO {
 		return BigDecimal.class.cast(criteria.uniqueResult());
 	}
 	
+	public BigDecimal buscarValorDeTitulosPagos(Arquivo retorno){
+		Criteria criteria = getCriteria(Retorno.class);
+		criteria.createAlias("remessa", "remessa");
+		criteria.add(Restrictions.eq("remessa.arquivo", retorno));
+		criteria.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PAGO.getConstante()));
+		criteria.setProjection(Projections.sum("saldoTitulo"));
+		return BigDecimal.class.cast(criteria.uniqueResult());
+	}
+	
 	public BigDecimal buscarValorDemaisDespesas(Remessa retorno){
 		Criteria criteria = getCriteria(Retorno.class);
 		criteria.add(Restrictions.eq("remessa", retorno));
+		criteria.setProjection(Projections.sum("valorDemaisDespesas"));
+		return BigDecimal.class.cast(criteria.uniqueResult());
+	}
+	
+	public BigDecimal buscarValorDemaisDespesas(Arquivo retorno){
+		Criteria criteria = getCriteria(Retorno.class);
+		criteria.createAlias("remessa", "remessa");
+		criteria.add(Restrictions.eq("remessa.arquivo", retorno));
 		criteria.setProjection(Projections.sum("valorDemaisDespesas"));
 		return BigDecimal.class.cast(criteria.uniqueResult());
 	}
@@ -97,6 +114,20 @@ public class RetornoDAO extends AbstractBaseDAO {
 		disj.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_COM_CUSTAS.getConstante()));
 		criteria.add(disj);
 		criteria.add(Restrictions.eq("remessa", retorno));
+		criteria.setProjection(Projections.sum("valorCustaCartorio"));
+		return BigDecimal.class.cast(criteria.uniqueResult());
+	}
+	
+	public BigDecimal buscarValorDeCustasCartorio(Arquivo retorno){
+		Criteria criteria = getCriteria(Retorno.class);
+		
+		Disjunction disj = Restrictions.disjunction();
+		disj.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PROTESTADO.getConstante()));
+		disj.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.RETIRADO.getConstante()));
+		disj.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_COM_CUSTAS.getConstante()));
+		criteria.add(disj);
+		criteria.createAlias("remessa", "remessa");
+		criteria.add(Restrictions.eq("remessa.arquivo", retorno));
 		criteria.setProjection(Projections.sum("valorCustaCartorio"));
 		return BigDecimal.class.cast(criteria.uniqueResult());
 	}

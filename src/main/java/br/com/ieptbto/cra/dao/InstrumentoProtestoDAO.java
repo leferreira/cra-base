@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -24,7 +25,7 @@ import br.com.ieptbto.cra.entidade.Retorno;
 public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 
 	private static final Logger logger = Logger.getLogger(InstrumentoProtestoDAO.class);
-	
+
 	public void salvarInstrumentoProtesto(InstrumentoProtesto instrumento) {
 		Transaction transaction = getBeginTransation();
 		
@@ -38,7 +39,7 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 		}
 	}
 	
-	public void salvarSLIP(List<EnvelopeSLIP> envelopes) {
+	public void salvarEnvelopesEtiquetas(List<EnvelopeSLIP> envelopes) {
 		EnvelopeSLIP envelopeSalvo = new EnvelopeSLIP();
 		Transaction transaction = getBeginTransation();
 		
@@ -49,10 +50,6 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 				envelopeSalvo = save(envelope);
 				
 				for (EtiquetaSLIP etiqueta : envelope.getEtiquetas()) {
-					Retorno tituloRetorno = carregarRetorno(etiqueta.getInstrumentoProtesto().getTituloRetorno());
-					etiqueta.getInstrumentoProtesto().setTituloRetorno(tituloRetorno);
-					
-					etiqueta.setInstrumentoProtesto(save(etiqueta.getInstrumentoProtesto()));
 					etiqueta.setEnvelope(envelopeSalvo);
 					save(etiqueta);
 				}
@@ -61,6 +58,22 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
+			logger.info(ex.getMessage());
+		}
+	}
+	
+	public void marcarComoInstrumentosGerados(List<InstrumentoProtesto> instrumentosProtesto) {
+
+		try {
+			for (InstrumentoProtesto instrumento : instrumentosProtesto) {
+				Query query = createSQLQuery("UPDATE tb_instrumento_protesto AS ins "
+						+ "SET gerado = true "
+						+ "WHERE ins.id_instrumento_protesto = " + instrumento.getId());
+				
+				query.executeUpdate();
+			}
+			
+		} catch (Exception ex) {
 			logger.info(ex.getMessage());
 		}
 	}

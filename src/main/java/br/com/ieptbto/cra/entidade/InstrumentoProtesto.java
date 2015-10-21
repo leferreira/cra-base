@@ -45,7 +45,7 @@ public class InstrumentoProtesto extends AbstractEntidade<InstrumentoProtesto> {
 		this.id = id;
 	}
 
-	@OneToOne(fetch=FetchType.EAGER)
+	@OneToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="RETORNO_ID")
 	public Retorno getTituloRetorno() {
 		return tituloRetorno;
@@ -53,7 +53,7 @@ public class InstrumentoProtesto extends AbstractEntidade<InstrumentoProtesto> {
 
 	public void setTituloRetorno(Retorno tituloRetorno) {
 		this.tituloRetorno = tituloRetorno;
-	}
+	} 
 
 	@Column(name = "DATA_ENTRADA")
 	public LocalDate getDataDeEntrada() {

@@ -149,12 +149,64 @@ public class RelatorioMediator {
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 
-	public JasperPrint relatorioRetorno(Arquivo arquivo, Instituicao instituicaoCorrente) {
-		return null;
+	public JasperPrint relatorioRetorno(JasperReport jasperReport, Arquivo arquivo, Instituicao instituicaoCorrente) throws JRException {
+		List<TituloRemessa> titulos = tituloDAO.buscarTitulosPorArquivo(arquivo, instituicaoCorrente);
+		
+		if (titulos.isEmpty())
+			throw new InfraException("Não foi possível gerar o relatório. O arquivo não contém titulos !");
+		
+		Integer numeroPagos = 0;
+		Integer numeroProtestadosRetirados = 0;
+		List<TituloBean> titulosJR = new ArrayList<TituloBean>();
+		for (TituloRemessa tituloRemessa : titulos) {
+			TituloBean tituloJR = new TituloBean();
+			tituloJR.parseToTituloRemessa(tituloRemessa);
+			if (TipoOcorrencia.getTipoOcorrencia(tituloRemessa.getRetorno().getTipoOcorrencia()).equals(TipoOcorrencia.PAGO)) {
+				numeroPagos = numeroPagos + 1;
+			} else if ((TipoOcorrencia.getTipoOcorrencia(tituloRemessa.getRetorno().getTipoOcorrencia()).equals(TipoOcorrencia.PROTESTADO)) ||
+					(TipoOcorrencia.getTipoOcorrencia(tituloRemessa.getRetorno().getTipoOcorrencia()).equals(TipoOcorrencia.RETIRADO))) {
+				numeroProtestadosRetirados = numeroProtestadosRetirados + 1;
+			}
+			titulosJR.add(tituloJR);
+		}
+		parametros.put("NOME_ARQUIVO", arquivo.getNomeArquivo());
+		parametros.put("DATA_ENVIO", DataUtil.localDateToString(arquivo.getDataEnvio()));
+		parametros.put("INSTITUICAO", arquivo.getInstituicaoEnvio().getNomeFantasia().toUpperCase());
+		parametros.put("TOTAL_TITULOS", Integer.class.cast(titulosJR.size()));
+		parametros.put("TOTAL_PAGOS", retornoDAO.buscarValorDeTitulosPagos(arquivo));
+		parametros.put("TOTAL_DEMAIS_DESPESAS", retornoDAO.buscarValorDemaisDespesas(arquivo));
+		parametros.put("TOTAL_CUSTAS", retornoDAO.buscarValorDeCustasCartorio(arquivo));
+		parametros.put("QTD_PAGOS", numeroPagos);
+		parametros.put("QTD_PROTESTADOS_RETIRADOS", numeroProtestadosRetirados);
+
+		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(titulosJR);
+		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 	
-	public List<TituloRemessa> buscarTitulosParaRelatorio(Instituicao instituicao, TipoRelatorio situacaoTitulos, LocalDate dataInicio, LocalDate dataFim, Usuario usuario) {
-		return tituloDAO.buscarTitulosParaRelatorio(instituicao, situacaoTitulos, dataInicio, dataFim, usuario);
+	public List<TituloRemessa> buscarTitulosParaRelatorio(Instituicao instituicao, TipoRelatorio situacaoTitulosRelatorio, LocalDate dataInicio, LocalDate dataFim, Usuario usuario) {
+		return relatorioDAO.buscarTitulosParaRelatorio(instituicao, situacaoTitulosRelatorio, dataInicio, dataFim, usuario);
+		
+//		if (situacaoTitulosRelatorio.equals(TipoRelatorio.GERAL)) {
+//			return relatorioDAO.relatorioTitulosGeral(usuario, instituicao, dataInicio, dataFim);
+//		} else if (situacaoTitulosRelatorio.equals(TipoRelatorio.SEM_CONFIRMACAO)) {
+//			return relatorioDAO.relatorioTitulosSemConfirmacao(usuario, instituicao, dataInicio, dataFim);
+//		} else if (situacaoTitulosRelatorio.equals(TipoRelatorio.COM_CONFIRMACAO)) {
+//			return relatorioDAO.relatorioTitulosComConfirmacao(usuario, instituicao, dataInicio, dataFim);
+//		} else if (situacaoTitulosRelatorio.equals(TipoRelatorio.SEM_RETORNO)) {
+//			return relatorioDAO.relatorioTitulosSemRetorno(usuario, instituicao, dataInicio, dataFim);
+//		} else if (situacaoTitulosRelatorio.equals(TipoRelatorio.COM_RETORNO)) {
+//			return relatorioDAO.relatorioTitulosComRetorno(usuario, instituicao, dataInicio, dataFim);
+//		} else if (situacaoTitulosRelatorio.equals(TipoRelatorio.PAGOS)) {
+//			return relatorioDAO.relatorioTitulosPagos(usuario, instituicao, dataInicio, dataFim);
+//		} else if (situacaoTitulosRelatorio.equals(TipoRelatorio.PROTESTADOS)) {
+//			return relatorioDAO.relatorioTitulosProtestados(usuario, instituicao, dataInicio, dataFim);
+//		} else if (situacaoTitulosRelatorio.equals(TipoRelatorio.RETIRADOS_DEVOLVIDOS)) {
+//			return relatorioDAO.relatorioTitulosRetiradosDevolvidos(usuario, instituicao, dataInicio, dataFim);
+//		} else if (situacaoTitulosRelatorio.equals(TipoRelatorio.DESISTÊNCIA_DE_PROTESTO)) {
+//			return relatorioDAO.relatorioTitulosPedidosDeDesistencias(usuario, instituicao, dataInicio, dataFim);
+//		}
+//		
+//		return null;
 	}
 	
 	public JasperPrint relatorioSintetico(Instituicao instituicao, TipoArquivoEnum tipoArquivo, LocalDate dataInicio, LocalDate dataFim)

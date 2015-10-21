@@ -30,5 +30,8 @@ public class CabecalhoMediator {
 		}
 		return true;
 	}
-
+	
+	public Integer gerarSequencialConfirmacaoRetorno(CabecalhoRemessa cabecalhoRemessa) {
+		return cabecalhoDAO.gerarSequencialConfirmacaoRetorno(cabecalhoRemessa);
+	}
 }

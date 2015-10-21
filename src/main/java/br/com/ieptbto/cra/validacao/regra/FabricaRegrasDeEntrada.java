@@ -29,6 +29,8 @@ public class FabricaRegrasDeEntrada {
 	private RegraVerificarDuplicidade regraValidarDuplicidade;
 	@Autowired
 	private RegraValidarHoraEnvio regraHoraEnvio;
+	@Autowired
+	private RegraNumeroSequencialRemessa regraNumeroSequencialRemessaCabecalho;
 	
 	public void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
 		regraNomeArquivo.validar(arquivo, arquivoProcessado, usuario, erros);
@@ -36,6 +38,7 @@ public class FabricaRegrasDeEntrada {
 		regraValidarUsuarioEnvio.validar(arquivo, arquivoProcessado, usuario, erros);
 		regraValidarDuplicidade.validar(arquivo, arquivoProcessado, usuario, erros);
 		regraHoraEnvio.validar(arquivo, arquivoProcessado, usuario, erros);
+		regraNumeroSequencialRemessaCabecalho.validar(arquivo, arquivoProcessado, usuario, erros);
 	}
 
 }

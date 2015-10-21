@@ -24,6 +24,7 @@ import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.XmlCraException;
+import br.com.ieptbto.cra.mediator.CabecalhoMediator;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.util.DataUtil;
 
@@ -38,6 +39,8 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 	private List<RemessaVO> arquivoVO;
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
+	@Autowired
+	private CabecalhoMediator cabecalhoMediator;
 	private Instituicao instituicaoEnvio;
 
 	public void fabrica(List<RemessaVO> arquivoFisico, Arquivo arquivo, List<Exception> erros) {

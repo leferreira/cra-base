@@ -253,15 +253,21 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 		cabecalho.setIdentificacaoTransacaoTipo(cabecalhoVO.getIdentificacaoTransacaoTipo());
 		cabecalho.setNomePortador(cabecalhoVO.getNomePortador());
 		cabecalho.setNumeroCodigoPortador(cabecalhoVO.getNumeroCodigoPortador());
-		cabecalho.setNumeroSequencialRegistroArquivo(cabecalhoVO.getNumeroSequencialRegistroArquivo());
-		cabecalho.setNumeroSequencialRemessa(Integer.parseInt(cabecalhoVO.getNumeroSequencialRemessa()));
+		cabecalho.setNumeroSequencialRemessa(verificarNumeroSequencialRemessa(cabecalhoVO));
 		cabecalho.setQtdIndicacoesRemessa(Integer.parseInt(cabecalhoVO.getQtdIndicacoesRemessa()));
 		cabecalho.setQtdOriginaisRemessa(Integer.parseInt(cabecalhoVO.getQtdOriginaisRemessa()));
 		cabecalho.setQtdRegistrosRemessa(Integer.parseInt(cabecalhoVO.getQtdRegistrosRemessa()));
 		cabecalho.setQtdTitulosRemessa(Integer.parseInt(cabecalhoVO.getQtdTitulosRemessa()));
 		cabecalho.setVersaoLayout(cabecalhoVO.getVersaoLayout());
+		cabecalho.setNumeroSequencialRegistroArquivo(cabecalhoVO.getNumeroSequencialRegistroArquivo());
 
 		return cabecalho;
+	}
+
+	private static Integer verificarNumeroSequencialRemessa(CabecalhoVO cabecalhoVO) {
+		
+		Integer.parseInt(cabecalhoVO.getNumeroSequencialRemessa());
+		return null;
 	}
 
 	private static LocalDate verificaDataMovimento(String dataMovimento) {
