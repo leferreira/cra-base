@@ -85,14 +85,15 @@ public class RemessaMediator {
 		return arquivo;
 	}
 
-	public ArquivoVO buscarRemessaParaCartorio(Instituicao cartorio, String nome) {
+	public RemessaVO buscarRemessaParaCartorio(Instituicao cartorio, String nome) {
 		Remessa remessa = remessaDao.buscarRemessaParaCartorio(cartorio, nome);
 		if (remessa == null) {
 			return null;
 		}
+		ArrayList<Arquivo> arquivos = new ArrayList<>();
+		arquivos.add(remessa.getArquivo());
 
-		ArquivoVO arquivo = conversorRemessaArquivo.converter(remessa);
-		return arquivo;
+		return conversorRemessaArquivo.converterRemessaVO(remessa);
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
@@ -201,7 +202,7 @@ public class RemessaMediator {
 
 	public File baixarRemessaTXT(Usuario usuario, DesistenciaProtesto desistenciaProtesto) {
 		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			 remessaDao.alterarSituacaoDesistenciaProtesto(desistenciaProtesto, true);
+			remessaDao.alterarSituacaoDesistenciaProtesto(desistenciaProtesto, true);
 		}
 
 		desistenciaProtesto = remessaDao.buscarRemessaDesistenciaProtesto(desistenciaProtesto);
@@ -234,12 +235,12 @@ public class RemessaMediator {
 			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
 			remessaDao.alterarSituacaoRemessa(remessa);
 		}
-		if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO) &&
-				remessa.getDevolvidoPelaCRA().equals(true)) {
-			throw new InfraException("O arquivo "+ remessa.getArquivo().getNomeArquivo() +" já foi devolvido pela CRA !");
+		if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)
+		        && remessa.getDevolvidoPelaCRA().equals(true)) {
+			throw new InfraException("O arquivo " + remessa.getArquivo().getNomeArquivo() + " já foi devolvido pela CRA !");
 		}
 		remesaParaBaixar = remessaDao.buscarPorPK(remessa);
-		return processadorArquivo.processarArquivoTXT(remesaParaBaixar); 
+		return processadorArquivo.processarArquivoTXT(remesaParaBaixar);
 	}
 
 	public File baixarArquivoTXT(Instituicao instituicao, Arquivo arquivo) {
@@ -284,9 +285,9 @@ public class RemessaMediator {
 		return remessaDao.confirmacoesPendentes(instituicao);
 	}
 
-	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
-	        ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
-		return remessaDao.buscarRemessaDesistenciaProtesto(arquivo, portador, municipio,dataInicio, dataFim, tiposArquivo, usuario);
+	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio,
+	        LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+		return remessaDao.buscarRemessaDesistenciaProtesto(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
 	public List<RemessaVO> buscarArquivos(String nomeArquivo, Instituicao instituicao) {

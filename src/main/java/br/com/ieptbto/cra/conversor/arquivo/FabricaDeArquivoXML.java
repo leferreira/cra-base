@@ -24,7 +24,6 @@ import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.XmlCraException;
-import br.com.ieptbto.cra.mediator.CabecalhoMediator;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.util.DataUtil;
 
@@ -39,8 +38,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 	private List<RemessaVO> arquivoVO;
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
-	@Autowired
-	private CabecalhoMediator cabecalhoMediator;
+
 	private Instituicao instituicaoEnvio;
 
 	public void fabrica(List<RemessaVO> arquivoFisico, Arquivo arquivo, List<Exception> erros) {
@@ -88,19 +86,17 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex.getCause());
-			getErros().add(
-			        new XmlCraException(ex.getMessage(), remessaVO.getCabecalho().getCodigoMunicipio(), remessaVO.getCabecalho()
-			                .getCodigoMunicipio(), CodigoErro.MUNICIPIO_NAO_CADASTRADO_NA_CRA));
+			getErros().add(new XmlCraException(ex.getMessage(), remessaVO.getCabecalho().getCodigoMunicipio(),
+			        remessaVO.getCabecalho().getCodigoMunicipio(), CodigoErro.MUNICIPIO_NAO_CADASTRADO_NA_CRA));
 		}
 	}
 
 	private void validarCodigoMunicipio(RemessaVO remessaVO) {
 		if (StringUtils.isEmpty(remessaVO.getCabecalho().getCodigoMunicipio())) {
 			logger.error(CodigoErro.CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao());
-			getErros().add(
-			        new XmlCraException(CodigoErro.CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao(), remessaVO.getCabecalho()
-			                .getCodigoMunicipio(), remessaVO.getCabecalho().getCodigoMunicipio(),
-			                CodigoErro.CODIGO_DO_MUNICIPIO_NAO_INFORMADO));
+			getErros().add(new XmlCraException(CodigoErro.CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao(),
+			        remessaVO.getCabecalho().getCodigoMunicipio(), remessaVO.getCabecalho().getCodigoMunicipio(),
+			        CodigoErro.CODIGO_DO_MUNICIPIO_NAO_INFORMADO));
 		}
 	}
 
