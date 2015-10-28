@@ -59,7 +59,8 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		if (titulo.getNumeroProtocoloCartorio() != null && titulo.getNumeroProtocoloCartorio() != StringUtils.EMPTY) {
 			criteria.createAlias("confirmacao", "confirmacao");
-			criteria.add(Restrictions.ilike("confirmacao.numeroProtocoloCartorio", titulo.getNumeroProtocoloCartorio(), MatchMode.ANYWHERE));
+			criteria.add(
+			        Restrictions.ilike("confirmacao.numeroProtocoloCartorio", titulo.getNumeroProtocoloCartorio(), MatchMode.ANYWHERE));
 		}
 
 		if (titulo.getNumeroTitulo() != null && titulo.getNumeroTitulo() != StringUtils.EMPTY)
@@ -126,8 +127,8 @@ public class TituloDAO extends AbstractBaseDAO {
 	public List<TituloRemessa> buscarTitulosPorArquivo(Arquivo arquivo, Instituicao instituicao) {
 		Criteria criteria = getCriteria(Remessa.class);
 		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem", instituicao),
-			        Restrictions.eq("instituicaoDestino", instituicao)));
+			criteria.add(
+			        Restrictions.or(Restrictions.eq("instituicaoOrigem", instituicao), Restrictions.eq("instituicaoDestino", instituicao)));
 		}
 		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)
 		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)
@@ -198,16 +199,23 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	private TituloRemessa salvarTituloRetorno(Retorno tituloRetorno, Transaction transaction) {
 		TituloRemessa titulo = buscaTituloRetornoSalvo(tituloRetorno);
-		
+
 		if (titulo == null) {
 			throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] não existe em nossa base de dados.");
 		} else {
 			if (titulo.getPedidoDesistencia() != null) {
 				if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
-					if (tituloRetorno.getDataOcorrencia().isAfter(titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento()) 
-							|| tituloRetorno.getDataOcorrencia().equals(titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento())) {
-						throw new InfraException("PROTESTO INDEVIDO ! O título "+ titulo.getNumeroTitulo() +" com o protocolo "+ tituloRetorno.getNumeroProtocoloCartorio() +" protestado em "+ DataUtil.localDateToString(tituloRetorno.getDataOcorrencia()) +" ,já contém um pedido de desistência no arquivo "+ 
-						 titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo()	+". Faça o CANCELAMENTO!");
+					if (tituloRetorno.getDataOcorrencia()
+					        .isAfter(titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho()
+					                .getDataMovimento())
+					        || tituloRetorno.getDataOcorrencia().equals(titulo.getPedidoDesistencia().getDesistenciaProtesto()
+					                .getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento())) {
+						throw new InfraException("PROTESTO INDEVIDO ! O título " + titulo.getNumeroTitulo() + " com o protocolo "
+						        + tituloRetorno.getNumeroProtocoloCartorio() + " protestado em "
+						        + DataUtil.localDateToString(tituloRetorno.getDataOcorrencia())
+						        + " ,já contém um pedido de desistência no arquivo " + titulo.getPedidoDesistencia()
+						                .getDesistenciaProtesto().getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo()
+						        + ". Faça o CANCELAMENTO!");
 					}
 				}
 			}
@@ -259,8 +267,8 @@ public class TituloDAO extends AbstractBaseDAO {
 		}
 
 		if (titulo == null) {
-			throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero()
-			        + "] não existe em nossa base de dados.");
+			throw new InfraException(
+			        "O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] não existe em nossa base de dados.");
 		}
 		try {
 			tituloConfirmacao.setTitulo(titulo);
@@ -276,13 +284,14 @@ public class TituloDAO extends AbstractBaseDAO {
 	}
 
 	public TituloRemessa buscaTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao) {
+		List<TituloRemessa> titulos = new ArrayList<TituloRemessa>();
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.add(Restrictions.like("codigoPortador", tituloConfirmacao.getCodigoPortador().trim(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("nossoNumero", tituloConfirmacao.getNossoNumero(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("numeroTitulo", tituloConfirmacao.getNumeroTitulo(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("agenciaCodigoCedente", tituloConfirmacao.getAgenciaCodigoCedente(), MatchMode.EXACT));
 
-		List<TituloRemessa> titulos = criteria.list();
+		titulos = criteria.list();
 		for (TituloRemessa titulo : titulos) {
 			if (titulo.getConfirmacao() == null) {
 				return titulo;
