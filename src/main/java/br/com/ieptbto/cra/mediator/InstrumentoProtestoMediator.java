@@ -15,11 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.InstrumentoProtestoDAO;
+import br.com.ieptbto.cra.dao.MunicipioDAO;
 import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.EnvelopeSLIP;
 import br.com.ieptbto.cra.entidade.EtiquetaSLIP;
 import br.com.ieptbto.cra.entidade.InstrumentoProtesto;
+import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Retorno;
+import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.slip.regra.RegraAgenciaDestino;
 
 /**
@@ -34,6 +37,8 @@ public class InstrumentoProtestoMediator {
 	@Autowired
 	private TituloDAO tituloDao;
 	@Autowired
+	private MunicipioDAO municipioDAO;
+	@Autowired
 	private InstrumentoProtestoDAO instrumentoDao;
 	@Autowired
 	private RegraAgenciaDestino regraAgenciaDestino;
@@ -43,18 +48,21 @@ public class InstrumentoProtestoMediator {
 	private List<EnvelopeSLIP> envelopes;
 	private List<InstrumentoProtesto> instrumentosProtesto;
 
-	public void salvarInstrumentoProtesto(List<Retorno> titulosProtestados) {
+	public void salvarInstrumentoProtesto(List<Retorno> titulosProtestados, Usuario usuario) {
 		
 		for (Retorno retorno : titulosProtestados) {
 			Retorno tituloRetorno = instrumentoDao.carregarRetorno(retorno);
-
-			InstrumentoProtesto instrumento = new InstrumentoProtesto();
-			instrumento.setDataDeEntrada(new LocalDate());
-			instrumento.setHoraEntrada(new LocalTime());
-			instrumento.setTituloRetorno(tituloRetorno);
-			instrumento.setGerado(false);
-			
-			instrumentoDao.salvarInstrumentoProtesto(instrumento);
+			InstrumentoProtesto instrumentoBuscado = instrumentoDao.isTituloJaFoiGeradoInstrumento(tituloRetorno);
+			if (instrumentoBuscado == null) {
+				InstrumentoProtesto instrumento = new InstrumentoProtesto();
+				instrumento.setDataDeEntrada(new LocalDate());
+				instrumento.setHoraEntrada(new LocalTime());
+				instrumento.setTituloRetorno(tituloRetorno);
+				instrumento.setGerado(false);
+				instrumento.setUsuario(usuario);
+				
+				instrumentoDao.salvarInstrumentoProtesto(instrumento);
+			}
 		}
 	}
 	
@@ -97,12 +105,12 @@ public class InstrumentoProtestoMediator {
 	}
 
 	private void gerarEnvelopes() {
-		HashMap<String, EnvelopeSLIP> mapaEnvelopes = new HashMap<String, EnvelopeSLIP>();
+		HashMap<chaveEnvelope, EnvelopeSLIP> mapaEnvelopes = new HashMap<chaveEnvelope, EnvelopeSLIP>();
 
 		logger.info("Gerando envelopes.");
 		for (EtiquetaSLIP etiqueta : getEtiquetas()) {
-			if (mapaEnvelopes.containsKey(etiqueta.getAgenciaDestino())) {
-				EnvelopeSLIP envelope = mapaEnvelopes.get(etiqueta.getAgenciaDestino());
+			if (mapaEnvelopes.containsKey(new chaveEnvelope(etiqueta.getBanco(), etiqueta.getAgenciaDestino()))) {
+				EnvelopeSLIP envelope = mapaEnvelopes.get(new chaveEnvelope(etiqueta.getBanco(), etiqueta.getAgenciaDestino()));
 				envelope.setQuantidadeInstrumentos(envelope.getQuantidadeInstrumentos() + 1);
 				envelope.getEtiquetas().add(etiqueta);
 			} else {
@@ -123,7 +131,7 @@ public class InstrumentoProtestoMediator {
 				envelope.setEtiquetas(new ArrayList<EtiquetaSLIP>());
 				envelope.getEtiquetas().add(etiqueta);
 
-				mapaEnvelopes.put(etiqueta.getAgenciaDestino(), envelope);
+				mapaEnvelopes.put(new chaveEnvelope(etiqueta.getBanco(), etiqueta.getAgenciaDestino()), envelope);
 				getEnvelopes().add(envelope);
 			}
 		}
@@ -189,5 +197,26 @@ public class InstrumentoProtestoMediator {
 
 	public void setInstrumentosProtesto(List<InstrumentoProtesto> instrumentosProtesto) {
 		this.instrumentosProtesto = instrumentosProtesto;
+	}
+
+	public List<EtiquetaSLIP> buscarEtiquetas(String codigoEnvelope, String codigoMunicipio, String numeroProtocolo, LocalDate dataEntrada) {
+		Municipio municipio = municipioDAO.buscaMunicipioPorCodigoIBGE(codigoMunicipio);
+		return instrumentoDao.buscarEtiquetas(codigoEnvelope, municipio, numeroProtocolo, dataEntrada);
+	}
+}
+
+class chaveEnvelope {
+	
+	private String nomeApresentante;
+	private String codigoAgencia;
+
+	public chaveEnvelope(String nomeApresentante, String codigoAgencia) {
+		this.nomeApresentante = nomeApresentante;
+		this.codigoAgencia = codigoAgencia;
+	}
+
+	@Override
+	public String toString() {
+		return nomeApresentante.toString() + codigoAgencia.toString();
 	}
 }

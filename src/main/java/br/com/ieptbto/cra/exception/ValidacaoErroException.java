@@ -1,5 +1,7 @@
 package br.com.ieptbto.cra.exception;
 
+import java.util.List;
+
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
@@ -59,6 +61,11 @@ public class ValidacaoErroException extends RuntimeException {
 	public ValidacaoErroException(String arquivo, String mensagem, Throwable cause) {
 		super(mensagem, cause);
 		this.arquivo = arquivo;
+		this.mensagem = mensagem;
+	}
+
+	public ValidacaoErroException(String mensagem, List<Exception> erros) {
+		super(mensagem);
 		this.mensagem = mensagem;
 	}
 

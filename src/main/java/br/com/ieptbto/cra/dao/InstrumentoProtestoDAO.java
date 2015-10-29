@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import br.com.ieptbto.cra.entidade.EnvelopeSLIP;
 import br.com.ieptbto.cra.entidade.EtiquetaSLIP;
 import br.com.ieptbto.cra.entidade.InstrumentoProtesto;
+import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Retorno;
 
 /**
@@ -143,5 +145,30 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(InstrumentoProtesto.class);
 		criteria.add(Restrictions.eq("tituloRetorno", tituloRetorno));
 		return InstrumentoProtesto.class.cast(criteria.uniqueResult());
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<EtiquetaSLIP> buscarEtiquetas(String codigoEnvelope, Municipio pracaProtesto, String numeroProtocolo, LocalDate dataEntrada) {
+		Criteria criteria = getCriteria(EtiquetaSLIP.class);
+		criteria.createAlias("instrumentoProtesto", "instrumentoProtesto");
+		criteria.createAlias("envelope", "envelope");
+		
+		if (codigoEnvelope != null) {
+			criteria.add(Restrictions.like("numeroProtocoloCartorio", numeroProtocolo, MatchMode.EXACT));
+		}
+		
+		if (pracaProtesto != null) {
+			criteria.add(Restrictions.like("pracaProtesto", pracaProtesto.getNomeMunicipio().toUpperCase(), MatchMode.EXACT));
+		}
+		
+		if (numeroProtocolo != null) {
+			criteria.add(Restrictions.like("numeroProtocoloCartorio", numeroProtocolo, MatchMode.EXACT));
+		}
+		
+		if (dataEntrada != null) {
+			criteria.add(Restrictions.between("instrumentoProtesto.dataDeEntrada", dataEntrada, dataEntrada));
+		}
+		
+		return criteria.list();
 	}
 }

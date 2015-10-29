@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import org.apache.commons.lang.StringUtils;
 
 import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -38,22 +37,15 @@ public class TituloBean {
 		this.setValorTitulo(titulo.getValorTitulo());
 		this.setSaldoTitulo(titulo.getSaldoTitulo());
 		this.setPracaProtesto(titulo.getPracaProtesto());
-		this.setSituacaoTitulo(titulo.getSituacaoTitulo());
 		this.setValorCustaCartorio(titulo.getValorCustaCartorio());
+		this.setSituacaoTitulo(titulo.getSituacaoTitulo());
 		
-		this.setNumeroProtocoloCartorio("");
-		this.setDataOcorrencia("");
+		this.setNumeroProtocoloCartorio(StringUtils.EMPTY);
+		this.setDataOcorrencia(StringUtils.EMPTY);
 		if (titulo.getConfirmacao() != null) {
 			this.setNumeroProtocoloCartorio(titulo.getConfirmacao().getNumeroProtocoloCartorio());
 			this.setDataOcorrencia(DataUtil.localDateToString(titulo.getConfirmacao().getDataProtocolo()));
 			this.setValorCustaCartorio(titulo.getConfirmacao().getValorCustaCartorio());
-			
-			if (titulo.getConfirmacao().getTipoOcorrencia() != null) {
-				if (!titulo.getConfirmacao().getTipoOcorrencia().trim().equals(StringUtils.EMPTY) ||
-						titulo.getConfirmacao().getNumeroProtocoloCartorio().equals("0")) {
-					this.setSituacaoTitulo(TipoOcorrencia.getTipoOcorrencia(titulo.getConfirmacao().getTipoOcorrencia()).getLabel());
-				}
-			}
 		}
 		if (titulo.getRetorno() != null) {
 			this.setNumeroProtocoloCartorio(titulo.getRetorno().getNumeroProtocoloCartorio());

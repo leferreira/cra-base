@@ -33,6 +33,7 @@ public class InstrumentoProtesto extends AbstractEntidade<InstrumentoProtesto> {
 	private LocalDate dataDeEntrada;
 	private LocalTime horaEntrada;
 	private Boolean gerado;
+	private Usuario usuario;
 	
 	@Id
 	@Column(name = "ID_INSTRUMENTO_PROTESTO", columnDefinition = "serial")
@@ -50,9 +51,19 @@ public class InstrumentoProtesto extends AbstractEntidade<InstrumentoProtesto> {
 	public Retorno getTituloRetorno() {
 		return tituloRetorno;
 	}
+	
+	@OneToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="USUARIO_ID")
+	public Usuario getUsuario() {
+		return usuario;
+	}
 
 	public void setTituloRetorno(Retorno tituloRetorno) {
 		this.tituloRetorno = tituloRetorno;
+	} 
+	
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	} 
 
 	@Column(name = "DATA_ENTRADA")

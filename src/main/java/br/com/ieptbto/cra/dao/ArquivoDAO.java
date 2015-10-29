@@ -38,6 +38,7 @@ import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.exception.TituloException;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -137,12 +138,13 @@ public class ArquivoDAO extends AbstractBaseDAO {
 								valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
 								totalRegistroDesistenciaProtesto++;
 							} else {
-								erros.add(new InfraException("O título de número "+ pedido.getNumeroTitulo() +", do protocolo "+ pedido.getNumeroProtocolo() +
-										" do dia "+ DataUtil.localDateToString(pedido.getDataProtocolagem()) +", já foi enviado anteriormente em outro arquivo de desistência!"));
+								erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número "+ pedido.getNumeroTitulo() +", do protocolo "+ pedido.getNumeroProtocolo() +
+										" do dia "+ DataUtil.localDateToString(pedido.getDataProtocolagem()) +", já foi enviado anteriormente em outro arquivo de título!"));
+								
 							}
 						} else {
-							erros.add(new InfraException("O título de número "+ pedido.getNumeroTitulo() +",com o protocolo "+ pedido.getNumeroProtocolo() +
-									" do dia "+ DataUtil.localDateToString(pedido.getDataProtocolagem()) +", não foi localizado na CRA. Verifique os dados do arquivo!"));
+							erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número "+ pedido.getNumeroTitulo() +",com o protocolo "+ pedido.getNumeroProtocolo() +
+									" do dia "+ DataUtil.localDateToString(pedido.getDataProtocolagem()) +", não foi localizado na CRA. Verifique os dados do título!"));
 						}
 					}
 					if (!pedidos.isEmpty()) {
@@ -173,26 +175,33 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					desistenciaProtestos.setRodapeCartorio(save(desistenciaProtestos.getRodapeCartorio()));
 					desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
 
-					save(desistenciaProtestos);
-					for (PedidoDesistenciaCancelamento pedido : desistenciaProtestos.getDesistencias()) {
-						save(pedido);
-					}
+						save(desistenciaProtestos);
+						for (PedidoDesistenciaCancelamento pedido : desistenciaProtestos.getDesistencias()) {
+							save(pedido);
+						}
 				}
 
+				if (!erros.isEmpty()) {
+					throw new TituloException("Não foi possível enviar a desistência! Por favor, corriga os erros no arquivo abaixo...", erros);
+				}
 			}
 
-			transaction.commit();
+//			transaction.commit();
+			
 			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
 			        + " foi inserido na base ");
+		} catch (TituloException ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage());
+			throw new TituloException(ex.getMessage(), ex.getErros());
 		} catch (InfraException ex) {
 			logger.error(ex.getMessage());
-			throw new InfraException(ex.getMessage(), ex.getCause());
-
+			throw new InfraException(ex.getMessage());
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
 			throw new InfraException("Não foi possível inserir esse arquivo na base de dados.");
-		}
+		} 
 		return arquivoSalvo;
 
 	}
