@@ -185,9 +185,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					throw new TituloException("Não foi possível enviar a desistência! Por favor, corriga os erros no arquivo abaixo...", erros);
 				}
 			}
-
-//			transaction.commit();
-			
+			transaction.commit();
 			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
 			        + " foi inserido na base ");
 		} catch (TituloException ex) {
