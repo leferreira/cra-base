@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import org.hibernate.envers.Audited;
 
 import br.com.ieptbto.cra.enumeration.CampoLayout;
+import br.com.ieptbto.cra.enumeration.TipoArquivoLayoutEmpresa;
 
 /**
  * 
@@ -28,11 +29,12 @@ import br.com.ieptbto.cra.enumeration.CampoLayout;
 public class LayoutFiliado extends AbstractEntidade<LayoutFiliado> {
 
 	private int id;
-	private Filiado filiado;
+	private Instituicao empresa;
 	private CampoLayout campo;
 	private Integer ordem;
 	private Integer posicaoInicio;
 	private Integer posicaoFim;
+	private TipoArquivoLayoutEmpresa tipoArquivo;
 
 	@Override
 	@Id
@@ -43,15 +45,21 @@ public class LayoutFiliado extends AbstractEntidade<LayoutFiliado> {
 	}
 
 	@OneToOne
-	@JoinColumn(name = "FILIADO_ID")
-	public Filiado getFiliado() {
-		return filiado;
+	@JoinColumn(name = "INSTITUICAO_ID")
+	public Instituicao getEmpresa() {
+		return empresa;
 	}
 
 	@Column(name = "CAMPO")
 	@Enumerated(EnumType.STRING)
 	public CampoLayout getCampo() {
 		return campo;
+	}
+
+	@Column(name = "TIPO_ARQUIVO")
+	@Enumerated(EnumType.STRING)
+	public TipoArquivoLayoutEmpresa getTipoArquivo() {
+		return tipoArquivo;
 	}
 
 	@Column(name = "ORDEM")
@@ -73,8 +81,8 @@ public class LayoutFiliado extends AbstractEntidade<LayoutFiliado> {
 		this.id = id;
 	}
 
-	public void setFiliado(Filiado filiado) {
-		this.filiado = filiado;
+	public void setEmpresa(Instituicao empresa) {
+		this.empresa = empresa;
 	}
 
 	public void setOrdem(Integer ordem) {
@@ -91,6 +99,10 @@ public class LayoutFiliado extends AbstractEntidade<LayoutFiliado> {
 
 	public void setCampo(CampoLayout campo) {
 		this.campo = campo;
+	}
+
+	public void setTipoArquivo(TipoArquivoLayoutEmpresa tipoArquivo) {
+		this.tipoArquivo = tipoArquivo;
 	}
 
 	@Override
