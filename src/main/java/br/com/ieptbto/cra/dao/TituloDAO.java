@@ -42,7 +42,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	private static final String DEVOLVIDO = "5";
 	@Autowired
 	TituloSemTaxaCraDAO tituloSemTaxaCraDAO;
-
+	
 	public List<TituloRemessa> buscarListaTitulos(TituloRemessa titulo, Municipio pracaProtesto, Usuario user) {
 		Instituicao instituicaoUsuario = user.getInstituicao();
 
@@ -254,7 +254,6 @@ public class TituloDAO extends AbstractBaseDAO {
 		return null;
 	}
 
-	@Transactional(readOnly = true)
 	private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao) {
 		TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao);
 
@@ -284,14 +283,13 @@ public class TituloDAO extends AbstractBaseDAO {
 	}
 
 	public TituloRemessa buscaTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao) {
-		List<TituloRemessa> titulos = new ArrayList<TituloRemessa>();
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.add(Restrictions.like("codigoPortador", tituloConfirmacao.getCodigoPortador().trim(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("nossoNumero", tituloConfirmacao.getNossoNumero(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("numeroTitulo", tituloConfirmacao.getNumeroTitulo(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("agenciaCodigoCedente", tituloConfirmacao.getAgenciaCodigoCedente(), MatchMode.EXACT));
 
-		titulos = criteria.list();
+		List<TituloRemessa> titulos = criteria.list();
 		for (TituloRemessa titulo : titulos) {
 			if (titulo.getConfirmacao() == null) {
 				return titulo;

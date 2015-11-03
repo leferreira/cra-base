@@ -24,5 +24,4 @@ public class RegraCabecalho extends Regra {
 		// TODO Auto-generated method stub
 
 	}
-
 }
