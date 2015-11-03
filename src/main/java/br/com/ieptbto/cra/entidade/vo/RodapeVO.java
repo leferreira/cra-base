@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
 
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
+import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Rodape;
 import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
 import br.com.ieptbto.cra.util.DataUtil;
@@ -131,9 +132,14 @@ public class RodapeVO extends AbstractArquivoVO {
 		rodapeVO.setNomePortador(rodape.getNomePortador());
 		rodapeVO.setNumeroCodigoPortador(rodape.getNumeroCodigoPortador());
 		rodapeVO.setNumeroSequencialRegistroArquivo(rodape.getNumeroSequencialRegistroArquivo());
-		rodapeVO.setSomatorioQtdRemessa(StringUtils.leftPad(rodape.getSomatorioQtdRemessa().toString().replaceAll("\\D", ""), 5, "0"));
+		rodapeVO.setSomatorioQtdRemessa(somatorioSegurancaRegistrosCabecalho(rodape.getRemessa().getCabecalho()));
 		rodapeVO.setSomatorioValorRemessa(StringUtils.leftPad(rodape.getSomatorioValorRemessa().toString().replaceAll("\\D", ""), 5, "0"));
 
 		return rodapeVO;
+	}
+
+	private static String somatorioSegurancaRegistrosCabecalho(CabecalhoRemessa cabecalho) {
+		int somatorioSeguranca = cabecalho.getQtdRegistrosRemessa() + cabecalho.getQtdTitulosRemessa() + cabecalho.getQtdIndicacoesRemessa() + cabecalho.getQtdOriginaisRemessa();
+		return StringUtils.leftPad(Integer.toString(somatorioSeguranca), 5, "0");
 	}
 }

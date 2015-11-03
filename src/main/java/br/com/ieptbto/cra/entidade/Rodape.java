@@ -96,6 +96,14 @@ public class Rodape extends AbstractEntidade<Rodape> {
 		if (somatorioQtdRemessa == null) {
 			somatorioQtdRemessa = BigDecimal.ZERO;
 		}
+		
+		if (this.remessa != null) {
+			if (this.remessa.getCabecalho() != null) {
+				somatorioQtdRemessa = new BigDecimal(
+						this.remessa.getCabecalho().getQtdRegistrosRemessa() + this.remessa.getCabecalho().getQtdTitulosRemessa() + 
+						this.remessa.getCabecalho().getQtdIndicacoesRemessa() + this.remessa.getCabecalho().getQtdOriginaisRemessa());
+			}
+		}
 		return somatorioQtdRemessa;
 	}
 

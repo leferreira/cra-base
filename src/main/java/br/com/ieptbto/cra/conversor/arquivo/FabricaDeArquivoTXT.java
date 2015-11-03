@@ -142,7 +142,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 			contSequencial++;
 		}
 		remessaVO.getCabecalho().setQtdTitulosRemessa(String.valueOf(remessaVO.getTitulos().size()));
-		remessaVO.getRodape().setSomatorioQtdRemessa(String.valueOf(remessaVO.getTitulos().size()));
+		remessaVO.getRodape().setSomatorioQtdRemessa(somatorioSegurancaQuantidadeRemessa(remessaVO));
 		remessaVO.getRodape().setSomatorioValorRemessa(new BigDecimalConversor().getValorConvertidoParaString(valorTotalTitulos));
 		remessaVO.setIdentificacaoRegistro(getRemessa().getCabecalho().getIdentificacaoRegistro().getConstante());
 		remessaVO.setTipoArquivo(getRemessa().getArquivo().getTipoArquivo());
@@ -182,7 +182,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 				contSequencial++;
 			}
 			remessaVO.getCabecalho().setQtdTitulosRemessa(String.valueOf(remessaVO.getTitulos().size()));
-			remessaVO.getRodape().setSomatorioQtdRemessa(String.valueOf(remessaVO.getTitulos().size()));
+			remessaVO.getRodape().setSomatorioQtdRemessa(somatorioSegurancaQuantidadeRemessa(remessaVO));
 			remessaVO.getRodape().setSomatorioValorRemessa(new BigDecimalConversor().getValorConvertidoParaString(valorTotalTitulos));
 			remessaVO.setIdentificacaoRegistro(remessa.getCabecalho().getIdentificacaoRegistro().getConstante());
 			remessaVO.setTipoArquivo(remessa.getArquivo().getTipoArquivo());
@@ -192,6 +192,15 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		}
 
 		gerarTXT(remessasVO);
+	}
+	
+	private String somatorioSegurancaQuantidadeRemessa(RemessaVO remessaVO) {
+		int somatorioQtdRemessa = 0;
+		if (remessaVO.getCabecalho() != null) {
+			somatorioQtdRemessa = Integer.parseInt(remessaVO.getCabecalho().getQtdRegistrosRemessa()) + Integer.parseInt(remessaVO.getCabecalho().getQtdTitulosRemessa()) + 
+					Integer.parseInt(remessaVO.getCabecalho().getQtdIndicacoesRemessa()) + Integer.parseInt(remessaVO.getCabecalho().getQtdOriginaisRemessa());
+		}
+		return Integer.toString(somatorioQtdRemessa);
 	}
 
 	private void gerarTXT(RemessaVO remessaVO) {
