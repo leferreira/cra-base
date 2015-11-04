@@ -34,6 +34,7 @@ public class LayoutFiliado extends AbstractEntidade<LayoutFiliado> {
 	private Integer ordem;
 	private Integer posicaoInicio;
 	private Integer posicaoFim;
+	private String descricaoCampo;
 	private TipoArquivoLayoutEmpresa tipoArquivo;
 
 	@Override
@@ -48,6 +49,11 @@ public class LayoutFiliado extends AbstractEntidade<LayoutFiliado> {
 	@JoinColumn(name = "INSTITUICAO_ID")
 	public Instituicao getEmpresa() {
 		return empresa;
+	}
+
+	@Column(name = "DESCRICAO_CAMPO", unique = true, length = 150)
+	public String getDescricaoCampo() {
+		return descricaoCampo;
 	}
 
 	@Column(name = "CAMPO")
@@ -91,6 +97,10 @@ public class LayoutFiliado extends AbstractEntidade<LayoutFiliado> {
 
 	public void setPosicaoInicio(Integer posicaoInicio) {
 		this.posicaoInicio = posicaoInicio;
+	}
+
+	public void setDescricaoCampo(String descricaoCampo) {
+		this.descricaoCampo = descricaoCampo;
 	}
 
 	public void setPosicaoFim(Integer posicaoFim) {
