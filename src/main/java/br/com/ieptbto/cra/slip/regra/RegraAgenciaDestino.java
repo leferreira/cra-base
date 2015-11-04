@@ -11,7 +11,6 @@ import br.com.ieptbto.cra.entidade.AgenciaCAF;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.BancoTipoRegraBasicaInstrumento;
 import br.com.ieptbto.cra.enumeration.TipoRegraInstrumento;
-import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.ProcessadorMigracaoCRA;
 
 /**
@@ -78,7 +77,9 @@ public class RegraAgenciaDestino {
 			setMunicipioDestino(agenciaCAF.getNomeAgencia());
 			setUfDestino(agenciaCAF.getUf());
 		} else {
-			throw new InfraException("Não foi possível identificar a agência de destino do título [Nosso Nº: " +getTitulo().getNossoNumero()+ "] .");
+			setAgenciaDestino(agenciaItau);
+			setMunicipioDestino(StringUtils.EMPTY);
+			setUfDestino(StringUtils.EMPTY);
 		}
 	}
 	
@@ -93,12 +94,15 @@ public class RegraAgenciaDestino {
 			agenciaBradesco = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.BRADESCO); 
 			AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaBradesco, BancoTipoRegraBasicaInstrumento.BRADESCO);
 			
-			if (agenciaCAF == null) {
-				throw new InfraException("Não foi possível identificar a agência de destino do título [Nosso Nº: " +getTitulo().getNossoNumero()+ "] .");
+			if (agenciaCAF != null) {
+				setAgenciaDestino(agenciaCAF.getCodigoAgencia());
+				setMunicipioDestino(agenciaCAF.getNomeAgencia());
+				setUfDestino(agenciaCAF.getUf());
+			} else {
+				setAgenciaDestino(agenciaBradesco);
+				setMunicipioDestino(StringUtils.EMPTY);
+				setUfDestino(StringUtils.EMPTY);
 			}
-			setAgenciaDestino(agenciaCAF.getCodigoAgencia());
-			setMunicipioDestino(agenciaCAF.getNomeAgencia());
-			setUfDestino(agenciaCAF.getUf());
 		}
 	}
 	
@@ -111,12 +115,15 @@ public class RegraAgenciaDestino {
 		String agencia = aplicarRegraBasica(bancoTipoRegra);
 		AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agencia, bancoTipoRegra);
 		
-		if (agenciaCAF == null) {
-			throw new InfraException("Não foi possível identificar a agência de destino do título [Nosso Nº: " +getTitulo().getNossoNumero()+ "] .");
+		if (agenciaCAF != null) {
+			setAgenciaDestino(agenciaCAF.getCodigoAgencia());
+			setMunicipioDestino(agenciaCAF.getCidade());
+			setUfDestino(agenciaCAF.getUf());
+		} else {
+			setAgenciaDestino(agencia);
+			setMunicipioDestino(StringUtils.EMPTY);
+			setUfDestino(StringUtils.EMPTY);
 		}
-		setAgenciaDestino(agenciaCAF.getCodigoAgencia());
-		setMunicipioDestino(agenciaCAF.getCidade());
-		setUfDestino(agenciaCAF.getUf());
 	}
 
 	private String aplicarRegraBasica(BancoTipoRegraBasicaInstrumento bancoTipoRegra) {
