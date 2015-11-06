@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.entidade;
 
-import java.beans.Transient;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
@@ -19,7 +18,7 @@ import br.com.ieptbto.cra.enumeration.TipoRegistro;
  *
  */
 @SuppressWarnings("serial")
-@MappedSuperclass
+@MappedSuperclass 
 public abstract class Titulo<T> extends AbstractEntidade<T> {
 
 	private TipoRegistro identificacaoRegistro;
@@ -46,10 +45,6 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 	private BigDecimal valorDemaisDespesas;
 	private String numeroSequencialArquivo;
 	private Remessa remessa;
-
-	@Override
-	@Transient
-	public abstract int getId();
 
 	@ManyToOne
 	@JoinColumn(name = "REMESSA_ID")

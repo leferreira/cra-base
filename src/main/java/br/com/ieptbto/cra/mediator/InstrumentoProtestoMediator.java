@@ -105,12 +105,12 @@ public class InstrumentoProtestoMediator {
 	}
 
 	private void gerarEnvelopes() {
-		HashMap<chaveEnvelope, EnvelopeSLIP> mapaEnvelopes = new HashMap<chaveEnvelope, EnvelopeSLIP>();
+		HashMap<Integer, EnvelopeSLIP> mapaEnvelopes = new HashMap<Integer, EnvelopeSLIP>();
 
 		logger.info("Gerando envelopes.");
 		for (EtiquetaSLIP etiqueta : getEtiquetas()) {
-			if (mapaEnvelopes.containsKey(new chaveEnvelope(etiqueta.getBanco(), etiqueta.getAgenciaDestino()))) {
-				EnvelopeSLIP envelope = mapaEnvelopes.get(new chaveEnvelope(etiqueta.getBanco(), etiqueta.getAgenciaDestino()));
+			if (mapaEnvelopes.containsKey(Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino()).toString()))) {
+				EnvelopeSLIP envelope = mapaEnvelopes.get(Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino()).toString()));
 				envelope.setQuantidadeInstrumentos(envelope.getQuantidadeInstrumentos() + 1);
 				envelope.getEtiquetas().add(etiqueta);
 			} else {
@@ -131,7 +131,7 @@ public class InstrumentoProtestoMediator {
 				envelope.setEtiquetas(new ArrayList<EtiquetaSLIP>());
 				envelope.getEtiquetas().add(etiqueta);
 
-				mapaEnvelopes.put(new chaveEnvelope(etiqueta.getBanco(), etiqueta.getAgenciaDestino()), envelope);
+				mapaEnvelopes.put(Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino()).toString()), envelope);
 				getEnvelopes().add(envelope);
 			}
 		}
@@ -207,16 +207,16 @@ public class InstrumentoProtestoMediator {
 
 class chaveEnvelope {
 	
-	private String nomeApresentante;
+	private String codigoPortador;
 	private String codigoAgencia;
 
-	public chaveEnvelope(String nomeApresentante, String codigoAgencia) {
-		this.nomeApresentante = nomeApresentante;
+	public chaveEnvelope(String codigoPortador, String codigoAgencia) {
+		this.codigoPortador = codigoPortador;
 		this.codigoAgencia = codigoAgencia;
 	}
 
 	@Override
 	public String toString() {
-		return nomeApresentante.toString() + codigoAgencia.toString();
+		return codigoPortador.toString() + codigoAgencia.toString();
 	}
 }

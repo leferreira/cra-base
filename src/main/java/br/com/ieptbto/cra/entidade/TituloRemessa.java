@@ -56,7 +56,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	private String cidadeSacadorVendedor;
 	private String ufSacadorVendedor;
 	private String especieTitulo;
-	private LocalDate dataEmissaoTitulo; // As datas são passada assim: DDMMAAAA
+	private LocalDate dataEmissaoTitulo;
 	private LocalDate dataVencimentoTitulo;
 	private String tipoMoeda;
 	private BigDecimal valorTitulo;
@@ -81,12 +81,12 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	private String situacaoTitulo;
 	private Date dataCadastro;
 
+	@Override
 	@Id
 	@Column(name = "ID_TITULO", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Override
 	public int getId() {
-		return this.id;
+		return id;
 	}
 
 	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
