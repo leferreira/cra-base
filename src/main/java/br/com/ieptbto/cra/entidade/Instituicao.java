@@ -294,4 +294,20 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 			setSituacao(false);
 		}
 	}
+	
+	@Transient
+	public String getPermitidoAnexos() {
+		if (isPermitidoAnexo() == true) {
+			return "Sim";
+		}
+		return "Não";
+	}
+
+	public void setPermitidoAnexos(String permitido) {
+		if (permitido.equals("Sim")) {
+			setPermitidoAnexo(true);
+		} else {
+			setPermitidoAnexo(false);
+		}
+	}
 }

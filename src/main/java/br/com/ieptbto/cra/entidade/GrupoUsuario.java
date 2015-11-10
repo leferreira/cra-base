@@ -82,9 +82,17 @@ public class GrupoUsuario extends AbstractEntidade<GrupoUsuario> {
 	}
 
 	public boolean equals(Object user) {
-		if (getId() != 0 && user instanceof Usuario) {
-			return getId() == ((Usuario) user).getId();
+		if (getId() != 0 && user instanceof GrupoUsuario) {
+			return getId() == ((GrupoUsuario) user).getId();
 		}
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (getId() == 0) {
+			return 0;
+		}
+		return getId();
 	}
 }
