@@ -31,7 +31,6 @@ import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoInstituicao;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.entidade.TituloSemTaxaCRA;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
@@ -377,22 +376,6 @@ public class ArquivoDAO extends AbstractBaseDAO {
 							titulo.setValorGravacaoEletronica(BigDecimal.ZERO);
 						} else {
 							titulo.setValorGravacaoEletronica(arquivoBuscado.getInstituicaoRecebe().getValorConfirmacao());
-						}
-					}
-				}
-			}
-			if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-				if (arquivoBuscado.getInstituicaoRecebe().getCodigoCompensacao().equals("237")) { // SOMENTE PARA BRADESCO
-					for (Titulo titulo : titulos) {
-						TituloSemTaxaCRA tituloSemTaxa = tituloSemTaxaCraDAO.verificarTituloEnviadoSemTaxa(titulo);
-						if (tituloSemTaxa != null) {
-							if (titulo.getTipoOcorrencia() != null) {
-								if (titulo.getTipoOcorrencia().equals("5") || tituloSemTaxa.getProtocolo().equals("0") ) {
-									titulo.setValorGravacaoEletronica(BigDecimal.ZERO);
-								} else {
-									titulo.setValorGravacaoEletronica(arquivoBuscado.getInstituicaoRecebe().getValorConfirmacao());
-								}
-							}	
 						}
 					}
 				}

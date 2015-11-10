@@ -40,6 +40,7 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	private LocalDate dataEnvio;
 	private LocalTime horaEnvio;
 	private List<Remessa> remessas;
+	private List<Anexo> anexos;
 	private RemessaDesistenciaProtesto remessaDesistenciaProtesto;
 	private Instituicao instituicaoRecebe;
 	private Instituicao instituicaoEnvio;
@@ -124,7 +125,16 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	public LocalTime getHoraEnvio() {
 		return horaEnvio;
 	}
-
+	
+	@OneToMany(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	public List<Anexo> getAnexos() {
+		return anexos;
+	}
+	
+	public void setAnexos(List<Anexo> anexos) {
+		this.anexos = anexos;
+	}
+	
 	public void setHoraEnvio(LocalTime horaEnvio) {
 		this.horaEnvio = horaEnvio;
 	}
@@ -187,5 +197,17 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 		compareToBuilder.append(this.getId(), entidade.getId());
 		compareToBuilder.append(this.getNomeArquivo(), entidade.getNomeArquivo());
 		return compareToBuilder.toComparison();
+	}
+	
+	@Override
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		return super.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		return super.equals(obj);
 	}
 }

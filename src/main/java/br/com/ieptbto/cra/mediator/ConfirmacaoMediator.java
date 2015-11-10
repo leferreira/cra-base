@@ -92,6 +92,7 @@ public class ConfirmacaoMediator {
 		return gerarResposta(getArquivo(), usuario);
 	}
 
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Arquivo salvarArquivo(Arquivo arquivo, Usuario usuario) {
 		return arquivoDAO.salvar(arquivo, usuario, new ArrayList<Exception>());
 	}

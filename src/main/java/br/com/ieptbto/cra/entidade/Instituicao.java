@@ -44,7 +44,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	private String numeroContaCorrente;
 	private String codigoCartorio;
 	private boolean situacao;
-
+	private boolean permitidoAnexo;
 	private TipoInstituicao tipoInstituicao;
 	private List<Arquivo> arquivoEnviados;
 	private List<Usuario> listaUsuarios;
@@ -159,6 +159,15 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		return codigoCartorio;
 	}
 
+	@Column(name = "PERMITIDO_ANEXO")
+	public boolean isPermitidoAnexo() {
+		return permitidoAnexo;
+	}
+
+	public void setPermitidoAnexo(boolean permitidoAnexo) {
+		this.permitidoAnexo = permitidoAnexo;
+	}
+	
 	public void setCodigoCartorio(String codigoCartorio) {
 		this.codigoCartorio = codigoCartorio;
 	}
