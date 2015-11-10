@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,6 +21,8 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
+
+import br.com.ieptbto.cra.enumeration.TipoCampo51;
 
 @Entity
 @Audited
@@ -49,6 +53,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	private List<Arquivo> arquivoEnviados;
 	private List<Usuario> listaUsuarios;
 	private Municipio municipio;
+	private TipoCampo51 tipoCampo51;
 
 	@Id
 	@Column(name = "ID_INSTITUICAO", columnDefinition = "serial")
@@ -250,6 +255,16 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 
 	public void setListaUsuarios(List<Usuario> listaUsuarios) {
 		this.listaUsuarios = listaUsuarios;
+	}
+	
+	@Column(name="TIPO_CAMPO_51")
+	@Enumerated(EnumType.STRING)
+	public TipoCampo51 getTipoCampo51() {
+		return tipoCampo51;
+	}
+
+	public void setTipoCampo51(TipoCampo51 tipoCampo51) {
+		this.tipoCampo51 = tipoCampo51;
 	}
 
 	@Override

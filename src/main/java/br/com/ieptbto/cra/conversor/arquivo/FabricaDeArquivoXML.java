@@ -23,8 +23,10 @@ import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.TipoCampo51;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.XmlCraException;
+import br.com.ieptbto.cra.mediator.ArquivoMediator;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.util.DataUtil;
 
@@ -39,6 +41,8 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 	private List<RemessaVO> arquivoVO;
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
+	@Autowired
+	private ArquivoMediator arquivoMediator;
 
 	private Instituicao instituicaoEnvio;
 
@@ -141,6 +145,8 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		for (TituloVO tituloVO : titulosVO) {
 			if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
 				titulo = TituloRemessa.parseTituloVO(tituloVO);
+				
+				converterDadosCampoComplementoRegistro(remessa, tituloVO);
 			} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
 				titulo = Confirmacao.parseTituloVO(tituloVO);
 			} else if (TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
@@ -153,6 +159,13 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		return titulos;
 	}
 
+	private void converterDadosCampoComplementoRegistro(Remessa remessa, TituloVO tituloVO) {
+		
+		if (remessa.getArquivo().getUsuarioEnvio().getInstituicao().getTipoCampo51().equals(TipoCampo51.DOCUMENTOS_ZIPADOS)) {
+			arquivoMediator.criarDocumentosZipadosCampoComplementoRegistro(remessa, tituloVO);
+		}
+	}
+
 	private Instituicao getInstituicaoDestino(CabecalhoVO cabecalho) {
 		if (TipoArquivoEnum.CONFIRMACAO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))
 		        || TipoArquivoEnum.RETORNO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))) {
@@ -161,7 +174,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 			return instituicaoMediator.getCartorioPorCodigoIBGE(cabecalho.getCodigoMunicipio());
 		}
 	}
-
+	
 	private Rodape getRodape(RodapeVO rodapeVO) {
 		return Rodape.parseRodapeVO(rodapeVO);
 	}
