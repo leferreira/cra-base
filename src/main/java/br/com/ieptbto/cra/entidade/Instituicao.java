@@ -159,7 +159,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		return codigoCartorio;
 	}
 
-	@Column(name = "PERMITIDO_ANEXO")
+	@Column(name = "PERMITIDO_ANEXO", columnDefinition = "boolean default false")
 	public boolean isPermitidoAnexo() {
 		return permitidoAnexo;
 	}
@@ -167,7 +167,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	public void setPermitidoAnexo(boolean permitidoAnexo) {
 		this.permitidoAnexo = permitidoAnexo;
 	}
-	
+
 	public void setCodigoCartorio(String codigoCartorio) {
 		this.codigoCartorio = codigoCartorio;
 	}
@@ -294,7 +294,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 			setSituacao(false);
 		}
 	}
-	
+
 	@Transient
 	public String getPermitidoAnexos() {
 		if (isPermitidoAnexo() == true) {
