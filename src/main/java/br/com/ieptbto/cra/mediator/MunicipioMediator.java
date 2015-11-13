@@ -26,12 +26,6 @@ public class MunicipioMediator {
 		return municipioDao.alterar(municipio);
 	}
 
-	/**
-	 * Verificar se o município já está cadastrado
-	 * 
-	 * @param Municipio
-	 * @return
-	 * */
 	public boolean isMunicipioNaoExiste(Municipio municipio) {
 		Municipio municipioNovo = municipioDao.buscarMunicipioPorNome(municipio.getNomeMunicipio());
 		if (municipioNovo == null) {
@@ -40,12 +34,6 @@ public class MunicipioMediator {
 		return false;
 	}
 
-	/**
-	 * Verificar se o município tem um cartorio cadastrado
-	 * 
-	 * @param Municipio
-	 * @return
-	 * */
 	public Instituicao isMunicipioTemCartorio(Municipio municipio) {
 		Instituicao cartorio = instituicaoDao.buscarCartorioPorMunicipio(municipio.getNomeMunicipio());
 		if (cartorio != null) {
@@ -54,24 +42,10 @@ public class MunicipioMediator {
 		return null;
 	}
 
-	/**
-	 * Retorna um município
-	 * 
-	 * @param String
-	 *            nomeMunicipio
-	 * @return
-	 * */
 	public Municipio buscarMunicipio(String nomeMunicipio) {
 		return municipioDao.buscarMunicipioPorNome(nomeMunicipio);
 	}
 
-	/**
-	 * Retorna a lista de todos os municípios
-	 * 
-	 * @param String
-	 *            nomeMunicipio
-	 * @return
-	 * */
 	public List<Municipio> listarTodos() {
 		return municipioDao.listarTodos();
 	}
@@ -82,7 +56,6 @@ public class MunicipioMediator {
 
 	public Municipio salvar(Municipio municipio) {
 		return municipioDao.salvar(municipio);
-
 	}
 
 	public Municipio buscaMunicipioPorCodigoIBGE(String codigoMunicipio) {
@@ -91,5 +64,9 @@ public class MunicipioMediator {
 
 	public Municipio buscarMunicipioDoCartorio(Instituicao cartorio) {
 		return municipioDao.buscarMunicipioDoCartorio(cartorio);
+	}
+
+	public List<Municipio> buscarMunicipiosAtivos() {
+		return municipioDao.buscarMunicipiosAtivos();
 	}
 }

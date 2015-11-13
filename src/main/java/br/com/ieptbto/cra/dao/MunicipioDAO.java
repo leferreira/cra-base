@@ -8,6 +8,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
@@ -16,6 +17,7 @@ import br.com.ieptbto.cra.entidade.Municipio;
 public class MunicipioDAO extends AbstractBaseDAO {
 
 	private static final int CARTORIO = 2;
+	private static final String SIGLA_TOCANTINS = "TO";
 
 	public Municipio salvar(Municipio municipio) {
 		Municipio novoMunicipio = new Municipio();
@@ -60,7 +62,7 @@ public class MunicipioDAO extends AbstractBaseDAO {
 	public List<Municipio> listarTodosTocantins() {
 		Criteria criteria = getCriteria(Municipio.class);
 		criteria.addOrder(Order.asc("nomeMunicipio"));
-		criteria.add(Restrictions.eq("uf", "TO"));
+		criteria.add(Restrictions.eq("uf", SIGLA_TOCANTINS));
 		return criteria.list();
 	}
 
@@ -80,5 +82,15 @@ public class MunicipioDAO extends AbstractBaseDAO {
 		criteria.setMaxResults(1);
 		Instituicao cartorioBuscado = Instituicao.class.cast(criteria.uniqueResult());
 		return cartorioBuscado.getMunicipio();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public List<Municipio> buscarMunicipiosAtivos() {
+		Criteria criteria = getCriteria(Municipio.class);
+		criteria.addOrder(Order.asc("nomeMunicipio"));
+		criteria.add(Restrictions.eq("uf", SIGLA_TOCANTINS));
+		criteria.add(Restrictions.eq("situacao", true));
+		return criteria.list();
 	}
 }

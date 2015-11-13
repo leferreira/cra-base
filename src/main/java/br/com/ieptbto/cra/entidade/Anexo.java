@@ -6,7 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
@@ -26,8 +26,7 @@ public class Anexo extends AbstractEntidade<Anexo> {
 	private static final long serialVersionUID = 123523;
 
 	private int id;
-	private String nomeAnexo;
-	private Arquivo arquivo;
+	private TituloRemessa titulo;
 
 	@Id
 	@Column(name = "ID_ANEXO", columnDefinition = "serial")
@@ -36,27 +35,18 @@ public class Anexo extends AbstractEntidade<Anexo> {
 		return id;
 	}
 
-	@Column(name="NOME_ANEXO", length=45)
-	public String getNomeAnexo() {
-		return nomeAnexo;
-	}
-
-	@ManyToOne
-	@JoinColumn(name = "ARQUIVO_ID")
-	public Arquivo getArquivo() {
-		return arquivo;
+	@OneToOne
+	@JoinColumn(name = "TITULO_ID")
+	public TituloRemessa getTitulo() {
+		return titulo;
 	}
 
 	public void setId(int id) {
 		this.id = id;
 	}
 
-	public void setNomeAnexo(String nomeAnexo) {
-		this.nomeAnexo = nomeAnexo;
-	}
-
-	public void setArquivo(Arquivo arquivo) {
-		this.arquivo = arquivo;
+	public void setTitulo(TituloRemessa Titulo) {
+		this.titulo = Titulo;
 	}
 
 	@Override

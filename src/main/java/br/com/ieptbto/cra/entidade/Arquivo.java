@@ -40,7 +40,6 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	private LocalDate dataEnvio;
 	private LocalTime horaEnvio;
 	private List<Remessa> remessas;
-	private List<Anexo> anexos;
 	private RemessaDesistenciaProtesto remessaDesistenciaProtesto;
 	private Instituicao instituicaoRecebe;
 	private Instituicao instituicaoEnvio;
@@ -124,15 +123,6 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	@Column(name = "HORA_ENVIO", nullable=true)
 	public LocalTime getHoraEnvio() {
 		return horaEnvio;
-	}
-	
-	@OneToMany(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	public List<Anexo> getAnexos() {
-		return anexos;
-	}
-	
-	public void setAnexos(List<Anexo> anexos) {
-		this.anexos = anexos;
 	}
 	
 	public void setHoraEnvio(LocalTime horaEnvio) {

@@ -43,6 +43,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	private static final long serialVersionUID = 1L;
 
 	private int id;
+	private Anexo anexo;
 	private List<Historico> historicos;
 	private Confirmacao confirmacao;
 	private Retorno retorno;
@@ -254,7 +255,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		return instrumentoProtesto;
 	}
 
-	@Column(name = "COMPLEMENTO_REGISTRO")
+	@Column(name = "COMPLEMENTO_REGISTRO", length=655360)
 	public String getComplementoRegistro() {
 		return complementoRegistro;
 	}
@@ -578,5 +579,14 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 			return 0;
 		}
 		return getId();
+	}
+
+	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
+	public Anexo getAnexo() {
+		return anexo;
+	}
+
+	public void setAnexo(Anexo anexo) {
+		this.anexo = anexo;
 	}
 }
