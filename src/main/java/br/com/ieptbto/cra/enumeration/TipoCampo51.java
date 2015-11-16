@@ -8,7 +8,7 @@ public enum TipoCampo51 {
 
 	ALFANUMERICO("Alfanumérico"),
 	LINK("Link Externo"),
-	DOCUMENTOS_ZIPADOS("Documentos Zipados");
+	DOCUMENTOS_COMPACTADOS("Documentos Compactados");
 	
 	private String label;
 	
