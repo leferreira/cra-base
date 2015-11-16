@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -379,5 +380,12 @@ public class RemessaDAO extends AbstractBaseDAO {
 
 	public DesistenciaProtesto buscarRemessaDesistenciaProtesto(DesistenciaProtesto entidade) {
 		return super.buscarPorPK(entidade);
+	}
+
+	public List<Anexo> verificarAnexosRemessa(Remessa remessa) {
+		Criteria criteria = getCriteria(Anexo.class);
+		criteria.createAlias("titulo", "titulo");
+		criteria.add(Restrictions.eq("titulo.remessa", remessa));
+		return criteria.list();
 	}
 }

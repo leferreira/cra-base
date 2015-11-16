@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorRemessaArquivo;
 import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.RemessaDAO;
+import br.com.ieptbto.cra.dao.TituloDAO;
+import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -32,7 +34,6 @@ import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
-import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
@@ -64,6 +65,8 @@ public class RemessaMediator {
 	private RemessaDAO remessaDao;
 	@Autowired
 	private ArquivoDAO arquivoDAO;
+	@Autowired
+	private TituloDAO tituloDAO;
 	@Autowired
 	private ConversorRemessaArquivo conversorRemessaArquivo;
 	@Autowired
@@ -348,14 +351,14 @@ public class RemessaMediator {
 		if (!diretorioRemessa.exists()) {
 			diretorioRemessa.mkdirs();
 
-			decodificarArquivosAnexos(pathDiretorioIdRemessa, remessa);
+			decodificarArquivosAnexos(user ,pathDiretorioIdRemessa, remessa);
 		}
 
 		try {
 			if (diretorioRemessa.exists()) {
 				if (!Arrays.asList(diretorioRemessa.listFiles()).isEmpty()) {
 
-					String nomeArquivoZip = remessa.getArquivo().getNomeArquivo().replaceAll(".", "_") + "_"
+					String nomeArquivoZip = remessa.getArquivo().getNomeArquivo().replace(".", "_") + "_"
 					        + remessa.getCabecalho().getCodigoMunicipio();
 					FileOutputStream fileOutputStream = new FileOutputStream(
 					        pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
@@ -383,21 +386,21 @@ public class RemessaMediator {
 		return null;
 	}
 
-	@SuppressWarnings("rawtypes")
-	private void decodificarArquivosAnexos(String path, Remessa remessa) {
+	private void decodificarArquivosAnexos(Usuario user, String path, Remessa remessa) {
 		try {
-			for (Titulo titulo : remessa.getTitulos()) {
-				TituloRemessa tituloRemessa = (TituloRemessa) titulo;
-
-				DecoderString decoderString = new DecoderString();
-				String nomeArquivoZip = tituloRemessa.getNomeDevedor() + "_"
-				        + tituloRemessa.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
-
-				decoderString.decode(tituloRemessa.getComplementoRegistro(),
-				        ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA
-				                + remessa.getArquivo().getNomeArquivo() + ConfiguracaoBase.BARRA
-				                + remessa.getCabecalho().getCodigoMunicipio() + ConfiguracaoBase.BARRA,
-				        nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+			List<TituloRemessa> titulos = tituloDAO.buscarTitulosPorRemessa(remessa, user.getInstituicao());
+			if (!titulos.isEmpty()) { 
+				for (TituloRemessa titulo : titulos) {
+					DecoderString decoderString = new DecoderString();
+					String nomeArquivoZip = titulo.getNomeDevedor() + "_"
+					        + titulo.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
+	
+					decoderString.decode(titulo.getComplementoRegistro(),
+					        ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA
+					                + remessa.getArquivo().getId() + ConfiguracaoBase.BARRA
+					                + remessa.getId() + ConfiguracaoBase.BARRA,
+					        nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+				}
 			}
 
 		} catch (FileNotFoundException e) {
@@ -407,5 +410,9 @@ public class RemessaMediator {
 			logger.info("O arquivo ZIP em anexo não pode ser criado.");
 			e.printStackTrace();
 		}
+	}
+
+	public List<Anexo> verificarAnexosRemessa(Remessa remessa) {
+		return remessaDao.verificarAnexosRemessa(remessa);
 	}
 }
