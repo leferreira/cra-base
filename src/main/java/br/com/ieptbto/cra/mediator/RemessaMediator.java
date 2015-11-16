@@ -1,9 +1,16 @@
 package br.com.ieptbto.cra.mediator;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
@@ -24,6 +31,8 @@ import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
+import br.com.ieptbto.cra.entidade.Titulo;
+import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
@@ -35,6 +44,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.exception.XmlCraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.util.DecoderString;
 import br.com.ieptbto.cra.webservice.VO.Descricao;
 import br.com.ieptbto.cra.webservice.VO.Detalhamento;
 import br.com.ieptbto.cra.webservice.VO.Mensagem;
@@ -270,7 +280,7 @@ public class RemessaMediator {
 	}
 
 	public Arquivo confirmacoesPendentes(Instituicao instituicao) {
-		List<Remessa> remessas = remessaDao.confirmacoesPendentes(instituicao);
+		List<Remessa> remessas = remessaDao.confirmacoesPendentes(instituicao); 
 //		List<Remessa> remessas = new ArrayList<Remessa>();
 		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
 		List<DesistenciaProtesto> desistenciaProtesto = remessaDao.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
@@ -304,5 +314,88 @@ public class RemessaMediator {
 		remessa.setDevolvidoPelaCRA(true);
 		remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
 		remessaDao.update(remessa);
+	}
+
+	@SuppressWarnings("resource")
+	public File processarArquivosAnexos(Usuario user, Remessa remessa) {
+		String pathDiretorioIdInstituicao = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId();
+		String pathDiretorioIdArquivo = pathDiretorioIdInstituicao + ConfiguracaoBase.BARRA + remessa.getArquivo().getId();
+		String pathDiretorioIdRemessa = pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + remessa.getId();
+		
+		File diretorioBaseArquivo = new File(ConfiguracaoBase.DIRETORIO_BASE);
+		File diretorioBaseInstituicao = new File(ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO);
+		File diretorioInstituicaoEnvio = new File(pathDiretorioIdInstituicao);
+		File diretorioArquivo = new File(pathDiretorioIdArquivo);
+		File diretorioRemessa = new File(pathDiretorioIdRemessa);
+
+		if (!diretorioBaseArquivo.exists()) {
+			diretorioBaseArquivo.mkdirs();
+		}
+		if (!diretorioBaseInstituicao.exists()) {
+			diretorioBaseInstituicao.mkdirs();
+		}
+		if (!diretorioInstituicaoEnvio.exists()) {
+			diretorioInstituicaoEnvio.mkdirs();
+		}
+		if (!diretorioArquivo.exists()) {
+			diretorioArquivo.mkdirs();
+		}
+		if (!diretorioRemessa.exists()) {
+			diretorioRemessa.mkdirs();
+			
+			decodificarArquivosAnexos(pathDiretorioIdRemessa, remessa);
+		} 
+		
+		try {
+			if (diretorioRemessa.exists()) {
+				if (!Arrays.asList(diretorioRemessa.listFiles()).isEmpty()) {
+				
+					String nomeArquivoZip = remessa.getArquivo().getNomeArquivo().replaceAll(".", "_") + "_" + remessa.getCabecalho().getCodigoMunicipio();
+					FileOutputStream fileOutputStream = new FileOutputStream(pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+					ZipOutputStream zipOut = new ZipOutputStream(fileOutputStream);
+					
+					for(File arq : diretorioRemessa.listFiles() ){
+						zipOut.putNextEntry(new ZipEntry(arq.getName().toString()));
+						FileInputStream fis = new FileInputStream(arq);
+						int content;
+						while ((content = fis.read()) != -1) {
+							zipOut.write( content );
+						}
+						zipOut.closeEntry();
+					}
+					zipOut.close();
+					
+					return new File(pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void decodificarArquivosAnexos(String path, Remessa remessa) {
+		try {
+			for (Titulo titulo : remessa.getTitulos()) {
+				TituloRemessa tituloRemessa = (TituloRemessa)titulo;
+				
+				DecoderString decoderString = new DecoderString();
+				String nomeArquivoZip = tituloRemessa.getNomeDevedor() + "_"
+						+ tituloRemessa.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
+				
+				decoderString.decode(tituloRemessa.getComplementoRegistro(), ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() 
+						+ ConfiguracaoBase.BARRA + remessa.getArquivo().getNomeArquivo()
+						+ ConfiguracaoBase.BARRA + remessa.getCabecalho().getCodigoMunicipio() + ConfiguracaoBase.BARRA , nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+			}
+			
+		} catch (FileNotFoundException e) {
+			logger.info("O arquivo ZIP em anexo não pode ser criado.");
+			e.printStackTrace();
+		} catch (IOException e) {
+			logger.info("O arquivo ZIP em anexo não pode ser criado.");
+			e.printStackTrace();
+		}
 	}
 }

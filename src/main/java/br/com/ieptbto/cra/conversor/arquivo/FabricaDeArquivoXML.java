@@ -8,6 +8,7 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Confirmacao;
@@ -26,7 +27,6 @@ import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoCampo51;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.XmlCraException;
-import br.com.ieptbto.cra.mediator.ArquivoMediator;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.util.DataUtil;
 
@@ -41,9 +41,6 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 	private List<RemessaVO> arquivoVO;
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
-	@Autowired
-	private ArquivoMediator arquivoMediator;
-
 	private Instituicao instituicaoEnvio;
 
 	public void fabrica(List<RemessaVO> arquivoFisico, Arquivo arquivo, List<Exception> erros) {
@@ -145,8 +142,8 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		for (TituloVO tituloVO : titulosVO) {
 			if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
 				titulo = TituloRemessa.parseTituloVO(tituloVO);
-				
-				converterDadosCampoComplementoRegistro(remessa, tituloVO);
+
+				verificarAnexoComplementoRegistro(remessa.getInstituicaoOrigem(), TituloRemessa.class.cast(titulo), tituloVO);
 			} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
 				titulo = Confirmacao.parseTituloVO(tituloVO);
 			} else if (TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
@@ -159,10 +156,13 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		return titulos;
 	}
 
-	private void converterDadosCampoComplementoRegistro(Remessa remessa, TituloVO tituloVO) {
+	private void verificarAnexoComplementoRegistro(Instituicao instituicaoEnvio, TituloRemessa titulo, TituloVO tituloVO) {
 		
-		if (remessa.getArquivo().getUsuarioEnvio().getInstituicao().getTipoCampo51().equals(TipoCampo51.DOCUMENTOS_ZIPADOS)) {
-			arquivoMediator.criarDocumentosZipadosCampoComplementoRegistro(remessa, tituloVO);
+		if (instituicaoEnvio.getTipoCampo51().equals(TipoCampo51.DOCUMENTOS_ZIPADOS)) {
+			Anexo anexoArquivo = new Anexo();
+			anexoArquivo.setTitulo(titulo);
+			
+			titulo.setAnexo(anexoArquivo);
 		}
 	}
 

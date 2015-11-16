@@ -14,9 +14,6 @@ import br.com.ieptbto.cra.util.DataUtil;
  */
 public class ArquivoOcorrenciaBean implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private Remessa remessa;
 	private DesistenciaProtesto desistencia;

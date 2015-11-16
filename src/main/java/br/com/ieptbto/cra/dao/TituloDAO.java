@@ -302,7 +302,14 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	private TituloRemessa salvarTituloRemessa(TituloRemessa tituloRemessa, Transaction transaction) {
 		try {
+			
 			tituloRemessa.setDataCadastro(tituloRemessa.getRemessa().getCabecalho().getDataMovimento().toDate());
+			TituloRemessa tituloSalvo = save(tituloRemessa);
+
+			if (tituloRemessa.getAnexo() != null) {
+				tituloRemessa.getAnexo().setTitulo(tituloSalvo);
+				save(tituloRemessa.getAnexo());
+			}
 			return save(tituloRemessa);
 		} catch (Exception ex) {
 			if (PSQLException.class.isInstance(ex)) {

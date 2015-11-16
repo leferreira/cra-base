@@ -260,6 +260,9 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	@Column(name="TIPO_CAMPO_51")
 	@Enumerated(EnumType.STRING)
 	public TipoCampo51 getTipoCampo51() {
+		if (tipoCampo51 == null) {
+			tipoCampo51 = TipoCampo51.ALFANUMERICO;
+		}
 		return tipoCampo51;
 	}
 
