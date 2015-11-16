@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
-import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
@@ -68,8 +67,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 	public Arquivo salvar(Arquivo arquivo, Usuario usuarioAcao, List<Exception> erros) {
 		Arquivo arquivoSalvo = new Arquivo();
-		Session session = getSession();
-		Transaction transaction = session.beginTransaction();
+		Transaction transaction = getSession().beginTransaction();
 		BigDecimal valorTotalSaldo = BigDecimal.ZERO;
 
 		try {
@@ -110,7 +108,6 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 						valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
 					}
-					transaction.commit();
 					remessa.getCabecalho().setQtdTitulosRemessa(remessa.getTitulos().size());
 					remessa.getRodape().setSomatorioValorRemessa(valorTotalSaldo);
 					remessa.setCabecalho(save(remessa.getCabecalho()));
@@ -202,8 +199,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			logger.error(ex.getMessage());
 			throw new InfraException(ex.getMessage());
 		} catch (Exception ex) {
-			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
+			transaction.rollback();
 			throw new InfraException("Não foi possível inserir esse arquivo na base de dados.");
 		}
 		return arquivoSalvo;
