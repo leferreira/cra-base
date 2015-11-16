@@ -77,6 +77,11 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		}
 	}
 
+	public void inserirInstituicaoInicial(String nomeMunicipio) {
+		Municipio municipio = municipioDAO.buscarMunicipioPorNome(nomeMunicipio);
+		inserirInstituicaoInicial(municipio);
+	}
+
 	public void inserirInstituicaoInicial(Municipio muMunicipio) {
 		Transaction transaction = getBeginTransation();
 		try {
@@ -137,7 +142,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	 * Buscar todos os cartórios, ativos ou não e menos as instituicões
 	 * 
 	 * @return List<Instituicao>
-	 * */
+	 */
 	@SuppressWarnings("unchecked")
 	public List<Instituicao> getCartorios() {
 		Criteria criteria = getCriteria(Instituicao.class);
@@ -152,7 +157,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	 * Buscar todos instituicões financieiras, ativos ou não
 	 * 
 	 * @return List<Instituicao>
-	 * */
+	 */
 	@SuppressWarnings("unchecked")
 	public List<Instituicao> getInstituicoesFinanceiras() {
 		Criteria criteria = getCriteria(Instituicao.class);

@@ -36,6 +36,7 @@ public class GrupoUsuarioDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
+	@Transactional
 	public void inserirGruposCargaInicial(GrupoUsuario grupo) {
 		Transaction transaction = getBeginTransation();
 		try {
@@ -59,12 +60,13 @@ public class GrupoUsuarioDAO extends AbstractBaseDAO {
 		return GrupoUsuario.class.cast(criteria.uniqueResult());
 	}
 
+	@Transactional(readOnly = true)
 	public GrupoUsuario buscarGrupoInicial(String grupo) {
 		Criteria criteria = getCriteria(GrupoUsuario.class);
 		criteria.add(Restrictions.eq("grupo", grupo));
 		return GrupoUsuario.class.cast(criteria.uniqueResult());
 	}
-	
+
 	public List<GrupoUsuario> listarGrupos() {
 		Criteria criteria = getCriteria(GrupoUsuario.class);
 		return criteria.list();

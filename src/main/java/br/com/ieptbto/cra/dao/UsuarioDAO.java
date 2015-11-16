@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.ieptbto.cra.entidade.GrupoUsuario;
+import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Usuario;
 
 /**
@@ -39,6 +41,9 @@ public class UsuarioDAO extends AbstractBaseDAO {
 
 	public void incluirUsuarioDeTeste() {
 		Usuario usuario = new Usuario();
+		instituicaoDAO.inserirInstituicaoInicial("Palmas");
+		Instituicao cra = instituicaoDAO.buscarInstituicao("CRA");
+		GrupoUsuario grupo = grupoUsuarioDAO.buscarGrupoInicial("Super Administrador");
 		Transaction transaction = getBeginTransation();
 		try {
 			usuario.setEmail("teste@teste.com.br");
@@ -47,12 +52,13 @@ public class UsuarioDAO extends AbstractBaseDAO {
 			usuario.setSenha(Usuario.cryptPass("teste1234"));
 			usuario.setContato("99999999");
 			usuario.setStatus(true);
-			usuario.setGrupoUsuario(grupoUsuarioDAO.buscarGrupoInicial("Super Administrador"));
-			usuario.setInstituicao(instituicaoDAO.buscarInstituicao("CRA"));
+			usuario.setGrupoUsuario(grupo);
+			usuario.setInstituicao(cra);
 			save(usuario);
 			transaction.commit();
 
 		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
 			transaction.rollback();
 		}
 	}
