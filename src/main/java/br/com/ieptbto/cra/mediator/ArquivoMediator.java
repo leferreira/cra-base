@@ -40,6 +40,15 @@ public class ArquivoMediator {
 	private List<Exception> erros;
 	private Arquivo arquivo;
 
+	/**
+	 * 
+	 * Salvar documento pela aplicação.
+	 * 
+	 * @param arquivo
+	 * @param uploadedFile
+	 * @param usuario
+	 * @return
+	 */
 	public ArquivoMediator salvar(Arquivo arquivo, FileUpload uploadedFile, Usuario usuario) {
 		if (verificarPermissaoDeEnvio(usuario, arquivo)) {
 			throw new InfraException("O usuário " + usuario.getNome() + " não pode enviar arquivos " + arquivo.getNomeArquivo());
@@ -86,7 +95,7 @@ public class ArquivoMediator {
 	private Arquivo processarArquivo(Arquivo arquivo, FileUpload uploadedFile) throws InfraException {
 		return processadorArquivo.processarArquivo(uploadedFile, arquivo, getErros());
 	}
-	
+
 	public List<Arquivo> buscarArquivos() {
 		return arquivoDAO.buscarTodosArquivos();
 	}

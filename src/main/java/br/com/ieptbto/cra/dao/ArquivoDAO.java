@@ -65,6 +65,13 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
+	/**
+	 * 
+	 * @param arquivo
+	 * @param usuarioAcao
+	 * @param erros
+	 * @return
+	 */
 	public Arquivo salvar(Arquivo arquivo, Usuario usuarioAcao, List<Exception> erros) {
 		Arquivo arquivoSalvo = new Arquivo();
 		Transaction transaction = getSession().beginTransaction();

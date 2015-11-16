@@ -15,6 +15,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -124,6 +125,10 @@ public class RemessaMediator {
 		Arquivo arquivo = new Arquivo();
 		arquivo.setUsuarioEnvio(usuario);
 		arquivo.setRemessas(new ArrayList<Remessa>());
+		arquivo.setHoraEnvio(new LocalTime());
+		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
+
 		logger.info("Iniciar processador do arquivo " + nomeArquivo);
 		processadorArquivo.processarArquivo(arquivoRecebido, usuario, nomeArquivo, arquivo, getErros());
 		logger.info("Fim processador do arquivo " + nomeArquivo);
@@ -280,8 +285,8 @@ public class RemessaMediator {
 	}
 
 	public Arquivo confirmacoesPendentes(Instituicao instituicao) {
-		List<Remessa> remessas = remessaDao.confirmacoesPendentes(instituicao); 
-//		List<Remessa> remessas = new ArrayList<Remessa>();
+		List<Remessa> remessas = remessaDao.confirmacoesPendentes(instituicao);
+		// List<Remessa> remessas = new ArrayList<Remessa>();
 		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
 		List<DesistenciaProtesto> desistenciaProtesto = remessaDao.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
 		remessaDesistenciaProtesto.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>(desistenciaProtesto));
@@ -321,7 +326,7 @@ public class RemessaMediator {
 		String pathDiretorioIdInstituicao = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId();
 		String pathDiretorioIdArquivo = pathDiretorioIdInstituicao + ConfiguracaoBase.BARRA + remessa.getArquivo().getId();
 		String pathDiretorioIdRemessa = pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + remessa.getId();
-		
+
 		File diretorioBaseArquivo = new File(ConfiguracaoBase.DIRETORIO_BASE);
 		File diretorioBaseInstituicao = new File(ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO);
 		File diretorioInstituicaoEnvio = new File(pathDiretorioIdInstituicao);
@@ -342,36 +347,39 @@ public class RemessaMediator {
 		}
 		if (!diretorioRemessa.exists()) {
 			diretorioRemessa.mkdirs();
-			
+
 			decodificarArquivosAnexos(pathDiretorioIdRemessa, remessa);
-		} 
-		
+		}
+
 		try {
 			if (diretorioRemessa.exists()) {
 				if (!Arrays.asList(diretorioRemessa.listFiles()).isEmpty()) {
-				
-					String nomeArquivoZip = remessa.getArquivo().getNomeArquivo().replaceAll(".", "_") + "_" + remessa.getCabecalho().getCodigoMunicipio();
-					FileOutputStream fileOutputStream = new FileOutputStream(pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+
+					String nomeArquivoZip = remessa.getArquivo().getNomeArquivo().replaceAll(".", "_") + "_"
+					        + remessa.getCabecalho().getCodigoMunicipio();
+					FileOutputStream fileOutputStream = new FileOutputStream(
+					        pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 					ZipOutputStream zipOut = new ZipOutputStream(fileOutputStream);
-					
-					for(File arq : diretorioRemessa.listFiles() ){
+
+					for (File arq : diretorioRemessa.listFiles()) {
 						zipOut.putNextEntry(new ZipEntry(arq.getName().toString()));
 						FileInputStream fis = new FileInputStream(arq);
 						int content;
 						while ((content = fis.read()) != -1) {
-							zipOut.write( content );
+							zipOut.write(content);
 						}
 						zipOut.closeEntry();
 					}
 					zipOut.close();
-					
-					return new File(pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+
+					return new File(
+					        pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
@@ -379,17 +387,19 @@ public class RemessaMediator {
 	private void decodificarArquivosAnexos(String path, Remessa remessa) {
 		try {
 			for (Titulo titulo : remessa.getTitulos()) {
-				TituloRemessa tituloRemessa = (TituloRemessa)titulo;
-				
+				TituloRemessa tituloRemessa = (TituloRemessa) titulo;
+
 				DecoderString decoderString = new DecoderString();
 				String nomeArquivoZip = tituloRemessa.getNomeDevedor() + "_"
-						+ tituloRemessa.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
-				
-				decoderString.decode(tituloRemessa.getComplementoRegistro(), ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() 
-						+ ConfiguracaoBase.BARRA + remessa.getArquivo().getNomeArquivo()
-						+ ConfiguracaoBase.BARRA + remessa.getCabecalho().getCodigoMunicipio() + ConfiguracaoBase.BARRA , nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+				        + tituloRemessa.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
+
+				decoderString.decode(tituloRemessa.getComplementoRegistro(),
+				        ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA
+				                + remessa.getArquivo().getNomeArquivo() + ConfiguracaoBase.BARRA
+				                + remessa.getCabecalho().getCodigoMunicipio() + ConfiguracaoBase.BARRA,
+				        nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 			}
-			
+
 		} catch (FileNotFoundException e) {
 			logger.info("O arquivo ZIP em anexo não pode ser criado.");
 			e.printStackTrace();
