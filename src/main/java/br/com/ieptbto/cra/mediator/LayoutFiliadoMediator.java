@@ -22,4 +22,8 @@ public class LayoutFiliadoMediator {
 	public void salvar(List<LayoutFiliado> listaCampos) {
 		layoutFiliadoDAO.salvar(listaCampos);
 	}
+
+	public List<LayoutFiliado> buscarEmpresasComLayout() {
+		return layoutFiliadoDAO.buscarEmpresas();
+	}
 }
