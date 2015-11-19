@@ -145,7 +145,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 								erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número "
 								        + pedido.getNumeroTitulo() + ", do protocolo " + pedido.getNumeroProtocolo() + " do dia "
 								        + DataUtil.localDateToString(pedido.getDataProtocolagem())
-								        + ", já foi enviado anteriormente em outro arquivo de título!"));
+								        + ", já foi enviado anteriormente em outro arquivo de desistência!"));
 
 							}
 						} else {

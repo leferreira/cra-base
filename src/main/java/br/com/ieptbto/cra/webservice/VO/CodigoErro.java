@@ -66,8 +66,9 @@ public enum CodigoErro {
 	        "Já passou do horário limite para envio da remessa."), JA_PASSOU_DO_HORÁRIO_LIMITE_PARA_ENVIO_DO_CANCELAMENTO(" 2140",
 	        "Já passou do horário limite para envio do cancelamento."), //
 	JA_PASSOU_DO_HORÁRIO_LIMITE_PARA_ENVIO_DA_DESISTENCIA("2141", "Já passou do horário limite para envio da desistência."), DADOS_DE_ENVIO_INVALIDOS(
-	        "0003", "Dados de envio inválidos");
-
+	        "0003", "Dados de envio inválidos"),
+	USUARIO_INSTITUICAO_DIFERENTE_ARQUIVO("0000000","O usuário informado não pode enviar este arquivo.");
+	
 	private String codigo;
 	private String descricao;
 

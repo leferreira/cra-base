@@ -80,6 +80,7 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 		if (nomePortador == null) {
 			nomePortador = StringUtils.EMPTY;
 		}
+		nomePortador.toUpperCase();
 		return nomePortador.trim();
 	}
 

@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "relatorio")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "descricao", "detalhamento", "codigoFinal", "descricaoFinal" })
-public class MensagemRetornoXml {
+public class MensagemXml {
 
 	@XmlElement(name = "descricao")
 	private Descricao descricao;
