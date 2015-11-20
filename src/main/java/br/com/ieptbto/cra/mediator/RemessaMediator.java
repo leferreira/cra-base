@@ -204,15 +204,31 @@ public class RemessaMediator {
 			comarcaDetalhamento.setCodigoMunicipio(remessa.getCabecalho().getCodigoMunicipio());
 			comarcaDetalhamento.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
 			comarcaDetalhamento.setRegistro(StringUtils.EMPTY);
-			comarcaDetalhamento.setCodigo(CodigoErro.SUCESSO.getCodigo());
-			comarcaDetalhamento.setOcorrencia(CodigoErro.SUCESSO.getDescricao());
+			
+			CodigoErro codigoErroSerpro = getCodigoErroSucessoSerpro(arquivo.getNomeArquivo());
+			comarcaDetalhamento.setCodigo(codigoErroSerpro.getCodigo());
+			comarcaDetalhamento.setOcorrencia(codigoErroSerpro.getDescricao());
 			comarcaDetalhamento.setTotalRegistros(remessa.getCabecalho().getQtdRegistrosRemessa());
 			listaComarcas.add(comarcaDetalhamento);
-			
 		}
 		
 		msgSucesso.setComarca(listaComarcas);
 		return msgSucesso;
+	}
+
+	private CodigoErro getCodigoErroSucessoSerpro(String nomeArquivo) {
+		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(nomeArquivo);
+		
+		CodigoErro codigoErro = null;
+		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
+			codigoErro = CodigoErro.SERPRO_SUCESSO_REMESSA;
+		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo) || 
+				TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)){
+			codigoErro = CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO;
+		} else {
+			codigoErro = CodigoErro.CRA_SUCESSO;
+		}
+		return codigoErro;
 	}
 
 	private String getMunicipio(Remessa remessa) {
