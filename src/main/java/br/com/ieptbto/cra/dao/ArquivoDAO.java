@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
@@ -252,32 +251,45 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Arquivo> buscarArquivosAvancadoConfirmacao(String nomeArquivo, Instituicao instituicao) {
+	public List<Arquivo> buscarArquivosAvancadoConfirmacao(String nomeArquivo, Instituicao instituicaoRecebe) {
 		Criteria criteria = getCriteria(Arquivo.class);
-
 		criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
-		criteria.createAlias("statusArquivo", "statusArquivo");
-		criteria.add(Restrictions.eq("statusArquivo.situacaoArquivo", SituacaoArquivo.AGUARDANDO));
-
+		criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
+		
 		List<Arquivo> arquivos = criteria.list();
-		if (arquivos != null) {
-			for (Arquivo arquivo : arquivos) {
-				Hibernate.initialize(arquivo);
-				for (Remessa remessa : arquivo.getRemessaBanco()) {
-					remessa.setTitulos(buscarTituloConfirmacaoBanco(remessa));
-				}
+		for (Arquivo arquivo : arquivos) {
+			arquivo.setRemessas(new ArrayList<Remessa>());
+			for (Remessa remessa : arquivo.getRemessaBanco()) {
+				Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
+				criteriaTitulo.createAlias("confirmacao", "confirmacao");
+				criteriaTitulo.add(Restrictions.eq("confirmacao.remessa", remessa));
+				
+				remessa.setTitulos(criteriaTitulo.list());
+				arquivo.getRemessas().add(remessa);
 			}
 		}
-
 		return arquivos;
 	}
-
-	private List<Titulo> buscarTituloConfirmacaoBanco(Remessa remessa) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("confirmacao", "confirmacao");
-		criteria.add(Restrictions.eq("confirmacao.remessa", remessa));
-
-		return criteria.list();
+	
+	@Transactional(readOnly = true)
+	public List<Arquivo> buscarArquivosAvancadoRetorno(String nomeArquivo, Instituicao instituicaoRecebe) {
+		Criteria criteria = getCriteria(Arquivo.class);
+		criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
+		criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
+		
+		List<Arquivo> arquivos = criteria.list();
+		for (Arquivo arquivo : arquivos) {
+			arquivo.setRemessas(new ArrayList<Remessa>());
+			for (Remessa remessa : arquivo.getRemessaBanco()) {
+				Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
+				criteriaTitulo.createAlias("retorno", "retorno");
+				criteriaTitulo.add(Restrictions.eq("retorno.remessa", remessa));
+				
+				remessa.setTitulos(criteriaTitulo.list());
+				arquivo.getRemessas().add(remessa);
+			}
+		}
+		return arquivos;
 	}
 
 	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos,

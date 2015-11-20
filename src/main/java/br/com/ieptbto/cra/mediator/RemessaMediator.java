@@ -346,12 +346,14 @@ public class RemessaMediator {
 	}
 
 	public List<RemessaVO> buscarArquivos(String nomeArquivo, Instituicao instituicao) {
+		List<Arquivo> arquivos = new ArrayList<Arquivo>();
+		
 		if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
-			List<Arquivo> arquivos = arquivoDAO.buscarArquivosAvancadoConfirmacao(nomeArquivo, instituicao);
-			return conversorRemessaArquivo.converter(arquivos);
+			arquivos = arquivoDAO.buscarArquivosAvancadoConfirmacao(nomeArquivo, instituicao);
+		} else if (nomeArquivo.startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
+			arquivos = arquivoDAO.buscarArquivosAvancadoRetorno(nomeArquivo, instituicao);
 		}
-
-		return null;
+		return conversorRemessaArquivo.converter(arquivos);
 	}
 
 	public void alterarParaDevolvidoPelaCRA(Remessa remessa) {
