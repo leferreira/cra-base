@@ -34,7 +34,7 @@ import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.webservice.VO.Descricao;
 import br.com.ieptbto.cra.webservice.VO.Detalhamento;
 import br.com.ieptbto.cra.webservice.VO.Mensagem;
-import br.com.ieptbto.cra.webservice.VO.MensagemRetornoXml;
+import br.com.ieptbto.cra.webservice.VO.MensagemXml;
 
 /**
  * @author thasso
@@ -69,7 +69,7 @@ public class ConfirmacaoMediator {
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public MensagemRetornoXml processarXML(ConfirmacaoVO confirmacaoVO, Usuario usuario, String nomeArquivo) {
+	public MensagemXml processarXML(ConfirmacaoVO confirmacaoVO, Usuario usuario, String nomeArquivo) {
 		this.arquivo = new Arquivo();
 		getArquivo().setDataEnvio(new LocalDate());
 		getArquivo().setHoraEnvio(new LocalTime());
@@ -97,9 +97,9 @@ public class ConfirmacaoMediator {
 		return arquivoDAO.salvar(arquivo, usuario, new ArrayList<Exception>());
 	}
 
-	private MensagemRetornoXml gerarResposta(Arquivo arquivo, Usuario usuario) {
+	private MensagemXml gerarResposta(Arquivo arquivo, Usuario usuario) {
 		List<Mensagem> mensagens = new ArrayList<Mensagem>();
-		MensagemRetornoXml mensagemRetorno = new MensagemRetornoXml();
+		MensagemXml mensagemRetorno = new MensagemXml();
 		Descricao desc = new Descricao();
 		Detalhamento detal = new Detalhamento();
 		detal.setMensagem(mensagens);

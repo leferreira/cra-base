@@ -65,6 +65,7 @@ public class RegraValidaTipoArquivoTXT extends RegrasDeEntrada {
 			logger.error(Erro.O_ARQUIVO_NAO_E_UM_TIPO_TXT_VALIDO.getMensagemErro());
 			getErros().add(new ValidacaoErroException(arquivo.getName(), Erro.TAMANHO_LINHA_FORA_DO_PADRAO, getNumeroLinha()));
 		} else if (arquivo.getName().contains("DP") && linha.length() != ConfiguracaoBase.TAMANHO_PADRAO_LINHA_DESISTENCIA_PROTESTO) {
+			System.out.println(linha.length());
 			logger.error(Erro.O_ARQUIVO_NAO_E_UM_TIPO_TXT_VALIDO.getMensagemErro());
 			getErros().add(new ValidacaoErroException(arquivo.getName(), Erro.TAMANHO_LINHA_FORA_DO_PADRAO, getNumeroLinha()));
 		}

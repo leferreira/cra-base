@@ -12,11 +12,14 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
+import br.com.ieptbto.cra.conversor.arquivo.BigDecimalConversor;
 import br.com.ieptbto.cra.conversor.arquivo.CampoArquivo;
 import br.com.ieptbto.cra.conversor.arquivo.FabricaConversor;
 import br.com.ieptbto.cra.entidade.Confirmacao;
+import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
+import br.com.ieptbto.cra.util.DataUtil;
 
 /**
  * 
@@ -681,7 +684,23 @@ public class TituloVO extends AbstractArquivoVO {
 				propertyAccessTituloVO.setPropertyValue(propertyName, valor.trim());
 			}
 		}
-
+		
+		tituloVO.setCodigoCartorio(titulo.getCodigoCartorio().toString());
+		tituloVO.setNumeroProtocoloCartorio(titulo.getNumeroProtocoloCartorio());
+		tituloVO.setDataProtocolo(DataUtil.localDateToStringddMMyyyy(titulo.getDataProtocolo()));
+		tituloVO.setTipoOcorrencia(titulo.getTipoOcorrencia());
+		tituloVO.setDataOcorrencia(DataUtil.localDateToStringddMMyyyy(titulo.getDataOcorrencia()));
+		tituloVO.setCodigoIrregularidade(titulo.getCodigoIrregularidade());
+		
+		if (titulo.getTipoOcorrencia() != null) {
+			if (titulo.getTipoOcorrencia().trim().equals("") || 
+					titulo.getTipoOcorrencia().equals("0")) {
+				tituloVO.setDataOcorrencia("00000000");
+				tituloVO.setCodigoIrregularidade("00");
+			} else {
+			tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoParaString(titulo.getValorGravacaoEletronica()));
+			}
+		}
 		return tituloVO;
 	}
 
@@ -702,6 +721,69 @@ public class TituloVO extends AbstractArquivoVO {
 			}
 		}
 
+		return tituloVO;
+	}
+	
+	public static TituloVO parseTitulo(Retorno titulo) {
+		TituloVO tituloVO = new TituloVO();
+		BeanWrapper propertyAccessCCR = PropertyAccessorFactory.forBeanPropertyAccess(titulo);
+		BeanWrapper propertyAccessTituloVO = PropertyAccessorFactory.forBeanPropertyAccess(tituloVO);
+		PropertyDescriptor[] propertyDescriptors = propertyAccessTituloVO.getPropertyDescriptors();
+		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+			String propertyName = propertyDescriptor.getName();
+			if (propertyAccessCCR.isReadableProperty(propertyName) && propertyAccessTituloVO.isWritableProperty(propertyName)) {
+				String valor = "";
+				if (propertyAccessCCR.getPropertyValue(propertyName) != null) {
+					valor = getValorString(propertyAccessCCR.getPropertyValue(propertyName),
+					        new CampoArquivo(propertyName, tituloVO.getClass()));
+				}
+				propertyAccessTituloVO.setPropertyValue(propertyName, valor.trim());
+			}
+		}
+
+		tituloVO.setNomeCedenteFavorecido(StringUtils.leftPad(" ", 45));
+		tituloVO.setNomeSacadorVendedor(StringUtils.leftPad(" ", 45));
+		tituloVO.setDocumentoSacador(StringUtils.leftPad(" ", 14));
+		tituloVO.setEnderecoSacadorVendedor(StringUtils.leftPad(" ", 45));
+		tituloVO.setCepSacadorVendedor(StringUtils.leftPad(" ", 8));
+		tituloVO.setCidadeSacadorVendedor(StringUtils.leftPad(" ", 20));
+		tituloVO.setUfSacadorVendedor(StringUtils.leftPad(" ", 2));
+		tituloVO.setEspecieTitulo(StringUtils.leftPad(" ", 3));
+		tituloVO.setNumeroTitulo(StringUtils.leftPad(" ", 11));
+		tituloVO.setDataEmissaoTitulo(StringUtils.leftPad(" ", 8));
+		tituloVO.setDataVencimentoTitulo(StringUtils.leftPad(" ", 8));
+		tituloVO.setPracaProtesto(StringUtils.leftPad(" ", 20));
+		tituloVO.setTipoEndoso(StringUtils.leftPad(" ", 1));
+		tituloVO.setInformacaoSobreAceite(StringUtils.leftPad(" ", 1));
+		tituloVO.setNumeroControleDevedor(StringUtils.leftPad(" ", 1));
+		tituloVO.setNomeDevedor(StringUtils.leftPad(" ", 45));
+		tituloVO.setTipoIdentificacaoDevedor(StringUtils.leftPad(" ", 3));
+		tituloVO.setNumeroIdentificacaoDevedor(StringUtils.leftPad(" ", 14));
+		tituloVO.setDocumentoDevedor(StringUtils.leftPad(" ", 11));
+		tituloVO.setEnderecoDevedor(StringUtils.leftPad(" ", 45));
+		tituloVO.setCepDevedor(StringUtils.leftPad(" ", 8));
+		tituloVO.setCidadeDevedor(StringUtils.leftPad(" ", 20));
+		tituloVO.setUfDevedor(StringUtils.leftPad(" ", 2));
+		tituloVO.setNumeroOperacaoBanco(StringUtils.leftPad(" ", 5));
+		tituloVO.setNumeroContratoBanco(StringUtils.leftPad(" ", 15));
+		tituloVO.setNumeroParcelaContrato(StringUtils.leftPad(" ", 3));
+		tituloVO.setTipoLetraCambio(StringUtils.leftPad(" ", 1));
+		tituloVO.setProtestoMotivoFalencia(StringUtils.leftPad(" ", 1));
+		tituloVO.setInstrumentoProtesto(StringUtils.leftPad(" ", 1));
+
+		tituloVO.setValorCustaCartorio(new BigDecimalConversor().getValorConvertidoParaString(titulo.getValorCustaCartorio()));
+		tituloVO.setTipoOcorrencia(titulo.getTipoOcorrencia());
+		tituloVO.setDataOcorrencia(DataUtil.localDateToStringddMMyyyy(titulo.getDataOcorrencia()));
+		tituloVO.setCodigoIrregularidade(titulo.getCodigoIrregularidade());
+		tituloVO.setCodigoCartorio(titulo.getCodigoCartorio().toString());
+		tituloVO.setNumeroProtocoloCartorio(titulo.getNumeroProtocoloCartorio());
+		tituloVO.setDataProtocolo(DataUtil.localDateToStringddMMyyyy(titulo.getDataProtocolo()));
+		
+		tituloVO.setValorDemaisDespesas(new BigDecimalConversor().getValorConvertidoParaString(titulo.getValorDemaisDespesas()));			
+		tituloVO.setNumeroSequencialArquivo(titulo.getNumeroSequencialArquivo());
+		tituloVO.setDeclaracaoPortador(" ");
+		tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoParaString(titulo.getValorGravacaoEletronica()));
+		
 		return tituloVO;
 	}
 

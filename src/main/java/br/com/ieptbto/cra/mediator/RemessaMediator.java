@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -38,6 +39,7 @@ import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
@@ -47,10 +49,13 @@ import br.com.ieptbto.cra.exception.XmlCraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.DecoderString;
+import br.com.ieptbto.cra.webservice.VO.CodigoErro;
+import br.com.ieptbto.cra.webservice.VO.ComarcaDetalhamentoSerpro;
 import br.com.ieptbto.cra.webservice.VO.Descricao;
 import br.com.ieptbto.cra.webservice.VO.Detalhamento;
 import br.com.ieptbto.cra.webservice.VO.Mensagem;
-import br.com.ieptbto.cra.webservice.VO.MensagemRetornoXml;
+import br.com.ieptbto.cra.webservice.VO.MensagemXml;
+import br.com.ieptbto.cra.webservice.VO.MensagemXmlSerpro;
 
 /**
  * @author Thasso Araújo
@@ -110,10 +115,20 @@ public class RemessaMediator {
 		return conversorRemessaArquivo.converterRemessaVO(remessa);
 	}
 
+	/**
+	 * 
+	 * @param arquivoRecebido
+	 * @param usuario
+	 * @param nomeArquivo
+	 * @return object
+	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public MensagemRetornoXml processarArquivoXML(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
+	public Object processarArquivoXML(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
 		Arquivo arquivo = processarArquivoXMLManual(arquivoRecebido, usuario, nomeArquivo);
 
+		if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.SERPRO)) {
+			return gerarRespostaSerpro(arquivo, usuario);
+		}
 		return gerarResposta(arquivo, usuario);
 	}
 
@@ -140,9 +155,9 @@ public class RemessaMediator {
 		return arquivo;
 	}
 
-	private MensagemRetornoXml gerarResposta(Arquivo arquivo, Usuario usuario) {
+	private MensagemXml gerarResposta(Arquivo arquivo, Usuario usuario) {
 		List<Mensagem> mensagens = new ArrayList<Mensagem>();
-		MensagemRetornoXml mensagemRetorno = new MensagemRetornoXml();
+		MensagemXml mensagemRetorno = new MensagemXml();
 		Descricao desc = new Descricao();
 		Detalhamento detal = new Detalhamento();
 		detal.setMensagem(mensagens);
@@ -177,6 +192,43 @@ public class RemessaMediator {
 		}
 
 		return mensagemRetorno;
+	}
+	
+	private MensagemXmlSerpro gerarRespostaSerpro(Arquivo arquivo, Usuario usuario) {
+		MensagemXmlSerpro msgSucesso = new MensagemXmlSerpro();
+		msgSucesso.setNomeArquivo(arquivo.getNomeArquivo());
+		
+		List<ComarcaDetalhamentoSerpro> listaComarcas = new ArrayList<ComarcaDetalhamentoSerpro>();
+		for (Remessa remessa: arquivo.getRemessas()) {
+			ComarcaDetalhamentoSerpro comarcaDetalhamento = new ComarcaDetalhamentoSerpro();
+			comarcaDetalhamento.setCodigoMunicipio(remessa.getCabecalho().getCodigoMunicipio());
+			comarcaDetalhamento.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
+			comarcaDetalhamento.setRegistro(StringUtils.EMPTY);
+			
+			CodigoErro codigoErroSerpro = getCodigoErroSucessoSerpro(arquivo.getNomeArquivo());
+			comarcaDetalhamento.setCodigo(codigoErroSerpro.getCodigo());
+			comarcaDetalhamento.setOcorrencia(codigoErroSerpro.getDescricao());
+			comarcaDetalhamento.setTotalRegistros(remessa.getCabecalho().getQtdRegistrosRemessa());
+			listaComarcas.add(comarcaDetalhamento);
+		}
+		
+		msgSucesso.setComarca(listaComarcas);
+		return msgSucesso;
+	}
+
+	private CodigoErro getCodigoErroSucessoSerpro(String nomeArquivo) {
+		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(nomeArquivo);
+		
+		CodigoErro codigoErro = null;
+		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
+			codigoErro = CodigoErro.SERPRO_SUCESSO_REMESSA;
+		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo) || 
+				TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)){
+			codigoErro = CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO;
+		} else {
+			codigoErro = CodigoErro.CRA_SUCESSO;
+		}
+		return codigoErro;
 	}
 
 	private String getMunicipio(Remessa remessa) {
@@ -310,12 +362,14 @@ public class RemessaMediator {
 	}
 
 	public List<RemessaVO> buscarArquivos(String nomeArquivo, Instituicao instituicao) {
+		List<Arquivo> arquivos = new ArrayList<Arquivo>();
+		
 		if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
-			List<Arquivo> arquivos = arquivoDAO.buscarArquivosAvancadoConfirmacao(nomeArquivo, instituicao);
-			return conversorRemessaArquivo.converter(arquivos);
+			arquivos = arquivoDAO.buscarArquivosAvancadoConfirmacao(nomeArquivo, instituicao);
+		} else if (nomeArquivo.startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
+			arquivos = arquivoDAO.buscarArquivosAvancadoRetorno(nomeArquivo, instituicao);
 		}
-
-		return null;
+		return conversorRemessaArquivo.converter(arquivos);
 	}
 
 	public void alterarParaDevolvidoPelaCRA(Remessa remessa) {

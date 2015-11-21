@@ -18,10 +18,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
+import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.TipoCampo51;
 
 @Entity
@@ -54,6 +56,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	private List<Usuario> listaUsuarios;
 	private Municipio municipio;
 	private TipoCampo51 tipoCampo51;
+	private LayoutPadraoXML layoutPadraoXML;
 
 	@Id
 	@Column(name = "ID_INSTITUICAO", columnDefinition = "serial")
@@ -79,6 +82,9 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 
 	@Column(name = "CODIGO_COMPENSACAO", length = 3)
 	public String getCodigoCompensacao() {
+		if (codigoCompensacao == null) {
+			codigoCompensacao = StringUtils.EMPTY;
+		}
 		return codigoCompensacao;
 	}
 
@@ -328,4 +334,19 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 			setPermitidoAnexo(false);
 		}
 	}
+
+	@Column(name="LAYOUT_PADRAO_XML")
+	@Enumerated(EnumType.STRING)
+	public LayoutPadraoXML getLayoutPadraoXML() {
+		if (layoutPadraoXML == null) {
+			layoutPadraoXML = LayoutPadraoXML.CRA_NACIONAL;
+		}
+		return layoutPadraoXML;
+	}
+
+	public void setLayoutPadraoXML(LayoutPadraoXML layoutPadraoXML) {
+		this.layoutPadraoXML = layoutPadraoXML;
+	}
+	
+	
 }

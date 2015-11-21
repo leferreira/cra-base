@@ -257,6 +257,11 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 
 	@Column(name = "COMPLEMENTO_REGISTRO", length=655360)
 	public String getComplementoRegistro() {
+		if (complementoRegistro != null) {
+			if (complementoRegistro.length() > 19){
+				complementoRegistro = StringUtils.EMPTY;
+			}
+		}
 		return complementoRegistro;
 	}
 

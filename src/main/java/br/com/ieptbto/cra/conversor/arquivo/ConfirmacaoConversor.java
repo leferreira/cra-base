@@ -49,16 +49,16 @@ public class ConfirmacaoConversor extends AbstractConversorArquivo<TituloVO, Con
 		tituloVO.setTipoOcorrencia(entidade.getTipoOcorrencia());
 		tituloVO.setDataOcorrencia(DataUtil.localDateToStringddMMyyyy(entidade.getDataOcorrencia()));
 		tituloVO.setCodigoIrregularidade(entidade.getCodigoIrregularidade());
-		tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoParaString(entidade.getValorGravacaoEletronica()));
 		
 		if (entidade.getTipoOcorrencia() != null) {
 			if (entidade.getTipoOcorrencia().trim().equals("") || 
 					entidade.getTipoOcorrencia().equals("0")) {
 				tituloVO.setDataOcorrencia("00000000");
 				tituloVO.setCodigoIrregularidade("00");
+			} else {
+				tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoParaString(entidade.getValorGravacaoEletronica()));
 			}
 		}
-		
 		return tituloVO;
 	}
 
