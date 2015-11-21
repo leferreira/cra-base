@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -64,8 +65,13 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
 		criteria.createAlias("municipio", "municipio");
-		criteria.add(Restrictions.like("municipio.nomeMunicipio", nomeMunicipio, MatchMode.EXACT));
 		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
+
+		Criterion restrict1 = Restrictions.ilike("municipio.nomeMunicipio", nomeMunicipio, MatchMode.EXACT);
+		Criterion restrict2 = Restrictions.ilike("municipio.nomeMunicipioSemAcento", nomeMunicipio, MatchMode.EXACT);
+
+		criteria.add(Restrictions.or(restrict1, restrict2));
+
 		return Instituicao.class.cast(criteria.uniqueResult());
 	}
 

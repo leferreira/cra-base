@@ -23,9 +23,10 @@ public class BigDecimalConversor extends AbstractConversor<BigDecimal> {
 	@Override
 	public BigDecimal getValorConvertido(String valor) {
 		try {
-			if (valor == null || StringUtils.trim(valor).isEmpty() ) {
+			if (valor == null || StringUtils.trim(valor).isEmpty()) {
 				return BigDecimal.ZERO;
 			}
+			valor = valor.replace(",", "");
 			BigDecimal retorno = new BigDecimal(StringUtils.trim(valor));
 			if (BigDecimal.ZERO.equals(retorno)) {
 				return BigDecimal.ZERO;

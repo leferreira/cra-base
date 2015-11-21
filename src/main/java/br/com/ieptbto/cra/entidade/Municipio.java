@@ -21,6 +21,7 @@ public class Municipio extends AbstractEntidade<Municipio> {
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private String nomeMunicipio;
+	private String nomeMunicipioSemAcento;
 	private String uf;
 	private String codigoIBGE;
 	private boolean situacao;
@@ -50,6 +51,15 @@ public class Municipio extends AbstractEntidade<Municipio> {
 	@Column(name = "SITUACAO")
 	public boolean isSituacao() {
 		return situacao;
+	}
+
+	@Column(name = "NOME_MUNICIPIO_SEM_ACENTO")
+	public String getNomeMunicipioSemAcento() {
+		return nomeMunicipioSemAcento;
+	}
+
+	public void setNomeMunicipioSemAcento(String nomeMunicipioSemAcento) {
+		this.nomeMunicipioSemAcento = nomeMunicipioSemAcento;
 	}
 
 	public void setId(int id) {

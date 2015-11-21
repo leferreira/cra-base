@@ -43,13 +43,17 @@ public class MunicipioMediator {
 	}
 
 	public Municipio buscarMunicipio(String nomeMunicipio) {
+		if (nomeMunicipio == null) {
+			return null;
+		}
+
 		return municipioDao.buscarMunicipioPorNome(nomeMunicipio);
 	}
 
 	public List<Municipio> listarTodos() {
 		return municipioDao.listarTodos();
 	}
-	
+
 	public List<Municipio> getMunicipiosTocantins() {
 		return municipioDao.listarTodosTocantins();
 	}

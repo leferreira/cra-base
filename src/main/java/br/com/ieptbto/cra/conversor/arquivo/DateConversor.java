@@ -25,6 +25,7 @@ public class DateConversor extends AbstractConversor<LocalDate> {
 			if (StringUtils.isBlank(valor) || valor.equals(ZEROS)) {
 				return null;
 			}
+			valor = valor.replace("/", "");
 			return DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, valor);
 		} catch (IllegalArgumentException e) {
 			if (getAnotacaoAtributo().obrigatoriedade()) {

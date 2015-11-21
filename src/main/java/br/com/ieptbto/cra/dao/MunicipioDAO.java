@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -46,7 +47,9 @@ public class MunicipioDAO extends AbstractBaseDAO {
 
 	public Municipio buscarMunicipioPorNome(String nomeMunicipio) {
 		Criteria criteria = getCriteria(Municipio.class);
-		criteria.add(Restrictions.like("nomeMunicipio", nomeMunicipio, MatchMode.EXACT));
+		Criterion restrict1 = Restrictions.ilike("nomeMunicipio", nomeMunicipio, MatchMode.EXACT);
+		Criterion restrict2 = Restrictions.ilike("nomeMunicipioSemAcento", nomeMunicipio, MatchMode.EXACT);
+		criteria.add(Restrictions.or(restrict1, restrict2));
 
 		return Municipio.class.cast(criteria.uniqueResult());
 	}
@@ -57,7 +60,7 @@ public class MunicipioDAO extends AbstractBaseDAO {
 		criteria.addOrder(Order.asc("nomeMunicipio"));
 		return criteria.list();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<Municipio> listarTodosTocantins() {
 		Criteria criteria = getCriteria(Municipio.class);

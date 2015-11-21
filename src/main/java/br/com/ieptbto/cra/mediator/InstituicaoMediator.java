@@ -76,11 +76,11 @@ public class InstituicaoMediator {
 	public List<Instituicao> getInstituicoesFinanceiras() {
 		return instituicaoDAO.getInstituicoesFinanceiras();
 	}
-	
+
 	public List<Instituicao> getInstituicoesFinanceirasEConvenios() {
 		return instituicaoDAO.getInstituicoesFinanceirasEConvenios();
 	}
-	
+
 	public List<Instituicao> getConvenios() {
 		return instituicaoDAO.getConvenios();
 	}
@@ -93,5 +93,9 @@ public class InstituicaoMediator {
 		Instituicao instituicao = new Instituicao();
 		instituicao.setNomeFantasia("CRA");
 		return instituicaoDAO.buscarInstituicao(instituicao);
+	}
+
+	public Instituicao buscarInstituicaoPorNomeCidade(String cidade) {
+		return instituicaoDAO.buscarCartorioPorMunicipio(cidade);
 	}
 }

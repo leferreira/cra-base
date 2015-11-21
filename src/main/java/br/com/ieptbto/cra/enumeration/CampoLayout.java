@@ -8,7 +8,7 @@ import br.com.ieptbto.cra.exception.InfraException;
  *
  */
 public enum CampoLayout implements CraEnum {
-	IDENTIFICACAOREGISTRO("1", "identificacaoRegistro - 1 - INT"), CODIGOPORTADOR("2", "codigoPortador"), //
+	IDENTIFICACAOREGISTRO("1", "identificacaoRegistro"), CODIGOPORTADOR("2", "codigoPortador"), //
 	AGENCIACODIGOCEDENTE("3", "agenciaCodigoCedente"), NOMECEDENTEFAVORECIDO("4", "nomeCedenteFavorecido"), //
 	NOMESACADORVENDEDOR("5", "nomeSacadorVendedor"), DOCUMENTOSACADOR("6", "documentoSacador"), //
 	ENDERECOSACADORVENDEDOR("7", "enderecoSacadorVendedor"), CEPSACADORVENDEDOR("8", "cepSacadorVendedor"), //

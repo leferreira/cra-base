@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -52,6 +53,15 @@ public class LayoutFiliadoDao extends AbstractBaseDAO {
 		}
 
 		return lista;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<LayoutFiliado> buscarLayout(Instituicao instituicao) {
+		Criteria criteria = getCriteria(LayoutFiliado.class);
+		criteria.createAlias("empresa", "empresa");
+		criteria.add(Restrictions.eq("empresa", instituicao));
+
+		return criteria.list();
 	}
 
 }
