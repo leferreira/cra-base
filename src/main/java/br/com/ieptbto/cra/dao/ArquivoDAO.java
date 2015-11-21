@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Historico;
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -260,9 +261,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		for (Arquivo arquivo : arquivos) {
 			arquivo.setRemessas(new ArrayList<Remessa>());
 			for (Remessa remessa : arquivo.getRemessaBanco()) {
-				Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
-				criteriaTitulo.createAlias("confirmacao", "confirmacao");
-				criteriaTitulo.add(Restrictions.eq("confirmacao.remessa", remessa));
+				Criteria criteriaTitulo = getCriteria(Confirmacao.class);
+				criteriaTitulo.add(Restrictions.eq("remessa", remessa));
 				
 				remessa.setTitulos(criteriaTitulo.list());
 				arquivo.getRemessas().add(remessa);
@@ -281,9 +281,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		for (Arquivo arquivo : arquivos) {
 			arquivo.setRemessas(new ArrayList<Remessa>());
 			for (Remessa remessa : arquivo.getRemessaBanco()) {
-				Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
-				criteriaTitulo.createAlias("retorno", "retorno");
-				criteriaTitulo.add(Restrictions.eq("retorno.remessa", remessa));
+				Criteria criteriaTitulo = getCriteria(Retorno.class);
+				criteriaTitulo.add(Restrictions.eq("remessa", remessa));
 				
 				remessa.setTitulos(criteriaTitulo.list());
 				arquivo.getRemessas().add(remessa);

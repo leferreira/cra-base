@@ -12,6 +12,7 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Rodape;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
@@ -47,12 +48,14 @@ public class ConversorRemessaArquivo {
 
 	private List<TituloVO> converterTitulos(List<Titulo> titulos) {
 		List<TituloVO> titulosVO = new ArrayList<TituloVO>();
-		TituloVO tituloVO;
+		TituloVO tituloVO = null;
 		for (Titulo titulo : titulos) {
 			if (titulo instanceof TituloRemessa) {
 				tituloVO = TituloVO.parseTitulo(TituloRemessa.class.cast(titulo));
-			} else {
+			} else if (titulo instanceof Confirmacao) {
 				tituloVO = TituloVO.parseTitulo(Confirmacao.class.cast(titulo));
+			} else if (titulo instanceof Retorno) {
+				tituloVO = TituloVO.parseTitulo(Retorno.class.cast(titulo));
 			}
 
 			titulosVO.add(tituloVO);
@@ -89,7 +92,6 @@ public class ConversorRemessaArquivo {
 		for (Arquivo arquivo : arquivos) {
 			remessasVO = converterRemessa(arquivo.getRemessaBanco());
 		}
-
 		return remessasVO;
 	}
 
