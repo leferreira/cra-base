@@ -57,7 +57,7 @@ public class ArquivoFiliadoMediator {
 
 		if (!verificarSeInstituicaoPossuiLayout(usuario.getInstituicao())) {
 			logger.error("Olá " + usuario.getNome() + ", Não existe layout cadastrado para sua instituicao");
-			throw new InfraException("Olá " + usuario.getNome() + ", Não existe layout cadastrado para sua instituicao");
+			throw new InfraException("Olá " + usuario.getNome() + ", Não há layout cadastrado para sua instituicao");
 
 		}
 
