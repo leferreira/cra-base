@@ -26,6 +26,9 @@ public class StringConversor extends AbstractConversor<String> {
 	public String getValorConvertidoParaString(String objeto) {
 		int tamanho = getAnotacaoAtributo().tamanho();
 		if (objeto != null) {
+			if (objeto.length() > tamanho) {
+				return objeto.substring(0, tamanho);
+			}
 			return StringUtils.rightPad(objeto, tamanho, ' ');
 		}
 		return StringUtils.repeat(" ", tamanho);

@@ -39,11 +39,15 @@ public abstract class AbstractConversorArquivo<R extends AbstractArquivoVO, E ex
 			String propertyName = propertyDescriptor.getName();
 			if (propertyAccessCRA.isReadableProperty(propertyName) && propertyAccessArquivo.isWritableProperty(propertyName)) {
 				Object valor = propertyAccessCRA.getPropertyValue(propertyName);
-				if (String.class.isInstance(valor)) {
-					propertyAccessArquivo.setPropertyValue(propertyName, valor);
-				} else {
-					propertyAccessArquivo.setPropertyValue(propertyName, converterValor(valor, new CampoArquivo(propertyName, arquivoVO)));
-				}
+				// if (String.class.isInstance(valor)) {
+				// // propertyAccessArquivo.setPropertyValue(propertyName,
+				// // valor);
+				// propertyAccessArquivo.setPropertyValue(propertyName,
+				// converterValor(valor, new CampoArquivo(propertyName,
+				// arquivoVO)));
+				// } else {
+				propertyAccessArquivo.setPropertyValue(propertyName, converterValor(valor, new CampoArquivo(propertyName, arquivoVO)));
+				// }
 			}
 
 		}

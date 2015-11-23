@@ -1,5 +1,6 @@
 package br.com.ieptbto.cra.dao;
 
+import java.text.Normalizer;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -24,12 +25,18 @@ public class MunicipioDAO extends AbstractBaseDAO {
 		Municipio novoMunicipio = new Municipio();
 		Transaction transaction = getBeginTransation();
 		try {
+			municipio.setNomeMunicipioSemAcento(getNomeMunicipioSemAcento(municipio.getNomeMunicipio()));
 			novoMunicipio = save(municipio);
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
 		}
 		return novoMunicipio;
+	}
+
+	private String getNomeMunicipioSemAcento(String nomeMunicipio) {
+		nomeMunicipio = Normalizer.normalize(nomeMunicipio, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+		return nomeMunicipio.toUpperCase();
 	}
 
 	public Municipio alterar(Municipio municipio) {

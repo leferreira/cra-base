@@ -224,6 +224,12 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		titulo.setPracaProtesto(titulo.getCidadeDevedor());
 		titulo.setSaldoTitulo(titulo.getValorTitulo());
 		titulo.setIdentificacaoRegistro(TipoRegistro.TITULO);
+
+		titulo.setCidadeSacadorVendedor(getInstituicao().getMunicipio().getNomeMunicipio());
+		titulo.setEnderecoSacadorVendedor(getInstituicao().getEndereco());
+		titulo.setDocumentoSacador(getInstituicao().getCnpj());
+		titulo.setUfSacadorVendedor(getInstituicao().getMunicipio().getUf());
+
 		titulo.setRemessa(remessa);
 		return titulo;
 	}

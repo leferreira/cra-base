@@ -121,6 +121,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		RemessaVO remessaVO = new RemessaVO();
 		remessaVO.setTitulos(new ArrayList<TituloVO>());
 		BigDecimal valorTotalTitulos = BigDecimal.ZERO;
+
 		remessaVO.setCabecalho(new CabecalhoConversor().converter(getRemessa().getCabecalho(), CabecalhoVO.class));
 		remessaVO.setRodapes(new RodapeConversor().converter(getRemessa().getRodape(), RodapeVO.class));
 
@@ -193,12 +194,14 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 		gerarTXT(remessasVO);
 	}
-	
+
 	private String somatorioSegurancaQuantidadeRemessa(RemessaVO remessaVO) {
 		int somatorioQtdRemessa = 0;
 		if (remessaVO.getCabecalho() != null) {
-			somatorioQtdRemessa = Integer.parseInt(remessaVO.getCabecalho().getQtdRegistrosRemessa()) + Integer.parseInt(remessaVO.getCabecalho().getQtdTitulosRemessa()) + 
-					Integer.parseInt(remessaVO.getCabecalho().getQtdIndicacoesRemessa()) + Integer.parseInt(remessaVO.getCabecalho().getQtdOriginaisRemessa());
+			somatorioQtdRemessa = Integer.parseInt(remessaVO.getCabecalho().getQtdRegistrosRemessa())
+			        + Integer.parseInt(remessaVO.getCabecalho().getQtdTitulosRemessa())
+			        + Integer.parseInt(remessaVO.getCabecalho().getQtdIndicacoesRemessa())
+			        + Integer.parseInt(remessaVO.getCabecalho().getQtdOriginaisRemessa());
 		}
 		return Integer.toString(somatorioQtdRemessa);
 	}
