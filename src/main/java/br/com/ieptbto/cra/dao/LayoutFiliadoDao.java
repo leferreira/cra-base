@@ -64,4 +64,11 @@ public class LayoutFiliadoDao extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
+	public boolean isLayout(Instituicao instituicao) {
+		if (!buscarLayout(instituicao).isEmpty()) {
+			return true;
+		}
+		return false;
+	}
+
 }

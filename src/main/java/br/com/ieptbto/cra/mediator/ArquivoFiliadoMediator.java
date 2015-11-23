@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -13,11 +14,15 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.conversor.arquivo.filiado.ConversorArquivoFiliado;
 import br.com.ieptbto.cra.dao.ArquivoDAO;
+import br.com.ieptbto.cra.dao.LayoutFiliadoDao;
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -34,12 +39,28 @@ public class ArquivoFiliadoMediator {
 	ConversorArquivoFiliado conversorArquivoFiliado;
 	@Autowired
 	ArquivoDAO arquivoDAO;
+	@Autowired
+	LayoutFiliadoDao layoutFiliadoDao;
+
+	protected static final Logger logger = Logger.getLogger(ArquivoFiliadoMediator.class);
 
 	private Usuario usuario;
 	private Arquivo arquivo;
 	private List<Exception> erros;
 
 	public ArquivoFiliadoMediator salvarArquivo(FileUploadField file, Usuario usuario) {
+
+		if (!verificarPermissaoDeEnvio(usuario, arquivo)) {
+			logger.error("O usuário " + usuario.getNome() + " não pode enviar arquivos " + file.getInputName());
+			throw new InfraException("O usuário " + usuario.getNome() + " não pode enviar arquivos " + file.getInputName());
+		}
+
+		if (!verificarSeInstituicaoPossuiLayout(usuario.getInstituicao())) {
+			logger.error("Olá " + usuario.getNome() + ", Não existe layout cadastrado para sua instituicao");
+			throw new InfraException("Olá " + usuario.getNome() + ", Não existe layout cadastrado para sua instituicao");
+
+		}
+
 		setUsuario(usuario);
 		setArquivo(new Arquivo());
 		getArquivo().setNomeArquivo(getNomeArquivo());
@@ -57,6 +78,15 @@ public class ArquivoFiliadoMediator {
 		return this;
 	}
 
+	/**
+	 * 
+	 * @param instituicao
+	 * @return true se exitir layout para a instituição
+	 */
+	private boolean verificarSeInstituicaoPossuiLayout(Instituicao instituicao) {
+		return layoutFiliadoDao.isLayout(instituicao);
+	}
+
 	private String getNomeArquivo() {
 		String nome = TipoArquivoEnum.REMESSA.getConstante();
 		nome = nome.concat(getUsuario().getInstituicao().getCodigoCompensacao());
@@ -70,6 +100,14 @@ public class ArquivoFiliadoMediator {
 		status.setData(new LocalDateTime());
 		status.setSituacaoArquivo(SituacaoArquivo.ENVIADO);
 		return status;
+	}
+
+	private boolean verificarPermissaoDeEnvio(Usuario user, Arquivo arquivo) {
+		if (TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA.equals(user.getInstituicao().getTipoInstituicao().getTipoInstituicao())) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public Usuario getUsuario() {

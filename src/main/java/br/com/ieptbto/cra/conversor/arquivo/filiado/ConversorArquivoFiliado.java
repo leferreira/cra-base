@@ -68,7 +68,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 	public void converter(FileUploadField file, Usuario usuario, Arquivo arquivo, List<Exception> list) {
 		setInstituicao(usuario.getInstituicao());
 		setFile(file);
-		setErros(erros);
+		setErros(list);
 		setLayoutfiliado(layoutFiliadoMediator.buscarLayout(instituicao));
 		setRemessa(arquivo);
 
@@ -124,7 +124,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 			while ((linha = reader.readLine()) != null) {
 				String dados[] = linha.split(Pattern.quote(";"));
 				if (dados.length == 12) {
-					LinhaTemplateLayout mapaCampos = TemplateLayoutEmpresa.getTemplate(dados, getLayoutfiliado());
+					LinhaTemplateLayout mapaCampos = TemplateLayoutEmpresa.getTemplate(dados, getLayoutfiliado(), getErros());
 
 					if (listaCampos.containsKey(mapaCampos.getCidade())) {
 						listaCampos.get(mapaCampos.getCidade()).add(mapaCampos.getCampos());
@@ -290,9 +290,6 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 	}
 
 	public List<Exception> getErros() {
-		if (erros == null) {
-			erros = new ArrayList<>();
-		}
 		return erros;
 	}
 

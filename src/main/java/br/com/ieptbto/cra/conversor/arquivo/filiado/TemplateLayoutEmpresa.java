@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import br.com.ieptbto.cra.entidade.LayoutFiliado;
 import br.com.ieptbto.cra.enumeration.CampoLayout;
+import br.com.ieptbto.cra.exception.InfraException;
 
 public class TemplateLayoutEmpresa {
 
@@ -37,7 +38,7 @@ public class TemplateLayoutEmpresa {
 		this.campo = campo;
 	}
 
-	public static LinhaTemplateLayout getTemplate(String[] dados, List<LayoutFiliado> layoutfiliado) {
+	public static LinhaTemplateLayout getTemplate(String[] dados, List<LayoutFiliado> layoutfiliado, List<Exception> list) {
 		List<TemplateLayoutEmpresa> listaCampos = new ArrayList<>();
 		String cidade = null;
 		for (int i = 0; i < dados.length; i++) {
@@ -48,6 +49,7 @@ public class TemplateLayoutEmpresa {
 					if (listaLayout.getCampo().equals(CampoLayout.CIDADEDEVEDOR) && StringUtils.isNotBlank(dados[i])) {
 						cidade = dados[i];
 					} else if (StringUtils.isBlank(dados[i])) {
+						list.add(new InfraException("Cidade não informada na linha " + dados));
 						logger.error("cidade não informada. " + dados);
 					}
 					break;
