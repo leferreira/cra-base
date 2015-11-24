@@ -41,7 +41,7 @@ public class ConversorArquivoDesistenciaProtesto {
 		arquivo.getRemessaDesistenciaProtesto().setArquivo(arquivo);
 		return arquivo;
 	}
-
+	
 	private RemessaDesistenciaProtesto getRemessaDesistenciaProtesto(ArquivoDesistenciaProtestoVO arquivoVO) {
 		DesistenciaProtesto desistenciaProtesto = new DesistenciaProtesto();
 		RemessaDesistenciaProtesto remessa = new RemessaDesistenciaProtesto();

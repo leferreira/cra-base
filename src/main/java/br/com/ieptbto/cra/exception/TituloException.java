@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
+
 public class TituloException extends RuntimeException {
 
 	/** **/
@@ -12,6 +14,7 @@ public class TituloException extends RuntimeException {
 	private final ErroTitulo erro;
 	private final String campo;
 	private final List<Exception> erros;
+	private final List<PedidoDesistenciaCancelamento> pedidosDesistenciaCancelamento;
 
 	/**
 	 * Construtor.
@@ -24,13 +27,15 @@ public class TituloException extends RuntimeException {
 		this.erro = erro;
 		this.campo = campo;
 		this.erros = new ArrayList<Exception>();
+		this.pedidosDesistenciaCancelamento = null;
 	}
 	
-	public TituloException(String message, List<Exception> erros) {
+	public TituloException(String message, List<Exception> erros, List<PedidoDesistenciaCancelamento> pedidos) {
 		super(message);
 		this.erro = ErroTitulo.CAMPOS_INCONSISTENTES;
 		this.campo = StringUtils.EMPTY;
 		this.erros = erros;
+		this.pedidosDesistenciaCancelamento = pedidos;
 	}
 	
 	/**
@@ -66,5 +71,9 @@ public class TituloException extends RuntimeException {
 	@Override
 	public String toString() {
 		return erro + " " + campo;
+	}
+
+	public List<PedidoDesistenciaCancelamento> getPedidosDesistenciaCancelamento() {
+		return pedidosDesistenciaCancelamento;
 	}
 }

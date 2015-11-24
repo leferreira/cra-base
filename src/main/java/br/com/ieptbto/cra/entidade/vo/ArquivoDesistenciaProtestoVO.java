@@ -93,5 +93,4 @@ public class ArquivoDesistenciaProtestoVO extends AbstractArquivoVO {
 	public String getIdentificacaoRegistro() {
 		return identificacaoRegistro;
 	}
-
 }

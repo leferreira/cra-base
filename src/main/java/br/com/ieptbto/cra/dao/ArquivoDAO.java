@@ -58,6 +58,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	TituloSemTaxaCraDAO tituloSemTaxaCraDAO;
 
 	private List<Remessa> remessasConfirmacoesRecebidas;
+	private List<PedidoDesistenciaCancelamento> pedidosDesistenciaCancelamento;
 
 	public List<Arquivo> buscarTodosArquivos() {
 		Criteria criteria = getCriteria(Arquivo.class);
@@ -142,6 +143,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 								valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
 								totalRegistroDesistenciaProtesto++;
 							} else {
+								getPedidosDesistenciaCancelamento().add(pedido);
 								erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número "
 								        + pedido.getNumeroTitulo() + ", do protocolo " + pedido.getNumeroProtocolo() + " do dia "
 								        + DataUtil.localDateToString(pedido.getDataProtocolagem())
@@ -149,6 +151,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 							}
 						} else {
+							getPedidosDesistenciaCancelamento().add(pedido);
 							erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número "
 							        + pedido.getNumeroTitulo() + ",com o protocolo " + pedido.getNumeroProtocolo() + " do dia "
 							        + DataUtil.localDateToString(pedido.getDataProtocolagem())
@@ -191,7 +194,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 				if (!erros.isEmpty()) {
 					throw new TituloException("Não foi possível enviar a desistência! Por favor, corriga os erros no arquivo abaixo...",
-					        erros);
+					        erros, getPedidosDesistenciaCancelamento());
 				}
 				transaction.commit();
 			}
@@ -200,7 +203,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		} catch (TituloException ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage());
-			throw new TituloException(ex.getMessage(), ex.getErros());
+			throw new TituloException(ex.getMessage(), ex.getErros(), ex.getPedidosDesistenciaCancelamento());
 		} catch (InfraException ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage());
@@ -444,5 +447,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			remessasConfirmacoesRecebidas = new ArrayList<Remessa>();
 		}
 		return remessasConfirmacoesRecebidas;
+	}
+
+	public List<PedidoDesistenciaCancelamento> getPedidosDesistenciaCancelamento() {
+		if (pedidosDesistenciaCancelamento == null) {
+			pedidosDesistenciaCancelamento = new ArrayList<PedidoDesistenciaCancelamento>();
+		}
+		return pedidosDesistenciaCancelamento;
 	}
 }
