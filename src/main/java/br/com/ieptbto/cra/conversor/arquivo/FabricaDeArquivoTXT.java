@@ -216,7 +216,6 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 	private void validarTXT() {
 		// TODO Auto-generated method stub
-
 	}
 
 	public Arquivo converter() {

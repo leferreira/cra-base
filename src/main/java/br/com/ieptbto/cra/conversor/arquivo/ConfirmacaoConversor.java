@@ -42,13 +42,13 @@ public class ConfirmacaoConversor extends AbstractConversorArquivo<TituloVO, Con
 			}
 
 		}
-
 		tituloVO.setCodigoCartorio(entidade.getCodigoCartorio().toString());
 		tituloVO.setNumeroProtocoloCartorio(entidade.getNumeroProtocoloCartorio());
 		tituloVO.setDataProtocolo(DataUtil.localDateToStringddMMyyyy(entidade.getDataProtocolo()));
 		tituloVO.setTipoOcorrencia(entidade.getTipoOcorrencia());
 		tituloVO.setDataOcorrencia(DataUtil.localDateToStringddMMyyyy(entidade.getDataOcorrencia()));
 		tituloVO.setCodigoIrregularidade(entidade.getCodigoIrregularidade());
+		tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoParaString(entidade.getRemessa().getInstituicaoDestino().getValorConfirmacao()));
 		
 		if (entidade.getTipoOcorrencia() != null) {
 			if (entidade.getTipoOcorrencia().trim().equals("") || 
@@ -56,10 +56,9 @@ public class ConfirmacaoConversor extends AbstractConversorArquivo<TituloVO, Con
 				tituloVO.setDataOcorrencia("00000000");
 				tituloVO.setCodigoIrregularidade("00");
 			} else {
-				tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoParaString(entidade.getValorGravacaoEletronica()));
+				tituloVO.setValorGravacaoEletronica("0000000000");
 			}
 		}
 		return tituloVO;
 	}
-
 }

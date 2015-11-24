@@ -79,7 +79,6 @@ public class ProcessadorArquivo extends Processador {
 		} else {
 			throw new InfraException("O arquivoFisico " + getFile().getClientFileName() + "enviado não pode ser processado.");
 		}
-
 	}
 
 	public void processarArquivo(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo, Arquivo arquivo,

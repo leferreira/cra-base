@@ -10,7 +10,6 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.joda.time.LocalDate;
 import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -20,6 +19,7 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Titulo;
@@ -356,21 +356,22 @@ public class TituloDAO extends AbstractBaseDAO {
 		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
 
-	public TituloRemessa buscarTituloDesistenciaProtesto(String numeroProtocolo, String numeroTitulo, LocalDate dataProtocolagem,
-	        BigDecimal valorTitulo) {
-		Integer numProtocolo = Integer.parseInt(numeroProtocolo);
+	public TituloRemessa buscarTituloDesistenciaProtesto(PedidoDesistenciaCancelamento pedidoDesistenciaCancelamento) {
+		Integer numProtocolo = Integer.parseInt(pedidoDesistenciaCancelamento.getNumeroProtocolo());
 
 		Criteria criteria = getCriteria(Confirmacao.class);
-		criteria.add(Restrictions.ilike("numeroTitulo", numeroTitulo, MatchMode.EXACT));
-		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
-		criteria.add(Restrictions.eq("dataProtocolo", dataProtocolagem));
 		criteria.createAlias("titulo", "titulo");
+		criteria.createAlias("remessa", "remessa");
+		criteria.createAlias("remessa.cabecalho", "cabecalho");
+		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedidoDesistenciaCancelamento.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
+		criteria.add(Restrictions.ilike("numeroTitulo", pedidoDesistenciaCancelamento.getNumeroTitulo(), MatchMode.EXACT));
+		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
+		criteria.add(Restrictions.eq("dataProtocolo", pedidoDesistenciaCancelamento.getDataProtocolagem()));
 		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
 
 		if (confirmacao == null) {
 			return null;
 		}
-
 		return confirmacao.getTitulo();
 	}
 }

@@ -82,6 +82,10 @@ public class FabricaDeArquivo {
 			return converterRetorno(arquivoFisico, arquivo, erros);
 		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
 			return converterDesistenciaProtesto(arquivoFisico, arquivo, erros);
+		} else if (TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
+			
+		} else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(arquivo.getTipoArquivo().getTipoArquivo())){
+			
 		}
 		return null;
 	}
@@ -103,7 +107,6 @@ public class FabricaDeArquivo {
 			InputStream xml = new ByteArrayInputStream(xmlGerado.getBytes());
 			arquivoVO = (ArquivoDesistenciaProtestoVO) unmarshaller.unmarshal(new InputSource(xml));
 			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO));
-
 		} catch (JAXBException e) {
 			System.out.println(e.getMessage());
 			logger.error(e.getMessage(), e.getCause());
