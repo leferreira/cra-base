@@ -57,7 +57,7 @@ public class RemessaDesistenciaProtesto extends AbstractEntidade<RemessaDesisten
 	public List<DesistenciaProtesto> getDesistenciaProtesto() {
 		return desistenciaProtesto;
 	}
-
+	
 	@OneToOne
 	@JoinColumn(name = "RODAPE_DESISTENCIA_PROTESTO_ID")
 	public RodapeArquivo getRodape() {

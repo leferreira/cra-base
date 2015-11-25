@@ -8,14 +8,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * 
- * @author Lefer
+ * @author Thasso Araújo
  *
  */
 @SuppressWarnings("serial")
-@XmlRootElement(name = "desistencia")
+@XmlRootElement(name = "cancelamento") 
 @XmlAccessorType(XmlAccessType.NONE)
-public class DesistenciaCancelamentoSerproVO extends AbstractArquivoVO {
+public class CancelamentoSerproVO extends AbstractArquivoVO {
 	
 	@XmlElement(name = "comarca")
 	private List<ComarcaDesistenciaCancelamentoSerproVO> comarcaDesistenciaCancelamento;
