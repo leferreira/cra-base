@@ -1,6 +1,9 @@
 package br.com.ieptbto.cra.enumeration;
 
-
+/**
+ * @author Thasso Araújo
+ *
+ */
 public enum AgenciaCentralizadora {
 
 	BRADESCO_AG_102397("237", "102397");
@@ -30,5 +33,4 @@ public enum AgenciaCentralizadora {
 		}
 		return null;
 	}
-
 }

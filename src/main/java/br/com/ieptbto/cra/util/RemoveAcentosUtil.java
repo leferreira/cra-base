@@ -11,9 +11,10 @@ public class RemoveAcentosUtil implements Serializable {
 
 
 	public static String removeAcentos(String str) {
-		 
-	  str = Normalizer.normalize(str, Normalizer.Form.NFD);
-	  str = str.replaceAll("[^\\p{ASCII}]", "");
-	  return str;
+		if (str != null) {
+			str = Normalizer.normalize(str, Normalizer.Form.NFD);
+			str = str.replaceAll("[^\\p{ASCII}]", "");
+		}
+		return str;
 	}
 }

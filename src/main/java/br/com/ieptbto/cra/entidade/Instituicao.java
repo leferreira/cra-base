@@ -72,7 +72,10 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 
 	@Column(name = "CNPJ", nullable = false, unique = true, length = 50)
 	public String getCnpj() {
-		return cnpj;
+		if (cnpj == null) {
+			cnpj = StringUtils.EMPTY;
+		}
+		return cnpj.replace(".", "").replace("-", "").replace("/", "").trim();
 	}
 
 	@Column(name = "RAZAO_SOCIAL", length = 100, nullable = false, unique = true)
@@ -105,6 +108,9 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 
 	@Column(name = "ENDERECO", length = 50)
 	public String getEndereco() {
+		if (endereco == null) {
+			endereco = StringUtils.EMPTY;
+		}
 		return endereco;
 	}
 

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.joda.time.LocalDate;
 import org.springframework.beans.BeanWrapper;
@@ -41,6 +42,7 @@ import br.com.ieptbto.cra.mediator.LayoutFiliadoMediator;
 import br.com.ieptbto.cra.mediator.MunicipioMediator;
 import br.com.ieptbto.cra.util.CraConstructorUtils;
 import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.util.RemoveAcentosUtil;
 
 /**
  * 
@@ -79,13 +81,15 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		processarArquivoRecebido(arquivo);
 	}
 
-	private Rodape getRodapeRemessa(Remessa remessa) {
+	private Rodape getRodapeRemessa(Remessa remessa, BigDecimal valortotalTitulos) {
 		Rodape rodape = new Rodape();
 		rodape.setDataMovimento(new LocalDate());
 		rodape.setIdentificacaoRegistro(TipoRegistro.RODAPE);
-		rodape.setNomePortador(getInstituicao().getNomeFantasia());
+		rodape.setNomePortador(RemoveAcentosUtil.removeAcentos(getInstituicao().getRazaoSocial()).toUpperCase());
 		rodape.setNumeroCodigoPortador(getInstituicao().getCodigoCompensacao());
 		rodape.setRemessa(remessa);
+		rodape.setSomatorioQtdRemessa(new BigDecimal(remessa.getTitulos().size()*3));
+		rodape.setSomatorioValorRemessa(valortotalTitulos);
 		rodape.setNumeroSequencialRegistroArquivo(String.valueOf(remessa.getTitulos().size() + 1));
 		return rodape;
 	}
@@ -94,20 +98,20 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		int totalTitulos = remessa.getTitulos().size();
 
 		CabecalhoRemessa cabecalho = new CabecalhoRemessa();
-		cabecalho.setAgenciaCentralizadora(getInstituicao().getAgenciaCentralizadora());
 		cabecalho.setCodigoMunicipio(getCodigoMunicipio(cidade));
 		cabecalho.setDataMovimento(new LocalDate());
 		cabecalho.setIdentificacaoRegistro(TipoRegistro.CABECALHO);
 		cabecalho.setIdentificacaoTransacaoDestinatario("SDT");
 		cabecalho.setIdentificacaoTransacaoRemetente("BFO");
 		cabecalho.setIdentificacaoTransacaoTipo("TPR");
-		cabecalho.setNomePortador(getInstituicao().getNomeFantasia());
+		cabecalho.setNomePortador(RemoveAcentosUtil.removeAcentos(getInstituicao().getRazaoSocial()).toUpperCase());
 		cabecalho.setNumeroCodigoPortador(getInstituicao().getCodigoCompensacao());
-		cabecalho.setQtdTitulosRemessa(totalTitulos);
 		cabecalho.setNumeroSequencialRegistroArquivo(String.valueOf(1));
-		cabecalho.setQtdIndicacoesRemessa(totalTitulos);
-		cabecalho.setQtdIndicacoesRemessa(totalTitulos);
+		cabecalho.setAgenciaCentralizadora(StringUtils.leftPad(getInstituicao().getAgenciaCentralizadora(), 6, "0"));
+		cabecalho.setQtdTitulosRemessa(totalTitulos);
 		cabecalho.setQtdRegistrosRemessa(totalTitulos);
+		cabecalho.setQtdIndicacoesRemessa(0);
+		cabecalho.setQtdOriginaisRemessa(totalTitulos);
 		cabecalho.setRemessa(remessa);
 		cabecalho.setVersaoLayout("043");
 
@@ -165,8 +169,6 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 			listaTitulos = new ArrayList<>();
 			remessa.setTitulos(new ArrayList<Titulo>());
 			remessa.setArquivo(arquivo);
-			remessa.setCabecalho(getCabecalhoRemessa(remessa, cidade));
-			remessa.setRodape(getRodapeRemessa(remessa));
 			remessa.setInstituicaoOrigem(getInstituicao());
 			remessa.setInstituicaoDestino(getMunicipioDestino(cidade));
 
@@ -185,10 +187,12 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 
 					}
 				}
-				valortotalTitulos = valortotalTitulos.add(titulo.getValorTitulo());
+				valortotalTitulos = valortotalTitulos.add(titulo.getSaldoTitulo());
 				listaTitulos.add(preencherTitulo(titulo, remessa));
 			}
 			remessa.getTitulos().addAll(listaTitulos);
+			remessa.setCabecalho(getCabecalhoRemessa(remessa, cidade));
+			remessa.setRodape(getRodapeRemessa(remessa, valortotalTitulos));
 			remessas.add(remessa);
 		}
 		arquivo.setRemessas(remessas);
@@ -217,19 +221,22 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 	}
 
 	private TituloRemessa preencherTitulo(TituloRemessa titulo, Remessa remessa) {
+		titulo.setIdentificacaoRegistro(TipoRegistro.TITULO);
 		titulo.setCodigoPortador(getInstituicao().getCodigoCompensacao());
-		titulo.setAgenciaCodigoCedente(getInstituicao().getCodigoCompensacao() + DataUtil.getDataAtual(new SimpleDateFormat("MMyyyy")));
+		titulo.setAgenciaCodigoCedente(StringUtils.leftPad(getInstituicao().getCodigoCompensacao() + DataUtil.getDataAtual(new SimpleDateFormat("MMyyyy")), 15, "0"));
+		titulo.setNomeCedenteFavorecido(RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getRazaoSocial()).toUpperCase());
+		titulo.setNomeSacadorVendedor(RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getRazaoSocial()).toUpperCase());
+		titulo.setDocumentoSacador(remessa.getInstituicaoOrigem().getCnpj());
+		titulo.setEnderecoSacadorVendedor(RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getEndereco()).toUpperCase());
+		titulo.setCidadeSacadorVendedor(RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getMunicipio().getNomeMunicipio().toUpperCase()));
+		titulo.setUfSacadorVendedor(remessa.getInstituicaoOrigem().getMunicipio().getUf());
+		
 		titulo.setDataCadastro(new Date());
 		titulo.setEspecieTitulo("CDA");
+		titulo.setDataOcorrencia(new LocalDate());
+		titulo.setDataVencimentoTitulo(titulo.getDataEmissaoTitulo());
 		titulo.setPracaProtesto(titulo.getCidadeDevedor());
-		titulo.setSaldoTitulo(titulo.getValorTitulo());
-		titulo.setIdentificacaoRegistro(TipoRegistro.TITULO);
-
-		titulo.setCidadeSacadorVendedor(getInstituicao().getMunicipio().getNomeMunicipio());
-		titulo.setEnderecoSacadorVendedor(getInstituicao().getEndereco());
-		titulo.setDocumentoSacador(getInstituicao().getCnpj().replace(".", "").replace("/", "").replace("-", ""));
-		titulo.setUfSacadorVendedor(getInstituicao().getMunicipio().getUf());
-
+		titulo.setValorTitulo(titulo.getSaldoTitulo());
 		titulo.setRemessa(remessa);
 		return titulo;
 	}
