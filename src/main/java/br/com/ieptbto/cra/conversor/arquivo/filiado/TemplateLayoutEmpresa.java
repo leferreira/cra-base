@@ -48,7 +48,7 @@ public class TemplateLayoutEmpresa {
 					listaCampos.add(template);
 					if (listaLayout.getCampo().equals(CampoLayout.CIDADEDEVEDOR) && StringUtils.isNotBlank(dados[i])) {
 						cidade = dados[i];
-					} else if (StringUtils.isBlank(dados[i])) {
+					} else if (listaLayout.getCampo().equals(CampoLayout.CIDADEDEVEDOR) && StringUtils.isBlank(dados[i])) {
 						list.add(new InfraException("Cidade não informada na linha " + dados));
 						logger.error("cidade não informada. " + dados);
 					}

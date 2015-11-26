@@ -120,10 +120,10 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(getFile().getFileUpload().getInputStream()));
 			String linha = reader.readLine();
-			int cont = 1;
+			int cont = 2;
 			while ((linha = reader.readLine()) != null) {
 				String dados[] = linha.split(Pattern.quote(";"));
-				if (dados.length == 12) {
+				if (dados.length >= getLayoutfiliado().size()) {
 					LinhaTemplateLayout mapaCampos = TemplateLayoutEmpresa.getTemplate(dados, getLayoutfiliado(), getErros());
 
 					if (listaCampos.containsKey(mapaCampos.getCidade())) {
@@ -227,7 +227,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 
 		titulo.setCidadeSacadorVendedor(getInstituicao().getMunicipio().getNomeMunicipio());
 		titulo.setEnderecoSacadorVendedor(getInstituicao().getEndereco());
-		titulo.setDocumentoSacador(getInstituicao().getCnpj());
+		titulo.setDocumentoSacador(getInstituicao().getCnpj().replace(".", "").replace("/", "").replace("-", ""));
 		titulo.setUfSacadorVendedor(getInstituicao().getMunicipio().getUf());
 
 		titulo.setRemessa(remessa);

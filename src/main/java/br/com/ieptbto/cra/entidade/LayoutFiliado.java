@@ -51,7 +51,7 @@ public class LayoutFiliado extends AbstractEntidade<LayoutFiliado> {
 		return empresa;
 	}
 
-	@Column(name = "DESCRICAO_CAMPO", unique = true, length = 150)
+	@Column(name = "DESCRICAO_CAMPO", length = 150)
 	public String getDescricaoCampo() {
 		return descricaoCampo;
 	}

@@ -71,11 +71,20 @@ public class ArquivoFiliadoMediator {
 		getArquivo().setHoraEnvio(new LocalTime());
 		getArquivo().setStatusArquivo(getStatusArquivoEnviado());
 
+		if (verificarSeArquivoJaEnviado(getArquivo())) {
+
+		}
+
 		conversorArquivoFiliado.converter(file, getUsuario(), getArquivo(), getErros());
 
 		setArquivo(arquivoDAO.salvar(getArquivo(), usuario, getErros()));
 
 		return this;
+	}
+
+	private boolean verificarSeArquivoJaEnviado(Arquivo arquivo2) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	/**
