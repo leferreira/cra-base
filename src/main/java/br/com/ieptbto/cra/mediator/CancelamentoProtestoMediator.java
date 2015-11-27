@@ -31,7 +31,7 @@ import br.com.ieptbto.cra.entidade.CabecalhoArquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoCartorio;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
+import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.RodapeArquivo;
@@ -189,7 +189,7 @@ public class CancelamentoProtestoMediator {
 			
 			CabecalhoCartorio cabecalhoCartorio = new CabecalhoCartorio();
 			RodapeCartorio rodapeCartorio = new RodapeCartorio();
-			List<PedidoDesistenciaCancelamento> pedidosDesistencia = new ArrayList<PedidoDesistenciaCancelamento>();
+			List<PedidoDesistencia> pedidosDesistencia = new ArrayList<PedidoDesistencia>();
 			for (CartorioDesistenciaCancelamentoSerproVO cartorio : comarca.getCartorioDesistenciaCancelamento()) {
 				cabecalhoCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.HEADER_CARTORIO);
 				cabecalhoCartorio.setCodigoCartorio(cartorio.getCodigoCartorio());
@@ -198,7 +198,7 @@ public class CancelamentoProtestoMediator {
 				cabecalhoCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(2), 5, "0"));
 				
 				for (TituloDesistenciaCancelamentoSerproVO titulo : cartorio.getTituloDesistenciaCancelamento()){
-					PedidoDesistenciaCancelamento registro = new PedidoDesistenciaCancelamento();
+					PedidoDesistencia registro = new PedidoDesistencia();
 					registro.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA);
 					registro.setNumeroProtocolo(titulo.getNumeroProtocoloCartorio());
 					registro.setDataProtocolagem(DataUtil.stringToLocalDate("ddMMyyyy", titulo.getDataProtocolo()));

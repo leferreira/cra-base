@@ -19,7 +19,7 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
+import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Titulo;
@@ -264,7 +264,6 @@ public class TituloDAO extends AbstractBaseDAO {
 				tituloConfirmacao.setValorGravacaoEletronica(tituloConfirmacao.getRemessa().getInstituicaoDestino().getValorConfirmacao());
 			}
 		}
-
 		if (titulo == null) {
 			throw new InfraException(
 			        "O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] não existe em nossa base de dados.");
@@ -356,7 +355,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
 
-	public TituloRemessa buscarTituloDesistenciaProtesto(PedidoDesistenciaCancelamento pedidoDesistenciaCancelamento) {
+	public TituloRemessa buscarTituloDesistenciaProtesto(PedidoDesistencia pedidoDesistenciaCancelamento) {
 		Integer numProtocolo = Integer.parseInt(pedidoDesistenciaCancelamento.getNumeroProtocolo());
 
 		Criteria criteria = getCriteria(Confirmacao.class);

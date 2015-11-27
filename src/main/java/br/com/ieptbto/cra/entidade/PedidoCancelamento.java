@@ -28,9 +28,9 @@ import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
  */
 @Entity
 @Audited
-@Table(name = "TB_PEDIDO_DESISTENCIA")
-@org.hibernate.annotations.Table(appliesTo = "TB_PEDIDO_DESISTENCIA")
-public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesistenciaCancelamento> {
+@Table(name = "TB_PEDIDO_CANCELAMENTO")
+@org.hibernate.annotations.Table(appliesTo = "TB_PEDIDO_CANCELAMENTO")
+public class PedidoCancelamento extends AbstractEntidade<PedidoCancelamento> {
 
 	private static final long serialVersionUID = 4806576818944343466L;
 
@@ -47,12 +47,12 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 	private String reservado;
 	private String numeroControleRecebimento;
 	private String sequenciaRegistro;
-	private DesistenciaProtesto desistenciaProtesto;
+	private CancelamentoProtesto cancelamentoProtesto;
 	private TituloRemessa titulo;
 
 	@Override
 	@Id
-	@Column(name = "ID_PEDIDO_DESISTENCIA", columnDefinition = "serial")
+	@Column(name = "TB_PEDIDO_CANCELAMENTO", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getId() {
 		return this.id;
@@ -147,13 +147,13 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "DESISTENCIA_PROTESTO_ID")
-	public DesistenciaProtesto getDesistenciaProtesto() {
-		return desistenciaProtesto;
+	@JoinColumn(name = "CANCELAMENTO_PROTESTO_ID")
+	public CancelamentoProtesto getCancelamentoProtesto() {
+		return cancelamentoProtesto;
 	}
 
 	@OneToOne
-	@JoinColumn(name = "TITULO_ID")
+	@JoinColumn(name = "TITULO_ID", nullable=true ,columnDefinition="integer")
 	public TituloRemessa getTitulo() {
 		return titulo;
 	}
@@ -162,8 +162,8 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 		this.titulo = titulo;
 	}
 
-	public void setDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto) {
-		this.desistenciaProtesto = desistenciaProtesto;
+	public void setCancelamentoProtesto(CancelamentoProtesto cancelamentoProtesto) {
+		this.cancelamentoProtesto = cancelamentoProtesto;
 	}
 
 	public void setId(int id) {
@@ -219,7 +219,7 @@ public class PedidoDesistenciaCancelamento extends AbstractEntidade<PedidoDesist
 	}
 
 	@Override
-	public int compareTo(PedidoDesistenciaCancelamento entidade) {
+	public int compareTo(PedidoCancelamento entidade) {
 		CompareToBuilder compareToBuilder = new CompareToBuilder();
 		compareToBuilder.append(this.getId(), entidade.getId());
 		return compareToBuilder.toComparison();

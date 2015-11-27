@@ -22,21 +22,21 @@ import org.hibernate.envers.Audited;
  */
 @Entity
 @Audited
-@Table(name = "TB_DESISTENCIA_PROTESTO")
-@org.hibernate.annotations.Table(appliesTo = "TB_DESISTENCIA_PROTESTO")
-public class DesistenciaProtesto extends AbstractEntidade<DesistenciaProtesto> {
+@Table(name = "TB_CANCELAMENTO_PROTESTO")
+@org.hibernate.annotations.Table(appliesTo = "TB_CANCELAMENTO_PROTESTO")
+public class CancelamentoProtesto extends AbstractEntidade<CancelamentoProtesto> {
 
 	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private CabecalhoCartorio cabecalhoCartorio;
-	private List<PedidoDesistencia> desistencias;
+	private List<PedidoCancelamento> cancelamentos;
 	private RodapeCartorio rodapeCartorio;
-	private RemessaDesistenciaProtesto remessaDesistenciaProtesto;
+	private RemessaCancelamentoProtesto remessaCancelamentoProtesto;
 	private Boolean download;
 
 	@Id
-	@Column(name = "ID_DESISTENCIA_PROTESTO", columnDefinition = "serial")
+	@Column(name = "ID_CANCELAMENTO_PROTESTO", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getId() {
 		return id;
@@ -48,9 +48,9 @@ public class DesistenciaProtesto extends AbstractEntidade<DesistenciaProtesto> {
 		return cabecalhoCartorio;
 	}
 
-	@OneToMany(mappedBy = "desistenciaProtesto", fetch = FetchType.LAZY)
-	public List<PedidoDesistencia> getDesistencias() {
-		return desistencias;
+	@OneToMany(mappedBy = "cancelamentoProtesto", fetch = FetchType.LAZY)
+	public List<PedidoCancelamento> getCancelamentos() {
+		return cancelamentos;
 	}
 
 	@OneToOne
@@ -60,9 +60,9 @@ public class DesistenciaProtesto extends AbstractEntidade<DesistenciaProtesto> {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "REMESSA_DESISTENCIA_PROTESTO_ID")
-	public RemessaDesistenciaProtesto getRemessaDesistenciaProtesto() {
-		return remessaDesistenciaProtesto;
+	@JoinColumn(name = "REMESSA_CANCELAMENTO_PROTESTO_ID")
+	public RemessaCancelamentoProtesto getRemessaCancelamentoProtesto() {
+		return remessaCancelamentoProtesto;
 	}
 
 	@Column(name = "DOWNLOAD_REALIZADO", columnDefinition = "boolean")
@@ -74,8 +74,8 @@ public class DesistenciaProtesto extends AbstractEntidade<DesistenciaProtesto> {
 		this.download = download;
 	}
 
-	public void setRemessaDesistenciaProtesto(RemessaDesistenciaProtesto remessaDesistenciaProtesto) {
-		this.remessaDesistenciaProtesto = remessaDesistenciaProtesto;
+	public void setRemessaCancelamentoProtesto(RemessaCancelamentoProtesto remessaCancelamentoProtesto) {
+		this.remessaCancelamentoProtesto = remessaCancelamentoProtesto;
 	}
 
 	public void setId(int id) {
@@ -86,8 +86,8 @@ public class DesistenciaProtesto extends AbstractEntidade<DesistenciaProtesto> {
 		this.cabecalhoCartorio = cabecalhoCartorio;
 	}
 
-	public void setDesistencias(List<PedidoDesistencia> desistencias) {
-		this.desistencias = desistencias;
+	public void setCancelamentos(List<PedidoCancelamento> cancelamentos) {
+		this.cancelamentos = cancelamentos;
 	}
 
 	public void setRodapeCartorio(RodapeCartorio rodapeCartorio) {
@@ -95,7 +95,7 @@ public class DesistenciaProtesto extends AbstractEntidade<DesistenciaProtesto> {
 	}
 
 	@Override
-	public int compareTo(DesistenciaProtesto entidade) {
+	public int compareTo(CancelamentoProtesto entidade) {
 		// TODO Auto-generated method stub
 		return 0;
 	}

@@ -1,6 +1,6 @@
 package br.com.ieptbto.cra.conversor.arquivo;
 
-import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
+import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 import br.com.ieptbto.cra.entidade.vo.RegistroDesistenciaProtestoVO;
 
 /**
@@ -9,6 +9,6 @@ import br.com.ieptbto.cra.entidade.vo.RegistroDesistenciaProtestoVO;
  *
  */
 public class RegistroDesistenciaProtestoConversor extends
-        AbstractConversorArquivo<RegistroDesistenciaProtestoVO, PedidoDesistenciaCancelamento> {
+        AbstractConversorArquivo<RegistroDesistenciaProtestoVO, PedidoDesistencia> {
 
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
+import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 
 public class TituloException extends RuntimeException {
 
@@ -14,7 +14,7 @@ public class TituloException extends RuntimeException {
 	private final ErroTitulo erro;
 	private final String campo;
 	private final List<Exception> erros;
-	private final List<PedidoDesistenciaCancelamento> pedidosDesistenciaCancelamento;
+	private final List<PedidoDesistencia> pedidosDesistenciaCancelamento;
 
 	/**
 	 * Construtor.
@@ -30,7 +30,7 @@ public class TituloException extends RuntimeException {
 		this.pedidosDesistenciaCancelamento = null;
 	}
 	
-	public TituloException(String message, List<Exception> erros, List<PedidoDesistenciaCancelamento> pedidos) {
+	public TituloException(String message, List<Exception> erros, List<PedidoDesistencia> pedidos) {
 		super(message);
 		this.erro = ErroTitulo.CAMPOS_INCONSISTENTES;
 		this.campo = StringUtils.EMPTY;
@@ -73,7 +73,7 @@ public class TituloException extends RuntimeException {
 		return erro + " " + campo;
 	}
 
-	public List<PedidoDesistenciaCancelamento> getPedidosDesistenciaCancelamento() {
+	public List<PedidoDesistencia> getPedidosDesistenciaCancelamento() {
 		return pedidosDesistenciaCancelamento;
 	}
 }

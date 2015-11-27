@@ -23,7 +23,7 @@ import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Historico;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
+import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
@@ -58,7 +58,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	TituloSemTaxaCraDAO tituloSemTaxaCraDAO;
 
 	private List<Remessa> remessasConfirmacoesRecebidas;
-	private List<PedidoDesistenciaCancelamento> pedidosDesistenciaCancelamento;
+	private List<PedidoDesistencia> pedidosDesistenciaCancelamento;
 
 	public List<Arquivo> buscarTodosArquivos() {
 		Criteria criteria = getCriteria(Arquivo.class);
@@ -137,10 +137,10 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					int totalRegistroDesistenciaProtesto = 0;
 
 					for (DesistenciaProtesto desistenciaProtestos : arquivo.getRemessaDesistenciaProtesto().getDesistenciaProtesto()) {
-						List<PedidoDesistenciaCancelamento> pedidos = new ArrayList<PedidoDesistenciaCancelamento>();
+						List<PedidoDesistencia> pedidos = new ArrayList<PedidoDesistencia>();
 						desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
 						desistenciaProtestos.setDownload(false);
-						for (PedidoDesistenciaCancelamento pedido : desistenciaProtestos.getDesistencias()) {
+						for (PedidoDesistencia pedido : desistenciaProtestos.getDesistencias()) {
 							pedido.setDesistenciaProtesto(desistenciaProtestos);
 							pedido.setTitulo(tituloDAO.buscarTituloDesistenciaProtesto(pedido));
 							if (pedido.getTitulo() != null) {
@@ -183,7 +183,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 						desistenciaProtestos.setRodapeCartorio(save(desistenciaProtestos.getRodapeCartorio()));
 						desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
 						save(desistenciaProtestos);
-						for (PedidoDesistenciaCancelamento pedido : desistenciaProtestos.getDesistencias()) {
+						for (PedidoDesistencia pedido : desistenciaProtestos.getDesistencias()) {
 							save(pedido);
 						}
 					}
@@ -439,9 +439,9 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return remessasConfirmacoesRecebidas;
 	}
 
-	public List<PedidoDesistenciaCancelamento> getPedidosDesistenciaCancelamento() {
+	public List<PedidoDesistencia> getPedidosDesistenciaCancelamento() {
 		if (pedidosDesistenciaCancelamento == null) {
-			pedidosDesistenciaCancelamento = new ArrayList<PedidoDesistenciaCancelamento>();
+			pedidosDesistenciaCancelamento = new ArrayList<PedidoDesistencia>();
 		}
 		return pedidosDesistenciaCancelamento;
 	}

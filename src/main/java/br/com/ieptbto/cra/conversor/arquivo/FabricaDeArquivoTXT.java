@@ -20,7 +20,7 @@ import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
+import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Retorno;
@@ -277,7 +277,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 		} else if (TipoRegistroDesistenciaProtesto.HEADER_CARTORIO.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			desistenciaProtesto = new DesistenciaProtesto();
-			desistenciaProtesto.setDesistencias(new ArrayList<PedidoDesistenciaCancelamento>());
+			desistenciaProtesto.setDesistencias(new ArrayList<PedidoDesistencia>());
 			CabecalhoCartorioDesistenciaProtestoVO cabecalhoCartorioVO = CabecalhoCartorioDesistenciaProtestoVO.class.cast(registro);
 			CabecalhoCartorio cabecalhoCartorio = new CabecalhoCartorioDesistenciaProtestoConversor().converter(CabecalhoCartorio.class,
 			        cabecalhoCartorioVO);
@@ -285,8 +285,8 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 		} else if (TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			RegistroDesistenciaProtestoVO tituloDesistenciaProtesto = RegistroDesistenciaProtestoVO.class.cast(registro);
-			PedidoDesistenciaCancelamento pedidoDesistencia = new RegistroDesistenciaProtestoConversor()
-			        .converter(PedidoDesistenciaCancelamento.class, tituloDesistenciaProtesto);
+			PedidoDesistencia pedidoDesistencia = new RegistroDesistenciaProtestoConversor()
+			        .converter(PedidoDesistencia.class, tituloDesistenciaProtesto);
 			desistenciaProtesto.getDesistencias().add(pedidoDesistencia);
 			pedidoDesistencia.setDesistenciaProtesto(desistenciaProtesto);
 

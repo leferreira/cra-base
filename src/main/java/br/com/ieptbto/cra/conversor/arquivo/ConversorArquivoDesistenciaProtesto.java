@@ -11,7 +11,7 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoArquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoCartorio;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
+import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.RodapeArquivo;
 import br.com.ieptbto.cra.entidade.RodapeCartorio;
@@ -58,14 +58,14 @@ public class ConversorArquivoDesistenciaProtesto {
 		remessa.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
 		for (DesistenciaProtestoVO pedidoDesistencia : remessaVo.getPedidoDesistencias()) {
 			desistenciaProtesto = new DesistenciaProtesto();
-			desistenciaProtesto.setDesistencias(new ArrayList<PedidoDesistenciaCancelamento>());
+			desistenciaProtesto.setDesistencias(new ArrayList<PedidoDesistencia>());
 			desistenciaProtesto.setCabecalhoCartorio(new CabecalhoCartorioDesistenciaProtestoConversor().converter(CabecalhoCartorio.class,
 			        pedidoDesistencia.getCabecalhoCartorio()));
 			desistenciaProtesto.setRodapeCartorio(new RodapeCartorioDesistenciaProtestoConversor().converter(RodapeCartorio.class,
 			        pedidoDesistencia.getRodapeCartorio()));
 			for (RegistroDesistenciaProtestoVO registro : pedidoDesistencia.getRegistroDesistenciaProtesto()) {
-				PedidoDesistenciaCancelamento registroPedido = new RegistroDesistenciaProtestoConversor().converter(
-				        PedidoDesistenciaCancelamento.class, registro);
+				PedidoDesistencia registroPedido = new RegistroDesistenciaProtestoConversor().converter(
+				        PedidoDesistencia.class, registro);
 				desistenciaProtesto.getDesistencias().add(registroPedido);
 				registroPedido.setDesistenciaProtesto(desistenciaProtesto);
 			}
@@ -92,7 +92,7 @@ public class ConversorArquivoDesistenciaProtesto {
 			desistenciaVO.setCabecalhoCartorio(new CabecalhoCartorioDesistenciaProtestoConversor().converter(
 			        desistencia.getCabecalhoCartorio(), CabecalhoCartorioDesistenciaProtestoVO.class));
 
-			for (PedidoDesistenciaCancelamento pedido : desistencia.getDesistencias()) {
+			for (PedidoDesistencia pedido : desistencia.getDesistencias()) {
 				RegistroDesistenciaProtestoVO registro = new RegistroDesistenciaProtestoConversor().converter(pedido,
 				        RegistroDesistenciaProtestoVO.class);
 				desistenciaVO.getRegistroDesistenciaProtesto().add(registro);

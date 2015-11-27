@@ -47,7 +47,9 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	private List<Historico> historicos;
 	private Confirmacao confirmacao;
 	private Retorno retorno;
-	private PedidoDesistenciaCancelamento pedidoDesistencia;
+	private PedidoDesistencia pedidoDesistencia;
+	private PedidoCancelamento pedidoCancelamento;
+	private PedidoAutorizacaoCancelamento pedidoAutorizacaoCancelamento;
 
 	private String nomeCedenteFavorecido;
 	private String nomeSacadorVendedor;
@@ -96,8 +98,18 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	}
 
 	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
-	public PedidoDesistenciaCancelamento getPedidoDesistencia() {
+	public PedidoDesistencia getPedidoDesistencia() {
 		return pedidoDesistencia;
+	}
+	
+	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
+	public PedidoCancelamento getPedidoCancelamento() {
+		return pedidoCancelamento;
+	}
+	
+	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
+	public PedidoAutorizacaoCancelamento getPedidoAutorizacaoCancelamento() {
+		return pedidoAutorizacaoCancelamento;
 	}
 
 	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
@@ -283,10 +295,18 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.confirmacao = confirmacao;
 	}
 
-	public void setPedidoDesistencia(PedidoDesistenciaCancelamento pedidoDesistencia) {
+	public void setPedidoDesistencia(PedidoDesistencia pedidoDesistencia) {
 		this.pedidoDesistencia = pedidoDesistencia;
 	}
 
+	public void setPedidoCancelamento(PedidoCancelamento pedidoCancelamento) {
+		this.pedidoCancelamento = pedidoCancelamento;
+	}
+	
+	public void setPedidoAutorizacaoCancelamento(PedidoAutorizacaoCancelamento pedidoAutorizacaoCancelamento) {
+		this.pedidoAutorizacaoCancelamento = pedidoAutorizacaoCancelamento;
+	}
+	
 	public void setHistoricos(List<Historico> historicos) {
 		this.historicos = historicos;
 	}

@@ -31,7 +31,7 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.entidade.PedidoDesistenciaCancelamento;
+import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
@@ -279,7 +279,7 @@ public class RemessaMediator {
 
 		BigDecimal valorTotal = BigDecimal.ZERO;
 		int totalRegistro = 0;
-		for (PedidoDesistenciaCancelamento pedido : desistenciaProtesto.getDesistencias()) {
+		for (PedidoDesistencia pedido : desistenciaProtesto.getDesistencias()) {
 			valorTotal = valorTotal.add(pedido.getValorTitulo());
 			totalRegistro++;
 		}

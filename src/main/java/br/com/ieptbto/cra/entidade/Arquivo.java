@@ -41,13 +41,15 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	private LocalTime horaEnvio;
 	private List<Remessa> remessas;
 	private RemessaDesistenciaProtesto remessaDesistenciaProtesto;
+	private RemessaCancelamentoProtesto remessaCancelamentoProtesto;
+	private RemessaAutorizacaoCancelamento remessaAutorizacao;
 	private Instituicao instituicaoRecebe;
 	private Instituicao instituicaoEnvio;
 	private TipoArquivo tipoArquivo;
 	private Usuario usuarioEnvio;
 	private StatusArquivo statusArquivo;
 	private List<Remessa> remessaBanco;
-
+ 
 	@Id
 	@Column(name = "ID_ARQUIVO", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -88,6 +90,16 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	@OneToOne(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	public RemessaDesistenciaProtesto getRemessaDesistenciaProtesto() {
 		return remessaDesistenciaProtesto;
+	}
+	
+	@OneToOne(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	public RemessaCancelamentoProtesto getRemessaCancelamentoProtesto() {
+		return remessaCancelamentoProtesto;
+	}
+
+	@OneToOne(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	public RemessaAutorizacaoCancelamento getRemessaAutorizacao() {
+		return remessaAutorizacao;
 	}
 
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -179,6 +191,14 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 
 	public void setInstituicaoEnvio(Instituicao instituicaoEnvio) {
 		this.instituicaoEnvio = instituicaoEnvio;
+	}
+	
+	public void setRemessaCancelamentoProtesto(RemessaCancelamentoProtesto remessaCancelamentoProtesto) {
+		this.remessaCancelamentoProtesto = remessaCancelamentoProtesto;
+	}
+
+	public void setRemessaAutorizacao(RemessaAutorizacaoCancelamento remessaAutorizacao) {
+		this.remessaAutorizacao = remessaAutorizacao;
 	}
 
 	@Override

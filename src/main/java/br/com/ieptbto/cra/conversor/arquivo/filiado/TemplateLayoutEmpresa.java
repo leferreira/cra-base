@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.conversor.arquivo.filiado;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -49,15 +50,14 @@ public class TemplateLayoutEmpresa {
 					if (listaLayout.getCampo().equals(CampoLayout.CIDADEDEVEDOR) && StringUtils.isNotBlank(dados[i])) {
 						cidade = dados[i];
 					} else if (listaLayout.getCampo().equals(CampoLayout.CIDADEDEVEDOR) && StringUtils.isBlank(dados[i])) {
-						list.add(new InfraException("Cidade não informada na linha " + dados));
-						logger.error("cidade não informada. " + dados);
+						list.add(new InfraException("Cidade não informada na linha " + Arrays.toString(dados)));
+						logger.error("cidade não informada. " + Arrays.toString(dados));
 					}
 					break;
 				}
 			}
 		}
 		return new LinhaTemplateLayout(listaCampos, cidade);
-
 	}
 
 }
