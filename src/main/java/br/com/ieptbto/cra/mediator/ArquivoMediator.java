@@ -96,10 +96,6 @@ public class ArquivoMediator {
 		return processadorArquivo.processarArquivo(uploadedFile, arquivo, getErros());
 	}
 
-	public List<Arquivo> buscarArquivos() {
-		return arquivoDAO.buscarTodosArquivos();
-	}
-
 	public List<Exception> getErros() {
 		if (erros == null) {
 			erros = new ArrayList<Exception>();

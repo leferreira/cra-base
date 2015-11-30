@@ -230,6 +230,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		titulo.setEnderecoSacadorVendedor(RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getEndereco()).toUpperCase());
 		titulo.setCidadeSacadorVendedor(RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getMunicipio().getNomeMunicipio().toUpperCase()));
 		titulo.setUfSacadorVendedor(remessa.getInstituicaoOrigem().getMunicipio().getUf());
+		titulo.setEnderecoDevedor(RemoveAcentosUtil.removeAcentos(titulo.getEnderecoDevedor()));
 		
 		titulo.setDataCadastro(new Date());
 		titulo.setEspecieTitulo("CDA");

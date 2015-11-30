@@ -1,0 +1,127 @@
+package br.com.ieptbto.cra.dao;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
+import br.com.ieptbto.cra.entidade.PedidoAutorizacaoCancelamento;
+import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.exception.AutorizacaoCancelamentoException;
+import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.util.DataUtil;
+
+/**
+ * @author Thasso Araújo
+ *
+ */
+@Repository
+public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
+	
+	@Autowired
+	private TituloDAO tituloDAO;
+	@Autowired
+	private InstituicaoDAO instituicaoDAO;
+
+	public Arquivo salvarAutorizacaoCancelamentoSerpro(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+		Arquivo arquivoSalvo = new Arquivo();
+		Transaction transaction = getSession().beginTransaction();
+
+		try {
+			arquivo.setStatusArquivo(save(arquivo.getStatusArquivo()));
+			arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
+			
+			arquivoSalvo = save(arquivo);
+			if (arquivo.getRemessaAutorizacao() != null) {
+				List<PedidoAutorizacaoCancelamento> pedidosACComErros = new ArrayList<PedidoAutorizacaoCancelamento>();
+				List<AutorizacaoCancelamento> autorizacoesCancelamentos = new ArrayList<AutorizacaoCancelamento>();
+				BigDecimal valorTotalDesistenciaProtesto = BigDecimal.ZERO;
+				int totalCancelamentoProtesto = 0;
+				int totalRegistroCancelamentoProtesto = 0;
+	
+				for (AutorizacaoCancelamento ac : arquivo.getRemessaAutorizacao().getAutorizacaoCancelamento()) {
+					List<PedidoAutorizacaoCancelamento> pedidosAC = new ArrayList<PedidoAutorizacaoCancelamento>();
+					ac.setRemessaAutorizacaoCancelamento(arquivo.getRemessaAutorizacao());
+					ac.setDownload(false);
+					for (PedidoAutorizacaoCancelamento pedido : ac.getAutorizacoesCancelamentos()) {
+						pedido.setAutorizacaoCancelamento(ac);
+						pedido.setTitulo(tituloDAO.buscarTituloAutorizacaoCancelamento(pedido));
+						if (pedido.getTitulo() != null) {
+							if (pedido.getTitulo().getPedidoDesistencia() == null) {
+								pedidosAC.add(pedido);
+								valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
+								totalRegistroCancelamentoProtesto++;
+							} else {
+								pedidosACComErros.add(pedido);
+								erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número "+ pedido.getNumeroTitulo() + ", do protocolo " + pedido.getNumeroProtocolo() + " do dia "
+								        + DataUtil.localDateToString(pedido.getDataProtocolagem())+ ", já foi enviado anteriormente em outro arquivo de autorização cancelamento!"));
+							}
+						} else if (pedido.getDataProtocolagem().isAfter(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015")) ||
+								pedido.getDataProtocolagem().equals(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))) {
+							pedidosACComErros.add(pedido);
+							erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número "+ pedido.getNumeroTitulo() + ",com o protocolo " + pedido.getNumeroProtocolo() + " do dia "
+							        + DataUtil.localDateToString(pedido.getDataProtocolagem())+ ", não foi localizado para a comarca [ "+ pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio() +" ]. Verifique os dados do título!"));
+						} else {
+							pedidosAC.add(pedido);
+							valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
+							totalRegistroCancelamentoProtesto++;
+						}
+					}
+					if (!pedidosAC.isEmpty()) {
+						ac.getCabecalhoCartorio().setQuantidadeDesistencia(pedidosAC.size());
+						ac.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(pedidosAC.size());
+						ac.setAutorizacoesCancelamentos(pedidosAC);
+						autorizacoesCancelamentos.add(ac);
+						totalCancelamentoProtesto++;
+					}
+				}
+				arquivo.getRemessaAutorizacao().getCabecalho().setQuantidadeDesistencia(totalCancelamentoProtesto);
+				arquivo.getRemessaAutorizacao().getCabecalho().setQuantidadeRegistro(totalRegistroCancelamentoProtesto);
+				arquivo.getRemessaAutorizacao().getRodape().setQuantidadeDesistencia(totalCancelamentoProtesto);
+				arquivo.getRemessaAutorizacao().getRodape().setSomatorioValorTitulo(valorTotalDesistenciaProtesto);
+				arquivo.getRemessaAutorizacao().setAutorizacaoCancelamento(autorizacoesCancelamentos);
+				arquivo.getRemessaAutorizacao().setCabecalho(save(arquivo.getRemessaAutorizacao().getCabecalho()));
+				arquivo.getRemessaAutorizacao().setRodape(save(arquivo.getRemessaAutorizacao().getRodape()));
+				save(arquivo.getRemessaAutorizacao());
+	
+				for (AutorizacaoCancelamento ac : autorizacoesCancelamentos) {
+					ac.getCabecalhoCartorio().setQuantidadeDesistencia(ac.getAutorizacoesCancelamentos().size());
+					ac.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(totalCancelamentoProtesto);
+					ac.setCabecalhoCartorio(save(ac.getCabecalhoCartorio()));
+					ac.setRodapeCartorio(save(ac.getRodapeCartorio()));
+					ac.setRemessaAutorizacaoCancelamento(ac.getRemessaAutorizacaoCancelamento());
+					save(ac);
+					for (PedidoAutorizacaoCancelamento pedido : ac.getAutorizacoesCancelamentos()) {
+						save(pedido);
+					}
+				}
+				if (!erros.isEmpty()) {
+					throw new AutorizacaoCancelamentoException("Não foi possível enviar o arquivo de autorização de cancelamento! Por favor, corriga os erros no arquivo abaixo...", erros ,pedidosACComErros);
+				}
+				transaction.commit();
+			}
+			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
+			        + " foi inserido na base ");
+
+		} catch (AutorizacaoCancelamentoException ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage());
+			throw new AutorizacaoCancelamentoException(ex.getMessage(), ex.getErros(), ex.getPedidosAutorizacaoCancelamento());
+		} catch (InfraException ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage());
+			throw new InfraException(ex.getMessage());
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+			transaction.rollback();
+			throw new InfraException("Não foi possível inserir esse arquivo na base de dados.");
+		}
+		return arquivoSalvo;
+	}
+}

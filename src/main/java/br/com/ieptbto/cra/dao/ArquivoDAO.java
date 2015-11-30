@@ -49,22 +49,9 @@ import br.com.ieptbto.cra.util.DataUtil;
 public class ArquivoDAO extends AbstractBaseDAO {
 
 	@Autowired
-	TituloDAO tituloDAO;
+	private TituloDAO tituloDAO;
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
-	@Autowired
-	RemessaDAO remessaDAO;
-	@Autowired
-	TituloSemTaxaCraDAO tituloSemTaxaCraDAO;
-
-	private List<Remessa> remessasConfirmacoesRecebidas;
-	private List<PedidoDesistencia> pedidosDesistenciaCancelamento;
-
-	public List<Arquivo> buscarTodosArquivos() {
-		Criteria criteria = getCriteria(Arquivo.class);
-		criteria.addOrder(Order.asc("id"));
-		return criteria.list();
-	}
+	private InstituicaoDAO instituicaoDAO;
 
 	/**
 	 * 
@@ -80,9 +67,9 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 		try {
 			arquivo.setStatusArquivo(save(arquivo.getStatusArquivo()));
-			verificaInstituicaoRecebe(arquivo);
+			arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
+			
 			arquivoSalvo = save(arquivo);
-
 			if (TipoArquivoEnum.REMESSA.equals(arquivo.getTipoArquivo().getTipoArquivo()) || 
 					TipoArquivoEnum.CONFIRMACAO.equals(arquivo.getTipoArquivo().getTipoArquivo()) ||
 					TipoArquivoEnum.RETORNO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
@@ -126,11 +113,10 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					}
 					transaction.commit();
 				}
-			} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(arquivo.getTipoArquivo().getTipoArquivo()) ||
-					TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(arquivo.getTipoArquivo().getTipoArquivo()) ||
-					TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
-				
+			} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
+
 				if (arquivo.getRemessaDesistenciaProtesto() != null) {
+					List<PedidoDesistencia> pedidosDesistenciaComErros = new ArrayList<PedidoDesistencia>();
 					List<DesistenciaProtesto> desistenciasProtesto = new ArrayList<DesistenciaProtesto>();
 					BigDecimal valorTotalDesistenciaProtesto = BigDecimal.ZERO;
 					int totalDesistenciaProtesto = 0;
@@ -149,12 +135,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 									valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
 									totalRegistroDesistenciaProtesto++;
 								} else {
-									getPedidosDesistenciaCancelamento().add(pedido);
+									pedidosDesistenciaComErros.add(pedido);
 									erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número "+ pedido.getNumeroTitulo() + ", do protocolo " + pedido.getNumeroProtocolo() + " do dia "
 									        + DataUtil.localDateToString(pedido.getDataProtocolagem())+ ", já foi enviado anteriormente em outro arquivo de desistência!"));
 								}
 							} else {
-								getPedidosDesistenciaCancelamento().add(pedido);
+								pedidosDesistenciaComErros.add(pedido);
 								erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número "+ pedido.getNumeroTitulo() + ",com o protocolo " + pedido.getNumeroProtocolo() + " do dia "
 								        + DataUtil.localDateToString(pedido.getDataProtocolagem())+ ", não foi localizado para a comarca [ "+ pedido.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio() +" ]. Verifique os dados do título!"));
 							}
@@ -187,20 +173,23 @@ public class ArquivoDAO extends AbstractBaseDAO {
 							save(pedido);
 						}
 					}
-
 					if (!erros.isEmpty()) {
-						throw new TituloException("Não foi possível enviar a desistência! Por favor, corriga os erros no arquivo abaixo...",
-						        erros, getPedidosDesistenciaCancelamento());
+						throw new TituloException("Não foi possível enviar a desistência! Por favor, corriga os erros no arquivo abaixo...", erros, pedidosDesistenciaComErros);
 					}
 					transaction.commit();
 				}
+			} else if (TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
+				new InfraException("Não foi possivel enviar o Cancelamento de Protesto! Entre em contato com a CRA!");
+			} else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
+				new InfraException("Não foi possivel enviar a Autorização de Cancelamento! Entre em contato com a CRA!");
 			}
 			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
 			        + " foi inserido na base ");
+
 		} catch (TituloException ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage());
-			throw new TituloException(ex.getMessage(), ex.getErros(), ex.getPedidosDesistenciaCancelamento());
+			throw new TituloException(ex.getMessage(), ex.getErros(), ex.getPedidosDesistencia());
 		} catch (InfraException ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage());
@@ -211,18 +200,28 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			throw new InfraException("Não foi possível inserir esse arquivo na base de dados.");
 		}
 		return arquivoSalvo;
+	}
+	
+	public Arquivo alterarSituacaoArquivo(Arquivo arquivo) {
+		Transaction transaction = getBeginTransation();
 
+		try {
+			StatusArquivo statusArquivo = save(arquivo.getStatusArquivo());
+			arquivo.setStatusArquivo(statusArquivo);
+			update(arquivo);
+
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível inserir esses dados na base.");
+		}
+		return arquivo;
 	}
 
 	private void setDevolvidoPelaCRA(Remessa remessa) {
 		if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
 			remessa.setDevolvidoPelaCRA(false);
-		}
-	}
-
-	private void verificaInstituicaoRecebe(Arquivo arquivo) {
-		if (arquivo.getInstituicaoRecebe() == null) {
-			arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao("CRA"));
 		}
 	}
 
@@ -332,36 +331,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	/**
-	 * Verifica se o arquivo já foi enviado para CRA
-	 * 
-	 * @param instituicao
-	 * @param nomeArquivo
-	 * @return
-	 */
 	public Arquivo buscarArquivosPorNomeArquivoInstituicaoEnvio(Instituicao instituicao, String nomeArquivo) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));
 		criteria.add(Restrictions.eq("nomeArquivo", nomeArquivo));
 
 		return Arquivo.class.cast(criteria.uniqueResult());
-	}
-
-	public Arquivo alterarSituacaoArquivo(Arquivo arquivo) {
-		Transaction transaction = getBeginTransation();
-
-		try {
-			StatusArquivo statusArquivo = save(arquivo.getStatusArquivo());
-			arquivo.setStatusArquivo(statusArquivo);
-			update(arquivo);
-
-			transaction.commit();
-		} catch (Exception ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível inserir esses dados na base.");
-		}
-		return arquivo;
 	}
 
 	@Transactional(readOnly = true)
@@ -430,19 +405,5 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 		criteria.add(Restrictions.ilike("nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
 		return criteria.list();
-	}
-
-	public List<Remessa> getRemessasConfirmacoesRecebidas() {
-		if (remessasConfirmacoesRecebidas == null) {
-			remessasConfirmacoesRecebidas = new ArrayList<Remessa>();
-		}
-		return remessasConfirmacoesRecebidas;
-	}
-
-	public List<PedidoDesistencia> getPedidosDesistenciaCancelamento() {
-		if (pedidosDesistenciaCancelamento == null) {
-			pedidosDesistenciaCancelamento = new ArrayList<PedidoDesistencia>();
-		}
-		return pedidosDesistenciaCancelamento;
 	}
 }

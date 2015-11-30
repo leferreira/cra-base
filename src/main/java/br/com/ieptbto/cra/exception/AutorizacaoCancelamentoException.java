@@ -5,16 +5,16 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import br.com.ieptbto.cra.entidade.PedidoDesistencia;
+import br.com.ieptbto.cra.entidade.PedidoAutorizacaoCancelamento;
 
-public class TituloException extends RuntimeException {
+public class AutorizacaoCancelamentoException extends RuntimeException {
 
 	/** **/
 	private static final long serialVersionUID = 1L;
 	private final ErroTitulo erro;
 	private final String campo;
 	private final List<Exception> erros;
-	private final List<PedidoDesistencia> pedidosDesistencia;
+	private final List<PedidoAutorizacaoCancelamento> pedidosAutorizacaoCancelamento;
 
 	/**
 	 * Construtor.
@@ -22,20 +22,20 @@ public class TituloException extends RuntimeException {
 	 * @param erro
 	 * @param campo
 	 */
-	public TituloException(ErroTitulo erro, String campo) {
+	public AutorizacaoCancelamentoException(ErroTitulo erro, String campo) {
 		super(erro.getMensagemErro());
 		this.erro = erro;
 		this.campo = campo;
 		this.erros = new ArrayList<Exception>();
-		this.pedidosDesistencia = new ArrayList<PedidoDesistencia>();
+		this.pedidosAutorizacaoCancelamento = new ArrayList<PedidoAutorizacaoCancelamento>();
 	}
 	
-	public TituloException(String message, List<Exception> erros, List<PedidoDesistencia> pedidosDesistencia) {
+	public AutorizacaoCancelamentoException(String message, List<Exception> erros, List<PedidoAutorizacaoCancelamento> pedidosComErros) {
 		super(message);
 		this.erro = ErroTitulo.CAMPOS_INCONSISTENTES;
 		this.campo = StringUtils.EMPTY;
 		this.erros = erros;
-		this.pedidosDesistencia = pedidosDesistencia;
+		this.pedidosAutorizacaoCancelamento = pedidosComErros;
 	}
 	
 	/**
@@ -73,7 +73,7 @@ public class TituloException extends RuntimeException {
 		return erro + " " + campo;
 	}
 
-	public List<PedidoDesistencia> getPedidosDesistencia() {
-		return pedidosDesistencia;
+	public List<PedidoAutorizacaoCancelamento> getPedidosAutorizacaoCancelamento() {
+		return pedidosAutorizacaoCancelamento;
 	}
 }

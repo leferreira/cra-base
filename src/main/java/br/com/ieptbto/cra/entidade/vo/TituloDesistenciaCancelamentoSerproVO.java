@@ -33,6 +33,11 @@ public class TituloDesistenciaCancelamentoSerproVO extends AbstractArquivoVO {
 	private String valorTitulo;
 
 	public String getNumeroProtocoloCartorio() {
+		if (numeroProtocoloCartorio != null) {
+			if (!numeroProtocoloCartorio.trim().equals(StringUtils.EMPTY)) {
+				numeroProtocoloCartorio = String.valueOf(Long.parseLong(numeroProtocoloCartorio));
+			}
+		}
 		return numeroProtocoloCartorio;
 	}
 

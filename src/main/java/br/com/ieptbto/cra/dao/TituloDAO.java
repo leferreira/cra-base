@@ -19,6 +19,8 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.entidade.PedidoAutorizacaoCancelamento;
+import br.com.ieptbto.cra.entidade.PedidoCancelamento;
 import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
@@ -366,6 +368,44 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.ilike("numeroTitulo", pedidoDesistenciaCancelamento.getNumeroTitulo(), MatchMode.EXACT));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 		criteria.add(Restrictions.eq("dataProtocolo", pedidoDesistenciaCancelamento.getDataProtocolagem()));
+		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
+
+		if (confirmacao == null) {
+			return null;
+		}
+		return confirmacao.getTitulo();
+	}
+
+	public TituloRemessa buscarTituloCancelamentoProtesto(PedidoCancelamento pedido) {
+		Integer numProtocolo = Integer.parseInt(pedido.getNumeroProtocolo());
+
+		Criteria criteria = getCriteria(Confirmacao.class);
+		criteria.createAlias("titulo", "titulo");
+		criteria.createAlias("remessa", "remessa");
+		criteria.createAlias("remessa.cabecalho", "cabecalho");
+		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
+		criteria.add(Restrictions.ilike("numeroTitulo", pedido.getNumeroTitulo(), MatchMode.EXACT));
+		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
+		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
+		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
+
+		if (confirmacao == null) {
+			return null;
+		}
+		return confirmacao.getTitulo();
+	}
+	
+	public TituloRemessa buscarTituloAutorizacaoCancelamento(PedidoAutorizacaoCancelamento pedido) {
+		Long numProtocolo = Long.parseLong(pedido.getNumeroProtocolo());
+
+		Criteria criteria = getCriteria(Confirmacao.class);
+		criteria.createAlias("titulo", "titulo");
+		criteria.createAlias("remessa", "remessa");
+		criteria.createAlias("remessa.cabecalho", "cabecalho");
+		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio()));
+		criteria.add(Restrictions.ilike("numeroTitulo", pedido.getNumeroTitulo(), MatchMode.EXACT));
+		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
+		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
 		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
 
 		if (confirmacao == null) {

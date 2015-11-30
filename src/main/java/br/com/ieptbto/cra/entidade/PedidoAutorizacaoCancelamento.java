@@ -67,7 +67,7 @@ public class PedidoAutorizacaoCancelamento extends AbstractEntidade<PedidoAutori
 	@Column(name = "NUMERO_PROTOCOLO", length = 11)
 	public String getNumeroProtocolo() {
 		if (numeroProtocolo != null) {
-			numeroProtocolo = String.valueOf(Integer.parseInt(numeroProtocolo));
+			numeroProtocolo = String.valueOf(Long.parseLong(numeroProtocolo));
 		}
 		return numeroProtocolo;
 	}
