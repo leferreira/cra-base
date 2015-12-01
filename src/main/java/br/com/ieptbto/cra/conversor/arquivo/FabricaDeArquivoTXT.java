@@ -22,6 +22,8 @@ import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
+import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Rodape;
@@ -71,6 +73,8 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	private List<Remessa> remessas;
 	private DesistenciaProtesto desistenciaProtesto;
 	private RemessaDesistenciaProtesto remessaDesistenciaProtesto;
+	private RemessaCancelamentoProtesto remessaCancelamentoProtesto;
+	private RemessaAutorizacaoCancelamento remessaAutorizacaoCancelamento;
 
 	public FabricaDeArquivoTXT fabrica(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
 		this.arquivoFisico = arquivoFisico;
@@ -88,7 +92,6 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		this.remessa = remessa;
 
 		validarTXT();
-
 		return this;
 	}
 
@@ -98,13 +101,36 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		this.remessaDesistenciaProtesto = remessa;
 		return gerarArquivoDesistenciaProtesto();
 	}
+	
+	public File fabricaArquivoCancelamentoProtestoTXT(File arquivoFisico, RemessaCancelamentoProtesto remessa, List<Exception> erros) {
+		this.arquivoFisico = arquivoFisico;
+		this.erros = erros;
+		this.remessaCancelamentoProtesto = remessa;
+		return gerarArquivoCancelamentoProtesto();
+	}
+
+	public File fabricaArquivoAutorizacaoCancelamentoTXT(File arquivoFisico, RemessaAutorizacaoCancelamento remessa, List<Exception> erros) {
+		this.arquivoFisico = arquivoFisico;
+		this.erros = erros;
+		this.remessaAutorizacaoCancelamento = remessa;
+		return gerarArquivoDesistenciaCancelamento();
+	}
+
+	private File gerarArquivoCancelamentoProtesto() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private File gerarArquivoDesistenciaCancelamento() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	private File gerarArquivoDesistenciaProtesto() {
 		List<Arquivo> arquivos = new ArrayList<Arquivo>();
 		arquivos.add(getArquivo());
 
-		return geradorDeArquivosTXT.gerar(conversorArquivoDesistenciaProtesto.converter(this.remessaDesistenciaProtesto),
-		        getArquivoFisico());
+		return geradorDeArquivosTXT.gerar(conversorArquivoDesistenciaProtesto.converter(this.remessaDesistenciaProtesto), getArquivoFisico());
 	}
 
 	public FabricaDeArquivoTXT fabricaArquivoTXT(File arquivoTXT, List<Remessa> remessas, List<Exception> erros) {

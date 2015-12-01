@@ -24,6 +24,8 @@ import org.xml.sax.InputSource;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
+import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -251,5 +253,13 @@ public class FabricaDeArquivo {
 
 	public File processarArquivoPersistenteDesistenciaProtesto(RemessaDesistenciaProtesto remessa, File arquivoFisico, List<Exception> erros) {
 		return fabricaDeArquivoTXT.fabricaArquivoDesistenciaProtestoTXT(arquivoFisico, remessa, erros);
+	}
+	
+	public File processarArquivoPersistenteCancelamentoProtesto(RemessaCancelamentoProtesto remessa, File arquivoFisico, List<Exception> erros) {
+		return fabricaDeArquivoTXT.fabricaArquivoCancelamentoProtestoTXT(arquivoFisico, remessa, erros);
+	}
+	
+	public File processarArquivoPersistenteAutorizacaoCancelamentoProtesto(RemessaAutorizacaoCancelamento remessa, File arquivoFisico, List<Exception> erros) {
+		return fabricaDeArquivoTXT.fabricaArquivoAutorizacaoCancelamentoTXT(arquivoFisico, remessa, erros);
 	}
 }

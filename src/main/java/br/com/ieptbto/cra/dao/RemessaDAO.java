@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
@@ -293,93 +292,6 @@ public class RemessaDAO extends AbstractBaseDAO {
 		}
 
 		return remessas;
-	}
-
-	public Remessa buscarRemessaDaConfirmacao(Remessa confirmacao) {
-		Criteria criteria = getCriteria(Remessa.class);
-		criteria.createAlias("arquivo", "arquivo");
-		criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
-		criteria.createAlias("cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.dataMovimento", confirmacao.getCabecalho().getDataMovimento()));
-		criteria.add(Restrictions.eq("cabecalho.numeroSequencialRemessa", confirmacao.getCabecalho().getNumeroSequencialRemessa()));
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", confirmacao.getCabecalho().getCodigoMunicipio()));
-		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.REMESSA));
-		return Remessa.class.cast(criteria.uniqueResult());
-	}
-
-	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
-	        ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
-
-		Criteria criteria = getCriteria(DesistenciaProtesto.class);
-		criteria.createAlias("remessaDesistenciaProtesto", "remessa");
-		criteria.createAlias("remessa.arquivo", "arquivo");
-
-		if (StringUtils.isNotBlank(arquivo.getNomeArquivo())) {
-			criteria.add(Restrictions.ilike("arquivo.nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
-		} 
-		
-		if (tiposArquivo != null && !tiposArquivo.isEmpty()) {
-			criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
-			criteria.add(filtrarRemessaPorTipoArquivo(tiposArquivo));
-		}
-		
-		if (dataInicio != null && dataFim != null) {
-			criteria.add((Restrictions.between("arquivo.dataEnvio", dataInicio, dataFim)));
-		}
-
-		if (portador != null) {
-			criteria.createAlias("remessa.cabecalho", "cabecalhoArquivo");
-			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", portador.getCodigoCompensacao()));
-		}
-		
-		if (municipio != null) {
-			criteria.createAlias("cabecalhoCartorio", "cabecalho");
-			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", municipio.getCodigoIBGE()));
-		}
-
-		if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
-			criteria.createAlias("cabecalhoCartorio", "cabecalho");
-			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", usuario.getInstituicao().getMunicipio().getCodigoIBGE()));
-		} else if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
-			criteria.createAlias("remessa.cabecalho", "cabecalhoArquivo");
-			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", usuario.getInstituicao().getCodigoCompensacao()));
-		}
-		return criteria.list();
-	}
-
-	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtestoPendenteDownload(Instituicao instituicao) {
-		Criteria criteria = getCriteria(DesistenciaProtesto.class);
-		criteria.createAlias("cabecalhoCartorio", "cabecalho");
-		
-		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
-			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", instituicao.getMunicipio().getCodigoIBGE()));
-		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
-			criteria.createAlias("remessaDesistenciaProtesto", "remessaDesistenciaProtesto");
-			criteria.createAlias("remessaDesistenciaProtesto.cabecalho", "cabecalhoArquivo");
-			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", instituicao.getCodigoCompensacao()));
-		}
-		criteria.add(Restrictions.eq("download", false));
-		return criteria.list();
-	}
-
-	public DesistenciaProtesto alterarSituacaoDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto, boolean download) {
-		Transaction transaction = getBeginTransation();
-
-		try {
-			desistenciaProtesto.setDownload(download);
-			update(desistenciaProtesto);
-			transaction.commit();
-		} catch (Exception ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível atualizar o status da DP.");
-		}
-		return desistenciaProtesto;
-
-	}
-
-	public DesistenciaProtesto buscarRemessaDesistenciaProtesto(DesistenciaProtesto entidade) {
-		return super.buscarPorPK(entidade);
 	}
 
 	public List<Anexo> verificarAnexosRemessa(Remessa remessa) {
