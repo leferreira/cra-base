@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import br.com.ieptbto.cra.conversor.arquivo.FabricaDeArquivo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
+import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
@@ -77,7 +79,7 @@ public class ProcessadorArquivo extends Processador {
 			return getArquivo();
 
 		} else {
-			throw new InfraException("O arquivoFisico " + getFile().getClientFileName() + "enviado não pode ser processado.");
+			throw new InfraException("O arquivo " + getFile().getClientFileName() + " enviado não pode ser processado.");
 		}
 	}
 
@@ -123,6 +125,34 @@ public class ProcessadorArquivo extends Processador {
 		fabricaDeArquivo.processarArquivoPersistenteDesistenciaProtesto(remessa, getArquivoFisico(), getErros());
 
 		logger.info("Fim da criação de Arquivo DP TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+
+		return getArquivoFisico();
+	}
+	
+	public File processarRemessaCancelamentoProtestoTXT(RemessaCancelamentoProtesto remessa, Usuario usuario) {
+		this.arquivo = remessa.getArquivo();
+		this.usuario = usuario;
+
+		logger.info("Início do criação de Arquivo CP TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+		verificaDiretorio();
+		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + getArquivo().getNomeArquivo()));
+		fabricaDeArquivo.processarArquivoPersistenteCancelamentoProtesto(remessa, getArquivoFisico(), getErros());
+
+		logger.info("Fim da criação de Arquivo CP TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+
+		return getArquivoFisico();
+	}
+	
+	public File processarRemessaAutorizacaoCancelamentoTXT(RemessaAutorizacaoCancelamento remessa, Usuario usuario) {
+		this.arquivo = remessa.getArquivo();
+		this.usuario = usuario;
+
+		logger.info("Início do criação de Arquivo AC TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+		verificaDiretorio();
+		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + getArquivo().getNomeArquivo()));
+		fabricaDeArquivo.processarArquivoPersistenteAutorizacaoCancelamentoProtesto(remessa, getArquivoFisico(), getErros());
+
+		logger.info("Fim da criação de Arquivo AC TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 
 		return getArquivoFisico();
 	}
@@ -321,5 +351,4 @@ public class ProcessadorArquivo extends Processador {
 	public String getPathUsuario() {
 		return pathUsuario;
 	}
-
 }

@@ -4,14 +4,23 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.Criteria;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
+import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoCancelamento;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.CancelamentoException;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -123,5 +132,73 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 			throw new InfraException("Não foi possível inserir esse arquivo na base de dados.");
 		}
 		return arquivoSalvo;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, 
+			LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+		Criteria criteria = getCriteria(CancelamentoProtesto.class);
+		criteria.createAlias("remessaCancelamentoProtesto", "remessa");
+		criteria.createAlias("remessa.arquivo", "arquivo");
+
+		if (StringUtils.isNotBlank(arquivo.getNomeArquivo())) {
+			criteria.add(Restrictions.ilike("arquivo.nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
+		} 
+		
+		if (tiposArquivo != null && !tiposArquivo.isEmpty()) {
+			criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
+			criteria.add(filtrarRemessaPorTipoArquivo(tiposArquivo));
+		}
+		
+		if (dataInicio != null && dataFim != null) {
+			criteria.add((Restrictions.between("arquivo.dataEnvio", dataInicio, dataFim)));
+		}
+
+		if (portador != null) {
+			criteria.createAlias("remessa.cabecalho", "cabecalhoArquivo");
+			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", portador.getCodigoCompensacao()));
+		}
+		
+		if (municipio != null) {
+			criteria.createAlias("cabecalhoCartorio", "cabecalho");
+			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", municipio.getCodigoIBGE()));
+		}
+
+		if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
+			criteria.createAlias("cabecalhoCartorio", "cabecalho");
+			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", usuario.getInstituicao().getMunicipio().getCodigoIBGE()));
+		} else if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
+			criteria.createAlias("remessa.cabecalho", "cabecalhoArquivo");
+			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", usuario.getInstituicao().getCodigoCompensacao()));
+		}
+		return criteria.list();
+	}
+	
+	private Disjunction filtrarRemessaPorTipoArquivo(ArrayList<TipoArquivoEnum> tiposArquivo) {
+		Disjunction disjunction = Restrictions.disjunction();
+		for (TipoArquivoEnum tipo : tiposArquivo) {
+			disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipo));
+		}
+		return disjunction;
+	}
+	
+	public CancelamentoProtesto alterarSituacaoCancelamentoProtesto(CancelamentoProtesto cancelamentoProtesto, boolean download) {
+		Transaction transaction = getBeginTransation();
+
+		try {
+			cancelamentoProtesto.setDownload(download);
+			update(cancelamentoProtesto);
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível atualizar o status da DP.");
+		}
+		return cancelamentoProtesto;
+
+	}
+
+	public CancelamentoProtesto buscarRemessaCancelamentoProtesto(CancelamentoProtesto entidade) {
+		return super.buscarPorPK(entidade);
 	}
 }
