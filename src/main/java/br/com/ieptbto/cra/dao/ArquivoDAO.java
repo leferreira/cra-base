@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
@@ -91,8 +92,18 @@ public class ArquivoDAO extends AbstractBaseDAO {
 							if (Retorno.class.isInstance(titulo)) {
 								Retorno.class.cast(titulo).setCabecalho(remessa.getCabecalho());
 							}
+							
 							TituloRemessa tituloSalvo = tituloDAO.salvar(titulo, transaction);
-
+							if(TituloRemessa.class.isInstance(titulo)) {
+								if (TituloRemessa.class.cast(titulo).getAnexo() != null) {
+									Anexo anexo = TituloRemessa.class.cast(titulo).getAnexo();
+									tituloSalvo.setAnexo(anexo);
+									anexo.setTitulo(tituloSalvo);
+									
+									save(anexo);
+								}
+							}
+								
 							Historico historico = new Historico();
 							if (tituloSalvo != null) {
 								historico.setDataOcorrencia(new LocalDateTime());
@@ -104,6 +115,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 								titulo.setSaldoTitulo(BigDecimal.ZERO);
 								remessa.getTitulos().remove(titulo);
 							}
+							
 							valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
 						}
 						remessa.getCabecalho().setQtdTitulosRemessa(remessa.getTitulos().size());

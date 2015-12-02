@@ -17,7 +17,7 @@ import br.com.ieptbto.cra.entidade.vo.RodapeCartorioDesistenciaProtestoVO;
  * @author Lefer
  *
  */
-public class ConversorArquivoDesistenciaProtestoVO {
+public class ConversorDesistenciaProtestoVO {
 
 	public static RemessaDesistenciaProtestoVO converterParaRemessaVO(ArquivoDesistenciaProtestoVO arquivoRecebido) {
 		RemessaDesistenciaProtestoVO remessa = new RemessaDesistenciaProtestoVO();

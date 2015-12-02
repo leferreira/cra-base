@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.InputSource;
 
-import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivoDesistenciaProtesto;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorDesistenciaProtesto;
 import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.AutorizacaoCancelamentoDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
@@ -63,7 +63,7 @@ public class AutorizacaoCancelamentoMediator {
 
 	protected static final Logger logger = Logger.getLogger(AutorizacaoCancelamentoMediator.class);
 	@Autowired
-	private ConversorArquivoDesistenciaProtesto conversorArquivoDesistenciaProtesto;
+	private ConversorDesistenciaProtesto conversorArquivoDesistenciaProtesto;
 	@Autowired
 	private ArquivoDAO arquivoDAO;
 	@Autowired

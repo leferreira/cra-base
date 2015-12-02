@@ -407,12 +407,24 @@ public class RemessaMediator {
 	public Arquivo confirmacoesPendentes(Instituicao instituicao) {
 		List<Remessa> remessas = remessaDao.confirmacoesPendentes(instituicao);
 		// List<Remessa> remessas = new ArrayList<Remessa>();
-		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
-		List<DesistenciaProtesto> desistenciaProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
-		remessaDesistenciaProtesto.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>(desistenciaProtesto));
+		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
+		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
+		List<AutorizacaoCancelamento> autorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
+		
 		Arquivo arquivo = new Arquivo();
 		arquivo.setRemessas(remessas);
+
+		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
+		remessaDesistenciaProtesto.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>(desistenciasProtesto));
 		arquivo.setRemessaDesistenciaProtesto(remessaDesistenciaProtesto);
+		
+		RemessaAutorizacaoCancelamento remessaAutorizacaoCancelamento = new RemessaAutorizacaoCancelamento();
+		remessaAutorizacaoCancelamento.setAutorizacaoCancelamento(autorizacaoCancelamento);
+		arquivo.setRemessaAutorizacao(remessaAutorizacaoCancelamento);
+
+		RemessaCancelamentoProtesto remessaCancelamento = new RemessaCancelamentoProtesto();
+		remessaCancelamento.setCancelamentoProtesto(cancelamentoProtesto);
+		arquivo.setRemessaCancelamentoProtesto(remessaCancelamento);
 
 		return arquivo;
 	}
@@ -528,7 +540,7 @@ public class RemessaMediator {
 					        ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA
 					                + remessa.getArquivo().getId() + ConfiguracaoBase.BARRA
 					                + remessa.getId() + ConfiguracaoBase.BARRA,
-					        nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+					        nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP); 
 				}
 			}
 

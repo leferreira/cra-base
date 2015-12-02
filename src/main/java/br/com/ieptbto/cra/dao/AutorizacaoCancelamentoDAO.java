@@ -182,6 +182,22 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 		return disjunction;
 	}
 	
+	@SuppressWarnings({ "unchecked" })
+	public List<AutorizacaoCancelamento> buscarRemessaAutorizacaoCancelamentoPendenteDownload(Instituicao instituicao) {
+		Criteria criteria = getCriteria(AutorizacaoCancelamento.class);
+		criteria.createAlias("cabecalhoCartorio", "cabecalho");
+		
+		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
+			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", instituicao.getMunicipio().getCodigoIBGE()));
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
+			criteria.createAlias("remessaDesistenciaProtesto", "remessaDesistenciaProtesto");
+			criteria.createAlias("remessaDesistenciaProtesto.cabecalho", "cabecalhoArquivo");
+			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", instituicao.getCodigoCompensacao()));
+		}
+		criteria.add(Restrictions.eq("download", false));
+		return criteria.list();
+	}
+	
 	public AutorizacaoCancelamento alterarSituacaoAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento, boolean download) {
 		Transaction transaction = getBeginTransation();
 

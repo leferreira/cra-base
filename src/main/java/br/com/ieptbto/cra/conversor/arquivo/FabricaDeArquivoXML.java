@@ -159,10 +159,16 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 	private void verificarAnexoComplementoRegistro(Instituicao instituicaoEnvio, TituloRemessa titulo, TituloVO tituloVO) {
 		
 		if (instituicaoEnvio.getTipoCampo51().equals(TipoCampo51.DOCUMENTOS_COMPACTADOS)) {
-			Anexo anexoArquivo = new Anexo();
-			anexoArquivo.setTitulo(titulo);
-			
-			titulo.setAnexo(anexoArquivo);
+			if (tituloVO.getComplementoRegistro() != null) {
+				if (!tituloVO.getComplementoRegistro().trim().equals(StringUtils.EMPTY)) {
+					titulo.setComplementoRegistro(tituloVO.getComplementoRegistro());
+					
+					Anexo anexoArquivo = new Anexo();
+					anexoArquivo.setTitulo(titulo);
+					
+					titulo.setAnexo(anexoArquivo);
+				}
+			}
 		}
 	}
 

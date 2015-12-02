@@ -38,6 +38,7 @@ public class ArquivoDesistenciaCancelamento implements Serializable {
 		this.envio = desistencia.getRemessaDesistenciaProtesto().getArquivo().getInstituicaoRecebe().getNomeFantasia();
 		this.horaEnvio = DataUtil.localTimeToString(desistencia.getRemessaDesistenciaProtesto().getArquivo().getHoraEnvio());
 		this.status = desistencia.getDownload();
+		
 		this.desistenciaProtesto = desistencia;
 	}
 
@@ -50,6 +51,8 @@ public class ArquivoDesistenciaCancelamento implements Serializable {
 		this.envio = cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo().getInstituicaoRecebe().getNomeFantasia();
 		this.horaEnvio = DataUtil.localTimeToString(cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo().getHoraEnvio());
 		this.status = cancelamentoProtesto.getDownload();
+		
+		this.cancelamentoProtesto = cancelamentoProtesto;
 	}
 
 	public void parseAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento) {
@@ -61,6 +64,8 @@ public class ArquivoDesistenciaCancelamento implements Serializable {
 		this.envio = autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo().getInstituicaoRecebe().getNomeFantasia();
 		this.horaEnvio = DataUtil.localTimeToString(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo().getHoraEnvio());
 		this.status = autorizacaoCancelamento.getDownload();
+		
+		this.autorizacaoCancelamento = autorizacaoCancelamento;
 	}
 
 	public String getNomeArquivo() {

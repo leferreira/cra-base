@@ -6,7 +6,7 @@ import java.util.List;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.conversor.ConversorArquivoDesistenciaProtestoVO;
+import br.com.ieptbto.cra.conversor.ConversorDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoArquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoCartorio;
@@ -30,7 +30,7 @@ import br.com.ieptbto.cra.entidade.vo.RodapeCartorioDesistenciaProtestoVO;
  *
  */
 @Service
-public class ConversorArquivoDesistenciaProtesto {
+public class ConversorDesistenciaProtesto {
 
 	public Arquivo converter(ArquivoDesistenciaProtestoVO arquivoVO, List<Exception> erros) {
 		Arquivo arquivo = new Arquivo();
@@ -45,7 +45,7 @@ public class ConversorArquivoDesistenciaProtesto {
 	private RemessaDesistenciaProtesto getRemessaDesistenciaProtesto(ArquivoDesistenciaProtestoVO arquivoVO) {
 		DesistenciaProtesto desistenciaProtesto = new DesistenciaProtesto();
 		RemessaDesistenciaProtesto remessa = new RemessaDesistenciaProtesto();
-		RemessaDesistenciaProtestoVO remessaVo = ConversorArquivoDesistenciaProtestoVO.converterParaRemessaVO(arquivoVO);
+		RemessaDesistenciaProtestoVO remessaVo = ConversorDesistenciaProtestoVO.converterParaRemessaVO(arquivoVO);
 
 		CabecalhoArquivo cabecalhoArquivo = new CabecalhoArquivoDesistenciaProtestoConversor().converter(CabecalhoArquivo.class,
 		        remessaVo.getCabecalhoArquivo());

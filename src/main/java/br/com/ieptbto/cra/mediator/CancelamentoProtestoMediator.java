@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.InputSource;
 
-import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivoDesistenciaProtesto;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorDesistenciaProtesto;
 import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.CancelamentoDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
@@ -63,7 +63,7 @@ public class CancelamentoProtestoMediator {
 
 	protected static final Logger logger = Logger.getLogger(CancelamentoProtestoMediator.class);
 	@Autowired
-	private ConversorArquivoDesistenciaProtesto conversorArquivoDesistenciaProtesto;
+	private ConversorDesistenciaProtesto conversorArquivoDesistenciaProtesto;
 	@Autowired
 	private ArquivoDAO arquivoDAO;
 	@Autowired
@@ -195,7 +195,7 @@ public class CancelamentoProtestoMediator {
 			List<PedidoCancelamento> pedidosCancelamento = new ArrayList<PedidoCancelamento>();
 			for (CartorioDesistenciaCancelamentoSerproVO cartorio : comarca.getCartorioDesistenciaCancelamento()) {
 				cabecalhoCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.HEADER_CARTORIO);
-				cabecalhoCartorio.setCodigoCartorio(cartorio.getCodigoCartorio());
+				cabecalhoCartorio.setCodigoCartorio(StringUtils.leftPad(cartorio.getCodigoCartorio(), 2, "0"));
 				cabecalhoCartorio.setQuantidadeDesistencia(cartorio.getTituloDesistenciaCancelamento().size());
 				cabecalhoCartorio.setCodigoMunicipio(comarca.getCodigoMunicipio());
 				cabecalhoCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(2), 5, "0"));

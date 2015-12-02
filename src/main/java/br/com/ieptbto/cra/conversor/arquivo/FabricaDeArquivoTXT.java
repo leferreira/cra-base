@@ -67,7 +67,9 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	@Autowired
 	private GeradorDeArquivosTXT geradorDeArquivosTXT;
 	@Autowired
-	private ConversorArquivoDesistenciaProtesto conversorArquivoDesistenciaProtesto;
+	private ConversorDesistenciaProtesto conversorDesistenciaProtesto;
+	@Autowired
+	private ConversorCancelamentoProtesto conversorCancelamentoProtesto;
 	private List<Exception> errosCabecalho;
 	private Remessa remessa;
 	private List<Remessa> remessas;
@@ -113,24 +115,28 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		this.arquivoFisico = arquivoFisico;
 		this.erros = erros;
 		this.remessaAutorizacaoCancelamento = remessa;
-		return gerarArquivoDesistenciaCancelamento();
+		return gerarArquivoAutorizacaoCancelamento();
+	}
+
+	private File gerarArquivoAutorizacaoCancelamento() {
+		List<Arquivo> arquivos = new ArrayList<Arquivo>();
+		arquivos.add(getArquivo());
+		
+		return geradorDeArquivosTXT.gerar(conversorCancelamentoProtesto.converter(this.remessaAutorizacaoCancelamento), getArquivoFisico());
 	}
 
 	private File gerarArquivoCancelamentoProtesto() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private File gerarArquivoDesistenciaCancelamento() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Arquivo> arquivos = new ArrayList<Arquivo>();
+		arquivos.add(getArquivo());
+		
+		return geradorDeArquivosTXT.gerar(conversorCancelamentoProtesto.converter(this.remessaCancelamentoProtesto), getArquivoFisico());
 	}
 
 	private File gerarArquivoDesistenciaProtesto() {
 		List<Arquivo> arquivos = new ArrayList<Arquivo>();
 		arquivos.add(getArquivo());
 
-		return geradorDeArquivosTXT.gerar(conversorArquivoDesistenciaProtesto.converter(this.remessaDesistenciaProtesto), getArquivoFisico());
+		return geradorDeArquivosTXT.gerar(conversorDesistenciaProtesto.converter(this.remessaDesistenciaProtesto), getArquivoFisico());
 	}
 
 	public FabricaDeArquivoTXT fabricaArquivoTXT(File arquivoTXT, List<Remessa> remessas, List<Exception> erros) {
@@ -139,7 +145,6 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		this.remessas = remessas;
 
 		validarTXT();
-
 		return this;
 	}
 

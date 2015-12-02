@@ -48,11 +48,11 @@ public class RegistroDesistenciaProtestoVO extends AbstractArquivoVO {
 	@XmlAttribute(name = "t07")
 	private String solicitacaoCancelamentoSustacao;
 
-	@IAtributoArquivo(ordem = 8, posicao = 91, tamanho = 12, descricao = "agencia conta", obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 8, posicao = 91, tamanho = 12, formato="0", descricao = "agencia conta", obrigatoriedade = true)
 	@XmlAttribute(name = "t08")
 	private String agenciaConta;
 
-	@IAtributoArquivo(ordem = 9, posicao = 103, tamanho = 12, descricao = "carteria / nosso número", obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 9, posicao = 103, tamanho = 12,formato="0",  descricao = "carteria / nosso número", obrigatoriedade = true)
 	@XmlAttribute(name = "t09")
 	private String carteiraNossoNumero;
 

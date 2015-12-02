@@ -55,7 +55,7 @@ public class FabricaDeArquivo {
 	@Autowired
 	private ConversorRemessaArquivo conversorRemessaArquivo;
 	@Autowired
-	private ConversorArquivoDesistenciaProtesto conversorArquivoDesistenciaProtesto;
+	private ConversorDesistenciaProtesto conversorArquivoDesistenciaProtesto;
 	@Autowired
 	private TipoArquivoMediator tipoArquivoMediator;
 
