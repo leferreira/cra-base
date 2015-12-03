@@ -267,7 +267,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		return instrumentoProtesto;
 	}
 
-	@Column(name = "COMPLEMENTO_REGISTRO", length=655360)
+	@Column(name = "COMPLEMENTO_REGISTRO", length=255)
 	public String getComplementoRegistro() {
 		if (complementoRegistro != null) {
 			if (complementoRegistro.length() > 19){

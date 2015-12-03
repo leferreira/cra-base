@@ -26,6 +26,7 @@ public class Anexo extends AbstractEntidade<Anexo> {
 	private static final long serialVersionUID = 123523;
 
 	private int id;
+	private String documentoAnexo;
 	private TituloRemessa titulo;
 
 	@Id
@@ -40,6 +41,11 @@ public class Anexo extends AbstractEntidade<Anexo> {
 	public TituloRemessa getTitulo() {
 		return titulo;
 	}
+	
+	@Column(name = "DOCUMENTO_ANEXO", columnDefinition="character varying(655360)")
+	public String getDocumentoAnexo() {
+		return documentoAnexo;
+	}
 
 	public void setId(int id) {
 		this.id = id;
@@ -47,6 +53,10 @@ public class Anexo extends AbstractEntidade<Anexo> {
 
 	public void setTitulo(TituloRemessa Titulo) {
 		this.titulo = Titulo;
+	}
+	
+	public void setDocumentoAnexo(String documentoAnexo) {
+		this.documentoAnexo = documentoAnexo;
 	}
 
 	@Override

@@ -165,8 +165,10 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 					
 					Anexo anexoArquivo = new Anexo();
 					anexoArquivo.setTitulo(titulo);
+					anexoArquivo.setDocumentoAnexo(tituloVO.getComplementoRegistro());
 					
 					titulo.setAnexo(anexoArquivo);
+					titulo.setComplementoRegistro(StringUtils.EMPTY);
 				}
 			}
 		}

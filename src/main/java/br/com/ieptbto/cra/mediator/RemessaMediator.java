@@ -528,19 +528,22 @@ public class RemessaMediator {
 	}
 
 	private void decodificarArquivosAnexos(Usuario user, String path, Remessa remessa) {
+		
 		try {
 			List<TituloRemessa> titulos = tituloDAO.buscarTitulosPorRemessa(remessa, user.getInstituicao());
 			if (!titulos.isEmpty()) { 
 				for (TituloRemessa titulo : titulos) {
-					DecoderString decoderString = new DecoderString();
-					String nomeArquivoZip = titulo.getNomeDevedor() + "_"
-					        + titulo.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
-	
-					decoderString.decode(titulo.getComplementoRegistro(),
-					        ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA
-					                + remessa.getArquivo().getId() + ConfiguracaoBase.BARRA
-					                + remessa.getId() + ConfiguracaoBase.BARRA,
-					        nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP); 
+					if (titulo.getAnexo() != null) {
+						DecoderString decoderString = new DecoderString();
+						String nomeArquivoZip = titulo.getNomeDevedor() + "_"
+						        + titulo.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
+		
+						decoderString.decode(titulo.getAnexo().getDocumentoAnexo(),
+						        ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA
+						                + remessa.getArquivo().getId() + ConfiguracaoBase.BARRA
+						                + remessa.getId() + ConfiguracaoBase.BARRA,
+						        nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP); 
+					}
 				}
 			}
 
