@@ -190,8 +190,8 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
 			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", instituicao.getMunicipio().getCodigoIBGE()));
 		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
-			criteria.createAlias("remessaDesistenciaProtesto", "remessaDesistenciaProtesto");
-			criteria.createAlias("remessaDesistenciaProtesto.cabecalho", "cabecalhoArquivo");
+			criteria.createAlias("remessaAutorizacaoCancelamento", "remessaAutorizacaoCancelamento");
+			criteria.createAlias("remessaAutorizacaoCancelamento.cabecalho", "cabecalhoArquivo");
 			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", instituicao.getCodigoCompensacao()));
 		}
 		criteria.add(Restrictions.eq("download", false));
