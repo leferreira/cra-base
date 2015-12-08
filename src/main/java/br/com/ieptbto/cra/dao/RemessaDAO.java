@@ -276,7 +276,25 @@ public class RemessaDAO extends AbstractBaseDAO {
 					+ "AND org.tipo_instituicao_id<>4 "
 					+ "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
 					+ "GROUP BY mun.nome_municipio,t.remessa_id "
-					+ "ORDER BY mun.nome_municipio";
+					+ "ORDER BY remessa_id ASC";
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
+			q = "select mun.nome_municipio,t.remessa_id "
+					+ "from TB_TITULO t "
+					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
+					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_destino_id=ins.id_instituicao "
+					+ "INNER JOIN tb_instituicao AS org ON rem.instituicao_origem_id=org.id_instituicao "
+					+ "INNER JOIN tb_municipio AS mun ON ins.municipio_id=mun.id_municipio "
+					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) "
+					+ "from TB_TITULO tit "
+					+ "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
+					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
+					+ "where con.titulo_id IS NULL "
+					+ "and tit.id_titulo > 37085) "
+					+ "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
+					+ "OR rem.status_remessa LIKE 'AGUARDANDO' "
+					+ "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
+					+ "GROUP BY mun.nome_municipio,t.remessa_id "
+					+ "ORDER BY remessa_id ASC";
 		}
 		
 		Query query = getSession().createSQLQuery(q);

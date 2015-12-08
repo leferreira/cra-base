@@ -11,9 +11,10 @@ import br.com.ieptbto.cra.entidade.Avalista;
 import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamentoConvenio;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
 
 /**
  * @author Thasso Araújo
@@ -49,12 +50,13 @@ public class TituloFiliadoMediator {
 		tituloFiliadoDAO.enviarTitulosPendentes(listaTitulosFiliado);
 	}
 
-	public List<TituloFiliado> consultarTitulosFiliado(Usuario user, TituloFiliado tituloBuscado) {
-		return tituloFiliadoDAO.consultarTitulosFiliado(user, tituloBuscado);
+	public List<TituloFiliado> consultarTitulosFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim, Municipio pracaProtesto, 
+			TituloFiliado tituloBuscado, SituacaoTituloConvenio situacaoTituloAguardando) {
+		return tituloFiliadoDAO.consultarTitulosFiliado(filiado, dataInicio, dataFim, pracaProtesto ,tituloBuscado, situacaoTituloAguardando);
 	}
 
-	public List<TituloFiliado> consultarTitulosConvenio(Instituicao instituicao, TituloFiliado tituloBuscado) {
-		return tituloFiliadoDAO.consultarTitulosConvenio(instituicao, tituloBuscado);
+	public List<TituloFiliado> consultarTitulosConvenio(Instituicao convenio, LocalDate dataInicio, LocalDate dataFim, Filiado filiado, Municipio pracaProtesto, TituloFiliado tituloBuscado) {
+		return tituloFiliadoDAO.consultarTitulosConvenio(convenio, dataInicio, dataFim,filiado, pracaProtesto, tituloBuscado);
 	}
 
 	public List<Avalista> buscarAvalistasPorTitulo(TituloFiliado titulo){
@@ -81,5 +83,9 @@ public class TituloFiliadoMediator {
 	
 	public int quatidadeTitulosFinalizadosFiliados(Filiado filiado, LocalDate dataInicio, LocalDate dataFim) {
 		return tituloFiliadoDAO.quatidadeTitulosFnalizados(filiado, dataInicio, dataFim);
+	}
+
+	public SolicitacaoDesistenciaCancelamentoConvenio enviarSolicitacaoDesistenciaCancelamento(SolicitacaoDesistenciaCancelamentoConvenio solicitacao) {
+		return tituloFiliadoDAO.enviarSolicitacaoDesistenciaCancelamento(solicitacao);
 	}
 }

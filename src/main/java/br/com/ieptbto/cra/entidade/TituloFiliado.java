@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
@@ -57,8 +58,11 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	private Filiado filiado;
 	private SituacaoTituloConvenio situacaoTituloConvenio;
 	private LocalDate dataEnvioCRA;
+	private LocalDate dataEntrada;
 	private TipoEspecieTitulo especieTitulo;
 	private String CpfCnpj;
+	
+	private SolicitacaoDesistenciaCancelamentoConvenio solicitacaoDesistenciaCancelamento;
 
 	@Override
 	@Id
@@ -115,6 +119,11 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 		}
 		return enderecoDevedor;
 	}
+	
+	@OneToOne(mappedBy="tituloFiliado")
+	public SolicitacaoDesistenciaCancelamentoConvenio getSolicitacaoDesistenciaCancelamento() {
+		return solicitacaoDesistenciaCancelamento;
+	}
 
 	@Column(name = "CIDADE_DEVEDOR", length = 20)
 	public String getCidadeDevedor() {
@@ -132,6 +141,11 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	@Column(name = "UF_DEVEDOR", length = 2)
 	public String getUfDevedor() {
 		return ufDevedor;
+	}
+	
+	public void setSolicitacaoDesistenciaCancelamento(
+			SolicitacaoDesistenciaCancelamentoConvenio solicitacaoDesistenciaCancelamento) {
+		this.solicitacaoDesistenciaCancelamento = solicitacaoDesistenciaCancelamento;
 	}
 
 	@ManyToOne
@@ -162,6 +176,14 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	public LocalDate getDataEnvioCRA() {
 		return dataEnvioCRA;
 	}
+	
+	@Column(name = "DATA_ENTRADA")
+	public LocalDate getDataEntrada() {
+		if (dataEntrada == null) {
+			dataEntrada = new LocalDate();
+		}
+		return dataEntrada;
+	}
 
 	@Column(name = "CPF_CNPJ_DEVEDOR", length = 18)
 	public String getCpfCnpj() {
@@ -189,6 +211,10 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 
 	public void setValorTitulo(BigDecimal valorTitulo) {
 		this.valorTitulo = valorTitulo;
+	}
+	
+	public void setDataEntrada(LocalDate dataEntrada) {
+		this.dataEntrada = dataEntrada;
 	}
 
 	public void setValorSaldoTitulo(BigDecimal valorSaldoTitulo) {

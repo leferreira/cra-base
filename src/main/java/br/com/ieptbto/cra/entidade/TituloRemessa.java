@@ -500,11 +500,9 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.setDocumentoSacador(tituloFiliado.getFiliado().getCnpjCpf());
 		this.setEnderecoSacadorVendedor(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getEndereco()));
 		this.setCepSacadorVendedor(tituloFiliado.getFiliado().getCep());
-		this.setCidadeSacadorVendedor(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio()
-		        .toUpperCase()));
+		this.setCidadeSacadorVendedor(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
 		this.setUfSacadorVendedor(tituloFiliado.getFiliado().getUf());
-		this.setNossoNumero(gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao()
-		        + tituloFiliado.getId()));
+		this.setNossoNumero(gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao()+ tituloFiliado.getId()));
 		this.setEspecieTitulo(tituloFiliado.getEspecieTitulo().getConstante());
 		this.setNumeroTitulo(tituloFiliado.getNumeroTitulo());
 		this.setDataEmissaoTitulo(tituloFiliado.getDataEmissao());
@@ -523,7 +521,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.setNumeroIdentificacaoDevedor(tituloFiliado.getCpfCnpj());
 		this.setCepDevedor(tituloFiliado.getCepDevedor());
 		this.setCidadeDevedor(RemoveAcentosUtil.removeAcentos(tituloFiliado.getCidadeDevedor()));
-		this.setBairroDevedor(tituloFiliado.getBairroDevedor());
+		this.setBairroDevedor(RemoveAcentosUtil.removeAcentos(tituloFiliado.getBairroDevedor()));
 		this.setUfDevedor(tituloFiliado.getUfDevedor());
 		this.setComplementoRegistro(buscarAlineaCheque(tituloFiliado));
 	}
@@ -537,11 +535,9 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.setDocumentoSacador(avalista.getTituloFiliado().getFiliado().getCnpjCpf());
 		this.setEnderecoSacadorVendedor(RemoveAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getEndereco()));
 		this.setCepSacadorVendedor(avalista.getTituloFiliado().getFiliado().getCep());
-		this.setCidadeSacadorVendedor(RemoveAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getMunicipio()
-		        .getNomeMunicipio().toUpperCase()));
+		this.setCidadeSacadorVendedor(RemoveAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
 		this.setUfSacadorVendedor(avalista.getTituloFiliado().getFiliado().getUf());
-		this.setNossoNumero(gerarNossoNumero(avalista.getTituloFiliado().getFiliado().getInstituicaoConvenio().getCodigoCompensacao()
-		        + avalista.getTituloFiliado().getId()));
+		this.setNossoNumero(gerarNossoNumero(avalista.getTituloFiliado().getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + avalista.getTituloFiliado().getId()));
 		this.setEspecieTitulo(avalista.getTituloFiliado().getEspecieTitulo().getConstante());
 		this.setNumeroTitulo(avalista.getTituloFiliado().getNumeroTitulo());
 		this.setDataEmissaoTitulo(avalista.getTituloFiliado().getDataEmissao());
@@ -549,13 +545,11 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.setTipoMoeda("001");
 		this.setValorTitulo(avalista.getTituloFiliado().getValorTitulo());
 		this.setSaldoTitulo(avalista.getTituloFiliado().getValorSaldoTitulo());
-		this.setPracaProtesto(RemoveAcentosUtil.removeAcentos(avalista.getTituloFiliado().getPracaProtesto().getNomeMunicipio()
-		        .toUpperCase()));
+		this.setPracaProtesto(RemoveAcentosUtil.removeAcentos(avalista.getTituloFiliado().getPracaProtesto().getNomeMunicipio().toUpperCase()));
 		this.setTipoEndoso("M");
 		this.setInformacaoSobreAceite("N");
 		this.setNumeroControleDevedor(numeroControleDevedor);
 		this.setNomeDevedor(RemoveAcentosUtil.removeAcentos(avalista.getNome()));
-		// this.setDocumentoDevedor(avalista.getDocumento());
 		this.setEnderecoDevedor(RemoveAcentosUtil.removeAcentos(avalista.getEndereco()));
 		this.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(avalista.getDocumento()));
 		this.setNumeroIdentificacaoDevedor(avalista.getDocumento());

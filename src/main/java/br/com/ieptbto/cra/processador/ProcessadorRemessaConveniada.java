@@ -198,8 +198,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private CabecalhoRemessa setCabecalho(TituloFiliado tituloFiliado, Instituicao instituicaoDestino) {
 		CabecalhoRemessa cabecalho = new CabecalhoRemessa();
 		cabecalho.setDataMovimento(new LocalDate());
-		cabecalho.setAgenciaCentralizadora(
-		        StringUtils.leftPad(tituloFiliado.getFiliado().getInstituicaoConvenio().getAgenciaCentralizadora(), 6, "0"));
+		cabecalho.setAgenciaCentralizadora(StringUtils.leftPad(tituloFiliado.getFiliado().getInstituicaoConvenio().getAgenciaCentralizadora(), 6, "0"));
 		cabecalho.setCodigoMunicipio(tituloFiliado.getPracaProtesto().getCodigoIBGE());
 		cabecalho.setIdentificacaoRegistro(TipoRegistro.CABECALHO);
 		cabecalho.setIdentificacaoTransacaoRemetente("BFO");
@@ -208,8 +207,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		cabecalho.setNomePortador(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getInstituicaoConvenio().getRazaoSocial()));
 		cabecalho.setNumeroCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
 		cabecalho.setNumeroSequencialRegistroArquivo("0001");
-		cabecalho
-		        .setNumeroSequencialRemessa(gerarNumeroSequencial(tituloFiliado.getFiliado().getInstituicaoConvenio(), instituicaoDestino));
+		cabecalho.setNumeroSequencialRemessa(gerarNumeroSequencial(tituloFiliado.getFiliado().getInstituicaoConvenio(), instituicaoDestino));
 		cabecalho.setVersaoLayout("043");
 		cabecalho.setQtdTitulosRemessa(1);
 		cabecalho.setQtdRegistrosRemessa(1);

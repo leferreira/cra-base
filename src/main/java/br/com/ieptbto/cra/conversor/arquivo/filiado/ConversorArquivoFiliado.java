@@ -117,6 +117,11 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 
 		return cabecalho;
 	}
+	
+//	private Integer gerarNumeroSequencial(Instituicao convenio, Instituicao instituicaoDestino) {
+//		int quantidadeAtual = remessaMediator.getNumeroSequencialConvenio(convenio, instituicaoDestino);
+//		return Integer.parseInt(StringUtils.leftPad(Integer.toString(quantidadeAtual + 1), 5, "0"));
+//	}
 
 	private void processarArquivoRecebido(Arquivo arquivo) {
 		Map<String, List<List<TemplateLayoutEmpresa>>> listaCampos = new HashMap<>();
@@ -231,6 +236,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		titulo.setCidadeSacadorVendedor(RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getMunicipio().getNomeMunicipio().toUpperCase()));
 		titulo.setUfSacadorVendedor(remessa.getInstituicaoOrigem().getMunicipio().getUf());
 		titulo.setEnderecoDevedor(RemoveAcentosUtil.removeAcentos(titulo.getEnderecoDevedor()));
+		titulo.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(titulo.getNumeroIdentificacaoDevedor()));
 		
 		titulo.setDataCadastro(new Date());
 		titulo.setEspecieTitulo("CDA");
@@ -240,6 +246,15 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		titulo.setValorTitulo(titulo.getSaldoTitulo());
 		titulo.setRemessa(remessa);
 		return titulo;
+	}
+	
+	private String verificarTipoIdentificacaoDevedor(String documentoDevedor) {
+		if (documentoDevedor != null) {
+			if (documentoDevedor.trim().length() <= 11) {
+				return "002";
+			}
+		}
+		return "001";
 	}
 
 	private Object getValorConvertido(String valor, Class<?> propertyType, String nomeCampo) {

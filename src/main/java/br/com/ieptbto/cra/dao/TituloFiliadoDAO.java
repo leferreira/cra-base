@@ -15,10 +15,9 @@ import br.com.ieptbto.cra.entidade.Avalista;
 import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamentoConvenio;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.entidade.UsuarioFiliado;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
 import br.com.ieptbto.cra.exception.InfraException;
 
@@ -141,64 +140,68 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 	}
 
 	public TituloRemessa buscarTituloDoConvenioNaCra(TituloFiliado tituloFiliado) {
-		// TODO Auto-generated method stub
-		return null;
+		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.add(Restrictions.eq("codigoPortador", tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao()));
+		criteria.add(Restrictions.eq("numeroTitulo", tituloFiliado.getNumeroTitulo()));
+		criteria.add(Restrictions.eq("saldoTitulo", tituloFiliado.getValorSaldoTitulo()));
+		criteria.add(Restrictions.ilike("nomeSacadorVendedor", tituloFiliado.getFiliado().getRazaoSocial().toUpperCase(), MatchMode.EXACT));
+		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<TituloFiliado> consultarTitulosFiliado(Usuario user, TituloFiliado tituloBuscado) {
-		Criteria criteria = getCriteria(UsuarioFiliado.class);
-		criteria.createAlias("filiado", "filiado");
-		criteria.add(Restrictions.eq("usuario", user));
-		Filiado empresaFiliado  = UsuarioFiliado.class.cast(criteria.uniqueResult()).getFiliado();
+	public List<TituloFiliado> consultarTitulosFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim, 
+			Municipio pracaProtesto, TituloFiliado tituloFiliado, SituacaoTituloConvenio situacaoTituloAguardando) {
+		Criteria criteria = getCriteria(TituloFiliado.class);
+		criteria.add(Restrictions.eq("filiado", filiado));
 
-		Criteria criteriaTitulos = getCriteria(TituloFiliado.class);
-		criteriaTitulos.add(Restrictions.eq("filiado", empresaFiliado));
+		if (tituloFiliado.getNumeroTitulo() != null)
+			criteria.add(Restrictions.ilike("numeroTitulo", tituloFiliado.getNumeroTitulo(), MatchMode.EXACT));
 
-		if (tituloBuscado.getNumeroTitulo() != null)
-			criteriaTitulos.add(Restrictions.ilike("numeroTitulo", tituloBuscado.getNumeroTitulo(), MatchMode.EXACT));
+		if (tituloFiliado.getNomeDevedor() != null)
+			criteria.add(Restrictions.ilike("nomeDevedor", tituloFiliado.getNomeDevedor(), MatchMode.ANYWHERE));
 
-		if (tituloBuscado.getNomeDevedor() != null)
-			criteriaTitulos.add(Restrictions.ilike("nomeDevedor", tituloBuscado.getNomeDevedor(), MatchMode.ANYWHERE));
+		if (tituloFiliado.getDocumentoDevedor() != null)
+			criteria.add(Restrictions.ilike("documentoDevedor", tituloFiliado.getDocumentoDevedor(), MatchMode.ANYWHERE));
 
-		if (tituloBuscado.getDocumentoDevedor() != null)
-			criteriaTitulos.add(Restrictions.ilike("documentoDevedor", tituloBuscado.getDocumentoDevedor(), MatchMode.ANYWHERE));
+		if (dataInicio != null && dataFim != null)
+			criteria.add(Restrictions.between("dataEnvioCRA", dataInicio, dataFim));
 
-		if (tituloBuscado.getDataEmissao() != null)
-			criteriaTitulos.add(Restrictions.between("dataEmissao", tituloBuscado.getDataEmissao(), tituloBuscado.getDataEmissao()));
-
-		if (tituloBuscado.getPracaProtesto() != null)
-			criteriaTitulos.add(Restrictions.eq("pracaProtesto", tituloBuscado.getPracaProtesto()));
-
+		if (pracaProtesto != null)
+			criteria.add(Restrictions.ilike("pracaProtesto", pracaProtesto));
+		
+		if (situacaoTituloAguardando != null) 
+			criteria.add(Restrictions.ne("situacaoTituloConvenio", situacaoTituloAguardando));
+			
 		criteria.add(Restrictions.ne("situacaoTituloConvenio", SituacaoTituloConvenio.REMOVIDO));
-		criteriaTitulos.addOrder(Order.asc("nomeDevedor"));
-		return criteriaTitulos.list();
+		criteria.addOrder(Order.asc("nomeDevedor"));
+		return criteria.list();
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<TituloFiliado> consultarTitulosConvenio(Instituicao instituicao, TituloFiliado titulo) {
+	public List<TituloFiliado> consultarTitulosConvenio(Instituicao instituicao, LocalDate dataInicio, LocalDate dataFim, 
+			Filiado filiado, Municipio pracaProtesto, TituloFiliado tituloFiliado) {
 		Criteria criteria = getCriteria(TituloFiliado.class);
 		criteria.createAlias("filiado", "filiado");
 		criteria.createAlias("filiado.instituicaoConvenio", "filiado.instituicaoConvenio");
 		criteria.add(Restrictions.eq("filiado.instituicaoConvenio", instituicao));
 
-		if (titulo.getFiliado() != null)
-			criteria.add(Restrictions.eq("filiado", titulo.getFiliado()));
+		if (tituloFiliado.getNumeroTitulo() != null)
+			criteria.add(Restrictions.ilike("numeroTitulo", tituloFiliado.getNumeroTitulo(), MatchMode.EXACT));
 
-		if (titulo.getNumeroTitulo() != null)
-			criteria.add(Restrictions.ilike("numeroTitulo", titulo.getNumeroTitulo(), MatchMode.EXACT));
+		if (tituloFiliado.getNomeDevedor() != null)
+			criteria.add(Restrictions.ilike("nomeDevedor", tituloFiliado.getNomeDevedor(), MatchMode.ANYWHERE));
 
-		if (titulo.getNomeDevedor() != null)
-			criteria.add(Restrictions.ilike("nomeDevedor", titulo.getNomeDevedor(), MatchMode.ANYWHERE));
+		if (tituloFiliado.getDocumentoDevedor() != null)
+			criteria.add(Restrictions.eq("filiado", tituloFiliado.getFiliado()));
 
-		if (titulo.getDocumentoDevedor() != null)
-			criteria.add(Restrictions.ilike("documentoDevedor", titulo.getDocumentoDevedor(), MatchMode.ANYWHERE));
+		if (filiado != null) 
+			criteria.add(Restrictions.eq("filiado", filiado));
+		
+		if (dataInicio != null && dataFim != null)
+			criteria.add(Restrictions.between("dataEnvioCRA", dataInicio, dataFim));
 
-		if (titulo.getDataEmissao() != null)
-			criteria.add(Restrictions.between("dataEnvioCRA", titulo.getDataEmissao(), titulo.getDataEmissao()));
-
-		if (titulo.getPracaProtesto() != null)
-			criteria.add(Restrictions.eq("pracaProtesto", titulo.getPracaProtesto()));
+		if (pracaProtesto != null)
+			criteria.add(Restrictions.eq("pracaProtesto", pracaProtesto));
 
 		criteria.add(Restrictions.ne("situacaoTituloConvenio", SituacaoTituloConvenio.REMOVIDO));
 		criteria.addOrder(Order.desc("nomeDevedor"));
@@ -283,5 +286,21 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("situacaoTituloConvenio", SituacaoTituloConvenio.FINALIZADO));
 		criteria.add(Restrictions.between("dataEnvioCRA", dataInicio, dataFim));
 		return criteria.list().size();
+	}
+
+	public SolicitacaoDesistenciaCancelamentoConvenio enviarSolicitacaoDesistenciaCancelamento(SolicitacaoDesistenciaCancelamentoConvenio solicitacao) {
+		Transaction transaction = getBeginTransation();
+		try {
+			solicitacao.getTituloFiliado().setSolicitacaoDesistenciaCancelamento(solicitacao);
+			solicitacao.setTituloFiliado(update(solicitacao.getTituloFiliado()));
+			save(solicitacao);
+			logger.info("Solicitação de Desistência ou Cancelamento enviada !");
+			
+			transaction.commit();
+		} catch (Exception ex) {
+			logger.error(ex.getMessage());
+			new InfraException(ex.getMessage(), ex.getCause());
+		}
+		return solicitacao;
 	}
 }
