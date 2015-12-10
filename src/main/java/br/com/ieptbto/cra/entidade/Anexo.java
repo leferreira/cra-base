@@ -42,7 +42,7 @@ public class Anexo extends AbstractEntidade<Anexo> {
 		return titulo;
 	}
 	
-	@Column(name = "DOCUMENTO_ANEXO", columnDefinition="character varying(655360)")
+	@Column(name = "DOCUMENTO_ANEXO", columnDefinition="text")
 	public String getDocumentoAnexo() {
 		return documentoAnexo;
 	}

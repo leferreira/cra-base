@@ -404,9 +404,9 @@ public class RemessaMediator {
 		return remessaDao.buscarRemessasPorArquivo(instituicao, arquivo);
 	}
 
-	public Arquivo confirmacoesPendentes(Instituicao instituicao) {
+	public Arquivo arquivosPendentes(Instituicao instituicao) {
 		List<Remessa> remessas = remessaDao.confirmacoesPendentes(instituicao);
-//		 List<Remessa> remessas = new ArrayList<Remessa>();
+//		 List<Remessa> remessas = new ArrayList<Remessa>(); 
 		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
 		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
 		List<AutorizacaoCancelamento> autorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
@@ -419,7 +419,7 @@ public class RemessaMediator {
 		arquivo.setRemessaDesistenciaProtesto(remessaDesistenciaProtesto);
 		
 		RemessaAutorizacaoCancelamento remessaAutorizacaoCancelamento = new RemessaAutorizacaoCancelamento();
-		remessaAutorizacaoCancelamento.setAutorizacaoCancelamento(autorizacaoCancelamento);
+		remessaAutorizacaoCancelamento.setAutorizacaoCancelamento(autorizacaoCancelamento); 
 		arquivo.setRemessaAutorizacao(remessaAutorizacaoCancelamento);
 
 		RemessaCancelamentoProtesto remessaCancelamento = new RemessaCancelamentoProtesto();
