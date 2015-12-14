@@ -9,9 +9,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Thasso Araújo
  *
  */
-@XmlRootElement(name = "registro_trailler")
+@XmlRootElement(name = "trailler")
 @XmlAccessorType(XmlAccessType.NONE)
-public class RodapeSerasaVO {
+public class RodapeCnpVO {
 
 	@XmlAttribute
 	private String codigoRegistro;

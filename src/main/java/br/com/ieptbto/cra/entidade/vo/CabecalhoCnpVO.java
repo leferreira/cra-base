@@ -9,9 +9,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Thasso Araújo
  *
  */
-@XmlRootElement(name = "registro_header")
+@XmlRootElement(name = "header")
 @XmlAccessorType(XmlAccessType.NONE)
-public class CabecalhoSerasaVO {
+public class CabecalhoCnpVO {
 
 	@XmlAttribute
 	private String codigoRegistro;
