@@ -72,7 +72,12 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 
 		criteria.add(Restrictions.or(restrict1, restrict2));
 
-		return Instituicao.class.cast(criteria.uniqueResult());
+		if (criteria.uniqueResult() != null) {
+			return Instituicao.class.cast(criteria.uniqueResult());
+
+		}
+		return null;
+
 	}
 
 	public boolean isInstituicaoAtiva(Instituicao instituicao) {

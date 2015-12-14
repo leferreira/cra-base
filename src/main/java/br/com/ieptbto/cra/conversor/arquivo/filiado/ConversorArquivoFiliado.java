@@ -88,7 +88,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		rodape.setNomePortador(RemoveAcentosUtil.removeAcentos(getInstituicao().getRazaoSocial()).toUpperCase());
 		rodape.setNumeroCodigoPortador(getInstituicao().getCodigoCompensacao());
 		rodape.setRemessa(remessa);
-		rodape.setSomatorioQtdRemessa(new BigDecimal(remessa.getTitulos().size()*3));
+		rodape.setSomatorioQtdRemessa(new BigDecimal(remessa.getTitulos().size() * 3));
 		rodape.setSomatorioValorRemessa(valortotalTitulos);
 		rodape.setNumeroSequencialRegistroArquivo(String.valueOf(remessa.getTitulos().size() + 1));
 		return rodape;
@@ -117,11 +117,6 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 
 		return cabecalho;
 	}
-	
-//	private Integer gerarNumeroSequencial(Instituicao convenio, Instituicao instituicaoDestino) {
-//		int quantidadeAtual = remessaMediator.getNumeroSequencialConvenio(convenio, instituicaoDestino);
-//		return Integer.parseInt(StringUtils.leftPad(Integer.toString(quantidadeAtual + 1), 5, "0"));
-//	}
 
 	private void processarArquivoRecebido(Arquivo arquivo) {
 		Map<String, List<List<TemplateLayoutEmpresa>>> listaCampos = new HashMap<>();
@@ -169,46 +164,67 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 
 		for (String cidade : listaRegistros.keySet()) {
 
-			valortotalTitulos = BigDecimal.ZERO;
 			remessa = new Remessa();
-			listaTitulos = new ArrayList<>();
-			remessa.setTitulos(new ArrayList<Titulo>());
-			remessa.setArquivo(arquivo);
-			remessa.setInstituicaoOrigem(getInstituicao());
-			remessa.setInstituicaoDestino(getMunicipioDestino(cidade));
+			valortotalTitulos = BigDecimal.ZERO;
 
-			for (List<TemplateLayoutEmpresa> registro : listaRegistros.get(cidade)) {
-				titulo = CraConstructorUtils.newInstance(TituloRemessa.class);
-				BeanWrapper propertyAccessTitulo = PropertyAccessorFactory.forBeanPropertyAccess(titulo);
-				PropertyDescriptor[] propertyDescriptors = propertyAccessTitulo.getPropertyDescriptors();
-				for (TemplateLayoutEmpresa templateLayoutEmpresa : registro) {
-					for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-						String propertyName = propertyDescriptor.getName();
-						if (propertyName.equals(templateLayoutEmpresa.getCampo().getLabel())) {
-							propertyAccessTitulo.setPropertyValue(propertyName, getValorConvertido(templateLayoutEmpresa.getValor(),
-							        propertyAccessTitulo.getPropertyType(propertyName), propertyName));
-							break;
+			if (isCidadeDestinoValida(cidade, remessa)) {
+				listaTitulos = new ArrayList<>();
+				remessa.setTitulos(new ArrayList<Titulo>());
+				remessa.setArquivo(arquivo);
+				remessa.setInstituicaoOrigem(getInstituicao());
+
+				for (List<TemplateLayoutEmpresa> registro : listaRegistros.get(cidade)) {
+					titulo = CraConstructorUtils.newInstance(TituloRemessa.class);
+					BeanWrapper propertyAccessTitulo = PropertyAccessorFactory.forBeanPropertyAccess(titulo);
+					PropertyDescriptor[] propertyDescriptors = propertyAccessTitulo.getPropertyDescriptors();
+					for (TemplateLayoutEmpresa templateLayoutEmpresa : registro) {
+						for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+							String propertyName = propertyDescriptor.getName();
+							if (propertyName.equals(templateLayoutEmpresa.getCampo().getLabel())) {
+								propertyAccessTitulo.setPropertyValue(propertyName, getValorConvertido(templateLayoutEmpresa.getValor(),
+								        propertyAccessTitulo.getPropertyType(propertyName), propertyName));
+								break;
+							}
+
 						}
-
 					}
+					valortotalTitulos = valortotalTitulos.add(titulo.getSaldoTitulo());
+					listaTitulos.add(preencherTitulo(titulo, remessa));
 				}
-				valortotalTitulos = valortotalTitulos.add(titulo.getSaldoTitulo());
-				listaTitulos.add(preencherTitulo(titulo, remessa));
+				remessa.getTitulos().addAll(listaTitulos);
+				remessa.setCabecalho(getCabecalhoRemessa(remessa, cidade));
+				remessa.setRodape(getRodapeRemessa(remessa, valortotalTitulos));
+				remessas.add(remessa);
+			} else {
+				logger.error("A cidade " + cidade + " não foi encontrado na base de dados.");
+				getErros().add(new InfraException("A cidade " + cidade + " não foi encontrado na base de dados."));
 			}
-			remessa.getTitulos().addAll(listaTitulos);
-			remessa.setCabecalho(getCabecalhoRemessa(remessa, cidade));
-			remessa.setRodape(getRodapeRemessa(remessa, valortotalTitulos));
-			remessas.add(remessa);
 		}
 		arquivo.setRemessas(remessas);
 
 	}
 
-	private Instituicao getMunicipioDestino(String cidade) {
-		if (!getInstituicaoDestino().containsKey(cidade)) {
-			getInstituicaoDestino().put(cidade, instituicaoMediator.buscarInstituicaoPorNomeCidade(cidade));
+	/**
+	 * 
+	 * Verifica se a cidade de destino do título existe na base de dados.
+	 * 
+	 * @param cidade
+	 * @param remessa
+	 * @return
+	 */
+	private boolean isCidadeDestinoValida(String cidade, Remessa remessa) {
+		if (getInstituicaoDestino().containsKey(cidade)) {
+			remessa.setInstituicaoDestino(getInstituicaoDestino().get(cidade));
+			return true;
 		}
-		return getInstituicaoDestino().get(cidade);
+
+		Instituicao cidadeDestino = instituicaoMediator.buscarInstituicaoPorNomeCidade(cidade);
+		if (cidadeDestino == null) {
+			return false;
+		}
+		remessa.setInstituicaoDestino(cidadeDestino);
+		getInstituicaoDestino().put(cidade, cidadeDestino);
+		return true;
 	}
 
 	private String getCodigoMunicipio(String cidade) {
@@ -228,16 +244,17 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 	private TituloRemessa preencherTitulo(TituloRemessa titulo, Remessa remessa) {
 		titulo.setIdentificacaoRegistro(TipoRegistro.TITULO);
 		titulo.setCodigoPortador(getInstituicao().getCodigoCompensacao());
-		titulo.setAgenciaCodigoCedente(StringUtils.leftPad(getInstituicao().getCodigoCompensacao() + DataUtil.getDataAtual(new SimpleDateFormat("MMyyyy")), 15, "0"));
+		titulo.setAgenciaCodigoCedente(StringUtils
+		        .leftPad(getInstituicao().getCodigoCompensacao() + DataUtil.getDataAtual(new SimpleDateFormat("MMyyyy")), 15, "0"));
 		titulo.setNomeCedenteFavorecido(RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getRazaoSocial()).toUpperCase());
 		titulo.setNomeSacadorVendedor(RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getRazaoSocial()).toUpperCase());
 		titulo.setDocumentoSacador(remessa.getInstituicaoOrigem().getCnpj());
 		titulo.setEnderecoSacadorVendedor(RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getEndereco()).toUpperCase());
-		titulo.setCidadeSacadorVendedor(RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getMunicipio().getNomeMunicipio().toUpperCase()));
+		titulo.setCidadeSacadorVendedor(
+		        RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getMunicipio().getNomeMunicipio().toUpperCase()));
 		titulo.setUfSacadorVendedor(remessa.getInstituicaoOrigem().getMunicipio().getUf());
 		titulo.setEnderecoDevedor(RemoveAcentosUtil.removeAcentos(titulo.getEnderecoDevedor()));
-		titulo.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(titulo.getNumeroIdentificacaoDevedor()));
-		
+
 		titulo.setDataCadastro(new Date());
 		titulo.setEspecieTitulo("CDA");
 		titulo.setDataOcorrencia(new LocalDate());
@@ -246,15 +263,6 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		titulo.setValorTitulo(titulo.getSaldoTitulo());
 		titulo.setRemessa(remessa);
 		return titulo;
-	}
-	
-	private String verificarTipoIdentificacaoDevedor(String documentoDevedor) {
-		if (documentoDevedor != null) {
-			if (documentoDevedor.trim().length() <= 11) {
-				return "002";
-			}
-		}
-		return "001";
 	}
 
 	private Object getValorConvertido(String valor, Class<?> propertyType, String nomeCampo) {

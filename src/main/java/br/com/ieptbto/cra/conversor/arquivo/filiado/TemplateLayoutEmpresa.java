@@ -50,14 +50,31 @@ public class TemplateLayoutEmpresa {
 					if (listaLayout.getCampo().equals(CampoLayout.CIDADEDEVEDOR) && StringUtils.isNotBlank(dados[i])) {
 						cidade = dados[i];
 					} else if (listaLayout.getCampo().equals(CampoLayout.CIDADEDEVEDOR) && StringUtils.isBlank(dados[i])) {
-						list.add(new InfraException("Cidade não informada na linha " + Arrays.toString(dados)));
+						cidade = "Palmas";
 						logger.error("cidade não informada. " + Arrays.toString(dados));
+					}
+					if (listaLayout.getCampo().equals(CampoLayout.DOCUMENTODEVEDOR) && StringUtils.isNotBlank(dados[i])) {
+						validarCpfCnpj(dados[i], list, listaCampos);
 					}
 					break;
 				}
 			}
 		}
 		return new LinhaTemplateLayout(listaCampos, cidade);
+	}
+
+	private static void validarCpfCnpj(String dados, List<Exception> list, List<TemplateLayoutEmpresa> listaCampos) {
+		String tipo = null;
+		if (dados.length() == 11) {
+			tipo = "002";
+		} else if (dados.length() == 14) {
+			tipo = "001";
+		} else {
+			list.add(new InfraException("O CPF/CNPJ " + dados + " está com o tamanho incorreto."));
+			logger.error("O CPF/CNPJ " + dados + " está com o tamanho incorreto.");
+		}
+
+		listaCampos.add(new TemplateLayoutEmpresa(tipo, CampoLayout.TIPOIDENTIFICACAODEVEDOR));
 	}
 
 }
