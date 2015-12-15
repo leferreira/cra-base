@@ -19,6 +19,7 @@ import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamentoConvenio;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
+import br.com.ieptbto.cra.enumeration.TipoRelatorio;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -139,13 +140,25 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		return criteria.list().size();
 	}
 
+	@SuppressWarnings("unchecked")
 	public TituloRemessa buscarTituloDoConvenioNaCra(TituloFiliado tituloFiliado) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.add(Restrictions.eq("codigoPortador", tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao()));
 		criteria.add(Restrictions.eq("numeroTitulo", tituloFiliado.getNumeroTitulo()));
+		criteria.add(Restrictions.eq("dataEmissaoTitulo", tituloFiliado.getDataEmissao()));
+		criteria.add(Restrictions.eq("dataVencimentoTitulo", tituloFiliado.getDataVencimento()));
+		criteria.add(Restrictions.eq("valorTitulo", tituloFiliado.getValorTitulo()));
 		criteria.add(Restrictions.eq("saldoTitulo", tituloFiliado.getValorSaldoTitulo()));
 		criteria.add(Restrictions.ilike("nomeSacadorVendedor", tituloFiliado.getFiliado().getRazaoSocial().toUpperCase(), MatchMode.EXACT));
-		return TituloRemessa.class.cast(criteria.uniqueResult());
+		criteria.addOrder(Order.desc("dataCadastro"));
+		
+		List<TituloRemessa> titulosRemessa = criteria.list();
+		for (TituloRemessa titulo : titulosRemessa) {
+			if (titulo.getDataCadastro().before(tituloFiliado.getDataEntrada().toDate())) {
+				return titulo;
+			}
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -210,7 +223,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 
 	@SuppressWarnings("unchecked")
 	public List<TituloFiliado> buscarTitulosParaRelatorioFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim,
-	        Municipio pracaProtesto) {
+	        TipoRelatorio tipoRelatorio, Municipio pracaProtesto) {
 		Criteria criteria = getCriteria(TituloFiliado.class);
 
 		if (filiado != null)

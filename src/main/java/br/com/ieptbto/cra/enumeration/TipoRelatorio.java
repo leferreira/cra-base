@@ -29,6 +29,9 @@ public enum TipoRelatorio {
 	 * @return the label
 	 */
 	public String getLabel() {
+		if (label != null) {
+			return label.toUpperCase();
+		}
 		return label;
 	}
 	

@@ -193,8 +193,6 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 
 	@Override
 	public void validar() {
-		// TODO Auto-generated method stub
-
 	}
 
 	public List<RemessaVO> getArquivoVO() {

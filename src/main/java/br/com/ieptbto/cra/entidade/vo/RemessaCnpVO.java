@@ -13,39 +13,39 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement(name = "remessa")
-@XmlAccessorType(XmlAccessType.NONE)
+@XmlAccessorType(XmlAccessType.FIELD)
 public class RemessaCnpVO {
 
 	@XmlElement(name = "header")
-	private CabecalhoCnpVO cabecalhoSerasaVO;
+	private CabecalhoCnpVO cabecalhoCnpVO;
 	
 	@XmlElement(name = "detalhe")
-	private List<RegistrosCnpVO> registrosSerasaVO;
+	private List<RegistrosCnpVO> registrosCnpVO;
 	
 	@XmlElement(name = "trailler")
-	private RodapeCnpVO rodapeSerasaVO;
+	private RodapeCnpVO rodapeCnpVO;
 
-	public CabecalhoCnpVO getCabecalhoSerasaVO() {
-		return cabecalhoSerasaVO;
+	public CabecalhoCnpVO getCabecalhoCnpVO() {
+		return cabecalhoCnpVO;
 	}
 
-	public void setCabecalhoSerasaVO(CabecalhoCnpVO cabecalhoSerasaVO) {
-		this.cabecalhoSerasaVO = cabecalhoSerasaVO;
+	public void setCabecalhoCnpVO(CabecalhoCnpVO cabecalhoCnpVO) {
+		this.cabecalhoCnpVO = cabecalhoCnpVO;
 	}
 
-	public List<RegistrosCnpVO> getRegistrosSerasaVO() {
-		return registrosSerasaVO;
+	public List<RegistrosCnpVO> getRegistrosCnpVO() {
+		return registrosCnpVO;
 	}
 
-	public void setRegistrosSerasaVO(List<RegistrosCnpVO> registrosSerasaVO) {
-		this.registrosSerasaVO = registrosSerasaVO;
+	public void setRegistrosCnpVO(List<RegistrosCnpVO> registrosCnpVO) {
+		this.registrosCnpVO = registrosCnpVO;
 	}
 
-	public RodapeCnpVO getRodapeSerasaVO() {
-		return rodapeSerasaVO;
+	public RodapeCnpVO getRodapeCnpVO() {
+		return rodapeCnpVO;
 	}
 
-	public void setRodapeSerasaVO(RodapeCnpVO rodapeSerasaVO) {
-		this.rodapeSerasaVO = rodapeSerasaVO;
+	public void setRodapeCnpVO(RodapeCnpVO rodapeCnpVO) {
+		this.rodapeCnpVO = rodapeCnpVO;
 	}
 }
