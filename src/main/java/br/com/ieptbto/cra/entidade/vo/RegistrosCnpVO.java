@@ -131,6 +131,9 @@ public class RegistrosCnpVO {
 	private String especieProtesto;
 	
 	@XmlAttribute
+	private String emBranco487;
+	
+	@XmlAttribute
 	private String codigoErro3Posicoes;
 	
 	@XmlAttribute
@@ -462,5 +465,13 @@ public class RegistrosCnpVO {
 
 	public void setSequenciaRegistro(String sequenciaRegistro) {
 		this.sequenciaRegistro = sequenciaRegistro;
+	}
+	
+	public String getEmBranco487() {
+		return emBranco487;
+	}
+	
+	public void setEmBranco487(String emBranco487) {
+		this.emBranco487 = emBranco487;
 	}
 }
