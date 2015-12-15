@@ -15,54 +15,56 @@ public class CabecalhoCnpVO {
 
 	@XmlAttribute
 	private String codigoRegistro;
-	
+
 	@XmlAttribute
 	private String emBranco2;
-	
+
 	@XmlAttribute
 	private String dataMovimento;
-	
+
 	@XmlAttribute
 	private String emBranco53;
-	
+
 	@XmlAttribute
 	private String numeroRemessaArquivo;
-	
+
 	@XmlAttribute
 	private String emBranco68;
-	
+
 	@XmlAttribute
 	private String tipoDocumento;
-	
+
 	@XmlAttribute
-	private String numeroCnpjCpfResponsavelCartorio; // ajustar a direita e preencher com 0 a esquerda
-	
+	private String numeroCnpjCpfResponsavelCartorio; // ajustar a direita e
+	                                                 // preencher com 0 a
+	                                                 // esquerda
+
 	@XmlAttribute
 	private String identificacaoDoArquivo;
-	
+
 	@XmlAttribute
 	private String codigoRemessa;
-	
+
 	@XmlAttribute
 	private String numeroDDD;
-	
+
 	@XmlAttribute
 	private String numeroTelefoneInstituicaoInformante;
-	
+
 	@XmlAttribute
 	private String numeroRamalContato;
-	
+
 	@XmlAttribute
 	private String nomeContatoInstituicaoInformante;
-	
+
 	@XmlAttribute
 	private String numeroVersaoSoftware;
-	
+
 	@XmlAttribute
 	private String codigoEDI;
-	
+
 	@XmlAttribute
-	private String propriedadeEnvio;
+	private String periodicidadeEnvio;
 
 	public String getCodigoRegistro() {
 		return codigoRegistro;
@@ -192,11 +194,12 @@ public class CabecalhoCnpVO {
 		this.codigoEDI = codigoEDI;
 	}
 
-	public String getPropriedadeEnvio() {
-		return propriedadeEnvio;
+	public String getPeriodicidadeEnvio() {
+		return periodicidadeEnvio;
 	}
 
-	public void setPropriedadeEnvio(String propriedadeEnvio) {
-		this.propriedadeEnvio = propriedadeEnvio;
+	public void setPeriodicidadeEnvio(String periodicidadeEnvio) {
+		this.periodicidadeEnvio = periodicidadeEnvio;
 	}
+
 }
