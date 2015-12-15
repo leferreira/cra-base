@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.dao;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +40,6 @@ import br.com.ieptbto.cra.util.DataUtil;
 @Repository
 public class TituloDAO extends AbstractBaseDAO {
 
-	private static final String DEVOLVIDO = "5";
 	@Autowired
 	TituloSemTaxaCraDAO tituloSemTaxaCraDAO;
 	
@@ -259,13 +257,6 @@ public class TituloDAO extends AbstractBaseDAO {
 	private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao) {
 		TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao);
 
-		if (tituloConfirmacao.getTipoOcorrencia() != null) {
-			if (tituloConfirmacao.getTipoOcorrencia().equals(DEVOLVIDO)) {
-				tituloConfirmacao.setValorGravacaoEletronica(BigDecimal.ZERO);
-			} else {
-				tituloConfirmacao.setValorGravacaoEletronica(tituloConfirmacao.getRemessa().getInstituicaoDestino().getValorConfirmacao());
-			}
-		}
 		if (titulo == null) {
 			throw new InfraException(
 			        "O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] não existe em nossa base de dados.");

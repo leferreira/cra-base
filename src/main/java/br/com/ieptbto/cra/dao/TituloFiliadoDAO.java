@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.dao;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
@@ -142,16 +143,10 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 
 	@SuppressWarnings("unchecked")
 	public TituloRemessa buscarTituloDoConvenioNaCra(TituloFiliado tituloFiliado) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.add(Restrictions.eq("codigoPortador", tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao()));
-		criteria.add(Restrictions.eq("numeroTitulo", tituloFiliado.getNumeroTitulo()));
-		criteria.add(Restrictions.eq("dataEmissaoTitulo", tituloFiliado.getDataEmissao()));
-		criteria.add(Restrictions.eq("dataVencimentoTitulo", tituloFiliado.getDataVencimento()));
-		criteria.add(Restrictions.eq("valorTitulo", tituloFiliado.getValorTitulo()));
-		criteria.add(Restrictions.eq("saldoTitulo", tituloFiliado.getValorSaldoTitulo()));
-		criteria.add(Restrictions.ilike("nomeSacadorVendedor", tituloFiliado.getFiliado().getRazaoSocial().toUpperCase(), MatchMode.EXACT));
-		criteria.addOrder(Order.desc("dataCadastro"));
+		String nossoNumero = tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId();
 		
+		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.add(Restrictions.eq("nossoNumero", StringUtils.rightPad(nossoNumero, 15, "0")));
 		List<TituloRemessa> titulosRemessa = criteria.list();
 		for (TituloRemessa titulo : titulosRemessa) {
 			if (titulo.getDataCadastro().before(tituloFiliado.getDataEntrada().toDate())) {
