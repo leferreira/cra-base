@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Thasso Araújo
  *
  */
-@XmlRootElement(name = "trailler")
+@XmlRootElement(name = "rodape")
 @XmlAccessorType(XmlAccessType.NONE)
 public class RodapeCnpVO {
 

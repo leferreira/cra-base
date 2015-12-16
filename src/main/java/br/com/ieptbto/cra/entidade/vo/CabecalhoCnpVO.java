@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Thasso Araújo
  *
  */
-@XmlRootElement(name = "header")
+@XmlRootElement(name = "cabecalho")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CabecalhoCnpVO {
 

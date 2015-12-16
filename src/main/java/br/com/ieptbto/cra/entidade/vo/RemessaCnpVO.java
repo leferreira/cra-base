@@ -16,13 +16,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RemessaCnpVO {
 
-	@XmlElement(name = "header")
+	@XmlElement(name = "cabecalho")
 	private CabecalhoCnpVO cabecalhoCnpVO;
 	
-	@XmlElement(name = "detalhe")
-	private List<RegistrosCnpVO> registrosCnpVO;
+	@XmlElement(name = "titulo")
+	private List<TituloCnpVO> registrosCnpVO;
 	
-	@XmlElement(name = "trailler")
+	@XmlElement(name = "rodape")
 	private RodapeCnpVO rodapeCnpVO;
 
 	public CabecalhoCnpVO getCabecalhoCnpVO() {
@@ -33,11 +33,11 @@ public class RemessaCnpVO {
 		this.cabecalhoCnpVO = cabecalhoCnpVO;
 	}
 
-	public List<RegistrosCnpVO> getRegistrosCnpVO() {
+	public List<TituloCnpVO> getRegistrosCnpVO() {
 		return registrosCnpVO;
 	}
 
-	public void setRegistrosCnpVO(List<RegistrosCnpVO> registrosCnpVO) {
+	public void setRegistrosCnpVO(List<TituloCnpVO> registrosCnpVO) {
 		this.registrosCnpVO = registrosCnpVO;
 	}
 
