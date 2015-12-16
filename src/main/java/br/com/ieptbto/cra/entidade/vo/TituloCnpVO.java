@@ -5,13 +5,18 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import br.com.ieptbto.cra.enumeration.TipoRegistro;
+
 /**
  * @author Thasso Araújo
  *
  */
 @XmlRootElement(name = "titulo")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class TituloCnpVO {
+public class TituloCnpVO extends AbstractArquivoVO{
+
+	/***/
+	private static final long serialVersionUID = 1L;
 
 	@XmlAttribute
 	private String codigoRegistro;
@@ -473,5 +478,10 @@ public class TituloCnpVO {
 	
 	public void setEmBranco487(String emBranco487) {
 		this.emBranco487 = emBranco487;
+	}
+
+	@Override
+	public String getIdentificacaoRegistro() {
+		return TipoRegistro.TITULO.getConstante();
 	}
 }

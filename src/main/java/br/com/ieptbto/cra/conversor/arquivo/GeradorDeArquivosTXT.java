@@ -15,7 +15,7 @@ import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.DesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.RegistroDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.entidade.vo.RemessaCnp;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -75,7 +75,7 @@ public class GeradorDeArquivosTXT extends Gerador {
 		return arquivoFisico;
 	}
 
-	public void gerar(RemessaVO remessaVO, File arquivoTXT) {
+	public void gerar(RemessaCnp remessaVO, File arquivoTXT) {
 		try {
 			Map<Integer, String> titulos = new HashMap<Integer, String>();
 			BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivoTXT));
@@ -104,11 +104,11 @@ public class GeradorDeArquivosTXT extends Gerador {
 
 	}
 
-	public void gerar(List<RemessaVO> remessasVO, File arquivoTXT) {
+	public void gerar(List<RemessaCnp> remessasVO, File arquivoTXT) {
 		try {
 			BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivoTXT));
 
-			for (RemessaVO remessaVO : remessasVO) {
+			for (RemessaCnp remessaVO : remessasVO) {
 				bWrite.write(gerarLinha(remessaVO.getCabecalho()));
 				bWrite.write(NEW_LINE);
 				for (TituloVO tituloVO : remessaVO.getTitulos()) {

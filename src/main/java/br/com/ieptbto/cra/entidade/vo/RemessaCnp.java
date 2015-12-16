@@ -19,7 +19,7 @@ import br.com.ieptbto.cra.entidade.TipoArquivo;
 @SuppressWarnings("serial")
 @XmlRootElement(name = "remessa")
 @XmlAccessorType(XmlAccessType.NONE)
-public class RemessaVO extends AbstractArquivoVO {
+public class RemessaCnp extends AbstractArquivoVO {
 
 	@XmlElement(name = "hd")
 	private CabecalhoVO cabecalho;

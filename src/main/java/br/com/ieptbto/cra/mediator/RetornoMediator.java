@@ -32,12 +32,11 @@ public class RetornoMediator {
 	private static final int NUMERO_SEQUENCIAL_RETORNO = 1;
 	
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 	@Autowired
-	TipoArquivoDAO tipoArquivoDAO;
+	private TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
-	RetornoDAO retornoDao;
-	
+	private RetornoDAO retornoDao;
 	private Instituicao cra;
 	private TipoArquivo tipoArquivo;
 	private Arquivo arquivo;

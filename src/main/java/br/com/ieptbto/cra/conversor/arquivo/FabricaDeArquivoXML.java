@@ -20,7 +20,7 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.ConfirmacaoVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.entidade.vo.RemessaCnp;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
@@ -38,12 +38,12 @@ import br.com.ieptbto.cra.util.DataUtil;
 @Service
 public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 
-	private List<RemessaVO> arquivoVO;
+	private List<RemessaCnp> arquivoVO;
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
 	private Instituicao instituicaoEnvio;
 
-	public void fabrica(List<RemessaVO> arquivoFisico, Arquivo arquivo, List<Exception> erros) {
+	public void fabrica(List<RemessaCnp> arquivoFisico, Arquivo arquivo, List<Exception> erros) {
 		this.arquivoVO = arquivoFisico;
 		this.arquivo = arquivo;
 		this.erros = erros;
@@ -54,7 +54,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		this.arquivo = arquivo;
 		this.erros = erros;
 
-		RemessaVO remessaVO = new RemessaVO();
+		RemessaCnp remessaVO = new RemessaCnp();
 		remessaVO.setCabecalho(confirmacaoVO.getCabecalho());
 		remessaVO.setRodapes(confirmacaoVO.getRodape());
 		remessaVO.setTitulos(new ArrayList<TituloVO>());
@@ -77,7 +77,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 	}
 
 	public Arquivo converter() {
-		for (RemessaVO remessaVO : getArquivoVO()) {
+		for (RemessaCnp remessaVO : getArquivoVO()) {
 			if (validar(remessaVO)) {
 				Remessa remessa = new Remessa();
 				remessa.setArquivo(getArquivo());
@@ -97,7 +97,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		return getArquivo();
 	}
 
-	private boolean validar(RemessaVO remessaVO) {
+	private boolean validar(RemessaCnp remessaVO) {
 
 		validarCodigoMunicipio(remessaVO);
 		validarMunicipioAtivo(remessaVO);
@@ -108,7 +108,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		return false;
 	}
 
-	private void validarMunicipioAtivo(RemessaVO remessaVO) {
+	private void validarMunicipioAtivo(RemessaCnp remessaVO) {
 		try {
 			getInstituicaoDestino(remessaVO.getCabecalho());
 
@@ -119,7 +119,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		}
 	}
 
-	private void validarCodigoMunicipio(RemessaVO remessaVO) {
+	private void validarCodigoMunicipio(RemessaCnp remessaVO) {
 		if (StringUtils.isEmpty(remessaVO.getCabecalho().getCodigoMunicipio())) {
 			logger.error(CodigoErro.CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao());
 			getErros().add(new XmlCraException(CodigoErro.CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao(),
@@ -195,11 +195,11 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 	public void validar() {
 	}
 
-	public List<RemessaVO> getArquivoVO() {
+	public List<RemessaCnp> getArquivoVO() {
 		return arquivoVO;
 	}
 
-	public void setArquivoVO(List<RemessaVO> arquivoVO) {
+	public void setArquivoVO(List<RemessaCnp> arquivoVO) {
 		this.arquivoVO = arquivoVO;
 	}
 

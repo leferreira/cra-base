@@ -27,7 +27,7 @@ import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.entidade.vo.RemessaCnp;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.exception.ValidacaoErroException;
@@ -83,7 +83,7 @@ public class ProcessadorArquivo extends Processador {
 		}
 	}
 
-	public void processarArquivo(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo, Arquivo arquivo,
+	public void processarArquivo(List<RemessaCnp> arquivoRecebido, Usuario usuario, String nomeArquivo, Arquivo arquivo,
 	        List<Exception> erros) {
 		this.usuario = usuario;
 		this.arquivo = arquivo;
@@ -176,12 +176,12 @@ public class ProcessadorArquivo extends Processador {
 		setArquivo(fabricaDeArquivo.processarArquivoFisico(getArquivoFisico(), getArquivo(), getErros()));
 	}
 
-	private void salvarXMLTemporario(List<RemessaVO> arquivoRecebido) {
+	private void salvarXMLTemporario(List<RemessaCnp> arquivoRecebido) {
 		try {
 			FileWriter fw = new FileWriter(getArquivoFisico());
 			BufferedWriter bw = new BufferedWriter(fw);
 
-			for (RemessaVO remessaVO : arquivoRecebido) {
+			for (RemessaCnp remessaVO : arquivoRecebido) {
 				bw.write(gerarXML(remessaVO));
 			}
 
@@ -194,7 +194,7 @@ public class ProcessadorArquivo extends Processador {
 		}
 	}
 
-	private String gerarXML(RemessaVO mensagem) {
+	private String gerarXML(RemessaCnp mensagem) {
 		Writer writer = new StringWriter();
 		JAXBContext context;
 		try {

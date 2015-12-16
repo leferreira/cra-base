@@ -5,13 +5,18 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import br.com.ieptbto.cra.enumeration.TipoRegistro;
+
 /**
  * @author Thasso Araújo
  *
  */
 @XmlRootElement(name = "cabecalho")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CabecalhoCnpVO {
+public class CabecalhoCnpVO extends AbstractArquivoVO {
+
+	/***/
+	private static final long serialVersionUID = 1L;
 
 	@XmlAttribute
 	private String codigoRegistro;
@@ -202,4 +207,8 @@ public class CabecalhoCnpVO {
 		this.periodicidadeEnvio = periodicidadeEnvio;
 	}
 
+	@Override
+	public String getIdentificacaoRegistro() {
+		return TipoRegistro.CABECALHO.getConstante();
+	}
 }

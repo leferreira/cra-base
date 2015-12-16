@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.conversor.ConversorArquivoVo;
+import br.com.ieptbto.cra.conversor.ConversorArquivoVO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Confirmacao;
@@ -18,7 +18,7 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.entidade.vo.RemessaCnp;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
 
@@ -78,7 +78,7 @@ public class ConversorRemessaArquivo {
 	}
 
 	public Arquivo converter(ArquivoVO arquivoVO, Arquivo arquivo, List<Exception> erros) {
-		List<RemessaVO> remessas = ConversorArquivoVo.converterParaRemessaVO(arquivoVO);
+		List<RemessaCnp> remessas = ConversorArquivoVO.converterParaRemessaVO(arquivoVO);
 		arquivo.setRemessas(new ArrayList<Remessa>());
 
 		fabricaDeArquivo.processarArquivoXML(remessas, arquivo.getUsuarioEnvio(), arquivo.getNomeArquivo(), arquivo, erros);
@@ -86,8 +86,8 @@ public class ConversorRemessaArquivo {
 		return arquivo;
 	}
 
-	public List<RemessaVO> converter(List<Arquivo> arquivos) {
-		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
+	public List<RemessaCnp> converter(List<Arquivo> arquivos) {
+		List<RemessaCnp> remessasVO = new ArrayList<RemessaCnp>();
 
 		for (Arquivo arquivo : arquivos) {
 			remessasVO = converterRemessa(arquivo.getRemessaBanco());
@@ -95,10 +95,10 @@ public class ConversorRemessaArquivo {
 		return remessasVO;
 	}
 
-	public List<RemessaVO> converterRemessa(List<Remessa> remessas) {
-		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
+	public List<RemessaCnp> converterRemessa(List<Remessa> remessas) {
+		List<RemessaCnp> remessasVO = new ArrayList<RemessaCnp>();
 		for (Remessa remessa : remessas) {
-			RemessaVO remessaVO = new RemessaVO();
+			RemessaCnp remessaVO = new RemessaCnp();
 			remessaVO.setTitulos(new ArrayList<TituloVO>());
 			remessaVO.setCabecalho(CabecalhoVO.parseCabecalho(remessa.getCabecalho()));
 			remessaVO.getTitulos().addAll(converterTitulos(remessa.getTitulos()));
@@ -109,8 +109,8 @@ public class ConversorRemessaArquivo {
 		return remessasVO;
 	}
 
-	public RemessaVO converterRemessaVO(Remessa remessa) {
-		RemessaVO remessaVO = new RemessaVO();
+	public RemessaCnp converterRemessaVO(Remessa remessa) {
+		RemessaCnp remessaVO = new RemessaCnp();
 		remessaVO.setTitulos(new ArrayList<TituloVO>());
 		remessaVO.setCabecalho(CabecalhoVO.parseCabecalho(remessa.getCabecalho()));
 		remessaVO.getTitulos().addAll(converterTitulos(remessa.getTitulos()));

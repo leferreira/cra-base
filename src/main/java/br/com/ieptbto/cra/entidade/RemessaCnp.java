@@ -34,7 +34,7 @@ public class RemessaCnp extends AbstractEntidade<RemessaCnp> {
 	private CabecalhoCnp cabecalho;
 	private List<TituloCnp> titulos;
 	private RodapeCnp rodape;
-
+	
 	@Override
 	@Id
 	@Column(name = "ID_REMESSA_CNP", columnDefinition = "serial")

@@ -31,7 +31,7 @@ import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.entidade.vo.RemessaCnp;
 import br.com.ieptbto.cra.enumeration.LayoutArquivo;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
@@ -225,7 +225,7 @@ public class FabricaDeArquivo {
 		}
 	}
 
-	public void processarArquivoXML(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo, Arquivo arquivo,
+	public void processarArquivoXML(List<RemessaCnp> arquivoRecebido, Usuario usuario, String nomeArquivo, Arquivo arquivo,
 	        List<Exception> erros) {
 		arquivo.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.getTipoArquivoEnum(nomeArquivo)));
 		arquivo.setNomeArquivo(nomeArquivo);

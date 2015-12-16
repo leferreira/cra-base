@@ -25,9 +25,9 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class InstituicaoDAO extends AbstractBaseDAO {
 
 	@Autowired
-	TipoInstituicaoDAO tipoInstituicaoDAO;
+	private TipoInstituicaoDAO tipoInstituicaoDAO;
 	@Autowired
-	MunicipioDAO municipioDAO;
+	private MunicipioDAO municipioDAO;
 
 	public Instituicao salvar(Instituicao instituicao) {
 		Instituicao nova = new Instituicao();

@@ -5,13 +5,18 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import br.com.ieptbto.cra.enumeration.TipoRegistro;
+
 /**
  * @author Thasso Araújo
  *
  */
 @XmlRootElement(name = "rodape")
 @XmlAccessorType(XmlAccessType.NONE)
-public class RodapeCnpVO {
+public class RodapeCnpVO extends AbstractArquivoVO {
+
+	/***/
+	private static final long serialVersionUID = 1L;
 
 	@XmlAttribute
 	private String codigoRegistro;
@@ -46,4 +51,8 @@ public class RodapeCnpVO {
 		this.sequenciaRegistro = sequenciaRegistro;
 	}
 
+	@Override
+	public String getIdentificacaoRegistro() {
+		return TipoRegistro.RODAPE.getConstante();
+	}
 }

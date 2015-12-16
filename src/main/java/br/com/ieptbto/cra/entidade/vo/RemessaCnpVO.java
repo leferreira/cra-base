@@ -20,7 +20,7 @@ public class RemessaCnpVO {
 	private CabecalhoCnpVO cabecalhoCnpVO;
 	
 	@XmlElement(name = "titulo")
-	private List<TituloCnpVO> registrosCnpVO;
+	private List<TituloCnpVO> titulosCnpVO;
 	
 	@XmlElement(name = "rodape")
 	private RodapeCnpVO rodapeCnpVO;
@@ -33,12 +33,12 @@ public class RemessaCnpVO {
 		this.cabecalhoCnpVO = cabecalhoCnpVO;
 	}
 
-	public List<TituloCnpVO> getRegistrosCnpVO() {
-		return registrosCnpVO;
+	public List<TituloCnpVO> getTitulosCnpVO() {
+		return titulosCnpVO;
 	}
 
-	public void setRegistrosCnpVO(List<TituloCnpVO> registrosCnpVO) {
-		this.registrosCnpVO = registrosCnpVO;
+	public void setTitulosCnpVO(List<TituloCnpVO> tituloCnpVO) {
+		this.titulosCnpVO = tituloCnpVO;
 	}
 
 	public RodapeCnpVO getRodapeCnpVO() {
