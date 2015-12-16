@@ -58,7 +58,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 		return razaoSocial;
 	}
 
-	@Column(name = "CPF_CNPJ", length = 18, unique = true, nullable = false)
+	@Column(name = "CPF_CNPJ", length = 18, nullable = false)
 	public String getCnpjCpf() {
 		if (cnpjCpf == null){
 			cnpjCpf = StringUtils.EMPTY;
