@@ -13,7 +13,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class InstituicaoMediator {
 
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 
 	public Instituicao salvar(Instituicao instituicao) {
 		return instituicaoDAO.salvar(instituicao);

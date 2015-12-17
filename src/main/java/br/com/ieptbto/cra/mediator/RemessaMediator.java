@@ -47,7 +47,7 @@ import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaCnp;
+import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
@@ -117,7 +117,7 @@ public class RemessaMediator {
 		return conversorRemessaArquivo.converter(remessa);
 	}
 
-	public RemessaCnp buscarRemessaParaCartorio(Instituicao cartorio, String nome) {
+	public RemessaVO buscarRemessaParaCartorio(Instituicao cartorio, String nome) {
 		Remessa remessa = remessaDao.buscarRemessaParaCartorio(cartorio, nome);
 		if (remessa == null) {
 			return null;
@@ -136,7 +136,7 @@ public class RemessaMediator {
 	 * @return object
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Object processarArquivoXML(List<RemessaCnp> arquivoRecebido, Usuario usuario, String nomeArquivo) {
+	public Object processarArquivoXML(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
 		Arquivo arquivo = processarArquivoXMLManual(arquivoRecebido, usuario, nomeArquivo);
 
 		if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.SERPRO)) {
@@ -152,7 +152,7 @@ public class RemessaMediator {
 	 * @param nomeArquivo
 	 * @return
 	 */
-	public Arquivo processarArquivoXMLManual(List<RemessaCnp> arquivoRecebido, Usuario usuario, String nomeArquivo) {
+	public Arquivo processarArquivoXMLManual(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
 		Arquivo arquivo = new Arquivo();
 		arquivo.setUsuarioEnvio(usuario);
 		arquivo.setRemessas(new ArrayList<Remessa>());
@@ -448,7 +448,7 @@ public class RemessaMediator {
 		return autorizacaoCancelamentoDAO.buscarAutorizacaoCancelamento(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
-	public List<RemessaCnp> buscarArquivos(String nomeArquivo, Instituicao instituicao) {
+	public List<RemessaVO> buscarArquivos(String nomeArquivo, Instituicao instituicao) {
 		List<Arquivo> arquivos = new ArrayList<Arquivo>();
 		
 		if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {

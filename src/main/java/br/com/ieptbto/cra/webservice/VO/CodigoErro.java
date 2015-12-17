@@ -65,6 +65,9 @@ public enum CodigoErro {
 	SERPRO_NUMERO_PROTOCOLO_INVALIDO("2005","NUMERO PROTOOCOLO INVALIDO"),
 	
 	CNP_SUCESSO("0000","Envio efetuado com sucesso"),
+	CNP_USUARIO_NAO_PERMITIDO_ENVIO("0001","Usuario não pode enviar arquivo CNP."),
+	CNP_USUARIO_NAO_PERMITIDO_CONSULTA("0001","Usuario não pode consultar arquivos CNP."),
+	CNP_NAO_HA_ARQUIVOS_DISPONIVEIS("0001","Não há arquivos disponíveis."),
 	CNP_ENVIO_FORA_DO_HORARIO_LIMITE_DO_SERVICO("9999","Fora do horário limite de envio de Arquivo CNP."),
 	CNP_CONSULTA_FORA_DO_HORARIO_LIMITE_DO_SERVICO("9999","Fora do horário limite de consulta de Arquivo CNP."),
 	CNP_ARQUIVO_CNP_JA_ENVIADO_HOJE("9999","Arquivo CNP já enviado hoje.");

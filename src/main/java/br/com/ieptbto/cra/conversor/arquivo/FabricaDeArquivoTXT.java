@@ -36,7 +36,7 @@ import br.com.ieptbto.cra.entidade.vo.CabecalhoArquivoDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoCartorioDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RegistroDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaCnp;
+import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeArquivoDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeCartorioDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
@@ -149,7 +149,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	}
 
 	public void converterParaTXT() {
-		RemessaCnp remessaVO = new RemessaCnp();
+		RemessaVO remessaVO = new RemessaVO();
 		remessaVO.setTitulos(new ArrayList<TituloVO>());
 		BigDecimal valorTotalTitulos = BigDecimal.ZERO;
 
@@ -185,11 +185,11 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	}
 
 	public void converterParaArquivoTXT() {
-		List<RemessaCnp> remessasVO = new ArrayList<RemessaCnp>();
+		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
 
 		for (Remessa remessa : getRemessas()) {
 			setArquivo(remessa.getArquivo());
-			RemessaCnp remessaVO = new RemessaCnp();
+			RemessaVO remessaVO = new RemessaVO();
 			remessaVO.setTitulos(new ArrayList<TituloVO>());
 			BigDecimal valorTotalTitulos = BigDecimal.ZERO;
 
@@ -226,7 +226,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		gerarTXT(remessasVO);
 	}
 
-	private String somatorioSegurancaQuantidadeRemessa(RemessaCnp remessaVO) {
+	private String somatorioSegurancaQuantidadeRemessa(RemessaVO remessaVO) {
 		int somatorioQtdRemessa = 0;
 		if (remessaVO.getCabecalho() != null) {
 			somatorioQtdRemessa = Integer.parseInt(remessaVO.getCabecalho().getQtdRegistrosRemessa())
@@ -237,11 +237,11 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		return Integer.toString(somatorioQtdRemessa);
 	}
 
-	private void gerarTXT(RemessaCnp remessaVO) {
+	private void gerarTXT(RemessaVO remessaVO) {
 		geradorDeArquivosTXT.gerar(remessaVO, getArquivoFisico());
 	}
 
-	private void gerarTXT(List<RemessaCnp> remessasVO) {
+	private void gerarTXT(List<RemessaVO> remessasVO) {
 		geradorDeArquivosTXT.gerar(remessasVO, getArquivoFisico());
 	}
 

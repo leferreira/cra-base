@@ -1,5 +1,7 @@
 package br.com.ieptbto.cra.dao;
 
+import java.util.List;
+
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
@@ -51,6 +53,18 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));
 		criteria.add(Restrictions.eq("dataEnvio", new LocalDate()));
 		return ArquivoCnp.class.cast(criteria.uniqueResult());
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<RemessaCnp> buscarRemessasCnpPendentes() {
+		Criteria criteria =  getCriteria(RemessaCnp.class);
+		criteria.add(Restrictions.eq("", ""));
+		return criteria.list();
+	}
+
+	public void salvarArquivoCnpNacional(ArquivoCnp arquivoCnp) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

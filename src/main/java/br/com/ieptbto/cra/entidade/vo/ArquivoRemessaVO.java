@@ -17,13 +17,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ArquivoRemessaVO {
 
 	@XmlElement(name = "remessa")
-	private List<RemessaCnp> remessas;
+	private List<RemessaVO> remessas;
 
-	public List<RemessaCnp> getRemessas() {
+	public List<RemessaVO> getRemessas() {
 		return remessas;
 	}
 
-	public void setRemessas(List<RemessaCnp> remessas) {
+	public void setRemessas(List<RemessaVO> remessas) {
 		this.remessas = remessas;
 	}
 

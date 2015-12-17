@@ -12,7 +12,9 @@ import br.com.ieptbto.cra.entidade.RemessaCnp;
 import br.com.ieptbto.cra.entidade.RodapeCnp;
 import br.com.ieptbto.cra.entidade.TituloCnp;
 import br.com.ieptbto.cra.entidade.vo.ArquivoCnpVO;
+import br.com.ieptbto.cra.entidade.vo.CabecalhoCnpVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaCnpVO;
+import br.com.ieptbto.cra.entidade.vo.RodapeCnpVO;
 import br.com.ieptbto.cra.entidade.vo.TituloCnpVO;
 
 /**
@@ -40,6 +42,20 @@ public class ConversorArquivoCnpVO {
 	}
 	
 	public static List<RemessaCnpVO> converterParaRemessaCnpVO(ArquivoCnp arquivo) {
-		return null;
+		List<RemessaCnpVO> remessasVO = new ArrayList<RemessaCnpVO>();
+
+		for (RemessaCnp remessa : arquivo.getRemessaCnp()) {
+			RemessaCnpVO remessaVO = new RemessaCnpVO();
+			remessaVO.setCabecalhoCnpVO(new CabecalhoCnpConversor().converter(remessa.getCabecalho(), CabecalhoCnpVO.class));
+			
+			remessaVO.setTitulosCnpVO(new ArrayList<TituloCnpVO>());
+			for (TituloCnp titulo : remessa.getTitulos()) {
+				remessaVO.getTitulosCnpVO().add(new TituloCnpConversor().converter(titulo, TituloCnpVO.class));
+			}
+
+			remessaVO.setRodapeCnpVO(new RodapeCnpConversor().converter(remessa.getRodape(), RodapeCnpVO.class));
+			remessasVO.add(remessaVO);
+		}
+		return remessasVO;
 	}
 }
