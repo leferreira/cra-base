@@ -1,5 +1,6 @@
 package br.com.ieptbto.cra.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -7,6 +8,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.ArquivoCnp;
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -22,6 +24,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 
+	@Transactional
 	public ArquivoCnp salvarArquivoCartorioCentralNacionalProtesto(Usuario user, ArquivoCnp arquivoCnp) {
 		Transaction transaction = getBeginTransation();
 		try {
@@ -48,6 +51,7 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		return arquivoCnp;
 	}
 
+	@Transactional
 	public ArquivoCnp getArquivoCnpHojeInstituicao(Instituicao instituicao) {
 		Criteria criteria = getCriteria(ArquivoCnp.class);
 		criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));
@@ -55,11 +59,12 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		return ArquivoCnp.class.cast(criteria.uniqueResult());
 	}
 
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	public List<RemessaCnp> buscarRemessasCnpPendentes() {
-		Criteria criteria =  getCriteria(RemessaCnp.class);
-		criteria.add(Restrictions.eq("", ""));
-		return criteria.list();
+//		Criteria criteria =  getCriteria(RemessaCnp.class);
+//		criteria.add(Restrictions.eq("", ""));
+//		return criteria.list();
+		return new ArrayList<>();
 	}
 
 	public void salvarArquivoCnpNacional(ArquivoCnp arquivoCnp) {

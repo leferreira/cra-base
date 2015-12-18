@@ -168,7 +168,6 @@ public class ProcessadorArquivo extends Processador {
 		fabricaDeArquivo.processarArquivoPersistente(remessas, getArquivoFisico(), getErros());
 
 		logger.info("Fim da criação de Arquivo TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
-
 		return getArquivoFisico();
 	}
 

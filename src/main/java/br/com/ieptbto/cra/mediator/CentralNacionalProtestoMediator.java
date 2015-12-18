@@ -4,6 +4,8 @@ import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.conversor.ConversorArquivoCnpVO;
 import br.com.ieptbto.cra.dao.CentralNancionalProtestoDAO;
@@ -40,7 +42,8 @@ public class CentralNacionalProtestoMediator {
 		arquivoCnpVO.setRemessasCnpVO(ConversorArquivoCnpVO.converterParaRemessaCnpVO(arquivoCnp));
 		return arquivoCnpVO;
 	}
-
+	
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public ArquivoCnp processarArquivoCartorio(Usuario usuario, ArquivoCnpVO arquivoCnpVO) {
 		ArquivoCnp arquivoCnp = new ArquivoCnp();
 		arquivoCnp.setDataEnvio(new LocalDate());
