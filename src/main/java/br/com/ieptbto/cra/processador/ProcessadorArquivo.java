@@ -107,7 +107,7 @@ public class ProcessadorArquivo extends Processador {
 		logger.info("Início do criação de Arquivo TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 
 		verificaDiretorio();
-		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + getArquivo().getNomeArquivo()));
+		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + remessa.getId()));
 		fabricaDeArquivo.processarArquivoPersistente(remessa, getArquivoFisico(), getErros());
 
 		logger.info("Fim da criação de Arquivo TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
@@ -121,7 +121,7 @@ public class ProcessadorArquivo extends Processador {
 
 		logger.info("Início do criação de Arquivo DP TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 		verificaDiretorio();
-		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + getArquivo().getNomeArquivo()));
+		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + remessa.getId()));
 		fabricaDeArquivo.processarArquivoPersistenteDesistenciaProtesto(remessa, getArquivoFisico(), getErros());
 
 		logger.info("Fim da criação de Arquivo DP TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
@@ -135,7 +135,7 @@ public class ProcessadorArquivo extends Processador {
 
 		logger.info("Início do criação de Arquivo CP TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 		verificaDiretorio();
-		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + getArquivo().getNomeArquivo()));
+		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + remessa.getId()));
 		fabricaDeArquivo.processarArquivoPersistenteCancelamentoProtesto(remessa, getArquivoFisico(), getErros());
 
 		logger.info("Fim da criação de Arquivo CP TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
@@ -149,7 +149,7 @@ public class ProcessadorArquivo extends Processador {
 
 		logger.info("Início do criação de Arquivo AC TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 		verificaDiretorio();
-		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + getArquivo().getNomeArquivo()));
+		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + remessa.getId()));
 		fabricaDeArquivo.processarArquivoPersistenteAutorizacaoCancelamentoProtesto(remessa, getArquivoFisico(), getErros());
 
 		logger.info("Fim da criação de Arquivo AC TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
@@ -164,7 +164,7 @@ public class ProcessadorArquivo extends Processador {
 		logger.info("Início do criação de Arquivo TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 
 		verificaDiretorio();
-		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + getArquivo().getNomeArquivo()));
+		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + getArquivo().getId()));
 		fabricaDeArquivo.processarArquivoPersistente(remessas, getArquivoFisico(), getErros());
 
 		logger.info("Fim da criação de Arquivo TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());

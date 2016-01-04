@@ -251,7 +251,7 @@ public class RemessaMediator {
 		        || TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
 			return remessa.getCabecalho().getNumeroCodigoPortador();
 		}
-		return "";
+		return StringUtils.EMPTY;
 	}
 
 	private String formatarMensagemRetorno(Remessa remessa) {
@@ -264,7 +264,7 @@ public class RemessaMediator {
 			return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
 			        + remessa.getCabecalho().getQtdTitulosRemessa() + " títulos confirmados.";
 		}
-		return "";
+		return StringUtils.EMPTY;
 
 	}
 
@@ -282,7 +282,7 @@ public class RemessaMediator {
 	public void setErros(List<Exception> erros) {
 		this.erros = erros;
 	}
-
+ 
 	public File baixarDesistenciaTXT(Usuario usuario, DesistenciaProtesto desistenciaProtesto) {
 		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			desistenciaDAO.alterarSituacaoDesistenciaProtesto(desistenciaProtesto, true);
@@ -362,7 +362,7 @@ public class RemessaMediator {
 		remessa.setArquivo(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo());
 		return processadorArquivo.processarRemessaAutorizacaoCancelamentoTXT(remessa, usuario);
 	}
-
+ 
 	public File baixarRemessaTXT(Usuario usuario, Remessa remessa) {
 		Remessa remesaParaBaixar = null;
 		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
