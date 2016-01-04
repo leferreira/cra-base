@@ -24,6 +24,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
+import br.com.ieptbto.cra.enumeration.TipoBatimento;
 import br.com.ieptbto.cra.enumeration.TipoCampo51;
 
 @Entity
@@ -54,6 +55,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	private TipoInstituicao tipoInstituicao;
 	private List<Arquivo> arquivoEnviados;
 	private List<Usuario> listaUsuarios;
+	private TipoBatimento tipoBatimento; 
 	private Municipio municipio;
 	private TipoCampo51 tipoCampo51;
 	private LayoutPadraoXML layoutPadraoXML;
@@ -354,5 +356,16 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		this.layoutPadraoXML = layoutPadraoXML;
 	}
 	
+	@Column(name="TIPO_BATIMENTO")
+	@Enumerated(EnumType.STRING)
+	public TipoBatimento getTipoBatimento() {
+		if (tipoBatimento == null) {
+			tipoBatimento = TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA;
+		}
+		return tipoBatimento;
+	}
 	
+	public void setTipoBatimento(TipoBatimento tipoBatimento) {
+		this.tipoBatimento = tipoBatimento;
+	}
 }
