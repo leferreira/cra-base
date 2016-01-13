@@ -7,18 +7,24 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.dao.BatimentoDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.dao.RetornoDAO;
 import br.com.ieptbto.cra.dao.TipoArquivoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Batimento;
+import br.com.ieptbto.cra.entidade.BatimentoDeposito;
+import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.exception.InfraException;
 
@@ -37,6 +43,8 @@ public class RetornoMediator {
 	private TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
 	private RetornoDAO retornoDao;
+	@Autowired
+	private BatimentoDAO batimentoDAO;
 	private Instituicao cra;
 	private TipoArquivo tipoArquivo;
 	private Arquivo arquivo;
@@ -45,38 +53,62 @@ public class RetornoMediator {
 		return retornoDao.buscarRetornosParaBatimento();
 	}
 	
+	public List<Remessa> buscarRetornosAguardandoLiberacao(){
+		return retornoDao.buscarRetornosAguardandoLiberacao();
+	}
+	
 	public List<Remessa> buscarRetornosConfirmados(){
 		return retornoDao.buscarRetornosConfirmados();
 	}
 	
 	public BigDecimal buscarValorDeTitulosPagos(Remessa retorno){
-		if (!retorno.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)){
-			throw new InfraException("O arquivo não é um arquivo de RETORNO válido.");
-		} 
 		return retornoDao.buscarValorDeTitulosPagos(retorno);
 	}
 	
 	public BigDecimal buscarValorDeCustasCartorio(Remessa retorno){
-		if (!retorno.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)){
-			throw new InfraException("O arquivo não é um arquivo de RETORNO válido.");
-		} 
 		return retornoDao.buscarValorDeCustasCartorio(retorno);
 	}
 	
-	public void confirmarBatimentos(List<Remessa> retornos){
-		retornoDao.confirmarBatimento(retornos);
+	public void salvarBatimentos(List<Remessa> retornos){
+		
+		for (Remessa retorno : retornos) {
+			Batimento batimento = new Batimento();
+			batimento.setDataBatimento(new LocalDateTime());
+			batimento.setRemessa(retorno);
+			batimento.setDepositosBatimento(new ArrayList<BatimentoDeposito>());
+			
+			for (Deposito depositosIdentificado : retorno.getListaDepositos()) {
+				BatimentoDeposito depositosBatimento = new BatimentoDeposito();
+				depositosBatimento.setBatimento(batimento);
+				depositosBatimento.setDeposito(depositosIdentificado);
+				
+				batimento.getDepositosBatimento().add(depositosBatimento);
+			}
+			retornoDao.salvarBatimento(batimento);
+		}
 	}
 	
-	public void removerConfirmado(Remessa retorno){
-		retornoDao.removerConfirmado(retorno);
+	public void removerBatimento(Remessa retorno){
+		Batimento batimento = batimentoDAO.buscarBatimentoDoRetorno(retorno);
+		
+		for (BatimentoDeposito depositosBatimento : batimento.getDepositosBatimento()) {
+			Deposito deposito = depositosBatimento.getDeposito();
+			List<Batimento> batimentosDoDeposito = batimentoDAO.buscarBatimentosDoDeposito(deposito);
+			if (batimentosDoDeposito.size() > 1){
+				throw new InfraException("O arquivo de retorno possui um depósito vínculado a mais de um batimento! Não é possível removê-lo...");
+			} else {
+				deposito.setSituacaoDeposito(SituacaoDeposito.NAO_IDENTIFICADO);
+				batimentoDAO.atualizarDeposito(deposito);
+			}
+		}
+		retornoDao.removerBatimento(retorno, batimento);
 	}
 	
 	public void gerarRetornos(Usuario usuarioAcao, List<Remessa> retornos){
+		this.cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
+		this.tipoArquivo = tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.RETORNO);
+		
 		List<Arquivo> arquivosDeRetorno = new ArrayList<Arquivo>();
-		
-		setCra(instituicaoDAO.buscarInstituicaoInicial("CRA"));
-		setTipoArquivo(tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.RETORNO));
-		
 		Instituicao instituicaoDestino = new Instituicao();
 		for (Remessa retorno: retornos){
 			
@@ -87,11 +119,11 @@ public class RetornoMediator {
 				List<Remessa> retornosDaInstituicao = retornoDao.buscarRetornosConfirmadosPorInstituicao(instituicaoDestino);
 				getArquivo().setRemessas(retornosDaInstituicao);
 				
-				if (!arquivosDeRetorno.contains(getArquivo()) && getArquivo() != null)
+				if (!arquivosDeRetorno.contains(getArquivo()) && getArquivo() != null) {
 					arquivosDeRetorno.add(getArquivo());
+				}
 			} 
 		}
-		
 		retornoDao.gerarRetornos(usuarioAcao ,arquivosDeRetorno);
 	}
 	
@@ -128,17 +160,5 @@ public class RetornoMediator {
 
 	public Arquivo getArquivo() {
 		return arquivo;
-	}
-
-	public void setCra(Instituicao cra) {
-		this.cra = cra;
-	}
-
-	public void setTipoArquivo(TipoArquivo tipoArquivo) {
-		this.tipoArquivo = tipoArquivo;
-	}
-
-	public void setArquivo(Arquivo arquivo) {
-		this.arquivo = arquivo;
 	}
 }

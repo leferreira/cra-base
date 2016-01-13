@@ -279,7 +279,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		}
 		return tipoCampo51;
 	}
-
+	
 	public void setTipoCampo51(TipoCampo51 tipoCampo51) {
 		this.tipoCampo51 = tipoCampo51;
 	}

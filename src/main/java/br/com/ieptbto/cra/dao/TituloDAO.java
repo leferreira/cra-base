@@ -160,7 +160,6 @@ public class TituloDAO extends AbstractBaseDAO {
 			} else {
 				criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("nomeDevedor"));
 			}
-
 			titulos = criteriaTitulo.list();
 			listaTitulos.addAll(titulos);
 		}

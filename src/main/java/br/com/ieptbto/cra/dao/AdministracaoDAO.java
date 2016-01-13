@@ -13,7 +13,6 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
@@ -22,16 +21,16 @@ import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
+import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 
+/**
+ * @author Thasso Araújo
+ *
+ */
 @Repository
 public class AdministracaoDAO extends AbstractBaseDAO {
 
-	@Autowired
-	HistoricoOcorrenciaDAO historicoDAO;
-	@Autowired
-	TituloDAO tituloDAO;
-	
 	public void removerRemessa(Instituicao instituicao, Arquivo arquivo) {
 		Query query;
 		try {
@@ -167,7 +166,7 @@ public class AdministracaoDAO extends AbstractBaseDAO {
 			for (Remessa r : arquivo.getRemessas()) {
 				r.setArquivoGeradoProBanco(r.getArquivo());
 				r.setSituacao(false);
-				r.setSituacaoBatimento(true);
+				r.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
 				update(r);				
 			}
 			transaction.commit();

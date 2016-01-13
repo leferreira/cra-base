@@ -20,6 +20,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
+import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 
 /**
@@ -39,7 +40,6 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	private int id;
 	private Arquivo arquivo;
 	private Arquivo arquivoGeradoProBanco;
-	private Batimento batimento;
 	private LocalDate dataRecebimento;
 	private Instituicao instituicaoOrigem;
 	private Instituicao instituicaoDestino;
@@ -48,8 +48,9 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	private List<Historico> historicos;
 	private List<Titulo> titulos;
 	private StatusRemessa statusRemessa;
-	private Boolean situacaoBatimento;
-	private Boolean situacao; // confirmacoes e retornos
+	
+	private SituacaoBatimentoRetorno situacaoBatimentoRetorno; 
+	private Boolean situacao;
 	private Boolean devolvidoPelaCRA;
 
 	@Id
@@ -109,10 +110,11 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	public Instituicao getInstituicaoOrigem() {
 		return instituicaoOrigem;
 	}
-
-	@OneToOne(optional = true, mappedBy = "remessa", fetch = FetchType.LAZY)
-	public Batimento getBatimento() {
-		return batimento;
+	
+	@Column(name = "SITUACAO_BATIMENTO_RETORNO", length=50)	
+	@Enumerated(EnumType.STRING)
+	public SituacaoBatimentoRetorno getSituacaoBatimentoRetorno() {
+		return situacaoBatimentoRetorno;
 	}
 
 	@Column(name = "SITUACAO", nullable = true)
@@ -122,10 +124,6 @@ public class Remessa extends AbstractRemessa<Remessa> {
 
 	public void setSituacao(Boolean situacao) {
 		this.situacao = situacao;
-	}
-
-	public void setBatimento(Batimento batimento) {
-		this.batimento = batimento;
 	}
 
 	public void setId(int id) {
@@ -159,6 +157,10 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	public void setInstituicaoOrigem(Instituicao instituicaoOrigem) {
 		this.instituicaoOrigem = instituicaoOrigem;
 	}
+	
+	public void setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno situacaoBatimentoRetorno) {
+		this.situacaoBatimentoRetorno = situacaoBatimentoRetorno;
+	}
 
 	@Override
 	public int compareTo(Remessa entidade) {
@@ -175,19 +177,21 @@ public class Remessa extends AbstractRemessa<Remessa> {
 		this.rodape = rodape;
 	}
 
-	@Column(name = "SITUACAO_BATIMENTO")
-	public Boolean getSituacaoBatimento() {
-		return situacaoBatimento;
-	}
-
-	public void setSituacaoBatimento(Boolean situacaoBatimento) {
-		this.situacaoBatimento = situacaoBatimento;
-	}
-
 	@Column(name = "STATUS_REMESSA")
 	@Enumerated(EnumType.STRING)
 	public StatusRemessa getStatusRemessa() {
 		return statusRemessa;
+	}
+	
+	private List<Deposito> listaDepositos;
+	
+	@javax.persistence.Transient
+	public List<Deposito> getListaDepositos() {
+		return listaDepositos;
+	}
+	
+	public void setListaDepositos(List<Deposito> listaDepositos) {
+		this.listaDepositos = listaDepositos;
 	}
 
 	public void setStatusRemessa(StatusRemessa statusRemessa) {

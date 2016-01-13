@@ -4,25 +4,27 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Batimento;
+import br.com.ieptbto.cra.entidade.BatimentoDeposito;
+import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
-import br.com.ieptbto.cra.enumeration.SituacaoBatimento;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
+import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
+import br.com.ieptbto.cra.enumeration.TipoBatimento;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.exception.InfraException;
 
@@ -31,43 +33,40 @@ import br.com.ieptbto.cra.exception.InfraException;
  *
  */
 @Repository
-@SuppressWarnings("unchecked")
 public class RetornoDAO extends AbstractBaseDAO {
 	
-	@Autowired
-	InstituicaoDAO instituicaoDAO;
-	@Autowired
-	TipoArquivoDAO tipoArquivoDAO;
-	
+	@SuppressWarnings("unchecked")
 	public List<Remessa> buscarRetornosParaBatimento(){
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "arquivo");
-		criteria.createAlias("instituicaoDestino", "instituicaoDestino");
-		criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
-		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.RETORNO));
-		criteria.add(Restrictions.eq("situacaoBatimento", false));
-		criteria.addOrder(Order.asc("instituicaoDestino.nomeFantasia"));
-		return criteria.list();
-	}
-
-	public List<Remessa> buscarRetornosConfirmados(){
-		Criteria criteria = getCriteria(Remessa.class);
-		criteria.createAlias("arquivo", "arquivo");
-		criteria.createAlias("instituicaoDestino", "instituicaoDestino");
-		criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
-		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.RETORNO));
-		criteria.add(Restrictions.eq("situacaoBatimento", true));
+		criteria.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.NAO_CONFIRMADO));
 		criteria.add(Restrictions.eq("situacao", false));
-		criteria.addOrder(Order.asc("instituicaoDestino.nomeFantasia"));
 		return criteria.list();
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<Remessa> buscarRetornosAguardandoLiberacao(){
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "arquivo");
+		criteria.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO));
+		criteria.add(Restrictions.eq("situacao", false));
+		return criteria.list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Remessa> buscarRetornosConfirmados(){
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "arquivo");
+		criteria.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.CONFIRMADO));
+		criteria.add(Restrictions.eq("situacao", false));
+		return criteria.list();
+	}
+	
+	@SuppressWarnings("unchecked")
 	public List<Remessa> buscarRetornosConfirmadosPorInstituicao(Instituicao instituicaoDestino){
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "arquivo");
-		criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
-		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.RETORNO));
-		criteria.add(Restrictions.eq("situacaoBatimento", true));
+		criteria.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.CONFIRMADO));
 		criteria.add(Restrictions.eq("situacao", false));
 		criteria.add(Restrictions.eq("instituicaoDestino", instituicaoDestino));
 		return criteria.list();
@@ -133,33 +132,94 @@ public class RetornoDAO extends AbstractBaseDAO {
 	}
 	
 
-	public void confirmarBatimento(List<Remessa> retornosConfirmados){
+	public Batimento salvarBatimento(Batimento batimento){
 		Transaction transaction = getBeginTransation();
+		
 		try {
-			for (Remessa retorno : retornosConfirmados) {
-				retorno.setSituacaoBatimento(true);
-				update(retorno);
+			Remessa remessa = batimento.getRemessa();
+			remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);	
+			if (remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)) {
+				remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);				
+			}
+			
+			batimento.setRemessa(update(remessa));
+			batimento = save(batimento);
+			if (batimento.getDepositosBatimento() != null) {
+				for (BatimentoDeposito batimentoDeposito : batimento.getDepositosBatimento()){
+					Deposito deposito = batimentoDeposito.getDeposito();
+					deposito.setSituacaoDeposito(SituacaoDeposito.IDENTIFICADO);
+					
+					batimentoDeposito.setDeposito(update(deposito));
+					batimentoDeposito.setBatimento(batimento);
+					save(batimentoDeposito);
+				}
 			}
 			transaction.commit();
-			logger.info("A confirmação do batimento foi realizado com sucesso!");
-		} catch (Exception ex) {
+		} catch (InfraException ex) {
 			transaction.rollback();
+			logger.error(ex.getMessage());
+			throw new InfraException(ex.getMessage());
+		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível confirmar estas remessas.");
+			transaction.rollback();
+			throw new InfraException("Não foi possível inserir os depósitos na base de dados.");
 		}
+		return batimento;
 	}
 	
-	public void removerConfirmado(Remessa retorno){
-		
+	public Remessa confirmarBatimento(Remessa retorno){
 		Transaction transaction = getBeginTransation();
+		
 		try {
-			retorno.setSituacaoBatimento(false);
-			update(retorno);
+			retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);				
+			if (retorno.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)) {
+				retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);				
+			}
+			retorno = update(retorno);
 
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível confirmar estas remessas.");
+		}
+		return retorno;
+	}
+	
+	public void removerBatimento(Remessa retorno, Batimento batimento){
+		
+		try {
+			StringBuffer sql = new StringBuffer();
+			if (retorno.getInstituicaoOrigem().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)) {
+				sql.append("UPDATE tb_remessa ");
+				sql.append("SET situacao_batimento_retorno='" + SituacaoBatimentoRetorno.NAO_CONFIRMADO.toString() +"' ");
+				sql.append("WHERE id_remessa=" + retorno.getId() +";");
+			} else if (retorno.getInstituicaoOrigem().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_INSTITUICAO)) {
+				sql.append("UPDATE tb_remessa ");
+				sql.append("SET situacao_batimento_retorno='" + SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO.toString() +"' ");
+				sql.append("WHERE id_remessa=" + retorno.getId() +";");
+			}
+			Query query =  createSQLQuery(sql.toString());
+			query.executeUpdate();
+			
+			sql = new StringBuffer();
+			sql.append("DELETE FROM tb_batimento_deposito ");
+			sql.append("WHERE batimento_id=" + batimento.getId() +"; ");
+			query = createSQLQuery(sql.toString());
+			query.executeUpdate();
+			
+			sql = new StringBuffer();
+			sql.append("DELETE FROM tb_batimento ");
+			sql.append("WHERE id_batimento=" + batimento.getId() +"; ");
+			query = createSQLQuery(sql.toString());
+			query.executeUpdate();
+
+		} catch (InfraException ex) {
+			logger.error(ex.getMessage());
+			throw new InfraException(ex.getMessage());
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível inserir os depósitos na base de dados.");
 		}
 	}
 	
@@ -180,24 +240,25 @@ public class RetornoDAO extends AbstractBaseDAO {
 					r.setSituacao(true);
 					r.setArquivoGeradoProBanco(retorno);
 					update(r);
-					
-					Batimento batimento = new Batimento();
-					batimento.setRemessa(r);
-					batimento.setSituacaoBatimento(SituacaoBatimento.GERADO);
-					batimento.setDataBatimento(new LocalDateTime());
-					
-					save(batimento);
 				}
 				logger.info("O arquivo " + retorno.getNomeArquivo() + " foi inserido na base com sucesso!");
 			}
-			
 			transaction.commit();
-			logger.info("O batimento foi realizado com sucesso!");
+			
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
 			throw new InfraException("Não foi possível realizar esse batimento.");
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<BatimentoDeposito> buscarDepositosBatimento(Remessa retorno) {
+		Criteria criteria = getCriteria(BatimentoDeposito.class);
+		criteria.createAlias("deposito", "deposito");
+		criteria.createAlias("batimento", "batimento");
+		criteria.add(Restrictions.eq("batimento.remessa", retorno));
+		return criteria.list();
 	}
 	
 }

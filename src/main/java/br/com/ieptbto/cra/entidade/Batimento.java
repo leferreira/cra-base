@@ -1,15 +1,16 @@
 package br.com.ieptbto.cra.entidade;
 
-import java.math.BigDecimal;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -17,8 +18,10 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDateTime;
 
-import br.com.ieptbto.cra.enumeration.SituacaoBatimento;
-
+/**
+ * @author Thasso Araújo
+ *
+ */
 @Entity
 @Audited
 @Table(name = "TB_BATIMENTO")
@@ -30,8 +33,7 @@ public class Batimento extends AbstractEntidade<Batimento>{
 	private int id;
 	private LocalDateTime dataBatimento;
 	private Remessa remessa;
-	private BigDecimal valorTotal;
-	private SituacaoBatimento situacaoBatimento;
+	private List<BatimentoDeposito> depositosBatimento;
 
 	@Id
 	@Column(name = "ID_BATIMENTO", columnDefinition = "serial")
@@ -51,15 +53,13 @@ public class Batimento extends AbstractEntidade<Batimento>{
 		return remessa;
 	}
 
-	@Column(name = "SITUACAO_BATIMENTO")	
-	@Enumerated(EnumType.STRING)
-	public SituacaoBatimento getSituacaoBatimento() {
-		return situacaoBatimento;
+	@OneToMany(mappedBy = "batimento", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+	public List<BatimentoDeposito> getDepositosBatimento() {
+		return depositosBatimento;
 	}
 	
-	@Column(name="VALOR_TOTAL")
-	public BigDecimal getValorTotal() {
-		return valorTotal;
+	public void setDepositosBatimento(List<BatimentoDeposito> depositosBatimento) {
+		this.depositosBatimento = depositosBatimento;
 	}
 
 	public void setId(int id) {
@@ -72,14 +72,6 @@ public class Batimento extends AbstractEntidade<Batimento>{
 
 	public void setRemessa(Remessa remessa) {
 		this.remessa = remessa;
-	}
-
-	public void setSituacaoBatimento(SituacaoBatimento situacaoBatimento) {
-		this.situacaoBatimento = situacaoBatimento;
-	}
-
-	public void setValorTotal(BigDecimal valorTotal) {
-		this.valorTotal = valorTotal;
 	}
 
 	@Override

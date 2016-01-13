@@ -226,10 +226,10 @@ public class RemessaDAO extends AbstractBaseDAO {
 	@SuppressWarnings("rawtypes")
 	public List<Remessa> confirmacoesPendentes(Instituicao instituicao) {
 		List<Remessa> remessas = new ArrayList<Remessa>();
-		String q = "";
+		String sql = "";
 		
 		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			q = "select rem.instituicao_destino_id, t.remessa_id "
+			sql = "select rem.instituicao_destino_id, t.remessa_id "
 					+ "from TB_TITULO t "
 					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
 					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_origem_id=ins.id_instituicao "
@@ -244,7 +244,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 					+ "GROUP BY rem.instituicao_destino_id,t.remessa_id "
 					+ "ORDER BY remessa_id ASC";
 		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
-			q = "select ins.nome_fantasia,t.remessa_id from TB_TITULO t "
+			sql = "select ins.nome_fantasia,t.remessa_id from TB_TITULO t "
 					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
 					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_origem_id=ins.id_instituicao "
 					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) "
@@ -258,7 +258,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 					+ "AND ins.tipo_instituicao_id<>4 "
 					+ "GROUP BY ins.nome_fantasia, t.remessa_id ORDER BY ins.nome_fantasia";
 		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
-			q = "select mun.nome_municipio,t.remessa_id "
+			sql = "select mun.nome_municipio,t.remessa_id "
 					+ "from TB_TITULO t "
 					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
 					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_destino_id=ins.id_instituicao "
@@ -278,7 +278,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 					+ "GROUP BY mun.nome_municipio,t.remessa_id "
 					+ "ORDER BY remessa_id ASC";
 		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
-			q = "select mun.nome_municipio,t.remessa_id "
+			sql = "select mun.nome_municipio,t.remessa_id "
 					+ "from TB_TITULO t "
 					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
 					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_destino_id=ins.id_instituicao "
@@ -297,18 +297,15 @@ public class RemessaDAO extends AbstractBaseDAO {
 					+ "ORDER BY remessa_id ASC";
 		}
 		
-		Query query = getSession().createSQLQuery(q);
+		Query query = getSession().createSQLQuery(sql);
 		Iterator iterator = query.list().iterator();
-
 		while (iterator.hasNext()) {
 			Object[] posicao = (Object[]) iterator.next();
 			Integer id = Integer.class.cast(posicao[1]);
 			Criteria criteria = getCriteria(Remessa.class);
 			criteria.add(Restrictions.eq("id", id));
 			remessas.add(Remessa.class.cast(criteria.uniqueResult()));
-
 		}
-
 		return remessas;
 	}
 

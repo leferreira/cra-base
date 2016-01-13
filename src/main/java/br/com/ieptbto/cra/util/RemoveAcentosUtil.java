@@ -30,11 +30,11 @@ public class RemoveAcentosUtil implements Serializable {
 	       str = str.replaceAll("Ý", "Y");
 	       str = str.replaceAll("ñ", "n");
 	       str = str.replaceAll("Ñ", "N");
-	       str = str.replaceAll("[-+=*&amp;%$#@!_]", "");
-	       str = str.replaceAll("['\"]", "");
-	       str = str.replaceAll("[<>()\\{\\}]", "");
-	       str = str.replaceAll("['\\\\.,()|/]", "");
-	       str = str.replaceAll("[^!-ÿ]{1}[^ -ÿ]{0,}[^!-ÿ]{1}|[^!-ÿ]{1}", " ");
+//	       str = str.replaceAll("[-+=*&amp;%$#@!_]", "");
+//	       str = str.replaceAll("['\"]", "");
+//	       str = str.replaceAll("[<>()\\{\\}]", "");
+//	       str = str.replaceAll("['\\\\.,()|/]", "");
+//	       str = str.replaceAll("[^!-ÿ]{1}[^ -ÿ]{0,}[^!-ÿ]{1}|[^!-ÿ]{1}", " ");
 		}
 		return str;
 	}

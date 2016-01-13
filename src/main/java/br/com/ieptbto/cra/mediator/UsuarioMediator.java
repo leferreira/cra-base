@@ -7,11 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.dao.FiliadoDAO;
-import br.com.ieptbto.cra.dao.GrupoUsuarioDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
-import br.com.ieptbto.cra.dao.TipoArquivoDAO;
-import br.com.ieptbto.cra.dao.TipoInstituicaoDAO;
 import br.com.ieptbto.cra.dao.UsuarioDAO;
 import br.com.ieptbto.cra.dao.UsuarioFiliadoDAO;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -25,21 +21,11 @@ public class UsuarioMediator {
 
 	private static final Logger logger = Logger.getLogger(UsuarioMediator.class);
 	@Autowired
-	UsuarioDAO usuarioDao;
+	private UsuarioDAO usuarioDao;
 	@Autowired
-	InstituicaoDAO instituicaoDao;
+	private InstituicaoDAO instituicaoDao;
 	@Autowired
-	TipoInstituicaoDAO tipoInstituicaoDao;
-	@Autowired
-	GrupoUsuarioDAO grupoUsuarioDao;
-	@Autowired
-	TipoArquivoDAO tipoArquivoDao;
-	@Autowired
-	MunicipioMediator municipioMediator;
-	@Autowired
-	UsuarioFiliadoDAO usuarioFiliadoDAO;
-	@Autowired
-	FiliadoDAO filiadoDAO;
+	private UsuarioFiliadoDAO usuarioFiliadoDAO;
 
 	public Usuario autenticarWS(String login, String senha) {
 		Usuario usuario = usuarioDao.buscarUsuarioPorLogin(login);

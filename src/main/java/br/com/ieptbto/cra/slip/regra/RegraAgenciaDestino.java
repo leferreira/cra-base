@@ -11,7 +11,6 @@ import br.com.ieptbto.cra.entidade.AgenciaCAF;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.BancoTipoRegraBasicaInstrumento;
 import br.com.ieptbto.cra.enumeration.TipoRegraInstrumento;
-import br.com.ieptbto.cra.processador.ProcessadorMigracaoCRA;
 
 /**
  * @author Thasso Araújo
@@ -20,7 +19,7 @@ import br.com.ieptbto.cra.processador.ProcessadorMigracaoCRA;
 @Service
 public class RegraAgenciaDestino {
 
-	private static final Logger logger = Logger.getLogger(ProcessadorMigracaoCRA.class);
+	private static final Logger logger = Logger.getLogger(RegraAgenciaDestino.class);
 	
 	@Autowired
 	ArquivoDeParaDAO arquivoDeParaDAO;

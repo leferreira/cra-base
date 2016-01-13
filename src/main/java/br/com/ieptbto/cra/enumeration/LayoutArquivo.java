@@ -8,14 +8,16 @@ import br.com.ieptbto.cra.exception.InfraException;
  *
  */
 public enum LayoutArquivo implements CraEnum {
-	TXT("0", "Arquivo TXT"), XML("<", "Arquivo XML");
+	TXT("0", "Arquivo TXT", ".txt"), XML("<", "Arquivo XML", ".xml"), CSV("", "Arquivo CSV", ".csv");
 
 	private String constante;
 	private String label;
-
-	private LayoutArquivo(String constante, String label) {
+	private String extensao;
+	
+	private LayoutArquivo(String constante, String label, String extensao) {
 		this.constante = constante;
 		this.label = label;
+		this.extensao = extensao;
 	}
 
 	@Override
@@ -26,6 +28,10 @@ public enum LayoutArquivo implements CraEnum {
 	@Override
 	public String getLabel() {
 		return this.label;
+	}
+	
+	public String getExtensao() {
+		return extensao;
 	}
 
 	/**

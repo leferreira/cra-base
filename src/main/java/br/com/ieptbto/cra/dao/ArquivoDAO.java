@@ -33,6 +33,7 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
+import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -54,13 +55,6 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	@Autowired
 	private InstituicaoDAO instituicaoDAO;
 
-	/**
-	 * 
-	 * @param arquivo
-	 * @param usuarioAcao
-	 * @param erros
-	 * @return
-	 */
 	public Arquivo salvar(Arquivo arquivo, Usuario usuarioAcao, List<Exception> erros) {
 		Arquivo arquivoSalvo = new Arquivo();
 		Transaction transaction = getSession().beginTransaction();
@@ -85,7 +79,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 						remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
 						setDevolvidoPelaCRA(remessa);
 						setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
-						setSituacaoRemessa(arquivo, remessa);
+						setSituacaoLiberadoProBancoEBatimentoRetorno(arquivo, remessa);
 						save(remessa);
 						for (Titulo titulo : remessa.getTitulos()) {
 							titulo.setRemessa(remessa);
@@ -246,12 +240,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 	}
 
-	private void setSituacaoRemessa(Arquivo arquivo, Remessa remessa) {
+	private void setSituacaoLiberadoProBancoEBatimentoRetorno(Arquivo arquivo, Remessa remessa) {
 		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)
 		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
 			remessa.setSituacao(false);
 			if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-				remessa.setSituacaoBatimento(false);
+				remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.NAO_CONFIRMADO);
 			}
 		}
 	}
