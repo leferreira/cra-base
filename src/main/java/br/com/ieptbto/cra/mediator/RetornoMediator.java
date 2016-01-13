@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.joda.time.LocalDate;
@@ -96,7 +97,7 @@ public class RetornoMediator {
 			List<Batimento> batimentosDoDeposito = batimentoDAO.buscarBatimentosDoDeposito(deposito);
 			if (batimentosDoDeposito.size() > 1){
 				throw new InfraException("O arquivo de retorno possui um depósito vínculado a mais de um batimento! Não é possível removê-lo...");
-			} else {
+			} else if (!batimentosDoDeposito.isEmpty()) {
 				deposito.setSituacaoDeposito(SituacaoDeposito.NAO_IDENTIFICADO);
 				batimentoDAO.atualizarDeposito(deposito);
 			}
@@ -104,27 +105,31 @@ public class RetornoMediator {
 		retornoDao.removerBatimento(retorno, batimento);
 	}
 	
+	public void liberarRetornoBatimentoInstituicao(List<Remessa> retornoLiberados) {
+		retornoDao.liberarRetornoBatimento(retornoLiberados);
+	}
+	
 	public void gerarRetornos(Usuario usuarioAcao, List<Remessa> retornos){
+		HashMap<String, Arquivo> arquivosRetorno = new HashMap<String, Arquivo>();
 		this.cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
 		this.tipoArquivo = tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.RETORNO);
 		
-		List<Arquivo> arquivosDeRetorno = new ArrayList<Arquivo>();
 		Instituicao instituicaoDestino = new Instituicao();
 		for (Remessa retorno: retornos){
 			
-			if (getArquivo() == null || !instituicaoDestino.equals(retorno.getInstituicaoDestino())){
+			if (arquivo == null || !instituicaoDestino.equals(retorno.getInstituicaoDestino())){
 				instituicaoDestino = retorno.getInstituicaoDestino();
 				criarNovoArquivoDeRetorno(instituicaoDestino, retorno);
 				
-				List<Remessa> retornosDaInstituicao = retornoDao.buscarRetornosConfirmadosPorInstituicao(instituicaoDestino);
-				getArquivo().setRemessas(retornosDaInstituicao);
-				
-				if (!arquivosDeRetorno.contains(getArquivo()) && getArquivo() != null) {
-					arquivosDeRetorno.add(getArquivo());
+				if (!arquivosRetorno.containsKey(instituicaoDestino.getCodigoCompensacao()) && arquivo != null) {
+					List<Remessa> retornosDaInstituicao = retornoDao.buscarRetornosConfirmadosPorInstituicao(instituicaoDestino);
+					arquivo.setRemessas(retornosDaInstituicao);
+					arquivosRetorno.put(instituicaoDestino.getCodigoCompensacao(), arquivo);
 				}
 			} 
 		}
-		retornoDao.gerarRetornos(usuarioAcao ,arquivosDeRetorno);
+		List<Arquivo> retornosArquivos = new ArrayList<Arquivo>(arquivosRetorno.values());
+		retornoDao.gerarRetornos(usuarioAcao ,retornosArquivos);
 	}
 	
 	private void criarNovoArquivoDeRetorno(Instituicao destino, Remessa retorno) {

@@ -190,15 +190,19 @@ public class RetornoDAO extends AbstractBaseDAO {
 		
 		try {
 			StringBuffer sql = new StringBuffer();
-			if (retorno.getInstituicaoOrigem().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)) {
-				sql.append("UPDATE tb_remessa ");
+			sql.append("UPDATE tb_remessa ");
+			if (retorno.getSituacaoBatimentoRetorno().equals(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO)) {
 				sql.append("SET situacao_batimento_retorno='" + SituacaoBatimentoRetorno.NAO_CONFIRMADO.toString() +"' ");
-				sql.append("WHERE id_remessa=" + retorno.getId() +";");
-			} else if (retorno.getInstituicaoOrigem().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_INSTITUICAO)) {
-				sql.append("UPDATE tb_remessa ");
+
+			} else if (retorno.getInstituicaoOrigem().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_INSTITUICAO) 
+					&& retorno.getSituacaoBatimentoRetorno().equals(SituacaoBatimentoRetorno.CONFIRMADO)) {
 				sql.append("SET situacao_batimento_retorno='" + SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO.toString() +"' ");
-				sql.append("WHERE id_remessa=" + retorno.getId() +";");
+
+			} else if ((retorno.getInstituicaoOrigem().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA) 
+					&& retorno.getSituacaoBatimentoRetorno().equals(SituacaoBatimentoRetorno.CONFIRMADO))){
+				sql.append("SET situacao_batimento_retorno='" + SituacaoBatimentoRetorno.NAO_CONFIRMADO.toString() +"' ");
 			}
+			sql.append("WHERE id_remessa=" + retorno.getId() +";");
 			Query query =  createSQLQuery(sql.toString());
 			query.executeUpdate();
 			
@@ -259,6 +263,25 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.createAlias("batimento", "batimento");
 		criteria.add(Restrictions.eq("batimento.remessa", retorno));
 		return criteria.list();
+	}
+
+	public void liberarRetornoBatimento(List<Remessa> retornoLiberados) {
+		Transaction transaction = getBeginTransation();
+		
+		try {
+			for (Remessa retorno : retornoLiberados) {
+				retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
+				update(retorno);
+			}
+			
+			transaction.commit();
+		} catch (InfraException ex) {
+			logger.error(ex.getMessage());
+			throw new InfraException(ex.getMessage());
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível inserir os depósitos na base de dados.");
+		}
 	}
 	
 }

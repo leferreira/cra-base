@@ -151,11 +151,11 @@ public class ConfirmacaoMediator {
 				List<Remessa> confirmacoes = confirmacaoDAO.buscarConfirmacoesPendentesPorInstituicao(instituicaoDestino);
 				arquivo.setRemessas(confirmacoes);
 
-				if (!arquivosDeConfirmacao.contains(arquivo) && arquivo != null)
+				if (!arquivosDeConfirmacao.contains(arquivo) && arquivo != null) {
 					arquivosDeConfirmacao.add(arquivo);
+				}
 			}
 		}
-
 		confirmacaoDAO.salvarArquivosDeConfirmacaoGerados(usuarioCorrente, arquivosDeConfirmacao);
 	}
 

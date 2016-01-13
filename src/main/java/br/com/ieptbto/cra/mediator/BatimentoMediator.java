@@ -3,6 +3,7 @@ package br.com.ieptbto.cra.mediator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -15,7 +16,6 @@ import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.conversor.arquivo.BigDecimalConversor;
 import br.com.ieptbto.cra.dao.BatimentoDAO;
 import br.com.ieptbto.cra.dao.RetornoDAO;
 import br.com.ieptbto.cra.entidade.Batimento;
@@ -77,7 +77,7 @@ public class BatimentoMediator {
 							deposito.setData(DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA ,dados[0]));
 							deposito.setLancamento(dados[1]);
 							deposito.setNumeroDocumento(dados[2]);
-							deposito.setValorCredito(new BigDecimalConversor().getValorConvertido(dados[3].replace(".", "")));
+							deposito.setValorCredito(new BigDecimal(dados[3].replace(".", "").replace(",", ".")));
 							
 							Remessa retorno = batimentoDAO.buscarRetornoCorrespondenteAoDeposito(deposito);
 							if (retorno != null) {
