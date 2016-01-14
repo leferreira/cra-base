@@ -26,6 +26,7 @@ import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.BancoAgenciaCentralizadoraCodigoCartorio;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
@@ -201,24 +202,24 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		if (titulo == null) {
 			throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] não existe em nossa base de dados.");
-		} else {
-			if (titulo.getPedidoDesistencia() != null) {
-				if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
-					if (tituloRetorno.getDataOcorrencia()
-					        .isAfter(titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho()
-					                .getDataMovimento())
-					        || tituloRetorno.getDataOcorrencia().equals(titulo.getPedidoDesistencia().getDesistenciaProtesto()
-					                .getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento())) {
-						throw new InfraException("PROTESTO INDEVIDO ! O título " + titulo.getNumeroTitulo() + " com o protocolo "
-						        + tituloRetorno.getNumeroProtocoloCartorio() + " protestado em "
-						        + DataUtil.localDateToString(tituloRetorno.getDataOcorrencia())
-						        + " ,já contém um pedido de desistência no arquivo " + titulo.getPedidoDesistencia()
-						                .getDesistenciaProtesto().getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo()
-						        + ". Faça o CANCELAMENTO!");
-					}
+		} 
+		if (titulo.getPedidoDesistencia() != null) {
+			if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
+				if (tituloRetorno.getDataOcorrencia()
+						.isAfter(titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho()
+								.getDataMovimento())
+						|| tituloRetorno.getDataOcorrencia().equals(titulo.getPedidoDesistencia().getDesistenciaProtesto()
+								.getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento())) {
+					throw new InfraException("PROTESTO INDEVIDO ! O título " + titulo.getNumeroTitulo() + " com o protocolo "
+							+ tituloRetorno.getNumeroProtocoloCartorio() + " protestado em "
+							+ DataUtil.localDateToString(tituloRetorno.getDataOcorrencia())
+							+ " ,já contém um pedido de desistência no arquivo " + titulo.getPedidoDesistencia()
+							.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo()
+							+ ". Faça o CANCELAMENTO!");
 				}
 			}
 		}
+		
 		try {
 			tituloRetorno.setTitulo(titulo);
 			titulo.setRetorno(save(tituloRetorno));
@@ -247,7 +248,7 @@ public class TituloDAO extends AbstractBaseDAO {
 			if (titulo.getRetorno() == null) {
 				return titulo;
 			} else {
-				logger.error(new InfraException("Titulo nº" + titulo.getNumeroTitulo() + " já tem retorno"));
+				logger.error(new InfraException("Titulo nº" + titulo.getNumeroTitulo() + " já tem retorno!"));
 			}
 		}
 		return null;
@@ -257,9 +258,19 @@ public class TituloDAO extends AbstractBaseDAO {
 		TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao);
 
 		if (titulo == null) {
-			throw new InfraException(
-			        "O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] não existe em nossa base de dados.");
+			throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] não existe em nossa base de dados.");
 		}
+		if (tituloConfirmacao.getTipoOcorrencia() != null) {
+			if (tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante()) &&
+					tituloConfirmacao.getCodigoIrregularidade().equals("00")) {
+				throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] foi devolvido e não contém código irregularidade!");
+			}
+		}
+		BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(tituloConfirmacao.getCodigoPortador());
+		if (banco != null) {
+			tituloConfirmacao.setCodigoCartorio(banco.getCodigoCartorio());
+		}
+		
 		try {
 			tituloConfirmacao.setTitulo(titulo);
 			titulo.setConfirmacao(save(tituloConfirmacao));
