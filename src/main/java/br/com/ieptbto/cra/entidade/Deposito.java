@@ -14,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
@@ -36,6 +38,7 @@ public class Deposito extends AbstractEntidade<Deposito> {
 	private LocalDate data;
 	private String lancamento;
 	private String numeroDocumento;
+	private String descricao;
 	private BigDecimal valorCredito;
 	private LocalDate dataImportacao;
 	private Usuario usuario;
@@ -85,6 +88,15 @@ public class Deposito extends AbstractEntidade<Deposito> {
 		return situacaoDeposito;
 	}
 	
+	@Column(name = "DESCRICAO")
+	public String getDescricao() {
+		return descricao;
+	}
+	
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+	
 	public Usuario getUsuario() {
 		return usuario;
 	}
@@ -132,7 +144,28 @@ public class Deposito extends AbstractEntidade<Deposito> {
 
 	@Override
 	public int compareTo(Deposito entidade) {
-		// TODO Auto-generated method stub
-		return 0;
+		CompareToBuilder compareTo = new CompareToBuilder();
+		return compareTo.toComparison();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Deposito) {
+			Deposito modalidade = Deposito.class.cast(obj);
+			EqualsBuilder equalsBuilder = new EqualsBuilder();
+			equalsBuilder.append(this.getId(), modalidade.getId());
+			equalsBuilder.append(this.getData(), modalidade.getData());
+			equalsBuilder.append(this.getValorCredito(), modalidade.getValorCredito());
+			return equalsBuilder.isEquals();
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		if (getId() == 0) {
+			return 0;
+		}
+		return getId();
 	}
 }

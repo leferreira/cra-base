@@ -6,8 +6,10 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Batimento;
@@ -128,5 +130,44 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		criteria.createAlias("depositosBatimento", "depositosBatimento");
 		criteria.add(Restrictions.eq("remessa", retorno));
 		return Batimento.class.cast(criteria.uniqueResult());
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Deposito> consultarDepositos(Deposito deposito, LocalDate dataInicio, LocalDate dataFim) {
+		Criteria criteria = getCriteria(Deposito.class);
+
+		if (dataInicio != null) {
+			criteria.add(Restrictions.between("data", dataInicio, dataFim));
+		}
+		if (deposito.getNumeroDocumento() != null) {
+			criteria.add(Restrictions.ilike("numeroDocumento", deposito.getNumeroDocumento(), MatchMode.ANYWHERE));
+		}
+		if (deposito.getValorCredito() != null) {
+			criteria.add(Restrictions.eq("valorCredito", deposito.getValorCredito()));
+		}
+		if (deposito.getSituacaoDeposito() != null) {
+			criteria.add(Restrictions.eq("situacaoDeposito", SituacaoDeposito.NAO_IDENTIFICADO));
+		}
+		
+		criteria.addOrder(Order.asc("data"));
+		return criteria.list();
+	}
+
+	public void atualizarInformacoesDeposito(Deposito deposito) {
+		Transaction transaction = getBeginTransation();
+		
+		try {
+			update(deposito);
+			transaction.commit();
+			
+		} catch (InfraException ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage());
+			throw new InfraException(ex.getMessage());
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+			transaction.rollback();
+			throw new InfraException("Não foi possível atualizar os depósitos na base de dados.");
+		}
 	}
 }

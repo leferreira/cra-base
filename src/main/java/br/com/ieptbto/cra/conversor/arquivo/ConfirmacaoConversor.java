@@ -55,8 +55,6 @@ public class ConfirmacaoConversor extends AbstractConversorArquivo<TituloVO, Con
 					entidade.getTipoOcorrencia().equals("0")) {
 				tituloVO.setDataOcorrencia("00000000");
 				tituloVO.setCodigoIrregularidade("00");
-			} else {
-				tituloVO.setValorGravacaoEletronica("0000000000");
 			}
 		}
 		return tituloVO;

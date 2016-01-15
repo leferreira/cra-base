@@ -9,6 +9,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.LocalDate;
 import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -203,19 +204,17 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (titulo == null) {
 			throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] não existe em nossa base de dados.");
 		} 
+		/**
+		 * VERIFICAR SE O TITULO NÃO É PROTESTO INDEVIDO
+		 * **/
 		if (titulo.getPedidoDesistencia() != null) {
+			LocalDate dataOcorrenciaRetorno = tituloRetorno.getDataOcorrencia();
+			LocalDate dataMovimentoDesistencia = titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
 			if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
-				if (tituloRetorno.getDataOcorrencia()
-						.isAfter(titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho()
-								.getDataMovimento())
-						|| tituloRetorno.getDataOcorrencia().equals(titulo.getPedidoDesistencia().getDesistenciaProtesto()
-								.getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento())) {
-					throw new InfraException("PROTESTO INDEVIDO ! O título " + titulo.getNumeroTitulo() + " com o protocolo "
-							+ tituloRetorno.getNumeroProtocoloCartorio() + " protestado em "
-							+ DataUtil.localDateToString(tituloRetorno.getDataOcorrencia())
-							+ " ,já contém um pedido de desistência no arquivo " + titulo.getPedidoDesistencia()
-							.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo()
-							+ ". Faça o CANCELAMENTO!");
+				if (dataOcorrenciaRetorno.isAfter(dataMovimentoDesistencia)	|| dataOcorrenciaRetorno.equals(dataMovimentoDesistencia)) {
+					throw new InfraException("PROTESTO INDEVIDO ! O título " + titulo.getNumeroTitulo() + " com o protocolo " + tituloRetorno.getNumeroProtocoloCartorio() + " protestado em "
+							+ DataUtil.localDateToString(tituloRetorno.getDataOcorrencia())	+ " ,já contém um pedido de desistência no arquivo " + titulo.getPedidoDesistencia()
+							.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo() + ". Faça o CANCELAMENTO!");
 				}
 			}
 		}
@@ -272,6 +271,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		}
 		
 		try {
+			tituloConfirmacao.setValorGravacaoEletronica(titulo.getRemessa().getInstituicaoOrigem().getValorConfirmacao());
 			tituloConfirmacao.setTitulo(titulo);
 			titulo.setConfirmacao(save(tituloConfirmacao));
 			save(titulo);

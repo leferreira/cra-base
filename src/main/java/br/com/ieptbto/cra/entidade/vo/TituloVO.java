@@ -693,14 +693,12 @@ public class TituloVO extends AbstractArquivoVO {
 		tituloVO.setTipoOcorrencia(titulo.getTipoOcorrencia());
 		tituloVO.setDataOcorrencia(DataUtil.localDateToStringddMMyyyy(titulo.getDataOcorrencia()));
 		tituloVO.setCodigoIrregularidade(titulo.getCodigoIrregularidade());
+		tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoParaString(titulo.getValorGravacaoEletronica()));
 		
 		if (titulo.getTipoOcorrencia() != null) {
-			if (titulo.getTipoOcorrencia().trim().equals("") || 
-					titulo.getTipoOcorrencia().equals("0")) {
+			if (titulo.getTipoOcorrencia().trim().equals("") || titulo.getTipoOcorrencia().equals("0")) {
 				tituloVO.setDataOcorrencia("00000000");
 				tituloVO.setCodigoIrregularidade("00");
-			} else {
-			tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoParaString(titulo.getValorGravacaoEletronica()));
 			}
 		}
 		return tituloVO;

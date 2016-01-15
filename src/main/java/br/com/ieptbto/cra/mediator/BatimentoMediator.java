@@ -171,4 +171,12 @@ public class BatimentoMediator {
 	public List<Deposito> buscarDepositosExtrato() {
 		return batimentoDAO.buscarDepositosExtrato();
 	}
+
+	public List<Deposito> consultarDepositos(Deposito deposito, LocalDate dataInicio, LocalDate dataFim) {
+		return batimentoDAO.consultarDepositos(deposito, dataInicio, dataFim);
+	}
+
+	public void atualizarInformacoesDeposito(Deposito deposito) {
+		batimentoDAO.atualizarInformacoesDeposito(deposito);
+	}
 }

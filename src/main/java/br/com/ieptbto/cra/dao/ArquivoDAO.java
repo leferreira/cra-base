@@ -37,6 +37,7 @@ import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.exception.TituloException;
 import br.com.ieptbto.cra.util.DataUtil;
@@ -59,6 +60,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		Arquivo arquivoSalvo = new Arquivo();
 		Transaction transaction = getSession().beginTransaction();
 		BigDecimal valorTotalSaldo = BigDecimal.ZERO;
+		Boolean retornoContemTituloPago = false;
 
 		try {
 			arquivo.setStatusArquivo(save(arquivo.getStatusArquivo()));
@@ -84,6 +86,9 @@ public class ArquivoDAO extends AbstractBaseDAO {
 						for (Titulo titulo : remessa.getTitulos()) {
 							titulo.setRemessa(remessa);
 							if (Retorno.class.isInstance(titulo)) {
+								if (titulo.getTipoOcorrencia().equals(TipoOcorrencia.PAGO.getConstante())) {
+									retornoContemTituloPago = true;
+								}
 								Retorno.class.cast(titulo).setCabecalho(remessa.getCabecalho());
 							}
 							
@@ -111,6 +116,10 @@ public class ArquivoDAO extends AbstractBaseDAO {
 							}
 							
 							valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
+						}
+						if (retornoContemTituloPago.equals(false)) {
+							remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
+							update(remessa);
 						}
 						remessa.getCabecalho().setQtdTitulosRemessa(remessa.getTitulos().size());
 						remessa.getRodape().setSomatorioValorRemessa(valorTotalSaldo);
@@ -347,7 +356,6 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 	@Transactional(readOnly = true)
 	public List<Remessa> buscarRemessasArquivo(Instituicao instituicao, Arquivo arquivo) {
-		Arquivo arquivoBuscado = buscarPorPK(arquivo);
 		Criteria criteria = getCriteria(Remessa.class);
 		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)
 		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)
@@ -360,25 +368,13 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		List<Remessa> remessas = criteria.list();
 
 		for (Remessa remessa : remessas) {
-			Criteria criteriaTitulo = getCriteria(Titulo.class);
 			List<Titulo> titulos = new ArrayList<Titulo>();
 
-			criteriaTitulo.createAlias("remessa", "remessa");
+			Criteria criteriaTitulo = getCriteria(Titulo.class);
 			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
 			titulos = criteriaTitulo.list();
 
 			remessa.setTitulos(new ArrayList<Titulo>());
-			if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
-				for (Titulo titulo : titulos) {
-					if (titulo.getTipoOcorrencia() != null) {
-						if (titulo.getTipoOcorrencia().equals("5")) {
-							titulo.setValorGravacaoEletronica(BigDecimal.ZERO);
-						} else {
-							titulo.setValorGravacaoEletronica(arquivoBuscado.getInstituicaoRecebe().getValorConfirmacao());
-						}
-					}
-				}
-			}
 			remessa.getTitulos().addAll(titulos);
 		}
 		return remessas;
