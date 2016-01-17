@@ -48,7 +48,7 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	private List<Historico> historicos;
 	private List<Titulo> titulos;
 	private StatusRemessa statusRemessa;
-	
+	private Batimento batimento;
 	private SituacaoBatimentoRetorno situacaoBatimentoRetorno; 
 	private Boolean situacao;
 	private Boolean devolvidoPelaCRA;
@@ -120,6 +120,15 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	@Column(name = "SITUACAO", nullable = true)
 	public Boolean getSituacao() {
 		return situacao;
+	}
+	
+	@OneToOne(mappedBy="remessa")
+	public Batimento getBatimento() {
+		return batimento;
+	}
+	
+	public void setBatimento(Batimento batimento) {
+		this.batimento = batimento;
 	}
 
 	public void setSituacao(Boolean situacao) {

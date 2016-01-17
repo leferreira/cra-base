@@ -3,12 +3,12 @@ package br.com.ieptbto.cra.mediator;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,8 +54,8 @@ public class RetornoMediator {
 		return retornoDao.buscarRetornosParaBatimento();
 	}
 	
-	public List<Remessa> buscarRetornosAguardandoLiberacao(){
-		return retornoDao.buscarRetornosAguardandoLiberacao();
+	public List<Remessa> buscarRetornosAguardandoLiberacao(LocalDate dataBatimento){
+		return retornoDao.buscarRetornosAguardandoLiberacao(dataBatimento);
 	}
 	
 	public List<Remessa> buscarRetornosConfirmados(){
@@ -70,11 +70,17 @@ public class RetornoMediator {
 		return retornoDao.buscarValorDeCustasCartorio(retorno);
 	}
 	
+	public Boolean verificarArquivoRetornoGeradoCra(){
+		return retornoDao.verificarArquivoRetornoGeradoCra(getCra());
+	}
+	
 	public void salvarBatimentos(List<Remessa> retornos){
-		
+		this.cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
+
+		Boolean arquivoRetornoGeradoHoje = verificarArquivoRetornoGeradoCra();
 		for (Remessa retorno : retornos) {
 			Batimento batimento = new Batimento();
-			batimento.setDataBatimento(new LocalDateTime());
+			batimento.setDataBatimento(aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
 			batimento.setRemessa(retorno);
 			batimento.setDepositosBatimento(new ArrayList<BatimentoDeposito>());
 			
@@ -89,6 +95,27 @@ public class RetornoMediator {
 		}
 	}
 	
+	public LocalDate aplicarRegraDataBatimento(Boolean arquivoRetornoGeradoHoje) {
+		
+		if (arquivoRetornoGeradoHoje.equals(false)) {
+			return new LocalDate();
+		} else if (arquivoRetornoGeradoHoje.equals(true)) {
+			Integer contadorDeDias = 1;
+			while (true) {
+				LocalDate proximoDiaUtil = new LocalDate().plusDays(contadorDeDias);
+				Date date = proximoDiaUtil.toDate();
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(date);
+				
+				if (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+		        	return proximoDiaUtil;
+		        }
+				contadorDeDias++;
+			}
+		}
+		return null;
+	}
+
 	public void removerBatimento(Remessa retorno){
 		Batimento batimento = batimentoDAO.buscarBatimentoDoRetorno(retorno);
 		

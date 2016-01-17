@@ -12,7 +12,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +39,8 @@ public class BatimentoMediator {
 	private BatimentoDAO batimentoDAO;
 	@Autowired
 	private RetornoDAO retornoDAO;
-	
+	@Autowired
+	private RetornoMediator retornoMediator;
 	private Usuario usuario;
 	private FileUpload fileUpload;
 	
@@ -53,6 +53,7 @@ public class BatimentoMediator {
 	}
 	
 	private void converterDepositosExtrato() {
+		Boolean arquivoRetornoGeradoHoje = retornoMediator.verificarArquivoRetornoGeradoCra();
 
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(getFileUpload().getInputStream()));
@@ -82,7 +83,7 @@ public class BatimentoMediator {
 							Remessa retorno = batimentoDAO.buscarRetornoCorrespondenteAoDeposito(deposito);
 							if (retorno != null) {
 								Batimento batimento = new Batimento();
-								batimento.setDataBatimento(new LocalDateTime());
+								batimento.setDataBatimento(retornoMediator.aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
 								
 								BatimentoDeposito batimentoDeposito = new BatimentoDeposito();
 								batimentoDeposito.setBatimento(batimento);

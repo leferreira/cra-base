@@ -16,7 +16,7 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
-import org.joda.time.LocalDateTime;
+import org.joda.time.LocalDate;
 
 /**
  * @author Thasso Araújo
@@ -31,7 +31,7 @@ public class Batimento extends AbstractEntidade<Batimento>{
 	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
-	private LocalDateTime dataBatimento;
+	private LocalDate dataBatimento;
 	private Remessa remessa;
 	private List<BatimentoDeposito> depositosBatimento;
 
@@ -43,7 +43,7 @@ public class Batimento extends AbstractEntidade<Batimento>{
 	}
 	
 	@Column(name = "DATA_BATIMENTO")	
-	public LocalDateTime getDataBatimento() {
+	public LocalDate getDataBatimento() {
 		return dataBatimento;
 	}
 	
@@ -66,7 +66,7 @@ public class Batimento extends AbstractEntidade<Batimento>{
 		this.id = id;
 	}
 
-	public void setDataBatimento(LocalDateTime dataBatimento) {
+	public void setDataBatimento(LocalDate dataBatimento) {
 		this.dataBatimento = dataBatimento;
 	}
 

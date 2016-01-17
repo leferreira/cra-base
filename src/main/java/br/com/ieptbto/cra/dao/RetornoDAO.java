@@ -9,6 +9,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +25,7 @@ import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
+import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoBatimento;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -38,25 +40,27 @@ public class RetornoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<Remessa> buscarRetornosParaBatimento(){
 		Criteria criteria = getCriteria(Remessa.class);
-		criteria.createAlias("arquivo", "arquivo");
 		criteria.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.NAO_CONFIRMADO));
 		criteria.add(Restrictions.eq("situacao", false));
 		return criteria.list();
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Remessa> buscarRetornosAguardandoLiberacao(){
+	public List<Remessa> buscarRetornosAguardandoLiberacao(LocalDate dataBatimento){
 		Criteria criteria = getCriteria(Remessa.class);
-		criteria.createAlias("arquivo", "arquivo");
+		criteria.createAlias("batimento", "batimento");
 		criteria.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO));
 		criteria.add(Restrictions.eq("situacao", false));
+		
+		if (dataBatimento != null){
+			criteria.add(Restrictions.eq("batimento.dataBatimento", dataBatimento));
+		}
 		return criteria.list();
 	}
 	
 	@SuppressWarnings("unchecked")
 	public List<Remessa> buscarRetornosConfirmados(){
 		Criteria criteria = getCriteria(Remessa.class);
-		criteria.createAlias("arquivo", "arquivo");
 		criteria.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.CONFIRMADO));
 		criteria.add(Restrictions.eq("situacao", false));
 		return criteria.list();
@@ -283,5 +287,19 @@ public class RetornoDAO extends AbstractBaseDAO {
 			throw new InfraException("Não foi possível inserir os depósitos na base de dados.");
 		}
 	}
-	
+
+	public Boolean verificarArquivoRetornoGeradoCra(Instituicao cra) {
+		Criteria criteria = getCriteria(Arquivo.class); 
+		criteria.createAlias("tipoArquivo", "tipoArquivo");
+		criteria.add(Restrictions.eq("dataEnvio", new LocalDate()));
+		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.RETORNO));
+		criteria.add(Restrictions.eq("instituicaoEnvio", cra));
+		
+		Arquivo arquivoRetornoCRA = Arquivo.class.cast(criteria.uniqueResult());
+		
+		if (arquivoRetornoCRA == null){
+			return false;
+		}
+		return true;
+	}
 }
