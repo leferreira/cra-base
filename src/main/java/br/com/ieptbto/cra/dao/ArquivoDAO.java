@@ -117,9 +117,11 @@ public class ArquivoDAO extends AbstractBaseDAO {
 							
 							valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
 						}
-						if (retornoContemTituloPago.equals(false)) {
-							remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
-							update(remessa);
+						if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+							if (retornoContemTituloPago.equals(false)) {
+								remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
+								update(remessa);
+							}
 						}
 						remessa.getCabecalho().setQtdTitulosRemessa(remessa.getTitulos().size());
 						remessa.getRodape().setSomatorioValorRemessa(valorTotalSaldo);

@@ -105,4 +105,8 @@ public class AdministracaoMediator {
 			ArrayList<SituacaoArquivo> situacaoArquivos) {
 		return adminDAO.buscarArquivosRemover(arquivo2, user, tiposArquivo, municipio, dataInicio, dataFim, situacaoArquivos);
 	}
+
+	public void executa() {
+		adminDAO.executa();
+	}
 }

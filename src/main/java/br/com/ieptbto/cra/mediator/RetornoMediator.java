@@ -80,7 +80,7 @@ public class RetornoMediator {
 		Boolean arquivoRetornoGeradoHoje = verificarArquivoRetornoGeradoCra();
 		for (Remessa retorno : retornos) {
 			Batimento batimento = new Batimento();
-			batimento.setDataBatimento(aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
+			batimento.setData(aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
 			batimento.setRemessa(retorno);
 			batimento.setDepositosBatimento(new ArrayList<BatimentoDeposito>());
 			

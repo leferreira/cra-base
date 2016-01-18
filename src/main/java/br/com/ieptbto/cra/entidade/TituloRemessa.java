@@ -465,7 +465,10 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 						this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.confirmacao.getTipoOcorrencia()).getLabel();
 					}
 				} 
-			} 
+				if (this.confirmacao.getNumeroProtocoloCartorio().equals("0")) {
+					this.situacaoTitulo="DEVOLVIDO S/C";
+				}
+			}
 		} else {
 			if (this.retorno != null && this.pedidoDesistencia != null) { 
 				if (this.retorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {

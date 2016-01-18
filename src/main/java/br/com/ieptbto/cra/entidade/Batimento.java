@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 
 /**
  * @author Thasso Araújo
@@ -31,7 +32,8 @@ public class Batimento extends AbstractEntidade<Batimento>{
 	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
-	private LocalDate dataBatimento;
+	private LocalDateTime dataBatimento;
+	private LocalDate data;
 	private Remessa remessa;
 	private List<BatimentoDeposito> depositosBatimento;
 
@@ -43,7 +45,7 @@ public class Batimento extends AbstractEntidade<Batimento>{
 	}
 	
 	@Column(name = "DATA_BATIMENTO")	
-	public LocalDate getDataBatimento() {
+	public LocalDateTime getDataBatimento() {
 		return dataBatimento;
 	}
 	
@@ -58,6 +60,11 @@ public class Batimento extends AbstractEntidade<Batimento>{
 		return depositosBatimento;
 	}
 	
+	@Column(name = "DATA")	
+	public LocalDate getData() {
+		return data;
+	}
+	
 	public void setDepositosBatimento(List<BatimentoDeposito> depositosBatimento) {
 		this.depositosBatimento = depositosBatimento;
 	}
@@ -66,7 +73,11 @@ public class Batimento extends AbstractEntidade<Batimento>{
 		this.id = id;
 	}
 
-	public void setDataBatimento(LocalDate dataBatimento) {
+	public void setData(LocalDate data) {
+		this.data = data;
+	}
+	
+	public void setDataBatimento(LocalDateTime dataBatimento) {
 		this.dataBatimento = dataBatimento;
 	}
 
@@ -78,7 +89,7 @@ public class Batimento extends AbstractEntidade<Batimento>{
 	public int compareTo(Batimento entidade) {
 		CompareToBuilder compare = new CompareToBuilder();
 		compare.append(entidade.getId(), this.getId());
-		compare.append(entidade.getDataBatimento(), this.getDataBatimento());
+		compare.append(entidade.getData(), this.getData());
 		compare.append(entidade.getRemessa(), this.getRemessa());
 		return compare.toComparison();
 	}

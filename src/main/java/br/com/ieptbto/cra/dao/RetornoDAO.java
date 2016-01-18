@@ -48,12 +48,13 @@ public class RetornoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<Remessa> buscarRetornosAguardandoLiberacao(LocalDate dataBatimento){
 		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "arquivo");
 		criteria.createAlias("batimento", "batimento");
 		criteria.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO));
 		criteria.add(Restrictions.eq("situacao", false));
 		
 		if (dataBatimento != null){
-			criteria.add(Restrictions.eq("batimento.dataBatimento", dataBatimento));
+			criteria.add(Restrictions.eq("batimento.data", dataBatimento));
 		}
 		return criteria.list();
 	}

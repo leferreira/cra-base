@@ -83,7 +83,7 @@ public class BatimentoMediator {
 							Remessa retorno = batimentoDAO.buscarRetornoCorrespondenteAoDeposito(deposito);
 							if (retorno != null) {
 								Batimento batimento = new Batimento();
-								batimento.setDataBatimento(retornoMediator.aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
+								batimento.setData(retornoMediator.aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
 								
 								BatimentoDeposito batimentoDeposito = new BatimentoDeposito();
 								batimentoDeposito.setBatimento(batimento);

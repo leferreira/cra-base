@@ -16,6 +16,7 @@ import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Batimento;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
@@ -222,5 +223,25 @@ public class AdministracaoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO));
 		criteria.addOrder(Order.desc("dataEnvio"));
 		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	public void executa() {
+		Criteria criteria = getCriteria(Batimento.class);
+		criteria.addOrder(Order.desc("dataBatimento"));
+		criteria.setMaxResults(1500);
+		List<Batimento> batimentos = criteria.list();
+		Transaction transaction = getBeginTransation();
+		for (Batimento batimento : batimentos){
+			
+			batimento.setData(new LocalDate());
+			if (batimento.getDataBatimento() != null) {
+				LocalDate localDate = batimento.getDataBatimento().toLocalDate();
+				batimento.setData(localDate);
+				
+			}
+			update(batimento);
+		}
+		transaction.commit();
 	}
 }
