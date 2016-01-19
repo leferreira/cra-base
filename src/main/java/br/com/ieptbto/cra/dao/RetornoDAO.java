@@ -289,6 +289,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public Boolean verificarArquivoRetornoGeradoCra(Instituicao cra) {
 		Criteria criteria = getCriteria(Arquivo.class); 
 		criteria.createAlias("tipoArquivo", "tipoArquivo");
@@ -296,9 +297,9 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.RETORNO));
 		criteria.add(Restrictions.eq("instituicaoEnvio", cra));
 		
-		Arquivo arquivoRetornoCRA = Arquivo.class.cast(criteria.uniqueResult());
+		List<Arquivo> arquivosRetornoCRA = criteria.list();
 		
-		if (arquivoRetornoCRA == null){
+		if (arquivosRetornoCRA.isEmpty()){
 			return false;
 		}
 		return true;

@@ -146,7 +146,7 @@ public class BatimentoDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("valorCredito", deposito.getValorCredito()));
 		}
 		if (deposito.getSituacaoDeposito() != null) {
-			criteria.add(Restrictions.eq("situacaoDeposito", SituacaoDeposito.NAO_IDENTIFICADO));
+			criteria.add(Restrictions.eq("situacaoDeposito", deposito.getSituacaoDeposito()));
 		}
 		
 		criteria.addOrder(Order.asc("data"));
