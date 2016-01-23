@@ -19,6 +19,7 @@ import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
 import br.com.ieptbto.cra.enumeration.TipoBatimento;
+import br.com.ieptbto.cra.enumeration.TipoDeposito;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -147,6 +148,9 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		}
 		if (deposito.getSituacaoDeposito() != null) {
 			criteria.add(Restrictions.eq("situacaoDeposito", deposito.getSituacaoDeposito()));
+		}
+		if (!deposito.getTipoDeposito().equals(TipoDeposito.NAO_INFORMADO)) {
+			criteria.add(Restrictions.eq("tipoDeposito", deposito.getTipoDeposito()));
 		}
 		
 		criteria.addOrder(Order.asc("data"));

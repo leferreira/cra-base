@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.dao;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -46,16 +47,18 @@ public class RetornoDAO extends AbstractBaseDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Remessa> buscarRetornosAguardandoLiberacao(LocalDate dataBatimento){
+	public List<Remessa> buscarRetornosAguardandoLiberacao(Instituicao instiuicao, LocalDate dataBatimento){
+		if (dataBatimento == null || instiuicao == null){
+			return new ArrayList<Remessa>();
+		}
+
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "arquivo");
 		criteria.createAlias("batimento", "batimento");
 		criteria.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO));
 		criteria.add(Restrictions.eq("situacao", false));
-		
-		if (dataBatimento != null){
-			criteria.add(Restrictions.eq("batimento.data", dataBatimento));
-		}
+		criteria.add(Restrictions.eq("batimento.data", dataBatimento));
+		criteria.add(Restrictions.eq("instituicaoDestino", instiuicao));
 		return criteria.list();
 	}
 	
@@ -81,6 +84,19 @@ public class RetornoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(Retorno.class);
 		criteria.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PAGO.getConstante()));
 		criteria.add(Restrictions.eq("remessa", retorno));
+		criteria.setProjection(Projections.sum("saldoTitulo"));
+		return BigDecimal.class.cast(criteria.uniqueResult());
+	}
+	
+	public BigDecimal buscarSomaValorTitulosPagosRemessas(Instituicao instituicao, LocalDate dataBatimento) {
+		Criteria criteria = getCriteria(Retorno.class);
+		criteria.createAlias("remessa", "remessa");
+		criteria.createAlias("remessa.batimento", "batimento");
+		criteria.add(Restrictions.eq("batimento.data", dataBatimento));
+		criteria.add(Restrictions.eq("remessa.instituicaoDestino", instituicao));
+		criteria.add(Restrictions.eq("remessa.situacaoBatimentoRetorno", SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO));
+		criteria.add(Restrictions.eq("remessa.situacao", false));
+		criteria.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PAGO.getConstante()));
 		criteria.setProjection(Projections.sum("saldoTitulo"));
 		return BigDecimal.class.cast(criteria.uniqueResult());
 	}

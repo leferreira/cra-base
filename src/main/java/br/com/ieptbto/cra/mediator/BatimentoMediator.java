@@ -23,8 +23,10 @@ import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
+import br.com.ieptbto.cra.enumeration.TipoDeposito;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.util.RemoveAcentosUtil;
 
 /**
  * @author Thasso Araújo
@@ -34,6 +36,7 @@ import br.com.ieptbto.cra.util.DataUtil;
 public class BatimentoMediator {
 	
 	protected static final Logger logger = Logger.getLogger(BatimentoMediator.class);
+	public static final String CONSTANTE_TIPO_DEPOSITO_CARTORIO = "CARTORIO";
 	
 	@Autowired
 	private BatimentoDAO batimentoDAO;
@@ -53,7 +56,9 @@ public class BatimentoMediator {
 	}
 	
 	private void converterDepositosExtrato() {
+		List<Deposito> depositos = new ArrayList<Deposito>();
 		Boolean arquivoRetornoGeradoHoje = retornoMediator.verificarArquivoRetornoGeradoCra();
+		int numeroLinha = 1;
 
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(getFileUpload().getInputStream()));
@@ -62,7 +67,6 @@ public class BatimentoMediator {
 			/**
 			 * Iniciar a leitura após a linha do saldo. (linha nº 7)
 			 * */
-			int numeroLinha = 1;
 			while ((linha = reader.readLine()) != null) {
 				
 				if (numeroLinha == 7 || numeroLinha > 7) {
@@ -74,9 +78,10 @@ public class BatimentoMediator {
 							deposito.setSituacaoDeposito(SituacaoDeposito.NAO_IDENTIFICADO);
 							deposito.setDataImportacao(new LocalDate());
 							deposito.setUsuario(getUsuario());
+							deposito.setTipoDeposito(verificaTipoDeposito(dados));
 							
 							deposito.setData(DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA ,dados[0]));
-							deposito.setLancamento(dados[1]);
+							deposito.setLancamento(RemoveAcentosUtil.removeAcentos(dados[1]));
 							deposito.setNumeroDocumento(dados[2]);
 							deposito.setValorCredito(new BigDecimal(dados[3].replace(".", "").replace(",", ".")));
 							
@@ -96,23 +101,38 @@ public class BatimentoMediator {
 								deposito.setSituacaoDeposito(SituacaoDeposito.IDENTIFICADO);
 							
 								batimento.setRemessa(retornoDAO.confirmarBatimento(retorno));
+								
 							}
-							salvarDeposito(deposito);
+							depositos.add(deposito);
 						}
 					}
 				}
 				numeroLinha++;
 			}
 			reader.close();
+
+			for (Deposito deposito : depositos) {
+				salvarDeposito(deposito);
+			}
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException("Não foi possível converter os dados do arquivo!");
+			throw new InfraException("Não foi possível converter os dados da linha [ Nº "+ numeroLinha +" ]. Verifique as informações do depósito!");
 		}
 	}
 	
+	private TipoDeposito verificaTipoDeposito(String dados[]) {
+		
+		if (dados[2] != null) {
+			String numeroDocumento = RemoveAcentosUtil.removeAcentos(dados[2]);
+			if (numeroDocumento.toUpperCase().trim().equals(CONSTANTE_TIPO_DEPOSITO_CARTORIO)) 
+				return TipoDeposito.DEPOSITO_CARTORIO_PARA_BANCO;
+		}
+		return TipoDeposito.NAO_INFORMADO;
+	}
+
 	private Deposito salvarDeposito(Deposito deposito) {
 		return batimentoDAO.salvarDeposito(deposito);
 	}
@@ -154,7 +174,7 @@ public class BatimentoMediator {
 	private boolean verificarLancamentoDeDebitoEmConta(String[] dados) {
 		String campoDebito = dados[4];
 		if (campoDebito != null) {
-			if (!StringUtils.isBlank(campoDebito.trim()) || !campoDebito.equals(StringUtils.EMPTY)) {
+			if (!StringUtils.isBlank(campoDebito.trim()) || !campoDebito.trim().equals(StringUtils.EMPTY)) {
 				return true;
 			}
 		}

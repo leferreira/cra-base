@@ -14,12 +14,14 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
+import br.com.ieptbto.cra.enumeration.TipoDeposito;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -42,6 +44,7 @@ public class Deposito extends AbstractEntidade<Deposito> {
 	private BigDecimal valorCredito;
 	private LocalDate dataImportacao;
 	private Usuario usuario;
+	private TipoDeposito tipoDeposito;
 	private SituacaoDeposito situacaoDeposito;
 	
 	private List<BatimentoDeposito> batimentosDeposito;
@@ -90,7 +93,19 @@ public class Deposito extends AbstractEntidade<Deposito> {
 	
 	@Column(name = "DESCRICAO")
 	public String getDescricao() {
+		if (descricao == null) {
+			descricao = StringUtils.EMPTY;
+		}
 		return descricao;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "TIPO_DEPOSITO")
+	public TipoDeposito getTipoDeposito() {
+		if (tipoDeposito == null) {
+			tipoDeposito = TipoDeposito.NAO_INFORMADO;
+		}
+		return tipoDeposito;
 	}
 	
 	public void setDescricao(String descricao) {
@@ -111,6 +126,10 @@ public class Deposito extends AbstractEntidade<Deposito> {
 
 	public void setData(LocalDate data) {
 		this.data = data;
+	}
+	
+	public void setTipoDeposito(TipoDeposito tipoDeposito) {
+		this.tipoDeposito = tipoDeposito;
 	}
 
 	public void setLancamento(String lancamento) {
