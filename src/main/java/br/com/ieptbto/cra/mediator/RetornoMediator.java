@@ -54,8 +54,8 @@ public class RetornoMediator {
 		return retornoDao.buscarRetornosParaBatimento();
 	}
 	
-	public List<Remessa> buscarRetornosAguardandoLiberacao(Instituicao instiuicao, LocalDate dataBatimento){
-		return retornoDao.buscarRetornosAguardandoLiberacao(instiuicao ,dataBatimento);
+	public List<Remessa> buscarRetornosAguardandoLiberacao(Instituicao instiuicao, LocalDate dataBatimento, boolean dataComoDataLimite){
+		return retornoDao.buscarRetornosAguardandoLiberacao(instiuicao ,dataBatimento, dataComoDataLimite);
 	}
 	
 	public List<Remessa> buscarRetornosConfirmados(){
@@ -66,8 +66,8 @@ public class RetornoMediator {
 		return retornoDao.buscarValorDeTitulosPagos(retorno);
 	}
 	
-	public BigDecimal buscarSomaValorTitulosPagosRemessas(Instituicao instituicao, LocalDate dataBatimento) {
-		return retornoDao.buscarSomaValorTitulosPagosRemessas(instituicao, dataBatimento);
+	public BigDecimal buscarSomaValorTitulosPagosRemessas(Instituicao instituicao, LocalDate dataBatimento, boolean dataComoDataLimite) {
+		return retornoDao.buscarSomaValorTitulosPagosRemessas(instituicao, dataBatimento, dataComoDataLimite);
 	}
 	
 	public BigDecimal buscarValorDeCustasCartorio(Remessa retorno){

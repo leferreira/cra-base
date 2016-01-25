@@ -47,7 +47,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Remessa> buscarRetornosAguardandoLiberacao(Instituicao instiuicao, LocalDate dataBatimento){
+	public List<Remessa> buscarRetornosAguardandoLiberacao(Instituicao instiuicao, LocalDate dataBatimento, boolean dataComoDataLimite){
 		if (dataBatimento == null || instiuicao == null){
 			return new ArrayList<Remessa>();
 		}
@@ -57,7 +57,12 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.createAlias("batimento", "batimento");
 		criteria.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO));
 		criteria.add(Restrictions.eq("situacao", false));
-		criteria.add(Restrictions.eq("batimento.data", dataBatimento));
+		
+		if (dataComoDataLimite == true) {
+			criteria.add(Restrictions.lt("batimento.data", dataBatimento));
+		} else {
+			criteria.add(Restrictions.eq("batimento.data", dataBatimento));
+		}
 		criteria.add(Restrictions.eq("instituicaoDestino", instiuicao));
 		return criteria.list();
 	}
@@ -70,7 +75,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") 
 	public List<Remessa> buscarRetornosConfirmadosPorInstituicao(Instituicao instituicaoDestino){
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "arquivo");
@@ -88,11 +93,16 @@ public class RetornoDAO extends AbstractBaseDAO {
 		return BigDecimal.class.cast(criteria.uniqueResult());
 	}
 	
-	public BigDecimal buscarSomaValorTitulosPagosRemessas(Instituicao instituicao, LocalDate dataBatimento) {
+	public BigDecimal buscarSomaValorTitulosPagosRemessas(Instituicao instituicao, LocalDate dataBatimento, boolean dataComoDataLimite) {
 		Criteria criteria = getCriteria(Retorno.class);
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("remessa.batimento", "batimento");
-		criteria.add(Restrictions.eq("batimento.data", dataBatimento));
+		
+		if (dataComoDataLimite == true) {
+			criteria.add(Restrictions.lt("batimento.data", dataBatimento));
+		} else {
+			criteria.add(Restrictions.eq("batimento.data", dataBatimento));
+		}
 		criteria.add(Restrictions.eq("remessa.instituicaoDestino", instituicao));
 		criteria.add(Restrictions.eq("remessa.situacaoBatimentoRetorno", SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO));
 		criteria.add(Restrictions.eq("remessa.situacao", false));
