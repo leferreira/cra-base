@@ -169,9 +169,10 @@ public class RetornoDAO extends AbstractBaseDAO {
 		try {
 			Remessa remessa = batimento.getRemessa();
 			remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);	
-			if (remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)) {
+			if (remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA) || 
+					remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO) ) {
 				remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);				
-			}
+			} 
 			
 			batimento.setRemessa(update(remessa));
 			batimento = save(batimento);
@@ -203,7 +204,8 @@ public class RetornoDAO extends AbstractBaseDAO {
 		
 		try {
 			retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);				
-			if (retorno.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)) {
+			if (retorno.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA) || 
+					retorno.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO) ) {
 				retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);				
 			}
 			retorno = update(retorno);
@@ -224,6 +226,10 @@ public class RetornoDAO extends AbstractBaseDAO {
 			sql.append("UPDATE tb_remessa ");
 			if (retorno.getSituacaoBatimentoRetorno().equals(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO)) {
 				sql.append("SET situacao_batimento_retorno='" + SituacaoBatimentoRetorno.NAO_CONFIRMADO.toString() +"' ");
+
+			} else if (retorno.getInstituicaoOrigem().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO) 
+					&&  retorno.getSituacaoBatimentoRetorno().equals(SituacaoBatimentoRetorno.CONFIRMADO)) {
+				sql.append("SET situacao_batimento_retorno='" + SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO.toString() +"' ");
 
 			} else if (retorno.getInstituicaoOrigem().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_INSTITUICAO) 
 					&& retorno.getSituacaoBatimentoRetorno().equals(SituacaoBatimentoRetorno.CONFIRMADO)) {

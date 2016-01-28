@@ -6,7 +6,9 @@ package br.com.ieptbto.cra.enumeration;
  */
 public enum TipoBatimento {
 
-	BATIMENTO_REALIZADO_PELA_CRA("Realizado pela CRA"),BATIMENTO_REALIZADO_PELA_INSTITUICAO("Realizado pela Instituição");
+	BATIMENTO_REALIZADO_PELA_CRA("Realizado pela CRA"),
+	BATIMENTO_REALIZADO_PELA_INSTITUICAO("Realizado pela Instituição"),
+	LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO("Liberação sem Identificação de Depósito");
 	
 	private String label;
 	

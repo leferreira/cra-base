@@ -38,7 +38,8 @@ public class BatimentoDAO extends AbstractBaseDAO {
 				for (BatimentoDeposito batimentoDeposito : deposito.getBatimentosDeposito()){
 					Batimento batimento = batimentoDeposito.getBatimento();
 					batimento.getRemessa().setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);
-					if (batimento.getRemessa().getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)) {
+					if (batimento.getRemessa().getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA) ||  
+							batimento.getRemessa().getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO) ) {
 						batimento.getRemessa().setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
 					}
 
