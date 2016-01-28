@@ -87,6 +87,7 @@ public class AutorizacaoCancelamentoMediator {
 		arquivo.setInstituicaoRecebe(getCra());
 		arquivo.setDataEnvio(new LocalDate());
 		arquivo.setHoraEnvio(new LocalTime());
+		arquivo.setDataRecebimento(new LocalDate().toDate());
 		arquivo.setRemessas(new ArrayList<Remessa>());
 		arquivo.setTipoArquivo(getTipoArquivoAutorizaoCancelamentoProtesto());
 		arquivo.setStatusArquivo(getStatusArquivo());

@@ -154,13 +154,13 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	 * 
 	 * @return List<Instituicao>
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked" })
 	public List<Instituicao> getCartorios() {
 		Criteria criteria = getCriteria(Instituicao.class);
-		criteria.addOrder(Order.asc("id"));
-		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao"); 
+		criteria.createAlias("municipio", "municipio");
 		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
-		criteria.addOrder(Order.asc("nomeFantasia"));
+		criteria.addOrder(Order.asc("municipio.nomeMunicipio"));
 		return criteria.list();
 	}
 

@@ -7,13 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-
 import org.hibernate.HibernateException;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +23,17 @@ import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
-import br.com.ieptbto.cra.enumeration.TipoRelatorio;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DataUtil;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 /**
  * @author Thasso Araújo
@@ -44,11 +43,11 @@ import br.com.ieptbto.cra.util.DataUtil;
 public class RelatorioMediator {
 	
 	@Autowired
-	RelatorioDAO relatorioDAO;
+	private RelatorioDAO relatorioDAO;
 	@Autowired
-	RetornoDAO retornoDAO;
+	private RetornoDAO retornoDAO;
 	@Autowired
-	TituloDAO tituloDAO;
+	private TituloDAO tituloDAO;
 	private HashMap<String, Object> parametros = new HashMap<String, Object>();
 	private LocalDate dataInicio;
 	private LocalDate dataFim;
@@ -183,7 +182,7 @@ public class RelatorioMediator {
 		return JasperFillManager.fillReport(jasperReport, parametros, beanCollection);
 	}
 	
-	public List<TituloRemessa> buscarTitulosParaRelatorio(Instituicao instituicao, TipoRelatorio situacaoTitulosRelatorio, LocalDate dataInicio, LocalDate dataFim, Usuario usuario) {
+	public List<TituloRemessa> buscarTitulosParaRelatorio(Instituicao instituicao, SituacaoTituloRelatorio situacaoTitulosRelatorio, LocalDate dataInicio, LocalDate dataFim, Usuario usuario) {
 		return relatorioDAO.buscarTitulosParaRelatorio(instituicao, situacaoTitulosRelatorio, dataInicio, dataFim, usuario);
 		
 //		if (situacaoTitulosRelatorio.equals(TipoRelatorio.GERAL)) {

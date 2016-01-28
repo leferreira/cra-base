@@ -75,11 +75,11 @@ public class RetornoMediator {
 	}
 	
 	public Boolean verificarArquivoRetornoGeradoCra(){
+		this.cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
 		return retornoDao.verificarArquivoRetornoGeradoCra(getCra());
 	}
 	
 	public void salvarBatimentos(List<Remessa> retornos){
-		this.cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
 
 		Boolean arquivoRetornoGeradoHoje = verificarArquivoRetornoGeradoCra();
 		for (Remessa retorno : retornos) {
@@ -170,6 +170,7 @@ public class RetornoMediator {
 		getArquivo().setInstituicaoRecebe(destino);
 		getArquivo().setInstituicaoEnvio(getCra());
 		getArquivo().setDataEnvio(new LocalDate());
+		getArquivo().setDataRecebimento(new LocalDate().toDate());
 		getArquivo().setHoraEnvio(new LocalTime());
 	}
 	

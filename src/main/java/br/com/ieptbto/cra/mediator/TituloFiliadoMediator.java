@@ -15,7 +15,7 @@ import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamentoConvenio;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
-import br.com.ieptbto.cra.enumeration.TipoRelatorio;
+import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
 
 /**
  * @author Thasso Araújo
@@ -64,13 +64,13 @@ public class TituloFiliadoMediator {
 		return tituloFiliadoDAO.avalistasTituloFiliado(titulo);
 	}
 	
-	public List<TituloFiliado> buscarTitulosParaRelatorioFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim, TipoRelatorio tipoRelatorio, 
+	public List<TituloFiliado> buscarTitulosParaRelatorioFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim, SituacaoTituloRelatorio tipoRelatorio, 
 			Municipio pracaProtesto) {
 		return tituloFiliadoDAO.buscarTitulosParaRelatorioFiliado(filiado, dataInicio, dataFim, tipoRelatorio, pracaProtesto);
 	}
 
 	public List<TituloFiliado> buscarTitulosParaRelatorioConvenio(Instituicao convenio, Filiado filiado, LocalDate dataInicio, LocalDate dataFim,
-			Municipio pracaProtesto, TipoRelatorio tipoRelatorio) {
+			Municipio pracaProtesto, SituacaoTituloRelatorio tipoRelatorio) {
 		return tituloFiliadoDAO.buscarTitulosParaRelatorioConvenio(convenio, filiado ,dataInicio, dataFim, pracaProtesto);
 	}
 

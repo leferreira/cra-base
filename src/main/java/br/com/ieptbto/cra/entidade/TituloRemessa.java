@@ -439,7 +439,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	public String getChaveTitulo() {
 		return this.getCodigoPortador() + getNossoNumero() + getNumeroTitulo();
 	}
-
+ 
 	@Override
 	public int compareTo(TituloRemessa entidade) {
 		CompareToBuilder compareToBuilder = new CompareToBuilder();
@@ -452,40 +452,21 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 
 	@Transient
 	public String getSituacaoTitulo() {
-		this.situacaoTitulo = "EM ABERTO";
+		this.situacaoTitulo = "ABERTO";
 		
 		if (this.confirmacao == null) {
 			this.situacaoTitulo = "S/CONFIRMAÇÃO";
 		} else if (this.confirmacao != null && this.retorno == null) {
 			if (this.confirmacao.getTipoOcorrencia() != null) {
-				if (!this.confirmacao.getTipoOcorrencia().equals(" ") || StringUtils.isNotBlank(this.confirmacao.getTipoOcorrencia())) {
-					if (this.confirmacao.getTipoOcorrencia().equals("")) {
-						
-					} else {
-						this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.confirmacao.getTipoOcorrencia()).getLabel();
-					}
-				} 
-				if (this.confirmacao.getNumeroProtocoloCartorio().equals("0")) {
-					this.situacaoTitulo="DEVOLVIDO S/C";
-				}
-			}
-		} else {
-			if (this.retorno != null && this.pedidoDesistencia != null) { 
-				if (this.retorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
-					if (this.retorno.getDataOcorrencia().isAfter(this.pedidoDesistencia.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento()) 
-							|| this.retorno.getDataOcorrencia().equals(this.pedidoDesistencia.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento())) {
-						this.situacaoTitulo = "PROTESTO INDEVIDO";
-					} else {
-						this.situacaoTitulo = TipoOcorrencia.PROTESTADO.getLabel();
-					}
-				} else {
-					this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.retorno.getTipoOcorrencia()).getLabel();	
+				if (StringUtils.isBlank(this.confirmacao.getTipoOcorrencia().trim())) {
+					this.situacaoTitulo = "ABERTO";
 				}
 			} else {
-				this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.retorno.getTipoOcorrencia()).getLabel();	
+				this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.confirmacao.getTipoOcorrencia()).getLabel();
 			}
+		} else if (this.retorno != null){
+			this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.retorno.getTipoOcorrencia()).getLabel();
 		}
-		
 		return situacaoTitulo;
 	}
 

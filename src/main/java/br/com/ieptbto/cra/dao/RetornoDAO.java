@@ -324,7 +324,6 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("instituicaoEnvio", cra));
 		
 		List<Arquivo> arquivosRetornoCRA = criteria.list();
-		
 		if (arquivosRetornoCRA.isEmpty()){
 			return false;
 		}

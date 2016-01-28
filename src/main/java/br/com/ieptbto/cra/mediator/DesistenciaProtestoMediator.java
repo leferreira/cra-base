@@ -83,6 +83,7 @@ public class DesistenciaProtestoMediator {
 		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
 		arquivo.setInstituicaoRecebe(getCra());
 		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setDataRecebimento(new LocalDate().toDate());
 		arquivo.setHoraEnvio(new LocalTime());
 		arquivo.setRemessas(new ArrayList<Remessa>());
 		arquivo.setTipoArquivo(getTipoArquivoDesistenciaProtesto());

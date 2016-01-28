@@ -67,6 +67,7 @@ public class ArquivoFiliadoMediator {
 		getArquivo().setInstituicaoEnvio(getUsuario().getInstituicao());
 		getArquivo().setUsuarioEnvio(getUsuario());
 		getArquivo().setDataEnvio(new LocalDate());
+		getArquivo().setDataRecebimento(new LocalDate().toDate());
 		getArquivo().setHoraEnvio(new LocalTime());
 		getArquivo().setStatusArquivo(getStatusArquivoEnviado());
 

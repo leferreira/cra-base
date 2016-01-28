@@ -204,9 +204,6 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (titulo == null) {
 			throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] não existe em nossa base de dados.");
 		} 
-		/**
-		 * VERIFICAR SE O TITULO NÃO É PROTESTO INDEVIDO
-		 * **/
 		if (titulo.getPedidoDesistencia() != null) {
 			LocalDate dataOcorrenciaRetorno = tituloRetorno.getDataOcorrencia();
 			LocalDate dataMovimentoDesistencia = titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
@@ -218,12 +215,20 @@ public class TituloDAO extends AbstractBaseDAO {
 				}
 			}
 		}
+		if (tituloRetorno.getTipoOcorrencia() != null) {
+			if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+				if (tituloRetorno.getCodigoIrregularidade() != null) {
+					if (tituloRetorno.getCodigoIrregularidade().equals("00") || StringUtils.isBlank(tituloRetorno.getCodigoIrregularidade().trim())) {
+						throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] foi devolvido e não contém código irregularidade!");						
+					}
+				}
+			}
+		}
 		
 		try {
 			tituloRetorno.setTitulo(titulo);
 			titulo.setRetorno(save(tituloRetorno));
 			save(titulo);
-			logger.info("Retorno salvo com sucesso");
 			return titulo;
 
 		} catch (Exception ex) {
@@ -264,6 +269,13 @@ public class TituloDAO extends AbstractBaseDAO {
 					tituloConfirmacao.getCodigoIrregularidade().equals("00")) {
 				throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] foi devolvido e não contém código irregularidade!");
 			}
+			if (tituloConfirmacao.getNumeroProtocoloCartorio() != null) {
+				if (StringUtils.isBlank(tituloConfirmacao.getNumeroProtocoloCartorio().trim()) || tituloConfirmacao.getNumeroProtocoloCartorio().trim().equals("0")) {
+					if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+						throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");
+					}
+				}
+			}
 		}
 		BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(tituloConfirmacao.getCodigoPortador());
 		if (banco != null) {
@@ -275,7 +287,6 @@ public class TituloDAO extends AbstractBaseDAO {
 			tituloConfirmacao.setTitulo(titulo);
 			titulo.setConfirmacao(save(tituloConfirmacao));
 			save(titulo);
-			logger.info("Confirmação salva com sucesso");
 
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex.getCause());

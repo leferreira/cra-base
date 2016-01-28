@@ -19,7 +19,7 @@ import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.enumeration.TipoRelatorio;
+import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
 
 /**
  * @author Thasso Araújo
@@ -218,7 +218,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<TituloRemessa> buscarTitulosParaRelatorio(Instituicao instituicao, TipoRelatorio tipoTitulosRelatorio, LocalDate dataInicio,
+	public List<TituloRemessa> buscarTitulosParaRelatorio(Instituicao instituicao, SituacaoTituloRelatorio tipoTitulosRelatorio, LocalDate dataInicio,
 	        LocalDate dataFim, Usuario usuarioCorrente) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");

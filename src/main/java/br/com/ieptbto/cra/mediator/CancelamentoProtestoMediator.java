@@ -87,6 +87,7 @@ public class CancelamentoProtestoMediator {
 		arquivo.setInstituicaoRecebe(getCra());
 		arquivo.setDataEnvio(new LocalDate());
 		arquivo.setHoraEnvio(new LocalTime());
+		arquivo.setDataRecebimento(new LocalDate().toDate());
 		arquivo.setRemessas(new ArrayList<Remessa>());
 		arquivo.setTipoArquivo(getTipoArquivoCancelamentoProtesto());
 		arquivo.setStatusArquivo(getStatusArquivo());

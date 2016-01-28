@@ -6,6 +6,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.springframework.stereotype.Repository;
 
@@ -75,5 +76,19 @@ public class ConfirmacaoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("situacao", false));
 		criteria.add(Restrictions.eq("instituicaoDestino", instituicaoDestino));
 		return criteria.list();
+	}
+
+	public Boolean verificarArquivoConfirmacaoGeradoCra(Instituicao cra) {
+		Criteria criteria = getCriteria(Arquivo.class); 
+		criteria.createAlias("tipoArquivo", "tipoArquivo");
+		criteria.add(Restrictions.eq("dataEnvio", new LocalDate()));
+		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.CONFIRMACAO));
+		criteria.add(Restrictions.eq("instituicaoEnvio", cra));
+		
+		List<Arquivo> arquivosRetornoCRA = criteria.list();
+		if (arquivosRetornoCRA.isEmpty()){
+			return false;
+		}
+		return true;
 	}
 }

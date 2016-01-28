@@ -67,11 +67,17 @@ public class ConfirmacaoMediator {
 	public List<Remessa> buscarConfirmacoesPendentesDeEnvio() {
 		return confirmacaoDAO.buscarConfirmacoesPendentesDeEnvio();
 	}
+	
+	public Boolean verificarArquivoConfirmacaoGeradoCra(){
+		this.cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
+		return confirmacaoDAO.verificarArquivoConfirmacaoGeradoCra(getCra());
+	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public MensagemXml processarXML(ConfirmacaoVO confirmacaoVO, Usuario usuario, String nomeArquivo) {
 		this.arquivo = new Arquivo();
 		getArquivo().setDataEnvio(new LocalDate());
+		arquivo.setDataRecebimento(new LocalDate().toDate());
 		getArquivo().setHoraEnvio(new LocalTime());
 		getArquivo().setInstituicaoEnvio(usuario.getInstituicao());
 		getArquivo().setNomeArquivo(nomeArquivo);

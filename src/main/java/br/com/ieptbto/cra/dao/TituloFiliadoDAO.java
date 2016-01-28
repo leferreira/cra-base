@@ -20,7 +20,7 @@ import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamentoConvenio;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
-import br.com.ieptbto.cra.enumeration.TipoRelatorio;
+import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -218,7 +218,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 
 	@SuppressWarnings("unchecked")
 	public List<TituloFiliado> buscarTitulosParaRelatorioFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim,
-	        TipoRelatorio tipoRelatorio, Municipio pracaProtesto) {
+	        SituacaoTituloRelatorio tipoRelatorio, Municipio pracaProtesto) {
 		Criteria criteria = getCriteria(TituloFiliado.class);
 
 		if (filiado != null)

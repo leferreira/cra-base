@@ -230,6 +230,7 @@ public class FabricaDeArquivo {
 		arquivo.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.getTipoArquivoEnum(nomeArquivo)));
 		arquivo.setNomeArquivo(nomeArquivo);
 		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setDataRecebimento(new LocalDate().toDate());
 		arquivo.setUsuarioEnvio(usuario);
 		arquivo.setStatusArquivo(getStatusEnviado());
 		fabricaDeArquivoXML.fabrica(arquivoRecebido, arquivo, erros);

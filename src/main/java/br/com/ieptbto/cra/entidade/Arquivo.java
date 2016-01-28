@@ -1,5 +1,6 @@
 package br.com.ieptbto.cra.entidade;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -14,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
@@ -37,6 +40,7 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	private String nomeArquivo;
 	private String comentario;
 	private String path;
+	private Date dataRecebimento;
 	private LocalDate dataEnvio;
 	private LocalTime horaEnvio;
 	private List<Remessa> remessas;
@@ -72,8 +76,14 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 		return path;
 	}
 
+	@Column(name = "DATA_RECEBIMENTO")
+	@Temporal(TemporalType.DATE)
+	public Date getDataRecebimento() {
+		return dataRecebimento;
+	}
+	
 	@Column(name = "DATA_ENVIO")
-	public LocalDate getDataEnvio() {
+	public LocalDate getDataEnvio() { 
 		return dataEnvio;
 	}
 
@@ -147,6 +157,10 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	public void setDataRecebimento(Date dataRecebimento) {
+		this.dataRecebimento = dataRecebimento;
 	}
 
 	public void setNomeArquivo(String nomeArquivo) {

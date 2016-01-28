@@ -112,6 +112,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 
 	private Arquivo criarArquivo(Remessa remessa) {
 		Arquivo arquivo = new Arquivo();
+		arquivo.setDataRecebimento(new LocalDate().toDate());
 		arquivo.setDataEnvio(new LocalDate());
 		arquivo.setHoraEnvio(new LocalTime());
 		arquivo.setInstituicaoEnvio(remessa.getInstituicaoOrigem());

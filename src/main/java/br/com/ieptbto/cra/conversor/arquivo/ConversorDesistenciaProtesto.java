@@ -34,7 +34,7 @@ public class ConversorDesistenciaProtesto {
 
 	public Arquivo converter(ArquivoDesistenciaProtestoVO arquivoVO, List<Exception> erros) {
 		Arquivo arquivo = new Arquivo();
-
+		arquivo.setDataRecebimento(new LocalDate().toDate());
 		arquivo.setDataEnvio(new LocalDate());
 		arquivo.setTipoArquivo(arquivoVO.getTipoArquivo());
 		arquivo.setRemessaDesistenciaProtesto(getRemessaDesistenciaProtesto(arquivoVO));
