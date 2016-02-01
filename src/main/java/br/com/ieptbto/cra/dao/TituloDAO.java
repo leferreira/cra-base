@@ -224,6 +224,10 @@ public class TituloDAO extends AbstractBaseDAO {
 				}
 			}
 		}
+		BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(tituloRetorno.getCodigoPortador());
+		if (banco != null) {
+			tituloRetorno.setCodigoCartorio(banco.getCodigoCartorio());
+		}
 		
 		try {
 			tituloRetorno.setTitulo(titulo);
