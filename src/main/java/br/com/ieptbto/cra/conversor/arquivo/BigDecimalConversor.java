@@ -53,6 +53,11 @@ public class BigDecimalConversor extends AbstractConversor<BigDecimal> {
 		return StringUtils.repeat(VALOR_ZERO, tamanho);
 	}
 
+	public String getValorConvertidoSegundoLayoutFebraban(BigDecimal valor){
+		int tamanho = TAMANHO_PADRAO_CAMPO_VALOR;
+		return StringUtils.leftPad(Double.toString(valor.doubleValue()).replace(".", ""), tamanho, VALOR_ZERO);
+	}
+	
 	@Override
 	public BigDecimal getValorConvertido(String valor, Class<?> propertyType) throws ConvertException {
 		return getValorConvertido(valor);

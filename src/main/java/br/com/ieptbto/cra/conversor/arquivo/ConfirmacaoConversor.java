@@ -48,7 +48,7 @@ public class ConfirmacaoConversor extends AbstractConversorArquivo<TituloVO, Con
 		tituloVO.setTipoOcorrencia(entidade.getTipoOcorrencia());
 		tituloVO.setDataOcorrencia(DataUtil.localDateToStringddMMyyyy(entidade.getDataOcorrencia()));
 		tituloVO.setCodigoIrregularidade(entidade.getCodigoIrregularidade());
-		tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoParaString(entidade.getRemessa().getInstituicaoDestino().getValorConfirmacao()));
+		tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(entidade.getRemessa().getInstituicaoDestino().getValorConfirmacao()));
 		
 		if (entidade.getTipoOcorrencia() != null) {
 			if (entidade.getTipoOcorrencia().trim().equals("") || 

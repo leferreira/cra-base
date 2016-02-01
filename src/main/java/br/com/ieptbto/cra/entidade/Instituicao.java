@@ -103,7 +103,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		return contato;
 	}
 
-	@Column(name = "VALOR_CONFIRMACAO", precision = 2)
+	@Column(name = "VALOR_CONFIRMACAO", precision = 2, columnDefinition="double precision")
 	public BigDecimal getValorConfirmacao() {
 		return valorConfirmacao;
 	}
