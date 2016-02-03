@@ -1,5 +1,7 @@
 package br.com.ieptbto.cra.webservice.VO;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -9,14 +11,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AutorizaCancelamentoPendente {
 
-	@XmlElement(name = "nome_arquivo")	
-	private String nomeArquivo;
+	@XmlElement(name = "nome_arquivo")
+	private List<String> arquivos;
 
-	public String getNomeArquivo() {
-		return nomeArquivo;
+	public List<String> getArquivos() {
+		return arquivos;
 	}
 
-	public void setNomeArquivo(String nomeArquivo) {
-		this.nomeArquivo = nomeArquivo;
+	public void setArquivos(List<String> arquivos) {
+		this.arquivos = arquivos;
 	}
 }

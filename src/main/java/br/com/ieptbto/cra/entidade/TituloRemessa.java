@@ -461,6 +461,18 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 				if (StringUtils.isBlank(this.confirmacao.getTipoOcorrencia().trim())) {
 					this.situacaoTitulo = "ABERTO";
 				}
+				if (this.confirmacao.getNumeroProtocoloCartorio() != null) {
+					if (StringUtils.isNotBlank(getNumeroProtocoloCartorio().trim())) { 
+						Integer protocolo = Integer.valueOf(getNumeroProtocoloCartorio().trim());
+						if (protocolo == 0) {
+							this.situacaoTitulo = TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getLabel();
+						} if (protocolo != 0 && protocolo != null) {
+							this.situacaoTitulo = "ABERTO";
+						}
+					} else {
+						this.situacaoTitulo = TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getLabel();
+					}
+				}
 			} else {
 				this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.confirmacao.getTipoOcorrencia()).getLabel();
 			}

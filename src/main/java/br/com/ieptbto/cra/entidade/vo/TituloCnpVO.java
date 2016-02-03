@@ -100,7 +100,7 @@ public class TituloCnpVO extends AbstractArquivoVO{
 	private String numeroDocumentoDevedor;
 	
 	@XmlAttribute
-	private String complementoDomentoDevedor;
+	private String complementoDocumentoDevedor;
 	
 	@XmlAttribute
 	private String digitoControleDocumentoDevedor;
@@ -360,12 +360,12 @@ public class TituloCnpVO extends AbstractArquivoVO{
 		this.numeroDocumentoDevedor = numeroDocumentoDevedor;
 	}
 
-	public String getComplementoDomentoDevedor() {
-		return complementoDomentoDevedor;
+	public String getComplementoDocumentoDevedor() {
+		return complementoDocumentoDevedor;
 	}
 
-	public void setComplementoDomentoDevedor(String complementoDomentoDevedor) {
-		this.complementoDomentoDevedor = complementoDomentoDevedor;
+	public void setComplementoDocumentoDevedor(String complementoDomentoDevedor) {
+		this.complementoDocumentoDevedor = complementoDomentoDevedor;
 	}
 
 	public String getDigitoControleDocumentoDevedor() {

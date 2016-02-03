@@ -129,17 +129,32 @@ public class ConfirmacaoMediator {
 			mensagens.add(mensagem);
 		}
 
-		for (Exception ex : getErros()) {
-			XmlCraException exception = XmlCraException.class.cast(ex);
-			Mensagem mensagem = new Mensagem();
-			mensagem.setCodigo(exception.getErro().getCodigo());
-			mensagem.setMunicipio(exception.getCodigoIbge());
-			mensagem.setDescricao("Município: " + exception.getCodigoIbge() + " - " + exception.getMunicipio() + " - "
-			        + exception.getErro().getDescricao());
-			mensagens.add(mensagem);
+		if (getErros() != null) {
+			for (Exception ex : getErros()) {
+				XmlCraException exception = XmlCraException.class.cast(ex);
+				Mensagem mensagem = new Mensagem();
+				mensagem.setCodigo(exception.getErro().getCodigo());
+				mensagem.setMunicipio(exception.getCodigoIbge());
+				mensagem.setDescricao("Município: " + exception.getCodigoIbge() + " - " + exception.getMunicipio() + " - "
+						+ exception.getErro().getDescricao());
+				mensagens.add(mensagem);
+			}
 		}
-
 		return mensagemRetorno;
+	}
+	
+	private String formatarMensagemRetorno(Remessa remessa) {
+		if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+			return "Município: " + remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString() + " - "
+			        + remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - "
+			        + remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.";
+		} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
+		        || TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+			return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
+			        + remessa.getCabecalho().getQtdTitulosRemessa() + " títulos receberam confirmação.";
+		}
+		return "";
+
 	}
 
 	public void gerarConfirmacoes(Usuario usuarioCorrente, List<Remessa> confirmacoesParaEnvio) {
@@ -183,20 +198,6 @@ public class ConfirmacaoMediator {
 		getArquivo().setInstituicaoEnvio(getCra());
 		getArquivo().setDataEnvio(new LocalDate());
 		getArquivo().setHoraEnvio(new LocalTime());
-	}
-
-	private String formatarMensagemRetorno(Remessa remessa) {
-		if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-			return "Município: " + remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString() + " - "
-			        + remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - "
-			        + remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.";
-		} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
-		        || TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-			return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
-			        + remessa.getCabecalho().getQtdTitulosRemessa() + " títulos confirmados.";
-		}
-		return "";
-
 	}
 
 	private StatusArquivo getStatusEnviado() {

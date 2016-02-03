@@ -1,7 +1,5 @@
 package br.com.ieptbto.cra.webservice.VO;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -16,46 +14,46 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class RelatorioArquivosPendentes {
 
 	@XmlElement(name = "remessa")
-	private List<RemessaPendente> remessas;
+	private RemessaPendente remessas;
 	
 	@XmlElement(name = "desistencia")
-	private List<DesistenciaPendente> desistencias;
+	private DesistenciaPendente desistencias;
 	
 	@XmlElement(name = "cancelamento")
-	private List<CancelamentoPendente> cancelamentos;
+	private CancelamentoPendente cancelamentos;
 	
 	@XmlElement(name = "autorizaCancelamento")
-	private List<AutorizaCancelamentoPendente> autorizaCancelamentos;
+	private AutorizaCancelamentoPendente autorizaCancelamentos;
 
-	public List<RemessaPendente> getRemessas() {
+	public RemessaPendente getRemessas() {
 		return remessas;
 	}
 
-	public void setRemessas(List<RemessaPendente> remessas) {
+	public void setRemessas(RemessaPendente remessas) {
 		this.remessas = remessas;
 	}
 
-	public List<DesistenciaPendente> getDesistencias() {
+	public DesistenciaPendente getDesistencias() {
 		return desistencias;
 	}
 
-	public void setDesistencias(List<DesistenciaPendente> desistencias) {
+	public void setDesistencias(DesistenciaPendente desistencias) {
 		this.desistencias = desistencias;
 	}
 
-	public List<CancelamentoPendente> getCancelamentos() {
+	public CancelamentoPendente getCancelamentos() {
 		return cancelamentos;
 	}
 
-	public void setCancelamentos(List<CancelamentoPendente> cancelamentos) {
+	public void setCancelamentos(CancelamentoPendente cancelamentos) {
 		this.cancelamentos = cancelamentos;
 	}
 
-	public List<AutorizaCancelamentoPendente> getAutorizaCancelamentos() {
+	public AutorizaCancelamentoPendente getAutorizaCancelamentos() {
 		return autorizaCancelamentos;
 	}
 
-	public void setAutorizaCancelamentos(List<AutorizaCancelamentoPendente> autorizaCancelamentos) {
+	public void setAutorizaCancelamentos(AutorizaCancelamentoPendente autorizaCancelamentos) {
 		this.autorizaCancelamentos = autorizaCancelamentos;
 	}
 }

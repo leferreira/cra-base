@@ -59,7 +59,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("situacao", false));
 		
 		if (dataComoDataLimite == true) {
-			criteria.add(Restrictions.lt("batimento.data", dataBatimento));
+			criteria.add(Restrictions.le("batimento.data", dataBatimento));
 		} else {
 			criteria.add(Restrictions.eq("batimento.data", dataBatimento));
 		}
