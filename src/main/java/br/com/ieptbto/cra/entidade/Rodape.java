@@ -186,6 +186,14 @@ public class Rodape extends AbstractEntidade<Rodape> {
 	}
 
 	private static Integer getValorTotalTitulos(String valor) {
+		if (valor != null) {
+			if (valor.contains(".")) {
+				valor = valor.replace(".","");
+			}
+			if (valor.contains(",")) {
+				valor = valor.replace(",","");
+			}
+		}
 		return Integer.parseInt(valor) / 100;
 	}
 	

@@ -1,5 +1,7 @@
 package br.com.ieptbto.cra.exception;
 
+import br.com.ieptbto.cra.webservice.VO.CodigoErro;
+
 /**
  * 
  * @author Lefer
@@ -34,6 +36,16 @@ public class InfraException extends RuntimeException {
 	 *            mensagem
 	 */
 	public InfraException(String message) {
+		super(message);
+	}
+	
+	/**
+	 * Cria uma nova exceção.
+	 * 
+	 * @param message
+	 *            mensagem
+	 */
+	public InfraException(String message, CodigoErro codigoErro) {
 		super(message);
 	}
 }

@@ -70,7 +70,9 @@ public enum CodigoErro {
 	CNP_NAO_HA_ARQUIVOS_DISPONIVEIS("0001","Não há arquivos disponíveis."),
 	CNP_ENVIO_FORA_DO_HORARIO_LIMITE_DO_SERVICO("9999","Fora do horário limite de envio de Arquivo CNP."),
 	CNP_CONSULTA_FORA_DO_HORARIO_LIMITE_DO_SERVICO("9999","Fora do horário limite de consulta de Arquivo CNP."),
-	CNP_ARQUIVO_CNP_JA_ENVIADO_HOJE("9999","Arquivo CNP já enviado hoje.");
+	CNP_ARQUIVO_CNP_JA_ENVIADO_HOJE("9999","Arquivo CNP já enviado hoje."),
+	
+	CARTORIO_ARQUIVO_NAO_EXISTE("9999","Não foi localizado este arquivo na CRA.");
 	
 	private String codigo;
 	private String descricao;

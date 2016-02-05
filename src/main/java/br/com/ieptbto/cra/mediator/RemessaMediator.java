@@ -28,7 +28,6 @@ import br.com.ieptbto.cra.dao.AutorizacaoCancelamentoDAO;
 import br.com.ieptbto.cra.dao.CancelamentoDAO;
 import br.com.ieptbto.cra.dao.DesistenciaDAO;
 import br.com.ieptbto.cra.dao.RemessaDAO;
-import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
@@ -44,6 +43,7 @@ import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
+import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
@@ -80,8 +80,6 @@ public class RemessaMediator {
 	@Autowired
 	private ArquivoDAO arquivoDAO;
 	@Autowired
-	private TituloDAO tituloDAO;
-	@Autowired
 	private DesistenciaDAO desistenciaDAO;
 	@Autowired
 	private CancelamentoDAO cancelamentoDAO;
@@ -96,6 +94,10 @@ public class RemessaMediator {
 	public List<Remessa> buscarRemessas(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
 	        ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario, ArrayList<StatusRemessa> situacoes) {
 		return remessaDao.buscarRemessaAvancado(arquivo, municipio, dataInicio, dataFim, usuario, tiposArquivo, situacoes);
+	}
+
+	public Remessa carregarTitulosRemessa(Remessa remessa) {
+		return remessaDao.carregarTitulosRemessa(remessa);
 	}
 
 	public int buscarTotalRemessas() {
@@ -376,7 +378,7 @@ public class RemessaMediator {
 		        && remessa.getDevolvidoPelaCRA().equals(true)) {
 			throw new InfraException("O arquivo " + remessa.getArquivo().getNomeArquivo() + " já foi devolvido pela CRA !");
 		}
-		remesaParaBaixar = remessaDao.buscarPorPK(remessa);
+		remesaParaBaixar = remessaDao.carregarTitulosRemessa(remessa);
 		return processadorArquivo.processarArquivoTXT(remesaParaBaixar);
 	}
 
@@ -408,8 +410,8 @@ public class RemessaMediator {
 
 	@Transactional
 	public Arquivo arquivosPendentes(Instituicao instituicao) {
-//		List<Remessa> remessas = remessaDao.confirmacoesPendentes(instituicao);
-		List<Remessa> remessas = new ArrayList<>();
+		List<Remessa> remessas = remessaDao.confirmacoesPendentes(instituicao);
+//		List<Remessa> remessas = new ArrayList<>();
 		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
 		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
 		List<AutorizacaoCancelamento> autorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
@@ -529,18 +531,20 @@ public class RemessaMediator {
 		return null;
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void decodificarArquivosAnexos(Usuario user, String path, Remessa remessa) {
 		
 		try {
-			List<TituloRemessa> titulos = tituloDAO.buscarTitulosPorRemessa(remessa, user.getInstituicao());
+			List<Titulo> titulos = remessaDao.carregarTitulosRemessa(remessa).getTitulos();
 			if (!titulos.isEmpty()) { 
-				for (TituloRemessa titulo : titulos) {
-					if (titulo.getAnexo() != null) {
+				for (Titulo titulo : titulos) { 
+					TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
+					if (tituloRemessa.getAnexo() != null) {
 						DecoderString decoderString = new DecoderString();
-						String nomeArquivoZip = titulo.getNomeDevedor() + "_"
-						        + titulo.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
+						String nomeArquivoZip = tituloRemessa.getNomeDevedor() + "_"
+						        + tituloRemessa.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
 		
-						decoderString.decode(titulo.getAnexo().getDocumentoAnexo(),
+						decoderString.decode(tituloRemessa.getAnexo().getDocumentoAnexo(),
 						        ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA
 						                + remessa.getArquivo().getId() + ConfiguracaoBase.BARRA
 						                + remessa.getId() + ConfiguracaoBase.BARRA,

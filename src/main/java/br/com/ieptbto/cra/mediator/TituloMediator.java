@@ -9,7 +9,6 @@ import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 
@@ -27,9 +26,9 @@ public class TituloMediator {
 		return tituloDAO.buscarListaTitulos(titulo, pracaProtesto, user);
 	}
 	
-	public List<TituloRemessa> buscarTitulosPorRemessa(Remessa remessa, Instituicao instituicaoCorrente){
-		return tituloDAO.buscarTitulosPorRemessa(remessa, instituicaoCorrente);
-	}
+//	public List<TituloRemessa> buscarTitulosPorRemessa(Remessa remessa, Instituicao instituicaoCorrente){
+//		return tituloDAO.buscarTitulosPorRemessa(remessa, instituicaoCorrente);
+//	}
 	
 	public List<TituloRemessa> buscarTitulosPorArquivo(Arquivo arquivo, Instituicao instituicaoCorrente){
 		return tituloDAO.buscarTitulosPorArquivo(arquivo, instituicaoCorrente);

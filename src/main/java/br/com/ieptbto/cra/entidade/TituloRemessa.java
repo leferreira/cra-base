@@ -488,8 +488,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	}
 
 	public void parseTituloFiliado(TituloFiliado tituloFiliado) {
-		this.setAgenciaCodigoCedente(tituloFiliado.getFiliado().getCodigoFiliado());
 		this.setIdentificacaoRegistro(TipoRegistro.TITULO);
+		this.setAgenciaCodigoCedente(tituloFiliado.getFiliado().getCodigoFiliado());
 		this.setCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
 		this.setNomeCedenteFavorecido(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getRazaoSocial()));
 		this.setNomeSacadorVendedor(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getRazaoSocial()));

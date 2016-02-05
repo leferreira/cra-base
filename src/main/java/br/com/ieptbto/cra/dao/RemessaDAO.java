@@ -143,11 +143,10 @@ public class RemessaDAO extends AbstractBaseDAO {
 		titulos = criteriaTitulo.list();
 
 		remessa.setTitulos(titulos);
-
 		return remessa;
 	}
 
-	public Remessa buscarPorPK(Remessa entidade) {
+	public Remessa carregarTitulosRemessa(Remessa entidade) {
 		Remessa remessa = super.buscarPorPK(entidade);
 		Criteria criteriaTitulo = getCriteria(Titulo.class);
 		criteriaTitulo.createAlias("remessa", "remessa");

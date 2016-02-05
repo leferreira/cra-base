@@ -47,8 +47,8 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	private Rodape rodape;
 	private List<Historico> historicos;
 	private List<Titulo> titulos;
-	private StatusRemessa statusRemessa;
 	private Batimento batimento;
+	private StatusRemessa statusRemessa;
 	private SituacaoBatimentoRetorno situacaoBatimentoRetorno; 
 	private Boolean situacao;
 	private Boolean devolvidoPelaCRA;

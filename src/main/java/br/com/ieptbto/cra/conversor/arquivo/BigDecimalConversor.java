@@ -27,6 +27,7 @@ public class BigDecimalConversor extends AbstractConversor<BigDecimal> {
 				return BigDecimal.ZERO;
 			}
 			valor = valor.replace(",", "");
+			valor = valor.replace(".", "");
 			BigDecimal retorno = new BigDecimal(StringUtils.trim(valor));
 			if (BigDecimal.ZERO.equals(retorno)) {
 				return BigDecimal.ZERO;
