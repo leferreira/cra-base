@@ -18,7 +18,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.util.RemoveAcentosUtil;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
  * @author Thasso Araújo
@@ -71,7 +71,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	@Column(name = "ENDERECO", length = 45)
 	public String getEndereco() {
 		if (endereco != null) {
-			endereco = RemoveAcentosUtil.removeAcentos(endereco);
+			endereco = RemoverAcentosUtil.removeAcentos(endereco);
 		}
 		return endereco;
 	}

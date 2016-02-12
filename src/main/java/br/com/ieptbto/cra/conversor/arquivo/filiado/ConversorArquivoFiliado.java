@@ -42,7 +42,7 @@ import br.com.ieptbto.cra.mediator.LayoutFiliadoMediator;
 import br.com.ieptbto.cra.mediator.MunicipioMediator;
 import br.com.ieptbto.cra.util.CraConstructorUtils;
 import br.com.ieptbto.cra.util.DataUtil;
-import br.com.ieptbto.cra.util.RemoveAcentosUtil;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
  * 
@@ -85,7 +85,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		Rodape rodape = new Rodape();
 		rodape.setDataMovimento(new LocalDate());
 		rodape.setIdentificacaoRegistro(TipoRegistro.RODAPE);
-		rodape.setNomePortador(RemoveAcentosUtil.removeAcentos(getInstituicao().getRazaoSocial()).toUpperCase());
+		rodape.setNomePortador(RemoverAcentosUtil.removeAcentos(getInstituicao().getRazaoSocial()).toUpperCase());
 		rodape.setNumeroCodigoPortador(getInstituicao().getCodigoCompensacao());
 		rodape.setRemessa(remessa);
 		rodape.setSomatorioQtdRemessa(new BigDecimal(remessa.getTitulos().size() * 3));
@@ -104,7 +104,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		cabecalho.setIdentificacaoTransacaoDestinatario("SDT");
 		cabecalho.setIdentificacaoTransacaoRemetente("BFO");
 		cabecalho.setIdentificacaoTransacaoTipo("TPR");
-		cabecalho.setNomePortador(RemoveAcentosUtil.removeAcentos(getInstituicao().getRazaoSocial()).toUpperCase());
+		cabecalho.setNomePortador(RemoverAcentosUtil.removeAcentos(getInstituicao().getRazaoSocial()).toUpperCase());
 		cabecalho.setNumeroCodigoPortador(getInstituicao().getCodigoCompensacao());
 		cabecalho.setNumeroSequencialRegistroArquivo(String.valueOf(1));
 		cabecalho.setAgenciaCentralizadora(StringUtils.leftPad(getInstituicao().getAgenciaCentralizadora(), 6, "0"));
@@ -246,14 +246,14 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		titulo.setCodigoPortador(getInstituicao().getCodigoCompensacao());
 		titulo.setAgenciaCodigoCedente(StringUtils
 		        .leftPad(getInstituicao().getCodigoCompensacao() + DataUtil.getDataAtual(new SimpleDateFormat("MMyyyy")), 15, "0"));
-		titulo.setNomeCedenteFavorecido(RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getRazaoSocial()).toUpperCase());
-		titulo.setNomeSacadorVendedor(RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getRazaoSocial()).toUpperCase());
+		titulo.setNomeCedenteFavorecido(RemoverAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getRazaoSocial()).toUpperCase());
+		titulo.setNomeSacadorVendedor(RemoverAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getRazaoSocial()).toUpperCase());
 		titulo.setDocumentoSacador(remessa.getInstituicaoOrigem().getCnpj());
-		titulo.setEnderecoSacadorVendedor(RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getEndereco()).toUpperCase());
+		titulo.setEnderecoSacadorVendedor(RemoverAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getEndereco()).toUpperCase());
 		titulo.setCidadeSacadorVendedor(
-		        RemoveAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getMunicipio().getNomeMunicipio().toUpperCase()));
+		        RemoverAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getMunicipio().getNomeMunicipio().toUpperCase()));
 		titulo.setUfSacadorVendedor(remessa.getInstituicaoOrigem().getMunicipio().getUf());
-		titulo.setEnderecoDevedor(RemoveAcentosUtil.removeAcentos(titulo.getEnderecoDevedor()));
+		titulo.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(titulo.getEnderecoDevedor()));
 
 		titulo.setDataCadastro(new Date());
 		titulo.setEspecieTitulo("CDA");

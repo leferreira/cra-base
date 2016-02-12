@@ -7,7 +7,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Utilitario para acentuacao
  */
-public class RemoveAcentosUtil implements Serializable {
+public class RemoverAcentosUtil implements Serializable {
 
 	/***/
 	private static final long serialVersionUID = 1L;

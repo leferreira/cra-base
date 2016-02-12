@@ -20,7 +20,7 @@ import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
 import br.com.ieptbto.cra.util.DataUtil;
-import br.com.ieptbto.cra.util.RemoveAcentosUtil;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
  * 
@@ -271,7 +271,7 @@ public class TituloVO extends AbstractArquivoVO {
 			if (enderecoSacadorVendedor.length() > 45) {
 				enderecoSacadorVendedor = enderecoSacadorVendedor.substring(0,44);
 			}
-			enderecoSacadorVendedor = RemoveAcentosUtil.removeAcentos(enderecoSacadorVendedor);
+			enderecoSacadorVendedor = RemoverAcentosUtil.removeAcentos(enderecoSacadorVendedor);
 		}
 		return enderecoSacadorVendedor;
 	}

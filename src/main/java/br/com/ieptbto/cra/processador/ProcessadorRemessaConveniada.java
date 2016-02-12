@@ -33,7 +33,7 @@ import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.mediator.RemessaMediator;
 import br.com.ieptbto.cra.mediator.TipoArquivoMediator;
-import br.com.ieptbto.cra.util.RemoveAcentosUtil;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
  * 
@@ -189,7 +189,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		Rodape rodape = new Rodape();
 		rodape.setDataMovimento(new LocalDate());
 		rodape.setIdentificacaoRegistro(TipoRegistro.RODAPE);
-		rodape.setNomePortador(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getInstituicaoConvenio().getRazaoSocial()));
+		rodape.setNomePortador(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getInstituicaoConvenio().getRazaoSocial()));
 		rodape.setNumeroCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
 		rodape.getSomatorioQtdRemessa().add(new BigDecimal(3));
 		rodape.getSomatorioValorRemessa().add(tituloFiliado.getValorSaldoTitulo());
@@ -205,7 +205,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		cabecalho.setIdentificacaoTransacaoRemetente("BFO");
 		cabecalho.setIdentificacaoTransacaoDestinatario("SDT");
 		cabecalho.setIdentificacaoTransacaoTipo("TPR");
-		cabecalho.setNomePortador(RemoveAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getInstituicaoConvenio().getRazaoSocial()));
+		cabecalho.setNomePortador(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getInstituicaoConvenio().getRazaoSocial()));
 		cabecalho.setNumeroCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
 		cabecalho.setNumeroSequencialRegistroArquivo("0001");
 		cabecalho.setNumeroSequencialRemessa(gerarNumeroSequencial(tituloFiliado.getFiliado().getInstituicaoConvenio(), instituicaoDestino));

@@ -12,7 +12,7 @@ import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Rodape;
 import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
 import br.com.ieptbto.cra.util.DataUtil;
-import br.com.ieptbto.cra.util.RemoveAcentosUtil;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
  * 
@@ -67,7 +67,7 @@ public class RodapeVO extends AbstractArquivoVO {
 
 	public String getNomePortador() {
 		if (nomePortador != null) {
-			nomePortador = RemoveAcentosUtil.removeAcentos(nomePortador);
+			nomePortador = RemoverAcentosUtil.removeAcentos(nomePortador);
 		}
 		return nomePortador;
 	}

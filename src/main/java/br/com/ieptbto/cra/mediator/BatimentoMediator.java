@@ -26,7 +26,7 @@ import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
 import br.com.ieptbto.cra.enumeration.TipoDeposito;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DataUtil;
-import br.com.ieptbto.cra.util.RemoveAcentosUtil;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
  * @author Thasso Araújo
@@ -81,7 +81,7 @@ public class BatimentoMediator {
 							deposito.setTipoDeposito(verificaTipoDeposito(dados));
 							
 							deposito.setData(DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA ,dados[0]));
-							deposito.setLancamento(RemoveAcentosUtil.removeAcentos(dados[1]));
+							deposito.setLancamento(RemoverAcentosUtil.removeAcentos(dados[1]));
 							deposito.setNumeroDocumento(dados[2]);
 							deposito.setValorCredito(new BigDecimal(dados[3].replace(".", "").replace(",", ".")));
 							
@@ -126,7 +126,7 @@ public class BatimentoMediator {
 	private TipoDeposito verificaTipoDeposito(String dados[]) {
 		
 		if (dados[2] != null) {
-			String numeroDocumento = RemoveAcentosUtil.removeAcentos(dados[2]);
+			String numeroDocumento = RemoverAcentosUtil.removeAcentos(dados[2]);
 			if (numeroDocumento.toUpperCase().trim().equals(CONSTANTE_TIPO_DEPOSITO_CARTORIO)) 
 				return TipoDeposito.DEPOSITO_CARTORIO_PARA_BANCO;
 		}
