@@ -305,6 +305,9 @@ public class TituloVO extends AbstractArquivoVO {
 	}
 
 	public String getDataVencimentoTitulo() {
+		if (dataVencimentoTitulo.equals(DataUtil.DATA_99999999)) {
+			dataVencimentoTitulo = dataEmissaoTitulo;
+		}
 		return dataVencimentoTitulo;
 	}
 

@@ -75,9 +75,10 @@ public class RemessaDAO extends AbstractBaseDAO {
 			        Restrictions.eq("instituicaoDestino", cartorioProtesto)));
 		}
 
-		if (dataInicio != null)
+		if (dataInicio != null){
 			criteria.add(Restrictions.between("dataRecebimento", dataInicio, dataFim));
-
+		}
+		
 		criteria.addOrder(Order.desc("a.dataEnvio"));
 		return criteria.list();
 	}

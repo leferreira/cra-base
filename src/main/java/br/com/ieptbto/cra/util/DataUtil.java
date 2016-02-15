@@ -47,6 +47,9 @@ public class DataUtil implements Serializable {
 
 	/** Formato padr�o para data */
 	public static final String FORMATO_DATA_PADRAO_REGISTRO = PADRAO_FORMATACAO_DATA_DDMMYYYY;
+	
+	public static final String DATA_99999999 = "99999999";
+
 
 	/**
 	 * Cria um {@link LocalDate} a partir de uma {@link String} no formato
