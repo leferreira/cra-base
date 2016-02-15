@@ -218,8 +218,10 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (tituloRetorno.getTipoOcorrencia() != null) {
 			if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
 				if (tituloRetorno.getCodigoIrregularidade() != null) {
-					if (tituloRetorno.getCodigoIrregularidade().equals("00") || StringUtils.isBlank(tituloRetorno.getCodigoIrregularidade().trim())) {
-						throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] foi devolvido e não contém código irregularidade!");						
+					if (!tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+						throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");
+					} else if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+						throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");
 					}
 				}
 			}
@@ -276,6 +278,8 @@ public class TituloDAO extends AbstractBaseDAO {
 			if (tituloConfirmacao.getNumeroProtocoloCartorio() != null) {
 				if (StringUtils.isBlank(tituloConfirmacao.getNumeroProtocoloCartorio().trim()) || tituloConfirmacao.getNumeroProtocoloCartorio().trim().equals("0")) {
 					if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+						throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");
+					} else if (tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
 						throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");
 					}
 				}
