@@ -25,35 +25,35 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
         "somatorioValorRemessa", "complementoRegistro", "numeroSequencialRegistroArquivo" })
 public class RodapeVO extends AbstractArquivoVO {
 
-	@XmlAttribute(name = "t01")
+	@XmlAttribute(name = "t01", required = true)
 	@IAtributoArquivo(ordem = 1, posicao = 1, tamanho = 1, descricao = "Identificar o registro trailler no arquivo. Constante 9.", obrigatoriedade = true, validacao = "9", tipo = Integer.class)
 	private String identificacaoRegistro;
 
-	@XmlAttribute(name = "t02")
+	@XmlAttribute(name = "t02", required = true)
 	@IAtributoArquivo(ordem = 2, posicao = 2, tamanho = 3, descricao = "Identificar o código do banco/portador. Preencher com o código compensação do Banco ou número de identificação do portador.", obrigatoriedade = true)
 	private String numeroCodigoPortador;
 
-	@XmlAttribute(name = "t03")
+	@XmlAttribute(name = "t03", required = true)
 	@IAtributoArquivo(ordem = 3, posicao = 5, tamanho = 40, descricao = "Preencher com o nome do Portador.('Razão Social')", obrigatoriedade = true)
 	private String nomePortador;
 
-	@XmlAttribute(name = "t04")
+	@XmlAttribute(name = "t04", required = true)
 	@IAtributoArquivo(ordem = 4, posicao = 45, tamanho = 8, descricao = "Informar a data do envio da remessa ao Serviço de Distribuição de Títulos, no formato DDMMAAAA.", obrigatoriedade = true)
 	private String dataMovimento;
 
-	@XmlAttribute(name = "t05")
+	@XmlAttribute(name = "t05", required = true)
 	@IAtributoArquivo(ordem = 5, posicao = 53, tamanho = 5, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Informar o somatório dos registros. Conforme a regra estabelecida para os campos do registro header. Campos 09,10,11 e 12.", obrigatoriedade = true)
 	private String somatorioQtdRemessa;
 
-	@XmlAttribute(name = "t06")
+	@XmlAttribute(name = "t06", required = true)
 	@IAtributoArquivo(ordem = 6, posicao = 58, tamanho = 18, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Informar o somatório do Saldos dos Títulos.", obrigatoriedade = true)
 	private String somatorioValorRemessa;
 
-	@XmlAttribute(name = "t07")
+	@XmlAttribute(name = "t07", required = true)
 	@IAtributoArquivo(ordem = 7, posicao = 76, tamanho = 521, descricao = "Ajusatar o tamanho do registro do trailler com o tamanho do registro de transação. Preencher com brancos.", obrigatoriedade = true)
 	private String complementoRegistro;
 
-	@XmlAttribute(name = "t08")
+	@XmlAttribute(name = "t08", required = true)
 	@IAtributoArquivo(ordem = 8, posicao = 597, tamanho = 04, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Informar o número sequêncial do registro.", obrigatoriedade = true)
 	private String numeroSequencialRegistroArquivo;
 

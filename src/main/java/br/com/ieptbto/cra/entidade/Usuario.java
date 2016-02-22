@@ -49,7 +49,8 @@ public class Usuario extends AbstractEntidade<Usuario> implements IClusterable, 
 	private GrupoUsuario grupoUsuario;
 	private Instituicao instituicao;
 	private List<Historico> historicos;
-
+	private List<TituloFiliado> titulosEntradaManual;
+	
 	@Override
 	@Id
 	@Column(name = "ID_USUARIO", columnDefinition = "serial")
@@ -89,6 +90,11 @@ public class Usuario extends AbstractEntidade<Usuario> implements IClusterable, 
 	public Instituicao getInstituicao() {
 		return instituicao;
 	}
+	
+	@OneToMany(mappedBy="usuarioEntradaManual")
+	public List<TituloFiliado> getTitulosEntradaManual() {
+		return titulosEntradaManual;
+	}
 
 	@Column(name = "EMAIL")
 	public String getEmail() {
@@ -111,6 +117,10 @@ public class Usuario extends AbstractEntidade<Usuario> implements IClusterable, 
 	
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public void setTitulosEntradaManual(List<TituloFiliado> titulosEntradaManual) {
+		this.titulosEntradaManual = titulosEntradaManual;
 	}
 
 	public void setId(int id) {

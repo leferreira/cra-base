@@ -3,7 +3,6 @@ package br.com.ieptbto.cra.mediator;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +20,12 @@ import br.com.ieptbto.cra.processador.ProcessadorRemessaConveniada;
 @Service
 public class ConvenioMediator {
 
-	@SpringBean
-	InstituicaoMediator instituicaoMediator;
 	@Autowired
-	TituloFiliadoDAO tituloFiliadoDAO;
+	private ProcessadorRemessaConveniada processadorRemessaConveniada;
 	@Autowired
-	ProcessadorRemessaConveniada processadorRemessaConveniada;
+	private TituloFiliadoDAO tituloFiliadoDAO;
 	@Autowired
-	ArquivoDAO arquivoDAO;
+	private ArquivoDAO arquivoDAO;
 
 	public List<TituloFiliado> buscarTitulosConvenios() {
 		return tituloFiliadoDAO.buscarTitulosConvenios();

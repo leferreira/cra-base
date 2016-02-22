@@ -1,8 +1,10 @@
 package br.com.ieptbto.cra.entidade;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -15,6 +17,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -58,9 +62,11 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	private Filiado filiado;
 	private SituacaoTituloConvenio situacaoTituloConvenio;
 	private LocalDate dataEnvioCRA;
-	private LocalDate dataEntrada;
+	private Date dataEntrada;
 	private TipoEspecieTitulo especieTitulo;
 	private String CpfCnpj;
+	private Usuario usuarioEntradaManual;
+	private SetorFiliado setor;
 	
 	private SolicitacaoDesistenciaCancelamentoConvenio solicitacaoDesistenciaCancelamento;
 
@@ -137,15 +143,22 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 		}
 		return cepDevedor.replace(".", "").replace("-", "").trim();
 	}
+	
+	@ManyToOne
+	@JoinColumn(name = "USUARIO_ID")
+	public Usuario getUsuarioEntradaManual() {
+		return usuarioEntradaManual;
+	}
 
 	@Column(name = "UF_DEVEDOR", length = 2)
 	public String getUfDevedor() {
 		return ufDevedor;
 	}
 	
-	public void setSolicitacaoDesistenciaCancelamento(
-			SolicitacaoDesistenciaCancelamentoConvenio solicitacaoDesistenciaCancelamento) {
-		this.solicitacaoDesistenciaCancelamento = solicitacaoDesistenciaCancelamento;
+	@OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "SETOR_ID", nullable = false)
+	public SetorFiliado getSetor() {
+		return setor;
 	}
 
 	@ManyToOne
@@ -178,9 +191,10 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	}
 	
 	@Column(name = "DATA_ENTRADA")
-	public LocalDate getDataEntrada() {
+	@Temporal(TemporalType.DATE)
+	public Date getDataEntrada() {
 		if (dataEntrada == null) {
-			dataEntrada = new LocalDate();
+			dataEntrada = new LocalDate().toDate();
 		}
 		return dataEntrada;
 	}
@@ -196,9 +210,22 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	public void setCpfCnpj(String cpfCnpj) {
 		CpfCnpj = cpfCnpj;
 	}
+	
+	public void setSolicitacaoDesistenciaCancelamento(
+			SolicitacaoDesistenciaCancelamentoConvenio solicitacaoDesistenciaCancelamento) {
+		this.solicitacaoDesistenciaCancelamento = solicitacaoDesistenciaCancelamento;
+	}
 
 	public void setDataEnvioCRA(LocalDate dataEnvioCRA) {
 		this.dataEnvioCRA = dataEnvioCRA;
+	}
+
+	public void setUsuarioEntradaManual(Usuario usuarioEntradaManual) {
+		this.usuarioEntradaManual = usuarioEntradaManual;
+	}
+	
+	public void setSetor(SetorFiliado setor) {
+		this.setor = setor;
 	}
 
 	public void setId(int id) {
@@ -213,7 +240,7 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 		this.valorTitulo = valorTitulo;
 	}
 	
-	public void setDataEntrada(LocalDate dataEntrada) {
+	public void setDataEntrada(Date dataEntrada) {
 		this.dataEntrada = dataEntrada;
 	}
 

@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.ieptbto.cra.entidade.vo.ArquivoConfirmacaoVO;
+import br.com.ieptbto.cra.entidade.vo.ArquivoRetornoVO;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.ConfirmacaoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.entidade.vo.RetornoVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
 
@@ -42,6 +44,26 @@ public class ConversorArquivoVO {
 
 		for (int i = 0; i < cabecalhosVO.size();) {
 			ConfirmacaoVO remessa = new ConfirmacaoVO();
+			remessa.setTitulos(new ArrayList<TituloVO>());
+			List<TituloVO> titulos = titulosVO.subList(0, Integer.parseInt(cabecalhosVO.get(i).getQtdTitulosRemessa()));
+			remessa.setCabecalho(cabecalhosVO.get(i));
+			remessa.setRodapes(rodapesVO.get(i));
+			remessa.getTitulos().addAll(titulos);
+			titulosVO.removeAll(titulosVO.subList(0, Integer.parseInt(cabecalhosVO.get(i).getQtdTitulosRemessa())));
+			remessa.setIdentificacaoRegistro(arquivoRecebido.getIdentificacaoRegistro());
+			remessa.setTipoArquivo(arquivoRecebido.getTipoArquivo());
+			return remessa;
+		}
+		return null;
+	}
+	
+	public static RetornoVO converterParaRemessaVO(ArquivoRetornoVO arquivoRecebido) {
+		List<CabecalhoVO> cabecalhosVO = arquivoRecebido.getCabecalhos();
+		List<RodapeVO> rodapesVO = arquivoRecebido.getRodapes();
+		List<TituloVO> titulosVO = arquivoRecebido.getTitulos();
+
+		for (int i = 0; i < cabecalhosVO.size();) {
+			RetornoVO remessa = new RetornoVO();
 			remessa.setTitulos(new ArrayList<TituloVO>());
 			List<TituloVO> titulos = titulosVO.subList(0, Integer.parseInt(cabecalhosVO.get(i).getQtdTitulosRemessa()));
 			remessa.setCabecalho(cabecalhosVO.get(i));

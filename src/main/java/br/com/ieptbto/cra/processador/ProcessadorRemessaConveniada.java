@@ -103,7 +103,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		remessa.setTitulos(setTitulosRemessa(listaTitulos, tituloFiliado));
 		remessa.setInstituicaoOrigem(setInstituicaoOrigem(tituloFiliado));
 		remessa.setCabecalho(setCabecalho(tituloFiliado, remessa.getInstituicaoDestino()));
-		remessa.setRodape(setRodape(tituloFiliado));
+		remessa.setRodape(setRodape(tituloFiliado, listaTitulos));
 		remessa.getCabecalho().setRemessa(remessa);
 		remessa.getRodape().setRemessa(remessa);
 		remessa.setStatusRemessa(StatusRemessa.AGUARDANDO);
@@ -151,6 +151,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private List<Titulo> setTitulosRemessa(List<Titulo> listaTitulos, TituloFiliado tituloFiliado) {
 		TituloRemessa tituloRemessa = new TituloRemessa();
 		tituloRemessa.parseTituloFiliado(tituloFiliado);
+		tituloRemessa.setNumeroSequencialArquivo(Integer.toString(listaTitulos.size()+2));
 		listaTitulos.add(tituloRemessa);
 		return listaTitulos;
 	}
@@ -164,6 +165,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 
 		TituloRemessa titulo = new TituloRemessa();
 		titulo.parseTituloFiliado(tituloFiliado);
+		titulo.setNumeroSequencialArquivo(Integer.toString(remessa.getTitulos().size()+2));
 		remessa.getTitulos().add(titulo);
 
 		if (tituloFiliado.getEspecieTitulo().equals(TipoEspecieTitulo.DMI)) {
@@ -179,13 +181,14 @@ public class ProcessadorRemessaConveniada extends Processador {
 		        quantidadeRegistros + quantidadeTitulos + quantidadeOriginais + quantidadeIndicacoes);
 		remessa.getRodape().setSomatorioQtdRemessa(somatorioQtdRemessa);
 		remessa.getRodape().setSomatorioValorRemessa(valorSaldo);
+		remessa.getRodape().setNumeroSequencialRegistroArquivo(Integer.toString(Integer.parseInt(remessa.getRodape().getNumeroSequencialRegistroArquivo())+1));
 	}
 
 	private Instituicao setInstituicaoDestino(TituloFiliado tituloFiliado) {
 		return instituicaoMediator.getCartorioPorCodigoIBGE(tituloFiliado.getPracaProtesto().getCodigoIBGE());
 	}
 
-	private Rodape setRodape(TituloFiliado tituloFiliado) {
+	private Rodape setRodape(TituloFiliado tituloFiliado, List<Titulo> titulos) {
 		Rodape rodape = new Rodape();
 		rodape.setDataMovimento(new LocalDate());
 		rodape.setIdentificacaoRegistro(TipoRegistro.RODAPE);
@@ -193,6 +196,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		rodape.setNumeroCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
 		rodape.getSomatorioQtdRemessa().add(new BigDecimal(3));
 		rodape.getSomatorioValorRemessa().add(tituloFiliado.getValorSaldoTitulo());
+		rodape.setNumeroSequencialRegistroArquivo(Integer.toString(titulos.size()+2));
 		return rodape;
 	}
 

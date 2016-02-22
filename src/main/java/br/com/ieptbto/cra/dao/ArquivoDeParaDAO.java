@@ -3,6 +3,7 @@ package br.com.ieptbto.cra.dao;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
@@ -26,7 +27,8 @@ public class ArquivoDeParaDAO extends AbstractBaseDAO{
 		Transaction transaction = getBeginTransation();
 		
 		try {
-		
+			Query query = createSQLQuery("DELETE FROM tb_agencia_caf ");
+			query.executeUpdate();
 			for (AgenciaCAF agencia: listaAgencias){
 				save(agencia);
 			}

@@ -8,11 +8,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import br.com.ieptbto.cra.conversor.arquivo.FabricaDeArquivoXML;
+import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.BatimentoDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.dao.RetornoDAO;
@@ -23,11 +30,20 @@ import br.com.ieptbto.cra.entidade.BatimentoDeposito;
 import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.vo.RetornoVO;
+import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.exception.XmlCraException;
+import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.webservice.VO.Descricao;
+import br.com.ieptbto.cra.webservice.VO.Detalhamento;
+import br.com.ieptbto.cra.webservice.VO.Mensagem;
+import br.com.ieptbto.cra.webservice.VO.MensagemXml;
 
 /**
  * @author Thasso Araújo
@@ -37,6 +53,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class RetornoMediator {
 
 	private static final int NUMERO_SEQUENCIAL_RETORNO = 1;
+	protected static final Logger logger = Logger.getLogger(ConfirmacaoMediator.class);
 	
 	@Autowired
 	private InstituicaoDAO instituicaoDAO;
@@ -46,9 +63,16 @@ public class RetornoMediator {
 	private RetornoDAO retornoDao;
 	@Autowired
 	private BatimentoDAO batimentoDAO;
+	@Autowired
+	private TipoArquivoMediator tipoArquivoMediator;
+	@Autowired
+	private FabricaDeArquivoXML fabricaDeArquivosXML;
+	@Autowired
+	private ArquivoDAO arquivoDAO;
 	private Instituicao cra;
 	private TipoArquivo tipoArquivo;
 	private Arquivo arquivo;
+	private List<Exception> erros;
 	
 	public List<Remessa> buscarRetornosParaBatimento(){
 		return retornoDao.buscarRetornosParaBatimento();
@@ -197,5 +221,119 @@ public class RetornoMediator {
 
 	public Arquivo getArquivo() {
 		return arquivo;
+	}
+
+	/**
+	 * PROCESSAR RETORNO XML RECEBIDO
+	 * */
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public MensagemXml processarXML(RetornoVO retornoVO, Usuario usuario, String nomeArquivo) {
+		this.arquivo = new Arquivo();
+		getArquivo().setDataEnvio(new LocalDate());
+		getArquivo().setDataRecebimento(new LocalDate().toDate());
+		getArquivo().setHoraEnvio(new LocalTime());
+		getArquivo().setInstituicaoEnvio(usuario.getInstituicao());
+		getArquivo().setNomeArquivo(nomeArquivo);
+		getArquivo().setTipoArquivo(getTipoArquivo());
+		getArquivo().setUsuarioEnvio(usuario);
+		getArquivo().setRemessas(new ArrayList<Remessa>());
+		getArquivo().setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.CONFIRMACAO));
+		getArquivo().setStatusArquivo(getStatusEnviado());
+
+		logger.info("Iniciar processo do arquivo [" + nomeArquivo + "] do usuário ["+ usuario.getLogin() +"]");
+
+		fabricaDeArquivosXML.processarRetornoXML(getArquivo(), retornoVO, erros);
+
+		logger.info("Fim de processo do arquivo [" + nomeArquivo + "] do usuário ["+ usuario.getLogin() +"]");
+
+		setArquivo(salvarArquivo(getArquivo(), usuario));
+		return gerarResposta(getArquivo(), usuario);
+	}
+	
+	private StatusArquivo getStatusEnviado() {
+		StatusArquivo status = new StatusArquivo();
+		status.setData(new LocalDateTime());
+		status.setSituacaoArquivo(SituacaoArquivo.ENVIADO);
+		return status;
+	}
+	
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public Arquivo salvarArquivo(Arquivo arquivo, Usuario usuario) {
+		return arquivoDAO.salvar(arquivo, usuario, new ArrayList<Exception>());
+	}
+	
+	private MensagemXml gerarResposta(Arquivo arquivo, Usuario usuario) {
+		List<Mensagem> mensagens = new ArrayList<Mensagem>();
+		MensagemXml mensagemRetorno = new MensagemXml();
+		Descricao desc = new Descricao();
+		Detalhamento detal = new Detalhamento();
+		detal.setMensagem(mensagens);
+
+		mensagemRetorno.setDescricao(desc);
+		mensagemRetorno.setDetalhamento(detal);
+		mensagemRetorno.setCodigoFinal("0000");
+		mensagemRetorno.setDescricaoFinal("Arquivo processado com sucesso");
+
+		desc.setDataEnvio(LocalDateTime.now().toString(DataUtil.PADRAO_FORMATACAO_DATAHORASEG));
+		desc.setTipoArquivo(Descricao.XML_UPLOAD_REMESSA);
+		desc.setDataMovimento(arquivo.getDataEnvio().toString(DataUtil.PADRAO_FORMATACAO_DATA));
+		desc.setPortador(arquivo.getInstituicaoEnvio().getCodigoCompensacao());
+		desc.setUsuario(usuario.getNome());
+
+		for (Remessa remessa : arquivo.getRemessas()) {
+			Mensagem mensagem = new Mensagem();
+			mensagem.setCodigo("0000");
+			mensagem.setMunicipio(getMunicipio(remessa));
+			mensagem.setDescricao(formatarMensagemRetorno(remessa));
+			mensagens.add(mensagem);
+		}
+
+		if (getErros() != null) {
+			for (Exception ex : getErros()) {
+				XmlCraException exception = XmlCraException.class.cast(ex);
+				Mensagem mensagem = new Mensagem();
+				mensagem.setCodigo(exception.getErro().getCodigo());
+				mensagem.setMunicipio(exception.getCodigoIbge());
+				mensagem.setDescricao("Município: " + exception.getCodigoIbge() + " - " + exception.getMunicipio() + " - "
+						+ exception.getErro().getDescricao());
+				mensagens.add(mensagem);
+			}
+		}
+		return mensagemRetorno;
+	}
+	
+	private String formatarMensagemRetorno(Remessa remessa) {
+		if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+			return "Município: " + remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString() + " - "
+			        + remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - "
+			        + remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.";
+		} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
+		        || TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+			return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
+			        + remessa.getCabecalho().getQtdTitulosRemessa() + " títulos receberam confirmação.";
+		}
+		return StringUtils.EMPTY;
+
+	}
+	
+	private String getMunicipio(Remessa remessa) {
+		if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+			return remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString();
+		} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
+		        || TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+			return remessa.getCabecalho().getNumeroCodigoPortador();
+		}
+		return StringUtils.EMPTY;
+	}
+	
+	public void setArquivo(Arquivo arquivo) {
+		this.arquivo = arquivo;
+	}
+	
+	public List<Exception> getErros() {
+		if (erros == null) {
+			erros = new ArrayList<Exception>();
+		}
+		return erros;
 	}
 }

@@ -56,6 +56,9 @@ public class BigDecimalConversor extends AbstractConversor<BigDecimal> {
 
 	public String getValorConvertidoSegundoLayoutFebraban(BigDecimal valor){
 		int tamanho = TAMANHO_PADRAO_CAMPO_VALOR;
+		if (valor == null) {
+			return StringUtils.EMPTY;
+		}
 		return StringUtils.leftPad(Double.toString(valor.doubleValue()).replace(".", ""), tamanho, VALOR_ZERO);
 	}
 	

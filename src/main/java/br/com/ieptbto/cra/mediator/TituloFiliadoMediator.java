@@ -11,6 +11,7 @@ import br.com.ieptbto.cra.entidade.Avalista;
 import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.entidade.SetorFiliado;
 import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamentoConvenio;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
@@ -25,7 +26,7 @@ import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
 public class TituloFiliadoMediator {
 
 	@Autowired
-	TituloFiliadoDAO tituloFiliadoDAO;
+	private TituloFiliadoDAO tituloFiliadoDAO;
 	
 	public TituloFiliado salvarTituloFiliado(TituloFiliado titulo){
 		return tituloFiliadoDAO.salvar(titulo);
@@ -39,8 +40,8 @@ public class TituloFiliadoMediator {
 		return tituloFiliadoDAO.buscarTituloDoConvenioNaCra(tituloFiliado);
 	}
 	
-	public List<TituloFiliado> titulosParaEnvioAoConvenio(Filiado empresaFiliada) {
-		return tituloFiliadoDAO.buscarTitulosParaEnvioAoConvenio(empresaFiliada);
+	public List<TituloFiliado> buscarTitulosParaEnvio(Filiado empresaFiliada, SetorFiliado setor) {
+		return tituloFiliadoDAO.buscarTitulosParaEnvio(empresaFiliada, setor);
 	}
 
 	public void removerTituloFiliado(TituloFiliado titulo) {

@@ -21,6 +21,7 @@ import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.ConfirmacaoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.entidade.vo.RetornoVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
@@ -59,6 +60,32 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		remessaVO.setRodapes(confirmacaoVO.getRodape());
 		remessaVO.setTitulos(new ArrayList<TituloVO>());
 		remessaVO.getTitulos().addAll(confirmacaoVO.getTitulos());
+
+		Remessa remessa = new Remessa();
+		remessa.setArquivo(arquivo);
+		remessa.setCabecalho(getCabecalho(remessaVO.getCabecalho()));
+		remessa.getCabecalho().setRemessa(remessa);
+		remessa.setRodape(getRodape(remessaVO.getRodape()));
+		remessa.getRodape().setRemessa(remessa);
+		remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho()));
+		remessa.setInstituicaoOrigem(getInstituicaoEnvio(remessaVO.getCabecalho()));
+		remessa.setDataRecebimento(getDataRecebimento(remessaVO.getCabecalho().getDataMovimento()));
+		remessa.setTitulos(getTitulos(remessaVO.getTitulos(), remessa));
+		arquivo.getRemessas().add(remessa);
+
+		return arquivo;
+
+	}
+	
+	public Arquivo processarRetornoXML(Arquivo arquivo, RetornoVO retornoVO, List<Exception> erros) {
+		this.arquivo = arquivo;
+		this.erros = erros;
+
+		RemessaVO remessaVO = new RemessaVO();
+		remessaVO.setCabecalho(retornoVO.getCabecalho());
+		remessaVO.setRodapes(retornoVO.getRodape());
+		remessaVO.setTitulos(new ArrayList<TituloVO>());
+		remessaVO.getTitulos().addAll(retornoVO.getTitulos());
 
 		Remessa remessa = new Remessa();
 		remessa.setArquivo(arquivo);

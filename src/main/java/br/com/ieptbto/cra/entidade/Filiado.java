@@ -44,6 +44,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	private Instituicao instituicaoConvenio;
 	private List<UsuarioFiliado> usuariosFiliados;
 	private List<TituloFiliado> titulosFiliado;
+	private List<SetorFiliado> setoresFiliado;
 
 	@Id
 	@Column(name = "ID_FILIADO", columnDefinition = "serial")
@@ -83,7 +84,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 		}
 		return cep.replace(".", "").replace("-", "").trim();
 	}
-
+	
 	@ManyToOne
 	@JoinColumn(name = "MUNICIPIO_ID")
 	public Municipio getMunicipio() {
@@ -99,7 +100,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	public String getCodigoFiliado() {
 		return codigoFiliado;
 	}
-
+	
 	@ManyToOne
 	@JoinColumn(name = "INSTITUICAO_ID")
 	public Instituicao getInstituicaoConvenio() {
@@ -120,6 +121,11 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	public Boolean isAtivo() {
 		return ativo;
 	}
+	
+	@OneToMany(mappedBy = "filiado")
+	public List<SetorFiliado> getSetoresFiliado() {
+		return setoresFiliado;
+	}
 
 	public void setId(int id) {
 		this.id = id;
@@ -139,6 +145,10 @@ public class Filiado extends AbstractEntidade<Filiado> {
 
 	public void setCep(String cep) {
 		this.cep = cep;
+	}
+	
+	public void setSetoresFiliado(List<SetorFiliado> setoresFiliado) {
+		this.setoresFiliado = setoresFiliado;
 	}
 
 	public void setMunicipio(Municipio municipio) {

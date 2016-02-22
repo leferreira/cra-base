@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import br.com.ieptbto.cra.dao.FiliadoDAO;
 import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.SetorFiliado;
 
 /**
  * @author Thasso Araújo
@@ -17,7 +18,7 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 public class FiliadoMediator {
 
 	@Autowired
-	FiliadoDAO filiadoDAO;
+	private FiliadoDAO filiadoDAO;
 
 	public Filiado salvarFiliado(Filiado filiado) {
 		return filiadoDAO.salvar(filiado);
@@ -34,5 +35,16 @@ public class FiliadoMediator {
 	public List<Filiado> buscarTodosFiliados() {
 		return filiadoDAO.getAll(Filiado.class);
 	}
+	
+	public void removerSetor(SetorFiliado setor) {
+		filiadoDAO.removerSertorFiliado(setor);
+	}
 
+	public List<SetorFiliado> buscarSetoresFiliado(Filiado filiado) {
+		return filiadoDAO.buscarSetoresFiliado(filiado);
+	}
+	
+	public List<SetorFiliado> buscarSetoresAtivosFiliado(Filiado filiado) {
+		return filiadoDAO.buscarSetoresAtivosFiliado(filiado);
+	}
 }

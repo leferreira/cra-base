@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -47,18 +48,17 @@ public class ConfirmacaoMediator {
 	protected static final Logger logger = Logger.getLogger(ConfirmacaoMediator.class);
 
 	@Autowired
-	ConfirmacaoDAO confirmacaoDAO;
+	private ConfirmacaoDAO confirmacaoDAO;
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 	@Autowired
-	TipoArquivoDAO tipoArquivoDAO;
+	private TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
-	FabricaDeArquivoXML fabricaDeArquivosXML;
+	private FabricaDeArquivoXML fabricaDeArquivosXML;
 	@Autowired
-	TipoArquivoMediator tipoArquivoMediator;
+	private TipoArquivoMediator tipoArquivoMediator;
 	@Autowired
-	ArquivoDAO arquivoDAO;
-
+	private ArquivoDAO arquivoDAO;
 	private Instituicao cra;
 	private TipoArquivo tipoArquivo;
 	private Arquivo arquivo;
@@ -77,7 +77,7 @@ public class ConfirmacaoMediator {
 	public MensagemXml processarXML(ConfirmacaoVO confirmacaoVO, Usuario usuario, String nomeArquivo) {
 		this.arquivo = new Arquivo();
 		getArquivo().setDataEnvio(new LocalDate());
-		arquivo.setDataRecebimento(new LocalDate().toDate());
+		getArquivo().setDataRecebimento(new LocalDate().toDate());
 		getArquivo().setHoraEnvio(new LocalTime());
 		getArquivo().setInstituicaoEnvio(usuario.getInstituicao());
 		getArquivo().setNomeArquivo(nomeArquivo);
@@ -153,7 +153,7 @@ public class ConfirmacaoMediator {
 			return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
 			        + remessa.getCabecalho().getQtdTitulosRemessa() + " títulos receberam confirmação.";
 		}
-		return "";
+		return StringUtils.EMPTY;
 
 	}
 
@@ -187,7 +187,7 @@ public class ConfirmacaoMediator {
 		        || TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
 			return remessa.getCabecalho().getNumeroCodigoPortador();
 		}
-		return "";
+		return StringUtils.EMPTY;
 	}
 
 	private void criarNovoArquivoDeConfirmacao(Instituicao destino, Remessa confirmacao) {
@@ -198,6 +198,7 @@ public class ConfirmacaoMediator {
 		getArquivo().setInstituicaoEnvio(getCra());
 		getArquivo().setDataEnvio(new LocalDate());
 		getArquivo().setHoraEnvio(new LocalTime());
+		getArquivo().setDataRecebimento(new LocalDate().toDate());
 	}
 
 	private StatusArquivo getStatusEnviado() {

@@ -16,6 +16,7 @@ import br.com.ieptbto.cra.entidade.Avalista;
 import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.entidade.SetorFiliado;
 import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamentoConvenio;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
@@ -92,13 +93,17 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<TituloFiliado> buscarTitulosParaEnvioAoConvenio(Filiado empresaFiliada) {
+	public List<TituloFiliado> buscarTitulosParaEnvio(Filiado empresaFiliada, SetorFiliado setorFiliado) {
 		Criteria criteria = getCriteria(TituloFiliado.class);
 		criteria.createAlias("filiado", "filiado");
-		criteria.add(Restrictions.eq("filiado", empresaFiliada));
+		criteria.add(Restrictions.eq("filiado", empresaFiliada));			
+		
+		if (setorFiliado != null) {
+			criteria.add(Restrictions.eq("setor", setorFiliado));	
+		}
 		criteria.add(Restrictions.eq("situacaoTituloConvenio", SituacaoTituloConvenio.AGUARDANDO));
 		criteria.add(Restrictions.ne("situacaoTituloConvenio", SituacaoTituloConvenio.REMOVIDO));
-		criteria.addOrder(Order.desc("nomeDevedor"));
+		criteria.addOrder(Order.asc("nomeDevedor"));
 		return criteria.list();
 	}
 
@@ -149,7 +154,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("nossoNumero", StringUtils.rightPad(nossoNumero, 15, "0")));
 		List<TituloRemessa> titulosRemessa = criteria.list();
 		for (TituloRemessa titulo : titulosRemessa) {
-			if (titulo.getDataCadastro().before(tituloFiliado.getDataEntrada().toDate())) {
+			if (titulo.getDataCadastro().before(tituloFiliado.getDataEntrada())) {
 				return titulo;
 			}
 		}

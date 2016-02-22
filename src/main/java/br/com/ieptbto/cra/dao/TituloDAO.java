@@ -216,12 +216,20 @@ public class TituloDAO extends AbstractBaseDAO {
 			}
 		}
 		if (tituloRetorno.getTipoOcorrencia() != null) {
-			if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-				if (tituloRetorno.getCodigoIrregularidade() != null) {
-					if (!tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-						throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");
-					} else if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-						throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");
+			if (tituloRetorno.getNumeroProtocoloCartorio() != null) {
+				if (!StringUtils.isBlank(tituloRetorno.getNumeroProtocoloCartorio().trim())) {
+					Integer numeroProtocolo = Integer.valueOf(tituloRetorno.getNumeroProtocoloCartorio().trim());
+					tituloRetorno.setNumeroProtocoloCartorio(numeroProtocolo.toString());
+					if (numeroProtocolo.equals(0)) {
+						if (!tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+							throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");						
+						}
+						if (tituloRetorno.getCodigoIrregularidade() != null){
+							if (StringUtils.isBlank(tituloRetorno.getCodigoIrregularidade().trim()) ||
+									tituloRetorno.getCodigoIrregularidade().equals("00")) {
+								throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] foi devolvido e não contém o código da irregularidade!");						
+							}
+						}
 					}
 				}
 			}
@@ -276,11 +284,19 @@ public class TituloDAO extends AbstractBaseDAO {
 				throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] foi devolvido e não contém código irregularidade!");
 			}
 			if (tituloConfirmacao.getNumeroProtocoloCartorio() != null) {
-				if (StringUtils.isBlank(tituloConfirmacao.getNumeroProtocoloCartorio().trim()) || tituloConfirmacao.getNumeroProtocoloCartorio().trim().equals("0")) {
-					if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-						throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");
-					} else if (tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-						throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");
+				if (!StringUtils.isBlank(tituloConfirmacao.getNumeroProtocoloCartorio().trim())) {
+					Integer numeroProtocolo = Integer.valueOf(tituloConfirmacao.getNumeroProtocoloCartorio().trim());
+					tituloConfirmacao.setNumeroProtocoloCartorio(numeroProtocolo.toString());
+					if (numeroProtocolo.equals(0)) {
+						if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+							throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");						
+						}
+						if (tituloConfirmacao.getCodigoIrregularidade() != null){
+							if (StringUtils.isBlank(tituloConfirmacao.getCodigoIrregularidade().trim()) ||
+									tituloConfirmacao.getCodigoIrregularidade().equals("00")) {
+								throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] foi devolvido e não contém o código da irregularidade!");						
+							}
+						}
 					}
 				}
 			}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.SetorFiliado;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 
@@ -29,6 +31,12 @@ public class FiliadoDAO extends AbstractBaseDAO {
 			novoFiliado = save(filiado);
 			novoFiliado.setCodigoFiliado(geradorCodigoCedenteFiliado(novoFiliado));
 			update(novoFiliado);
+			
+			for (SetorFiliado setor : filiado.getSetoresFiliado()) {
+				setor.setFiliado(novoFiliado);
+				save(setor);
+			}
+			
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
@@ -44,6 +52,16 @@ public class FiliadoDAO extends AbstractBaseDAO {
 		
 		try {
 			novoFiliado = update(filiado);
+			
+			for (SetorFiliado setor : filiado.getSetoresFiliado()) {
+				if (setor.getId() == 0) {
+					setor.setFiliado(novoFiliado);
+					save(setor);
+				} else {
+					update(setor);
+				}
+			}
+
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
@@ -69,11 +87,36 @@ public class FiliadoDAO extends AbstractBaseDAO {
 			return new ArrayList<Filiado>();
 		}
 		
-		if (instituicao.getTipoInstituicao().getTipoInstituicao() != TipoInstituicaoCRA.CRA)
+		if (instituicao.getTipoInstituicao().getTipoInstituicao() != TipoInstituicaoCRA.CRA) {
 			criteria.add(Restrictions.eq("instituicaoConvenio", instituicao));
-		
+		}
 		criteria.addOrder(Order.asc("razaoSocial"));
 		return criteria.list();
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<SetorFiliado> buscarSetoresFiliado(Filiado filiado) {
+		Criteria criteria = getCriteria(SetorFiliado.class);
+		criteria.add(Restrictions.eq("filiado", filiado));
+		return criteria.list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<SetorFiliado> buscarSetoresAtivosFiliado(Filiado filiado) {
+		Criteria criteria = getCriteria(SetorFiliado.class);
+		criteria.add(Restrictions.eq("filiado", filiado));
+		criteria.add(Restrictions.eq("situacaoAtivo", true));
+		return criteria.list();
+	}
+
+	public void removerSertorFiliado(SetorFiliado setor) {
+		
+		try {
+			Query query = createSQLQuery("DELETE FROM tb_setor_filiado WHERE id_setor_filiado=" + setor.getId());
+			query.executeUpdate();
+			
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+		}
+	}
 }
