@@ -62,7 +62,7 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 						pedido.setCancelamentoProtesto(cancelamento);;
 						pedido.setTitulo(tituloDAO.buscarTituloCancelamentoProtesto(pedido));
 						if (pedido.getTitulo() != null) {
-							if (pedido.getTitulo().getPedidoDesistencia() == null) {
+							if (pedido.getTitulo().getPedidoCancelamento() == null) {
 								pedidos.add(pedido);
 								valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
 								totalRegistroCancelamentoProtesto++;

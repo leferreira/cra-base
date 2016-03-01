@@ -130,14 +130,10 @@ public class ArquivoDAO extends AbstractBaseDAO {
 							pedido.setDesistenciaProtesto(desistenciaProtestos);
 							pedido.setTitulo(tituloDAO.buscarTituloDesistenciaProtesto(pedido));
 							if (pedido.getTitulo() != null) {
-								if (pedido.getTitulo().getPedidoDesistencia() == null) {
-									pedidosProcessados.add(pedido);
-									quantidadeDesistenciasCartorio = quantidadeDesistenciasCartorio + 1;
-									valorTotalDesistenciaArquivo = valorTotalDesistenciaArquivo.add(pedido.getValorTitulo());
-									quantidadeDesistenciasArquivo = quantidadeDesistenciasArquivo + 1;
-								} else {
-									pedidosDesistenciaComErro.add(pedido);
-								}
+								pedidosProcessados.add(pedido);
+								quantidadeDesistenciasCartorio = quantidadeDesistenciasCartorio + 1;
+								valorTotalDesistenciaArquivo = valorTotalDesistenciaArquivo.add(pedido.getValorTitulo());
+								quantidadeDesistenciasArquivo = quantidadeDesistenciasArquivo + 1;
 							} else {
 								pedidosDesistenciaComErro.add(pedido);
 							}
@@ -183,8 +179,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			} else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
 				new InfraException("Não foi possivel enviar a Autorização de Cancelamento! Entre em contato com a CRA!");
 			}
-			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
-			        + " foi inserido na base ");
+			logger.info("O arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
+			        + " salvo com sucesso.");
 
 		} catch (InfraException ex) {
 			transaction.rollback();

@@ -204,15 +204,17 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (titulo == null) {
 			throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] não existe em nossa base de dados.");
 		} 
-		if (titulo.getPedidoDesistencia() != null) {
-			LocalDate dataOcorrenciaRetorno = tituloRetorno.getDataOcorrencia();
-			LocalDate dataMovimentoDesistencia = titulo.getPedidoDesistencia().getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
-			if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
-				if (dataOcorrenciaRetorno.isAfter(dataMovimentoDesistencia)	|| dataOcorrenciaRetorno.equals(dataMovimentoDesistencia)) {
-					throw new InfraException("PROTESTO INDEVIDO ! O título " + titulo.getNumeroTitulo() + " com o protocolo " + tituloRetorno.getNumeroProtocoloCartorio() + " protestado em "
-							+ DataUtil.localDateToString(tituloRetorno.getDataOcorrencia())	+ " ,já contém um pedido de desistência no arquivo " + titulo.getPedidoDesistencia()
-							.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo() + ". Faça o CANCELAMENTO!");
-				}
+		if (titulo.getPedidosDesistencia() != null) {
+			for (PedidoDesistencia pedido : titulo.getPedidosDesistencia()) {
+				
+				LocalDate dataOcorrenciaRetorno = tituloRetorno.getDataOcorrencia();
+				LocalDate dataMovimentoDesistencia = pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
+				if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
+					if (dataOcorrenciaRetorno.isAfter(dataMovimentoDesistencia)	|| dataOcorrenciaRetorno.equals(dataMovimentoDesistencia)) {
+						throw new InfraException("PROTESTO INDEVIDO! O título com o protocolo " + tituloRetorno.getNumeroProtocoloCartorio() + ", protestado em "
+								+ DataUtil.localDateToString(tituloRetorno.getDataOcorrencia())	+ ", já contém um pedido de desistência. Faça o CANCELAMENTO!");
+					}
+				}  
 			}
 		}
 		if (tituloRetorno.getTipoOcorrencia() != null) {

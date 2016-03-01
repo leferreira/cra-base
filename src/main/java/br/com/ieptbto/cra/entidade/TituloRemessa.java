@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.entidade;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -44,7 +46,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	private Anexo anexo;
 	private Confirmacao confirmacao;
 	private Retorno retorno;
-	private PedidoDesistencia pedidoDesistencia;
+	private List<PedidoDesistencia> pedidosDesistencia;
 	private PedidoCancelamento pedidoCancelamento;
 	private PedidoAutorizacaoCancelamento pedidoAutorizacaoCancelamento;
 
@@ -94,9 +96,9 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		return confirmacao;
 	}
 
-	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
-	public PedidoDesistencia getPedidoDesistencia() {
-		return pedidoDesistencia;
+	@OneToMany(mappedBy = "titulo", fetch = FetchType.LAZY)
+	public List<PedidoDesistencia> getPedidosDesistencia() {
+		return pedidosDesistencia;
 	}
 	
 	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
@@ -287,8 +289,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.confirmacao = confirmacao;
 	}
 
-	public void setPedidoDesistencia(PedidoDesistencia pedidoDesistencia) {
-		this.pedidoDesistencia = pedidoDesistencia;
+	public void setPedidosDesistencia(List<PedidoDesistencia> pedidosDesistencia) {
+		this.pedidosDesistencia = pedidosDesistencia;
 	}
 
 	public void setPedidoCancelamento(PedidoCancelamento pedidoCancelamento) {

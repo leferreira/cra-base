@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
@@ -152,7 +151,7 @@ public class PedidoDesistencia extends AbstractEntidade<PedidoDesistencia> {
 		return desistenciaProtesto;
 	}
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "TITULO_ID")
 	public TituloRemessa getTitulo() {
 		return titulo;

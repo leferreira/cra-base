@@ -25,8 +25,8 @@ public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOc
 	public void parseToRemessa(Remessa remessa) {
 		this.arquivo = remessa.getArquivo();
 		this.remessa = remessa;
-		this.dataHora = DataUtil.localDateToString(remessa.getDataRecebimento());
-		this.nomeUsuario = remessa.getArquivo().getUsuarioEnvio().getNome();
+		this.dataHora = DataUtil.localDateToString(remessa.getArquivo().getDataEnvio()) + " " + DataUtil.localTimeToString(remessa.getArquivo().getHoraEnvio());
+		this.nomeUsuario = remessa.getArquivo().getUsuarioEnvio().getNome(); 
 	}
 
 	public void parseToDesistenciaProtesto(DesistenciaProtesto dp) {
@@ -34,7 +34,7 @@ public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOc
 		this.desistenciaProtesto = dp;
 		this.dataHora = DataUtil.localDateToString(dp.getRemessaDesistenciaProtesto().getArquivo().getDataEnvio()) + " " +
 				DataUtil.localTimeToString(dp.getRemessaDesistenciaProtesto().getArquivo().getHoraEnvio());
-		this.nomeUsuario = dp.getRemessaDesistenciaProtesto().getArquivo().getUsuarioEnvio().getNome();
+		this.nomeUsuario = dp.getRemessaDesistenciaProtesto().getArquivo().getUsuarioEnvio().getNome(); 
 	}
 
 	public void parseToArquivoGerado(Arquivo arquivoGerado) {
