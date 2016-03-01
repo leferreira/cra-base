@@ -93,14 +93,14 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		inserirInstituicaoInicial(municipio);
 	}
 
-	public void inserirInstituicaoInicial(Municipio muMunicipio) {
+	public void inserirInstituicaoInicial(Municipio municipio) {
 		Transaction transaction = getBeginTransation();
 		try {
 			Instituicao instituicao = new Instituicao();
 			instituicao.setNomeFantasia("CRA");
 			instituicao.setSituacao(true);
 			instituicao.setCnpj("123");
-			instituicao.setMunicipio(muMunicipio);
+			instituicao.setMunicipio(municipio);
 			instituicao.setRazaoSocial("CRA");
 			instituicao.setTipoInstituicao(tipoInstituicaoDAO.buscarTipoInstituicao(TipoInstituicaoCRA.CRA));
 			save(instituicao);
@@ -185,7 +185,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		return Instituicao.class.cast(criteria.uniqueResult());
 	}
 
-	public Instituicao getInstituicao(String codigoMunicipio) {
+	public Instituicao getCartorioPeloCodigoMunicipio(String codigoMunicipio) {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.createAlias("municipio", "municipio");
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");

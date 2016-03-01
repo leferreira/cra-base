@@ -59,7 +59,7 @@ public class InstituicaoMediator {
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Instituicao getCartorioPorCodigoIBGE(String codigoMunicipio) {
-		Instituicao instituicao = instituicaoDAO.getInstituicao(codigoMunicipio);
+		Instituicao instituicao = instituicaoDAO.getCartorioPeloCodigoMunicipio(codigoMunicipio);
 		if (instituicao == null) {
 			throw new InfraException("Instituição não cadastrada com o código IBGE [" + codigoMunicipio + "]");
 		}

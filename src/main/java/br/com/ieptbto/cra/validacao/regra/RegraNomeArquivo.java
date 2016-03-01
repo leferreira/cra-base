@@ -33,7 +33,7 @@ public class RegraNomeArquivo extends RegrasDeEntrada {
 	}
 
 	private void validarNomeArquivo() {
-		int tamanhoNome =arquivo.getName().length();
+		int tamanhoNome = arquivo.getName().length();
 		
 		if (arquivo.getName().endsWith(".txt") || arquivo.getName().endsWith(".TXT")) {
 			logger.error(Erro.EXTENSAO_NOME_ARQUIVO_INVALIDA.getMensagemErro());
@@ -62,7 +62,7 @@ public class RegraNomeArquivo extends RegrasDeEntrada {
 				throw new InfraException(Erro.TAMANHO_NOME_ARQUIVO_INVALIDO.getMensagemErro());
 			}
 			try {
-				DataUtil.stringToLocalDate("ddMM.yy", arquivo.getName().substring(5, 11));
+				DataUtil.stringToLocalDate("ddMM.yy", arquivo.getName().substring(5, 12));
 			} catch (Exception ex) {
 				logger.error(Erro.DATA_NOME_ARQUIVO_INVALIDA.getMensagemErro());
 				throw new InfraException(Erro.DATA_NOME_ARQUIVO_INVALIDA.getMensagemErro());

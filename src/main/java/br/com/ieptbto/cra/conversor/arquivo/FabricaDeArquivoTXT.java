@@ -61,7 +61,7 @@ import br.com.ieptbto.cra.validacao.regra.RegraValidaTipoArquivoTXT;
 public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 	@Autowired
-	InstituicaoMediator instituicaoMediator;
+	private InstituicaoMediator instituicaoMediator;
 	@Autowired
 	private ValidarCabecalhoRemessa validarCabecalhoRemessa;
 	@Autowired
