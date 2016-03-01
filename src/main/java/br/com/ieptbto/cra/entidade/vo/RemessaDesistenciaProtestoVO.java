@@ -2,6 +2,11 @@ package br.com.ieptbto.cra.entidade.vo;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * 
  * @author Lefer
@@ -9,10 +14,15 @@ import java.util.List;
  */
 
 @SuppressWarnings("serial")
+@XmlRootElement(name = "sustacao")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class RemessaDesistenciaProtestoVO extends AbstractArquivoVO {
 
+	@XmlElement(name = "hdb")
 	private CabecalhoArquivoDesistenciaProtestoVO cabecalhoArquivo;
+	@XmlElement(name = "registros")
 	private List<DesistenciaProtestoVO> pedidoDesistencias;
+	@XmlElement(name = "tlb")
 	private RodapeArquivoDesistenciaProtestoVO rodapeArquivo;
 	private String identificacaoRegistro;
 

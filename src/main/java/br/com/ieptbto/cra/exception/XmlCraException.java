@@ -31,6 +31,13 @@ public class XmlCraException extends RuntimeException {
 		this.erro = erro;
 	}
 
+	public XmlCraException(String message, String municipio, CodigoErro erro) {
+		super(message);
+		this.municipio = municipio;
+		this.codigoIbge = municipio;
+		this.erro = erro;
+	}
+	
 	public String getMunicipio() {
 		return municipio;
 	}

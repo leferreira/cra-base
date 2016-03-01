@@ -30,6 +30,11 @@ public class AutorizacaoCancelamentoException extends RuntimeException {
 		this.pedidosAutorizacaoCancelamento = new ArrayList<PedidoAutorizacaoCancelamento>();
 	}
 	
+	/**
+	 * @param message
+	 * @param erros
+	 * @param pedidosComErros
+	 */
 	public AutorizacaoCancelamentoException(String message, List<Exception> erros, List<PedidoAutorizacaoCancelamento> pedidosComErros) {
 		super(message);
 		this.erro = ErroTitulo.CAMPOS_INCONSISTENTES;

@@ -24,7 +24,7 @@ public class RegraNomeArquivo extends RegrasDeEntrada {
 		this.usuario = usuario;
 		this.arquivo = arquivo;
 		setErros(erros);
-//		executar();
+		executar();
 	}
 
 	@Override

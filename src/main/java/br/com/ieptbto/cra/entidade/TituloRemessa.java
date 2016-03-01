@@ -2,7 +2,6 @@ package br.com.ieptbto.cra.entidade;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,7 +9,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -44,7 +42,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 
 	private int id;
 	private Anexo anexo;
-	private List<Historico> historicos;
 	private Confirmacao confirmacao;
 	private Retorno retorno;
 	private PedidoDesistencia pedidoDesistencia;
@@ -115,11 +112,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
 	public Retorno getRetorno() {
 		return retorno;
-	}
-
-	@OneToMany(mappedBy = "titulo", fetch = FetchType.LAZY)
-	public List<Historico> getHistoricos() {
-		return historicos;
 	}
 
 	@Column(name = "NOME_CEDENTE_FAVORECIDO")
@@ -307,10 +299,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.pedidoAutorizacaoCancelamento = pedidoAutorizacaoCancelamento;
 	}
 	
-	public void setHistoricos(List<Historico> historicos) {
-		this.historicos = historicos;
-	}
-
 	public void setNomeCedenteFavorecido(String nomeCedenteFavorecido) {
 		this.nomeCedenteFavorecido = nomeCedenteFavorecido;
 	}
@@ -595,7 +583,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
 	public Anexo getAnexo() {
 		return anexo;
-	}
+	} 
 
 	public void setAnexo(Anexo anexo) {
 		this.anexo = anexo;

@@ -253,11 +253,9 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		if (TipoArquivoEnum.REMESSA.equals(getArquivo().getTipoArquivo().getTipoArquivo())
 		        || TipoArquivoEnum.CONFIRMACAO.equals(getArquivo().getTipoArquivo().getTipoArquivo())
 		        || TipoArquivoEnum.RETORNO.equals(getArquivo().getTipoArquivo().getTipoArquivo())) {
-
-			return processarRemessa();
+			return processarRemessaConfirmacaoRetorno();
 		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(getArquivo().getTipoArquivo().getTipoArquivo())) {
 			return processarDesistenciaProtesto();
-
 		} else {
 			return null;
 		}
@@ -342,7 +340,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 	}
 
-	private Arquivo processarRemessa() {
+	private Arquivo processarRemessaConfirmacaoRetorno() {
 		try {
 			List<Remessa> remessas = new ArrayList<Remessa>();
 			getArquivo().setRemessas(remessas);

@@ -23,7 +23,7 @@ public class RodapeCartorioDesistenciaProtestoVO extends AbstractArquivoVO {
 	private String identificacaoRegistro;
 
 	@XmlAttribute(name = "t02")
-	@IAtributoArquivo(ordem = 2, posicao = 2, tamanho = 2, descricao = "Identificar o código do cartório.", obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 2, posicao = 2, tamanho = 2, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Identificar o código do cartório.", obrigatoriedade = true)
 	private String codigoCartorio;
 
 	@XmlAttribute(name = "t03")
@@ -31,7 +31,7 @@ public class RodapeCartorioDesistenciaProtestoVO extends AbstractArquivoVO {
 	private String somaTotalCancelamentoDesistencia;
 
 	@XmlAttribute(name = "t04")
-	@IAtributoArquivo(ordem = 4, posicao = 9, tamanho = 114, formato = "", descricao = "Reservado.", obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 4, posicao = 9, tamanho = 114, descricao = "Reservado.", obrigatoriedade = true)
 	private String reservado;
 
 	@XmlAttribute(name = "t05")

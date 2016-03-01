@@ -14,25 +14,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Mensagem {
 
-	@XmlAttribute(name = "municipio")
-	private String municipio;
+	@XmlAttribute(name = "descricao")
+	private String descricao;
 
 	@XmlAttribute(name = "codigo")
 	private String codigo;
 
-	@XmlAttribute(name = "descricao")
-	private String descricao;
+	@XmlAttribute(name = "municipio")
+	private String municipio;
 
-	public String getMunicipio() {
-		return municipio;
+
+	public String getDescricao() {
+		return descricao;
 	}
 
 	public String getCodigo() {
 		return codigo;
 	}
 
-	public String getDescricao() {
-		return descricao;
+	public String getMunicipio() {
+		return municipio;
 	}
 
 	public void setMunicipio(String municipio) {
@@ -46,5 +47,4 @@ public class Mensagem {
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
-
 }

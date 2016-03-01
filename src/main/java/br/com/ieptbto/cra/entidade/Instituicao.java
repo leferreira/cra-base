@@ -23,6 +23,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
+import br.com.ieptbto.cra.enumeration.EnumerationSimNao;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.TipoBatimento;
 import br.com.ieptbto.cra.enumeration.TipoCampo51;
@@ -51,7 +52,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	private String numeroContaCorrente;
 	private String codigoCartorio;
 	private boolean situacao;
-	private boolean permitidoAnexo;
+	private EnumerationSimNao permitidoSetoresConvenio;
 	private TipoInstituicao tipoInstituicao;
 	private List<Arquivo> arquivoEnviados;
 	private List<Usuario> listaUsuarios;
@@ -178,13 +179,10 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		return codigoCartorio;
 	}
 
-	@Column(name = "PERMITIDO_ANEXO", columnDefinition = "boolean default false")
-	public boolean isPermitidoAnexo() {
-		return permitidoAnexo;
-	}
-
-	public void setPermitidoAnexo(boolean permitidoAnexo) {
-		this.permitidoAnexo = permitidoAnexo;
+	@Column(name="PERMITIDO_SETORES_CONVENIO")
+	@Enumerated(EnumType.STRING)
+	public EnumerationSimNao getPermitidoSetoresConvenio() {
+		return permitidoSetoresConvenio;
 	}
 
 	public void setCodigoCartorio(String codigoCartorio) {
@@ -209,6 +207,10 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 
 	public void setCnpj(String cnpj) {
 		this.cnpj = cnpj;
+	}
+	
+	public void setPermitidoSetoresConvenio(EnumerationSimNao permitidoSetoresConvenio) {
+		this.permitidoSetoresConvenio = permitidoSetoresConvenio;
 	}
 
 	public void setCodigoCompensacao(String codigoCompensacao) {
@@ -324,22 +326,6 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 			setSituacao(true);
 		} else {
 			setSituacao(false);
-		}
-	}
-
-	@Transient
-	public String getPermitidoAnexos() {
-		if (isPermitidoAnexo() == true) {
-			return "Sim";
-		}
-		return "Não";
-	}
-
-	public void setPermitidoAnexos(String permitido) {
-		if (permitido.equals("Sim")) {
-			setPermitidoAnexo(true);
-		} else {
-			setPermitidoAnexo(false);
 		}
 	}
 

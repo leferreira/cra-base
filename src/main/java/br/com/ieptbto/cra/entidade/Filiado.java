@@ -188,7 +188,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	}
 
 	public void setSituacao(String status) {
-		if (status.equals("Ativo")) {
+		if (status.equals("Sim")) {
 			setAtivo(true);
 		} else {
 			setAtivo(false);

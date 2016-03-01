@@ -12,7 +12,6 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,6 @@ import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.Historico;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoDesistencia;
@@ -38,9 +36,9 @@ import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
+import br.com.ieptbto.cra.error.CodigoErro;
+import br.com.ieptbto.cra.exception.DesistenciaException;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.exception.TituloException;
-import br.com.ieptbto.cra.util.DataUtil;
 
 /**
  * 
@@ -60,18 +58,16 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		Arquivo arquivoSalvo = new Arquivo();
 		Transaction transaction = getSession().beginTransaction();
 		BigDecimal valorTotalSaldo = BigDecimal.ZERO;
+		TipoArquivoEnum tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
 		Boolean retornoContemTituloPago = false;
 
 		try {
 			arquivo.setStatusArquivo(save(arquivo.getStatusArquivo()));
 			arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
-			
 			arquivoSalvo = save(arquivo);
-			if (TipoArquivoEnum.REMESSA.equals(arquivo.getTipoArquivo().getTipoArquivo()) || 
-					TipoArquivoEnum.CONFIRMACAO.equals(arquivo.getTipoArquivo().getTipoArquivo()) ||
-					TipoArquivoEnum.RETORNO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
-				
-				if (!arquivo.getRemessas().isEmpty()) {
+			
+			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo) || TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
+				if (arquivo.getRemessas() != null) {
 					for (Remessa remessa : arquivo.getRemessas()) {
 						remessa.setArquivo(arquivoSalvo);
 						remessa.setCabecalho(save(remessa.getCabecalho()));
@@ -91,30 +87,19 @@ public class ArquivoDAO extends AbstractBaseDAO {
 								}
 								Retorno.class.cast(titulo).setCabecalho(remessa.getCabecalho());
 							}
-							
 							TituloRemessa tituloSalvo = tituloDAO.salvar(titulo, transaction);
 							if(TituloRemessa.class.isInstance(titulo)) {
 								if (TituloRemessa.class.cast(titulo).getAnexo() != null) {
 									Anexo anexo = TituloRemessa.class.cast(titulo).getAnexo();
 									tituloSalvo.setAnexo(anexo);
 									anexo.setTitulo(tituloSalvo);
-									
 									save(anexo);
 								}
 							}
-								
-							Historico historico = new Historico();
-							if (tituloSalvo != null) {
-								historico.setDataOcorrencia(new LocalDateTime());
-								historico.setRemessa(remessa);
-								historico.setTitulo(tituloSalvo);
-								historico.setUsuarioAcao(usuarioAcao);
-								save(historico);
-							} else {
+							if (tituloSalvo == null) {
 								titulo.setSaldoTitulo(BigDecimal.ZERO);
 								remessa.getTitulos().remove(titulo);
 							}
-							
 							valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
 						}
 						if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
@@ -130,17 +115,15 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					}
 					transaction.commit();
 				}
-			} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
-
+			} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
 				if (arquivo.getRemessaDesistenciaProtesto() != null) {
-					List<PedidoDesistencia> pedidosDesistenciaComErros = new ArrayList<PedidoDesistencia>();
 					List<DesistenciaProtesto> desistenciasProtesto = new ArrayList<DesistenciaProtesto>();
-					BigDecimal valorTotalDesistenciaProtesto = BigDecimal.ZERO;
-					int totalDesistenciaProtesto = 0;
-					int totalRegistroDesistenciaProtesto = 0;
-
+					BigDecimal valorTotalDesistenciaArquivo = BigDecimal.ZERO;
+					int quantidadeDesistenciasArquivo = 0;
 					for (DesistenciaProtesto desistenciaProtestos : arquivo.getRemessaDesistenciaProtesto().getDesistenciaProtesto()) {
-						List<PedidoDesistencia> pedidos = new ArrayList<PedidoDesistencia>();
+						List<PedidoDesistencia> pedidosDesistenciaComErro = new ArrayList<PedidoDesistencia>();
+						List<PedidoDesistencia> pedidosProcessados = new ArrayList<PedidoDesistencia>();
+						int quantidadeDesistenciasCartorio = 0;
 						desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
 						desistenciaProtestos.setDownload(false);
 						for (PedidoDesistencia pedido : desistenciaProtestos.getDesistencias()) {
@@ -148,40 +131,43 @@ public class ArquivoDAO extends AbstractBaseDAO {
 							pedido.setTitulo(tituloDAO.buscarTituloDesistenciaProtesto(pedido));
 							if (pedido.getTitulo() != null) {
 								if (pedido.getTitulo().getPedidoDesistencia() == null) {
-									pedidos.add(pedido);
-									valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
-									totalRegistroDesistenciaProtesto++;
+									pedidosProcessados.add(pedido);
+									quantidadeDesistenciasCartorio = quantidadeDesistenciasCartorio + 1;
+									valorTotalDesistenciaArquivo = valorTotalDesistenciaArquivo.add(pedido.getValorTitulo());
+									quantidadeDesistenciasArquivo = quantidadeDesistenciasArquivo + 1;
 								} else {
-									pedidosDesistenciaComErros.add(pedido);
-									erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número "+ pedido.getNumeroTitulo() + ", do protocolo " + pedido.getNumeroProtocolo() + " do dia "
-									        + DataUtil.localDateToString(pedido.getDataProtocolagem())+ ", já foi enviado anteriormente em outro arquivo de desistência!"));
+									pedidosDesistenciaComErro.add(pedido);
 								}
 							} else {
-								pedidosDesistenciaComErros.add(pedido);
-								erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número "+ pedido.getNumeroTitulo() + ",com o protocolo " + pedido.getNumeroProtocolo() + " do dia "
-								        + DataUtil.localDateToString(pedido.getDataProtocolagem())+ ", não foi localizado para a comarca [ "+ pedido.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio() +" ]. Verifique os dados do título!"));
+								pedidosDesistenciaComErro.add(pedido);
 							}
 						}
-						if (!pedidos.isEmpty()) {
-							desistenciaProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(pedidos.size());
-							desistenciaProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(pedidos.size());
-							desistenciaProtestos.setDesistencias(pedidos);
+						if (!pedidosProcessados.isEmpty()) {
+							desistenciaProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(quantidadeDesistenciasCartorio);
+							desistenciaProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(quantidadeDesistenciasCartorio*2);
+							desistenciaProtestos.setDesistencias(pedidosProcessados);
 							desistenciasProtesto.add(desistenciaProtestos);
-							totalDesistenciaProtesto++;
+						} else {
+							StringBuffer descricao = new StringBuffer();
+							String municipio = StringUtils.EMPTY;
+							for (PedidoDesistencia pedidoDesistencia : pedidosDesistenciaComErro) {
+								descricao.append("Protocolo Inválido ("+pedidoDesistencia.getNumeroProtocolo()+").");
+								municipio = pedidoDesistencia.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio();
+							}
+							erros.add(new DesistenciaException(descricao.toString(), municipio, CodigoErro.CRA_PROTOCOLO_INVALIDO.getCodigo()));
+							pedidosDesistenciaComErro.clear();
 						}
 					}
-					arquivo.getRemessaDesistenciaProtesto().getCabecalho().setQuantidadeDesistencia(totalDesistenciaProtesto);
-					arquivo.getRemessaDesistenciaProtesto().getCabecalho().setQuantidadeRegistro(totalRegistroDesistenciaProtesto);
-					arquivo.getRemessaDesistenciaProtesto().getRodape().setQuantidadeDesistencia(totalDesistenciaProtesto);
-					arquivo.getRemessaDesistenciaProtesto().getRodape().setSomatorioValorTitulo(valorTotalDesistenciaProtesto);
+					arquivo.getRemessaDesistenciaProtesto().getCabecalho().setQuantidadeDesistencia(quantidadeDesistenciasArquivo);
+					arquivo.getRemessaDesistenciaProtesto().getCabecalho().setQuantidadeRegistro(quantidadeDesistenciasArquivo);
+					arquivo.getRemessaDesistenciaProtesto().getRodape().setQuantidadeDesistencia((quantidadeDesistenciasArquivo*2));
+					arquivo.getRemessaDesistenciaProtesto().getRodape().setSomatorioValorTitulo(valorTotalDesistenciaArquivo);
+					
 					arquivo.getRemessaDesistenciaProtesto().setDesistenciaProtesto(desistenciasProtesto);
 					arquivo.getRemessaDesistenciaProtesto().setCabecalho(save(arquivo.getRemessaDesistenciaProtesto().getCabecalho()));
 					arquivo.getRemessaDesistenciaProtesto().setRodape(save(arquivo.getRemessaDesistenciaProtesto().getRodape()));
 					save(arquivo.getRemessaDesistenciaProtesto());
-
 					for (DesistenciaProtesto desistenciaProtestos : desistenciasProtesto) {
-						desistenciaProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(desistenciaProtestos.getDesistencias().size());
-						desistenciaProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(desistenciaProtestos.getDesistencias().size());
 						desistenciaProtestos.setCabecalhoCartorio(save(desistenciaProtestos.getCabecalhoCartorio()));
 						desistenciaProtestos.setRodapeCartorio(save(desistenciaProtestos.getRodapeCartorio()));
 						desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
@@ -190,23 +176,16 @@ public class ArquivoDAO extends AbstractBaseDAO {
 							save(pedido);
 						}
 					}
-					if (!erros.isEmpty()) {
-						throw new TituloException("Não foi possível enviar a desistência! Por favor, corriga os erros no arquivo abaixo...", erros, pedidosDesistenciaComErros);
-					}
 					transaction.commit();
 				}
-			} else if (TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
+			} else if (TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
 				new InfraException("Não foi possivel enviar o Cancelamento de Protesto! Entre em contato com a CRA!");
-			} else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
+			} else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
 				new InfraException("Não foi possivel enviar a Autorização de Cancelamento! Entre em contato com a CRA!");
 			}
 			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
 			        + " foi inserido na base ");
 
-		} catch (TituloException ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage());
-			throw new TituloException(ex.getMessage(), ex.getErros(), ex.getPedidosDesistencia());
 		} catch (InfraException ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage());
@@ -219,7 +198,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return arquivoSalvo;
 	}
 	
-	public Arquivo alterarSituacaoArquivo(Arquivo arquivo) {
+	public Arquivo alterarStatusArquivo(Arquivo arquivo) {
 		Transaction transaction = getBeginTransation();
 
 		try {
@@ -233,7 +212,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			logger.error(ex.getMessage(), ex);
 			throw new InfraException("Não foi possível inserir esses dados na base.");
 		}
-		return arquivo;
+		return arquivo; 
 	}
 
 	private void setDevolvidoPelaCRA(Remessa remessa) {
@@ -348,6 +327,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
+	@Transactional(readOnly = true)
 	public Arquivo buscarArquivosPorNomeArquivoInstituicaoEnvio(Instituicao instituicao, String nomeArquivo) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));

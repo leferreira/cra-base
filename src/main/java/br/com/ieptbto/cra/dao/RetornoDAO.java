@@ -180,6 +180,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 				for (BatimentoDeposito batimentoDeposito : batimento.getDepositosBatimento()){
 					Deposito deposito = batimentoDeposito.getDeposito();
 					deposito.setSituacaoDeposito(SituacaoDeposito.IDENTIFICADO);
+					update(deposito);
 					
 					batimentoDeposito.setDeposito(update(deposito));
 					batimentoDeposito.setBatimento(batimento);

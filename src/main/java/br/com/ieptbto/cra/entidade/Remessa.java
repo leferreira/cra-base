@@ -12,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -45,7 +44,6 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	private Instituicao instituicaoDestino;
 	private CabecalhoRemessa cabecalho;
 	private Rodape rodape;
-	private List<Historico> historicos;
 	private List<Titulo> titulos;
 	private Batimento batimento;
 	private StatusRemessa statusRemessa;
@@ -58,11 +56,6 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getId() {
 		return id;
-	}
-
-	@OneToMany(mappedBy = "remessa", fetch = FetchType.LAZY)
-	public List<Historico> getHistoricos() {
-		return historicos;
 	}
 
 	@ManyToOne
@@ -122,7 +115,7 @@ public class Remessa extends AbstractRemessa<Remessa> {
 		return situacao;
 	}
 	
-	@OneToOne(mappedBy="remessa")
+	@OneToOne(mappedBy="remessa", fetch=FetchType.LAZY) 
 	public Batimento getBatimento() {
 		return batimento;
 	}
@@ -141,10 +134,6 @@ public class Remessa extends AbstractRemessa<Remessa> {
 
 	public void setArquivo(Arquivo arquivo) {
 		this.arquivo = arquivo;
-	}
-
-	public void setHistoricos(List<Historico> historicos) {
-		this.historicos = historicos;
 	}
 
 	public void setTitulos(List<Titulo> titulos) {

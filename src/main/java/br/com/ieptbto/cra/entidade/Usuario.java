@@ -48,7 +48,6 @@ public class Usuario extends AbstractEntidade<Usuario> implements IClusterable, 
 	private boolean status;
 	private GrupoUsuario grupoUsuario;
 	private Instituicao instituicao;
-	private List<Historico> historicos;
 	private List<TituloFiliado> titulosEntradaManual;
 	
 	@Override
@@ -106,15 +105,6 @@ public class Usuario extends AbstractEntidade<Usuario> implements IClusterable, 
 		return status;
 	}
 
-	@OneToMany(mappedBy="usuarioAcao")
-	public List<Historico> getHistoricos() {
-		return historicos;
-	}
-
-	public void setHistoricos(List<Historico> historicos) {
-		this.historicos = historicos;
-	}
-	
 	public void setEmail(String email) {
 		this.email = email;
 	}

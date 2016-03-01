@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -55,6 +57,7 @@ public class InstituicaoMediator {
 		return instituicaoDAO.getCartorios();
 	}
 
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Instituicao getCartorioPorCodigoIBGE(String codigoMunicipio) {
 		Instituicao instituicao = instituicaoDAO.getInstituicao(codigoMunicipio);
 		if (instituicao == null) {
@@ -64,6 +67,7 @@ public class InstituicaoMediator {
 		return instituicao;
 	}
 
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Instituicao getInstituicaoPorCodigoPortador(String codigoPortador) {
 		Instituicao instituicao = instituicaoDAO.getInstituicaoPorCodigo(codigoPortador);
 		if (instituicao == null) {
@@ -72,6 +76,16 @@ public class InstituicaoMediator {
 
 		return instituicao;
 	}
+	
+	public Instituicao buscarBancoPorCodigoPortador(String codigoPortador) {
+		Instituicao instituicao = instituicaoDAO.getInstituicaoPorCodigo(codigoPortador);
+		if (instituicao == null) {
+			throw new InfraException("Instituição não cadastrada com o código de compesação [" + codigoPortador + "]");
+		}
+
+		return instituicao;
+	}
+
 
 	public List<Instituicao> getInstituicoesFinanceiras() {
 		return instituicaoDAO.getInstituicoesFinanceiras();

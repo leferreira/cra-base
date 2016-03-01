@@ -19,6 +19,7 @@ import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
+import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
@@ -675,7 +676,7 @@ public class TituloVO extends AbstractArquivoVO {
 
 	public static TituloVO parseTitulo(Confirmacao titulo) {
 		TituloVO tituloVO = new TituloVO();
-		BeanWrapper propertyAccessCCR = PropertyAccessorFactory.forBeanPropertyAccess(titulo);
+		BeanWrapper propertyAccessCCR = PropertyAccessorFactory.forBeanPropertyAccess(titulo.getTitulo());
 		BeanWrapper propertyAccessTituloVO = PropertyAccessorFactory.forBeanPropertyAccess(tituloVO);
 		PropertyDescriptor[] propertyDescriptors = propertyAccessTituloVO.getPropertyDescriptors();
 		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
@@ -696,13 +697,17 @@ public class TituloVO extends AbstractArquivoVO {
 		tituloVO.setTipoOcorrencia(titulo.getTipoOcorrencia());
 		tituloVO.setDataOcorrencia(DataUtil.localDateToStringddMMyyyy(titulo.getDataOcorrencia()));
 		tituloVO.setCodigoIrregularidade(titulo.getCodigoIrregularidade());
-		tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoParaString(titulo.getValorGravacaoEletronica()));
 		
 		if (titulo.getTipoOcorrencia() != null) {
-			if (titulo.getTipoOcorrencia().trim().equals("") || titulo.getTipoOcorrencia().equals("0")) {
+			if (titulo.getTipoOcorrencia().trim().equals("") || 
+					titulo.getTipoOcorrencia().equals("0")) {
 				tituloVO.setDataOcorrencia("00000000");
 				tituloVO.setCodigoIrregularidade("00");
 			}
+		}
+		
+		if (!titulo.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+			tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(titulo.getRemessa().getInstituicaoDestino().getValorConfirmacao()));
 		}
 		return tituloVO;
 	}

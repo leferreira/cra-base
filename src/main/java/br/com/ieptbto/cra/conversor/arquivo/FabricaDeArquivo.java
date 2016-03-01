@@ -68,14 +68,13 @@ public class FabricaDeArquivo {
 		} else if (LayoutArquivo.XML.equals(LayoutArquivo.get(linha))) {
 			arquivo.setNomeArquivo(arquivoFisico.getName());
 			return converterXML(arquivoFisico, arquivo, erros);
-		}
-
-		else {
-			throw new InfraException("Layout Do arquivo [" + arquivo.getNomeArquivo() + "] inválido");
+		} else {
+			throw new InfraException("Não foi possível identificar o layout do arquivo. Os dados internos podem estar ilegíveis ou não segue o manual FEBRABAN.");
 		}
 	}
 
 	private Arquivo converterXML(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
+		
 		if (TipoArquivoEnum.REMESSA.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
 			return converterRemessa(arquivoFisico, arquivo, erros);
 		} else if (TipoArquivoEnum.CONFIRMACAO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
@@ -112,10 +111,10 @@ public class FabricaDeArquivo {
 		} catch (JAXBException e) {
 			System.out.println(e.getMessage());
 			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException(CodigoErro.ARQUIVO_CORROMPIDO.getDescricao());
+			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException(CodigoErro.ARQUIVO_CORROMPIDO.getDescricao());
+			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		}
 		arquivo = conversorArquivoDesistenciaProtesto.converter(arquivoVO, erros);
 		return arquivo;
@@ -142,10 +141,10 @@ public class FabricaDeArquivo {
 
 		} catch (JAXBException e) {
 			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException(CodigoErro.ARQUIVO_CORROMPIDO.getDescricao());
+			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException(CodigoErro.ARQUIVO_CORROMPIDO.getDescricao());
+			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		}
 		arquivo = conversorRemessaArquivo.converter(arquivoVO, arquivo, erros);
 		return arquivo;
@@ -172,10 +171,10 @@ public class FabricaDeArquivo {
 
 		} catch (JAXBException e) {
 			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException(CodigoErro.ARQUIVO_CORROMPIDO.getDescricao());
+			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException(CodigoErro.ARQUIVO_CORROMPIDO.getDescricao());
+			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		}
 		arquivo = conversorRemessaArquivo.converter(arquivoVO, arquivo, erros);
 		return arquivo;
@@ -200,10 +199,10 @@ public class FabricaDeArquivo {
 
 		} catch (JAXBException e) {
 			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException(CodigoErro.ARQUIVO_CORROMPIDO.getDescricao());
+			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException(CodigoErro.ARQUIVO_CORROMPIDO.getDescricao());
+			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		}
 		arquivo = conversorRemessaArquivo.converter(arquivoVO, arquivo, erros);
 		return arquivo;
@@ -234,7 +233,6 @@ public class FabricaDeArquivo {
 		arquivo.setUsuarioEnvio(usuario);
 		arquivo.setStatusArquivo(getStatusEnviado());
 		fabricaDeArquivoXML.fabrica(arquivoRecebido, arquivo, erros);
-
 	}
 
 	private StatusArquivo getStatusEnviado() {

@@ -24,7 +24,7 @@ public enum Erro {
 	NUMERO_SEQUENCIAL_CABECALHO_INVALDIO("0012", "Número sequencial do Cabecalho inválido"), //
 	TAMANHO_NOME_ARQUIVO_INVALIDO("", "Quantidade de caracteres informada no nome do arquivo é inválida"), //
 	DATA_NOME_ARQUIVO_INVALIDA("", "A data informada no nome do arquivo é inválida"), //
-	EXTENSAO_NOME_ARQUIVO_INVALIDA("", "Extensão do nome do arquivo inválida"); //
+	EXTENSAO_NOME_ARQUIVO_INVALIDA("", "Extensão do nome do arquivo inválida. Verifique o nome do arquivo se segue com o layout FEBRABAN."); //
 	
 
 	private String codigoErro;

@@ -386,9 +386,8 @@ public class RemessaMediator {
 		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
 		        && !arquivo.getStatusArquivo().getSituacaoArquivo().equals(SituacaoArquivo.ENVIADO)) {
 			arquivo.setStatusArquivo(gerarStatusArquivoRecebido());
-			arquivoDAO.alterarSituacaoArquivo(arquivo);
-		}
-
+			arquivoDAO.alterarStatusArquivo(arquivo);
+		} 
 		List<Remessa> remessas = arquivoDAO.buscarRemessasArquivo(instituicao, arquivo);
 		return processadorArquivo.processarArquivoTXT(arquivo, remessas);
 	}

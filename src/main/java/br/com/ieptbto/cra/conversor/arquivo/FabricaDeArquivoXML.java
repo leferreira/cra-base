@@ -142,16 +142,16 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex.getCause());
 			getErros().add(new XmlCraException(ex.getMessage(), remessaVO.getCabecalho().getCodigoMunicipio(),
-			        remessaVO.getCabecalho().getCodigoMunicipio(), CodigoErro.MUNICIPIO_NAO_CADASTRADO_NA_CRA));
+			        remessaVO.getCabecalho().getCodigoMunicipio(), CodigoErro.CRA_MUNICIPIO_NAO_CADASTRADO_NA_CRA));
 		}
 	}
 
 	private void validarCodigoMunicipio(RemessaVO remessaVO) {
 		if (StringUtils.isEmpty(remessaVO.getCabecalho().getCodigoMunicipio())) {
-			logger.error(CodigoErro.CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao());
-			getErros().add(new XmlCraException(CodigoErro.CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao(),
+			logger.error(CodigoErro.CRA_CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao());
+			getErros().add(new XmlCraException(CodigoErro.CRA_CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao(),
 			        remessaVO.getCabecalho().getCodigoMunicipio(), remessaVO.getCabecalho().getCodigoMunicipio(),
-			        CodigoErro.CODIGO_DO_MUNICIPIO_NAO_INFORMADO));
+			        CodigoErro.CRA_CODIGO_DO_MUNICIPIO_NAO_INFORMADO));
 		}
 	}
 

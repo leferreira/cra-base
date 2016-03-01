@@ -190,7 +190,7 @@ public class ProcessadorArquivo extends Processador {
 			logger.info("Arquivo XML gerado com Sucesso.");
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e.getCause());
-			new InfraException(CodigoErro.ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao(), e.getCause());
+			new InfraException(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao(), e.getCause());
 		}
 	}
 
@@ -210,7 +210,7 @@ public class ProcessadorArquivo extends Processador {
 
 		} catch (JAXBException e) {
 			logger.error(e.getMessage(), e.getCause());
-			new InfraException(CodigoErro.ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao(), e.getCause());
+			new InfraException(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao(), e.getCause());
 		}
 		return null;
 	}

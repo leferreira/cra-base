@@ -22,8 +22,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.InputSource;
 
+import br.com.ieptbto.cra.conversor.arquivo.ConversorCancelamentoProtesto;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorDesistenciaProtesto;
 import br.com.ieptbto.cra.dao.ArquivoDAO;
+import br.com.ieptbto.cra.dao.DesistenciaDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.dao.TipoArquivoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
@@ -32,7 +34,6 @@ import br.com.ieptbto.cra.entidade.CabecalhoCartorio;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.PedidoDesistencia;
-import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.RodapeArquivo;
 import br.com.ieptbto.cra.entidade.RodapeCartorio;
@@ -43,6 +44,7 @@ import br.com.ieptbto.cra.entidade.vo.ArquivoDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.CartorioDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.ComarcaDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.DesistenciaSerproVO;
+import br.com.ieptbto.cra.entidade.vo.RemessaDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.TituloDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
@@ -69,6 +71,8 @@ public class DesistenciaProtestoMediator {
 	private InstituicaoDAO instituicaoDAO;
 	@Autowired
 	private TipoArquivoDAO tipoArquivoDAO;
+	@Autowired
+	private DesistenciaDAO desistenciaDAO;
 	
 	private int sequenciaRegistro = 2;
 	private int quantidadeDesistencias = 0;
@@ -78,16 +82,6 @@ public class DesistenciaProtestoMediator {
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Arquivo processarDesistencia(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados, List<Exception> erros, Usuario usuario) {
 		Arquivo arquivo = new Arquivo();
-		arquivo.setNomeArquivo(nomeArquivo);
-		arquivo.setUsuarioEnvio(usuario);
-		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
-		arquivo.setInstituicaoRecebe(getCra());
-		arquivo.setDataEnvio(new LocalDate());
-		arquivo.setDataRecebimento(new LocalDate().toDate());
-		arquivo.setHoraEnvio(new LocalTime());
-		arquivo.setRemessas(new ArrayList<Remessa>());
-		arquivo.setTipoArquivo(getTipoArquivoDesistenciaProtesto());
-		arquivo.setStatusArquivo(getStatusArquivo());
 		
 		if (layoutPadraoXML.equals(LayoutPadraoXML.CRA_NACIONAL)) {
 			arquivo = conversorArquivoDesistenciaProtesto.converter(converterStringParaVO(dados), erros);
@@ -96,6 +90,15 @@ public class DesistenciaProtestoMediator {
 			RemessaDesistenciaProtesto remessaDesistencia = converterDesistenciaCancelamentoSerpro(arquivo ,usuario.getInstituicao(), desistenciaCancelamentoSerpro, erros);
 			arquivo.setRemessaDesistenciaProtesto(remessaDesistencia);
 		}
+		arquivo.setNomeArquivo(nomeArquivo);
+		arquivo.setUsuarioEnvio(usuario);
+		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
+		arquivo.setInstituicaoRecebe(getCra());
+		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setDataRecebimento(new LocalDate().toDate());
+		arquivo.setHoraEnvio(new LocalTime());
+		arquivo.setTipoArquivo(getTipoArquivoDesistenciaProtesto());
+		arquivo.setStatusArquivo(getStatusArquivo());
 		return arquivoDAO.salvar(arquivo, usuario, erros);
 	}
 
@@ -270,5 +273,27 @@ public class DesistenciaProtestoMediator {
 
 	public int getSequenciaRegistro() {
 		return sequenciaRegistro;
+	}
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public Arquivo verificarDesistenciaJaEnviadaAnteriormente(String nomeArquivo, Instituicao instituicao) {
+		return arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(instituicao, nomeArquivo);
+	}
+	
+	@Transactional
+	public RemessaDesistenciaProtestoVO buscarDesistenciaCancelamentoCartorio(Instituicao cartorio, String nome) {
+		Arquivo arquivo = desistenciaDAO.buscarDesistenciaCancelamentoCartorio(cartorio, nome);
+		if (arquivo == null) {
+			return null;
+		} 
+		
+		if (arquivo.getRemessaDesistenciaProtesto() != null) {
+			return new ConversorDesistenciaProtesto().converter(arquivo.getRemessaDesistenciaProtesto());
+		} else if (arquivo.getRemessaCancelamentoProtesto() != null) {
+			return new ConversorCancelamentoProtesto().converter(arquivo.getRemessaCancelamentoProtesto());
+		} else if (arquivo.getRemessaAutorizacao() != null) {
+			return new ConversorCancelamentoProtesto().converter(arquivo.getRemessaAutorizacao());
+		}
+		return null;
 	}
 }

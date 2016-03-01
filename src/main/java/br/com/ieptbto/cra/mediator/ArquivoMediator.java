@@ -124,8 +124,4 @@ public class ArquivoMediator {
 	public Arquivo buscarArquivoPorNome(Instituicao instituicao, String nomeArquivo) {
 		return arquivoDAO.buscarArquivoPorNome(instituicao, nomeArquivo);
 	}
-
-	public List<Arquivo> buscarArquivosPorNome(Instituicao instituicao, Arquivo arquivo) {
-		return arquivoDAO.buscarArquivosPorNome(instituicao, arquivo);
-	}
 }

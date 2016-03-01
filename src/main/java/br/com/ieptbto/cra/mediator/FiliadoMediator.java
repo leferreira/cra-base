@@ -47,4 +47,8 @@ public class FiliadoMediator {
 	public List<SetorFiliado> buscarSetoresAtivosFiliado(Filiado filiado) {
 		return filiadoDAO.buscarSetoresAtivosFiliado(filiado);
 	}
+
+	public SetorFiliado buscarSetorPadraoFiliado(Filiado filiado) {
+		return filiadoDAO.buscarSetorPadraoFiliado(filiado);
+	}
 }

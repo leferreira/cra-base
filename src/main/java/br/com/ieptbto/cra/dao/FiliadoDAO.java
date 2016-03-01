@@ -119,4 +119,11 @@ public class FiliadoDAO extends AbstractBaseDAO {
 			logger.error(ex.getMessage(), ex);
 		}
 	}
+
+	public SetorFiliado buscarSetorPadraoFiliado(Filiado filiado) {
+		Criteria criteria = getCriteria(SetorFiliado.class);
+		criteria.add(Restrictions.eq("filiado", filiado));
+		criteria.add(Restrictions.eq("setorPadraoFiliado", true));
+		return SetorFiliado.class.cast(criteria.uniqueResult());
+	}
 }

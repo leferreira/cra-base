@@ -7,6 +7,7 @@ import org.springframework.beans.PropertyAccessorFactory;
 
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
+import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.util.CraConstructorUtils;
 import br.com.ieptbto.cra.util.DataUtil;
 
@@ -48,7 +49,6 @@ public class ConfirmacaoConversor extends AbstractConversorArquivo<TituloVO, Con
 		tituloVO.setTipoOcorrencia(entidade.getTipoOcorrencia());
 		tituloVO.setDataOcorrencia(DataUtil.localDateToStringddMMyyyy(entidade.getDataOcorrencia()));
 		tituloVO.setCodigoIrregularidade(entidade.getCodigoIrregularidade());
-		tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(entidade.getRemessa().getInstituicaoDestino().getValorConfirmacao()));
 		
 		if (entidade.getTipoOcorrencia() != null) {
 			if (entidade.getTipoOcorrencia().trim().equals("") || 
@@ -56,6 +56,10 @@ public class ConfirmacaoConversor extends AbstractConversorArquivo<TituloVO, Con
 				tituloVO.setDataOcorrencia("00000000");
 				tituloVO.setCodigoIrregularidade("00");
 			}
+		}
+		
+		if (!entidade.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+			tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(entidade.getRemessa().getInstituicaoDestino().getValorConfirmacao()));
 		}
 		return tituloVO;
 	}

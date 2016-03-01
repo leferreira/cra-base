@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.webservice.VO;
 
 public enum CodigoErro {
+	
 	CRA_SUCESSO("0000", "Envio efetuado com sucesso"), //
 	CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO("9999", "Erro no processamento do arquivo"), //
 	CRA_FALHA_NA_AUTENTICACAO("0001", "Falha na autenticação."), //
@@ -41,7 +42,7 @@ public enum CodigoErro {
 	CRA_NAO_EXISTE_MUNICIPIO_COM_O_CODIGO_INFORMADO_NA_CRA(" 2131", "Não existe município com o código informado (XXX) na CRA."), 
 	CRA_CARTORIO_NAO_ENCONTRADO_NO_MUNICIPIO(" 2132", "Cartório (XXX) não encontrado no município (XXX - XXX)."), //
 	CRA_ARQUIVO_CORROMPIDO_SOLICITAÇÃO_NAO_E_DE_CANCELAMENTO(" 2133", "Arquivo corrompido. Solicitação não é de cancelamento (C)."), 
-	CRA_PROTOCOLO_INVALIDO(" 2134", "Protocolo inválido (XXX)."), 
+	CRA_PROTOCOLO_INVALIDO("2134", "Protocolo inválido (XXX)."), 
 	CRA_DATA_DO_PROTOCOLO_INVALIDA(" 2135", "Data do protocolo inválida (XXX)."), //
 	CRA_ARQUIVO_CORROMPIDO_SOMATORIO_DE_SEGURANCA_DOS_REGISTROS_NAO_CONFERE_COM_A_SOMA_DAS_QUANTIDADES_INFORMADAS_NO_HEADER(" 2136","Arquivo corrompido. Somatório de segurança dos registros (XXX) não confere com a soma das quantidades informadas no header (XXX)."), 
 	CRA_CAMPO_INVALIDO(" 2137", "Campo 'XXX' inválido."), //

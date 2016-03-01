@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.Historico;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.util.DataUtil;
 
@@ -23,11 +22,11 @@ public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOc
 	private String nomeUsuario;
 	private DesistenciaProtesto desistenciaProtesto;
 
-	public void parseToHistorico(Historico historico) {
-		this.arquivo = historico.getRemessa().getArquivo();
-		this.remessa = historico.getRemessa();
-		this.dataHora = DataUtil.localDateTimeToString(historico.getDataOcorrencia());
-		this.nomeUsuario = historico.getUsuarioAcao().getNome();
+	public void parseToRemessa(Remessa remessa) {
+		this.arquivo = remessa.getArquivo();
+		this.remessa = remessa;
+		this.dataHora = DataUtil.localDateToString(remessa.getDataRecebimento());
+		this.nomeUsuario = remessa.getArquivo().getUsuarioEnvio().getNome();
 	}
 
 	public void parseToDesistenciaProtesto(DesistenciaProtesto dp) {

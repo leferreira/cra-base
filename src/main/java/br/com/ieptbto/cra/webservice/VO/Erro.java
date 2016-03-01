@@ -13,18 +13,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "erro")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Erro {
-	@XmlAttribute(name = "codigo")
-	private String codigo;
-
+	
 	@XmlAttribute(name = "descricao")
 	private String descricao;
 
+	@XmlAttribute(name = "codigo")
+	private String codigo;
+
+	@XmlAttribute(name = "municipio")
+	private String municipio;
+	
 	public String getCodigo() {
 		return codigo;
 	}
 
 	public String getDescricao() {
 		return descricao;
+	}
+	
+	public String getMunicipio() {
+		return municipio;
 	}
 
 	public void setCodigo(String codigo) {
@@ -35,4 +43,7 @@ public class Erro {
 		this.descricao = descricao;
 	}
 
+	public void setMunicipio(String municipio) {
+		this.municipio = municipio;
+	}
 }

@@ -300,6 +300,10 @@ public class TituloDAO extends AbstractBaseDAO {
 					}
 				}
 			}
+			
+			if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+				tituloConfirmacao.setValorGravacaoEletronica(titulo.getRemessa().getInstituicaoOrigem().getValorConfirmacao());
+			}
 		}
 		BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(tituloConfirmacao.getCodigoPortador());
 		if (banco != null) {
@@ -307,7 +311,6 @@ public class TituloDAO extends AbstractBaseDAO {
 		}
 		
 		try {
-			tituloConfirmacao.setValorGravacaoEletronica(titulo.getRemessa().getInstituicaoOrigem().getValorConfirmacao());
 			tituloConfirmacao.setTitulo(titulo);
 			titulo.setConfirmacao(save(tituloConfirmacao));
 			save(titulo);

@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.entidade;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,7 +38,7 @@ public class BatimentoDeposito extends AbstractEntidade<BatimentoDeposito>{
 		return deposito;
 	}
 	
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="BATIMENTO_ID")
 	public Batimento getBatimento() {
 		return batimento;
