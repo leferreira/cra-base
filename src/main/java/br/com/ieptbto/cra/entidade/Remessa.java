@@ -16,6 +16,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
+import org.hibernate.bytecode.internal.javassist.FieldHandled;
+import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
@@ -31,7 +35,7 @@ import br.com.ieptbto.cra.enumeration.StatusRemessa;
 @Audited
 @Table(name = "TB_REMESSA")
 @org.hibernate.annotations.Table(appliesTo = "TB_REMESSA")
-public class Remessa extends AbstractRemessa<Remessa> {
+public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
 
 	/***/
 	private static final long serialVersionUID = 1L;
@@ -47,9 +51,10 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	private List<Titulo> titulos;
 	private Batimento batimento;
 	private StatusRemessa statusRemessa;
-	private SituacaoBatimentoRetorno situacaoBatimentoRetorno; 
+	private SituacaoBatimentoRetorno situacaoBatimentoRetorno;
 	private Boolean situacao;
 	private Boolean devolvidoPelaCRA;
+	private FieldHandler handler;
 
 	@Id
 	@Column(name = "ID_REMESSA", columnDefinition = "serial")
@@ -58,13 +63,13 @@ public class Remessa extends AbstractRemessa<Remessa> {
 		return id;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ARQUIVO_ID")
 	public Arquivo getArquivo() {
 		return arquivo;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ARQUIVO_GERADO_BANCO_ID")
 	public Arquivo getArquivoGeradoProBanco() {
 		return arquivoGeradoProBanco;
@@ -75,7 +80,7 @@ public class Remessa extends AbstractRemessa<Remessa> {
 		return dataRecebimento;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "INSTITUICAO_DESTINO_ID")
 	public Instituicao getInstituicaoDestino() {
 		return instituicaoDestino;
@@ -98,13 +103,13 @@ public class Remessa extends AbstractRemessa<Remessa> {
 		return rodape;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "INSTITUICAO_ORIGEM_ID")
 	public Instituicao getInstituicaoOrigem() {
 		return instituicaoOrigem;
 	}
-	
-	@Column(name = "SITUACAO_BATIMENTO_RETORNO", length=50)	
+
+	@Column(name = "SITUACAO_BATIMENTO_RETORNO", length = 50)
 	@Enumerated(EnumType.STRING)
 	public SituacaoBatimentoRetorno getSituacaoBatimentoRetorno() {
 		return situacaoBatimentoRetorno;
@@ -114,13 +119,20 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	public Boolean getSituacao() {
 		return situacao;
 	}
-	
-	@OneToOne(mappedBy="remessa", fetch=FetchType.LAZY) 
+
+	@OneToOne(mappedBy = "remessa", fetch = FetchType.LAZY)
+	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public Batimento getBatimento() {
+		if (this.handler != null) {
+			return (Batimento) this.handler.readObject(this, "batimento", batimento);
+		}
 		return batimento;
 	}
-	
+
 	public void setBatimento(Batimento batimento) {
+		if (this.handler != null) {
+			this.batimento = (Batimento) this.handler.writeObject(this, "batimento", this.batimento, batimento);
+		}
 		this.batimento = batimento;
 	}
 
@@ -155,7 +167,7 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	public void setInstituicaoOrigem(Instituicao instituicaoOrigem) {
 		this.instituicaoOrigem = instituicaoOrigem;
 	}
-	
+
 	public void setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno situacaoBatimentoRetorno) {
 		this.situacaoBatimentoRetorno = situacaoBatimentoRetorno;
 	}
@@ -180,14 +192,14 @@ public class Remessa extends AbstractRemessa<Remessa> {
 	public StatusRemessa getStatusRemessa() {
 		return statusRemessa;
 	}
-	
+
 	private List<Deposito> listaDepositos;
-	
+
 	@javax.persistence.Transient
 	public List<Deposito> getListaDepositos() {
 		return listaDepositos;
 	}
-	
+
 	public void setListaDepositos(List<Deposito> listaDepositos) {
 		this.listaDepositos = listaDepositos;
 	}
@@ -205,5 +217,16 @@ public class Remessa extends AbstractRemessa<Remessa> {
 
 	public void setDevolvidoPelaCRA(Boolean devolvidoPelaCRA) {
 		this.devolvidoPelaCRA = devolvidoPelaCRA;
+	}
+
+	@Override
+	public void setFieldHandler(FieldHandler handler) {
+		this.handler = handler;
+
+	}
+
+	@Override
+	public FieldHandler getFieldHandler() {
+		return this.handler;
 	}
 }

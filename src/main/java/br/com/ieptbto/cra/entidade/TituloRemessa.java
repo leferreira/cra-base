@@ -18,7 +18,11 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
 import org.hibernate.annotations.Type;
+import org.hibernate.bytecode.internal.javassist.FieldHandled;
+import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
@@ -37,7 +41,7 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 @Audited
 @Table(name = "TB_TITULO")
 @org.hibernate.annotations.Table(appliesTo = "TB_TITULO")
-public class TituloRemessa extends Titulo<TituloRemessa> {
+public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled {
 
 	/*** */
 	private static final long serialVersionUID = 1L;
@@ -82,6 +86,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	private String complementoRegistro;
 	private String situacaoTitulo;
 	private Date dataCadastro;
+	private FieldHandler handler;
 
 	@Override
 	@Id
@@ -92,28 +97,45 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	}
 
 	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
+	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public Confirmacao getConfirmacao() {
+		if (this.handler != null) {
+			return (Confirmacao) this.handler.readObject(this, "confirmacao", confirmacao);
+		}
 		return confirmacao;
+	}
+
+	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
+	@LazyToOne(LazyToOneOption.NO_PROXY)
+	public Retorno getRetorno() {
+		if (this.handler != null) {
+			return (Retorno) this.handler.readObject(this, "retorno", retorno);
+		}
+		return retorno;
 	}
 
 	@OneToMany(mappedBy = "titulo", fetch = FetchType.LAZY)
 	public List<PedidoDesistencia> getPedidosDesistencia() {
 		return pedidosDesistencia;
 	}
-	
+
 	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
+	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public PedidoCancelamento getPedidoCancelamento() {
+		if (this.handler != null) {
+			return (PedidoCancelamento) this.handler.readObject(this, "pedidoCancelamento", pedidoCancelamento);
+		}
 		return pedidoCancelamento;
-	}
-	
-	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
-	public PedidoAutorizacaoCancelamento getPedidoAutorizacaoCancelamento() {
-		return pedidoAutorizacaoCancelamento;
 	}
 
 	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
-	public Retorno getRetorno() {
-		return retorno;
+	@LazyToOne(LazyToOneOption.NO_PROXY)
+	public PedidoAutorizacaoCancelamento getPedidoAutorizacaoCancelamento() {
+		if (this.handler != null) {
+			return (PedidoAutorizacaoCancelamento) this.handler.readObject(this, "pedidoAutorizacaoCancelamento",
+			        pedidoAutorizacaoCancelamento);
+		}
+		return pedidoAutorizacaoCancelamento;
 	}
 
 	@Column(name = "NOME_CEDENTE_FAVORECIDO")
@@ -261,10 +283,10 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		return instrumentoProtesto;
 	}
 
-	@Column(name = "COMPLEMENTO_REGISTRO", length=255)
+	@Column(name = "COMPLEMENTO_REGISTRO", length = 255)
 	public String getComplementoRegistro() {
 		if (complementoRegistro != null) {
-			if (complementoRegistro.length() > 19){
+			if (complementoRegistro.length() > 19) {
 				complementoRegistro = StringUtils.EMPTY;
 			}
 		}
@@ -286,6 +308,10 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	}
 
 	public void setConfirmacao(Confirmacao confirmacao) {
+		if (this.handler != null) {
+			this.confirmacao = (Confirmacao) this.handler.writeObject(this, "confirmacao", this.confirmacao, confirmacao);
+		}
+
 		this.confirmacao = confirmacao;
 	}
 
@@ -294,13 +320,21 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	}
 
 	public void setPedidoCancelamento(PedidoCancelamento pedidoCancelamento) {
+		if (this.handler != null) {
+			this.pedidoCancelamento = (PedidoCancelamento) this.handler.writeObject(this, "pedidoCancelamento", this.pedidoCancelamento,
+			        pedidoCancelamento);
+		}
 		this.pedidoCancelamento = pedidoCancelamento;
 	}
-	
+
 	public void setPedidoAutorizacaoCancelamento(PedidoAutorizacaoCancelamento pedidoAutorizacaoCancelamento) {
+		if (this.handler != null) {
+			this.pedidoAutorizacaoCancelamento = (PedidoAutorizacaoCancelamento) this.handler.writeObject(this,
+			        "pedidoAutorizacaoCancelamento", this.pedidoAutorizacaoCancelamento, pedidoAutorizacaoCancelamento);
+		}
 		this.pedidoAutorizacaoCancelamento = pedidoAutorizacaoCancelamento;
 	}
-	
+
 	public void setNomeCedenteFavorecido(String nomeCedenteFavorecido) {
 		this.nomeCedenteFavorecido = nomeCedenteFavorecido;
 	}
@@ -310,6 +344,9 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	}
 
 	public void setRetorno(Retorno retorno) {
+		if (this.handler != null) {
+			this.retorno = (Retorno) this.handler.writeObject(this, "retorno", this.retorno, retorno);
+		}
 		this.retorno = retorno;
 	}
 
@@ -429,7 +466,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	public String getChaveTitulo() {
 		return this.getCodigoPortador() + getNossoNumero() + getNumeroTitulo();
 	}
- 
+
 	@Override
 	public int compareTo(TituloRemessa entidade) {
 		CompareToBuilder compareToBuilder = new CompareToBuilder();
@@ -443,7 +480,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	@Transient
 	public String getSituacaoTitulo() {
 		this.situacaoTitulo = "ABERTO";
-		
+
 		if (this.confirmacao == null) {
 			this.situacaoTitulo = "S/CONFIRMAÇÃO";
 		} else if (this.confirmacao != null && this.retorno == null) {
@@ -452,7 +489,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 					this.situacaoTitulo = "ABERTO";
 				}
 				if (this.confirmacao.getNumeroProtocoloCartorio() != null) {
-					if (StringUtils.isNotBlank(this.confirmacao.getNumeroProtocoloCartorio().trim())) { 
+					if (StringUtils.isNotBlank(this.confirmacao.getNumeroProtocoloCartorio().trim())) {
 						Integer protocolo = Integer.valueOf(this.confirmacao.getNumeroProtocoloCartorio().trim());
 						if (protocolo == 0) {
 							this.situacaoTitulo = TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getLabel();
@@ -462,7 +499,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 			} else {
 				this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.confirmacao.getTipoOcorrencia()).getLabel();
 			}
-		} else if (this.retorno != null){
+		} else if (this.retorno != null) {
 			this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.retorno.getTipoOcorrencia()).getLabel();
 		}
 		return situacaoTitulo;
@@ -482,9 +519,11 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.setDocumentoSacador(tituloFiliado.getFiliado().getCnpjCpf());
 		this.setEnderecoSacadorVendedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getEndereco()));
 		this.setCepSacadorVendedor(tituloFiliado.getFiliado().getCep());
-		this.setCidadeSacadorVendedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
+		this.setCidadeSacadorVendedor(
+		        RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
 		this.setUfSacadorVendedor(tituloFiliado.getFiliado().getUf());
-		this.setNossoNumero(gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao()+ tituloFiliado.getId()));
+		this.setNossoNumero(
+		        gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId()));
 		this.setEspecieTitulo(tituloFiliado.getEspecieTitulo().getConstante());
 		this.setNumeroTitulo(tituloFiliado.getNumeroTitulo());
 		this.setDataEmissaoTitulo(tituloFiliado.getDataEmissao());
@@ -517,9 +556,11 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.setDocumentoSacador(avalista.getTituloFiliado().getFiliado().getCnpjCpf());
 		this.setEnderecoSacadorVendedor(RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getEndereco()));
 		this.setCepSacadorVendedor(avalista.getTituloFiliado().getFiliado().getCep());
-		this.setCidadeSacadorVendedor(RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
+		this.setCidadeSacadorVendedor(
+		        RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
 		this.setUfSacadorVendedor(avalista.getTituloFiliado().getFiliado().getUf());
-		this.setNossoNumero(gerarNossoNumero(avalista.getTituloFiliado().getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + avalista.getTituloFiliado().getId()));
+		this.setNossoNumero(gerarNossoNumero(avalista.getTituloFiliado().getFiliado().getInstituicaoConvenio().getCodigoCompensacao()
+		        + avalista.getTituloFiliado().getId()));
 		this.setEspecieTitulo(avalista.getTituloFiliado().getEspecieTitulo().getConstante());
 		this.setNumeroTitulo(avalista.getTituloFiliado().getNumeroTitulo());
 		this.setDataEmissaoTitulo(avalista.getTituloFiliado().getDataEmissao());
@@ -527,7 +568,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 		this.setTipoMoeda("001");
 		this.setValorTitulo(avalista.getTituloFiliado().getValorTitulo());
 		this.setSaldoTitulo(avalista.getTituloFiliado().getValorSaldoTitulo());
-		this.setPracaProtesto(RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getPracaProtesto().getNomeMunicipio().toUpperCase()));
+		this.setPracaProtesto(
+		        RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getPracaProtesto().getNomeMunicipio().toUpperCase()));
 		this.setTipoEndoso("M");
 		this.setInformacaoSobreAceite("N");
 		this.setNumeroControleDevedor(numeroControleDevedor);
@@ -583,11 +625,29 @@ public class TituloRemessa extends Titulo<TituloRemessa> {
 	}
 
 	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
+	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public Anexo getAnexo() {
+		if (this.handler != null) {
+			return (Anexo) this.handler.readObject(this, "anexo", anexo);
+		}
 		return anexo;
-	} 
+	}
 
 	public void setAnexo(Anexo anexo) {
+		if (this.handler != null) {
+			this.anexo = (Anexo) this.handler.writeObject(this, "anexo", this.anexo, anexo);
+		}
 		this.anexo = anexo;
+	}
+
+	@Override
+	public void setFieldHandler(FieldHandler handler) {
+		this.handler = handler;
+
+	}
+
+	@Override
+	public FieldHandler getFieldHandler() {
+		return this.handler;
 	}
 }

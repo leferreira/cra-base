@@ -14,7 +14,7 @@ public enum BancoTipoRegraBasicaInstrumento {
 	MERCANTIL("389", TipoRegraInstrumento.POSICAO_7_A_10_AGENCIA_CODIGO_CEDENTE),
 	BRB("070", TipoRegraInstrumento.POSICAO_5_A_8_AGENCIA_CODIGO_CEDENTE),
 	BIC("", TipoRegraInstrumento.POSICAO_5_A_8_AGENCIA_CODIGO_CEDENTE),
-	BANCO_CENTRAL_DO_BRASIL("001", null),
+	BANCO_DO_BRASIL("001", null),
 	SAFRA("422", TipoRegraInstrumento.POSICAO_5_A_8_AGENCIA_CODIGO_CEDENTE);
 	
 	private String codigoPortador;

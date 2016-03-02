@@ -10,6 +10,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.hibernate.bytecode.internal.javassist.FieldHandled;
+import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
 
 import br.com.ieptbto.cra.conversor.arquivo.ConfirmacaoConversor;
@@ -25,7 +27,7 @@ import br.com.ieptbto.cra.entidade.vo.TituloVO;
 @Audited
 @Table(name = "TB_CONFIRMACAO")
 @org.hibernate.annotations.Table(appliesTo = "TB_CONFIRMACAO")
-public class Confirmacao extends Titulo<Confirmacao> {
+public class Confirmacao extends Titulo<Confirmacao> implements FieldHandled {
 
 	private String identificacaoTransacaoRemetente;
 	private String identificacaoTransacaoDestinatario;
@@ -33,6 +35,7 @@ public class Confirmacao extends Titulo<Confirmacao> {
 	private int id;
 
 	private TituloRemessa tituloRemessa;
+	private FieldHandler handler;
 
 	@Id
 	@Column(name = "ID_CONFIRMACAO", columnDefinition = "serial")
@@ -59,11 +62,18 @@ public class Confirmacao extends Titulo<Confirmacao> {
 
 	@OneToOne
 	@JoinColumn(name = "TITULO_ID")
+	// @LazyToOne(LazyToOneOption.NO_PROXY)
 	public TituloRemessa getTitulo() {
+		if (this.handler != null) {
+			return (TituloRemessa) this.handler.readObject(this, "tituloRemessa", tituloRemessa);
+		}
 		return tituloRemessa;
 	}
 
 	public void setTitulo(TituloRemessa titulo) {
+		if (this.handler != null) {
+			this.tituloRemessa = (TituloRemessa) this.handler.writeObject(this, "tituloRemessa", this.tituloRemessa, tituloRemessa);
+		}
 		this.tituloRemessa = titulo;
 	}
 
@@ -93,6 +103,17 @@ public class Confirmacao extends Titulo<Confirmacao> {
 		CompareToBuilder compareToBuilder = new CompareToBuilder();
 		compareToBuilder.append(this.getId(), entidade.getId());
 		return compareToBuilder.toComparison();
+	}
+
+	@Override
+	public void setFieldHandler(FieldHandler handler) {
+		this.handler = handler;
+
+	}
+
+	@Override
+	public FieldHandler getFieldHandler() {
+		return this.handler;
 	}
 
 }

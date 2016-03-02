@@ -3,6 +3,7 @@ package br.com.ieptbto.cra.entidade;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
@@ -18,7 +19,7 @@ import br.com.ieptbto.cra.enumeration.TipoRegistro;
  *
  */
 @SuppressWarnings("serial")
-@MappedSuperclass 
+@MappedSuperclass
 public abstract class Titulo<T> extends AbstractEntidade<T> {
 
 	private TipoRegistro identificacaoRegistro;
@@ -46,7 +47,7 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 	private String numeroSequencialArquivo;
 	private Remessa remessa;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "REMESSA_ID")
 	public Remessa getRemessa() {
 		return remessa;

@@ -49,7 +49,7 @@ public class RegraAgenciaDestino {
 				aplicarRegraItau();
 			} else if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BRADESCO)) {
 				aplicarRegraBradesco();
-			} else if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BANCO_CENTRAL_DO_BRASIL)) {
+			} else if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BANCO_DO_BRASIL)) {
 				aplicarRegraBB();
 			} else if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.SANTANDER) || 
 					bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.HSBC) ||
@@ -107,7 +107,7 @@ public class RegraAgenciaDestino {
 	
 	private void aplicarRegraBB () {
 		this.agenciaDestino = new RegraBancoDoBrasilAgencia().aplicarRegraEspecifica(getTitulo());
-		aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.BANCO_CENTRAL_DO_BRASIL);
+		aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.BANCO_DO_BRASIL);
 	}
 	
 	private void aplicarRegraOutros(BancoTipoRegraBasicaInstrumento bancoTipoRegra) {

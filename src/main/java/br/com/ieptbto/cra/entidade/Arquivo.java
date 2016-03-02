@@ -19,6 +19,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
+import org.hibernate.bytecode.internal.javassist.FieldHandled;
+import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -32,7 +36,7 @@ import org.joda.time.LocalTime;
 @Audited
 @Table(name = "TB_ARQUIVO")
 @org.hibernate.annotations.Table(appliesTo = "TB_ARQUIVO")
-public class Arquivo extends AbstractEntidade<Arquivo> {
+public class Arquivo extends AbstractEntidade<Arquivo> implements FieldHandled {
 
 	/****/
 	private static final long serialVersionUID = 8563214L;
@@ -53,7 +57,8 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	private Usuario usuarioEnvio;
 	private StatusArquivo statusArquivo;
 	private List<Remessa> remessaBanco;
- 
+	private FieldHandler handler;
+
 	@Id
 	@Column(name = "ID_ARQUIVO", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -81,9 +86,9 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	public Date getDataRecebimento() {
 		return dataRecebimento;
 	}
-	
+
 	@Column(name = "DATA_ENVIO")
-	public LocalDate getDataEnvio() { 
+	public LocalDate getDataEnvio() {
 		return dataEnvio;
 	}
 
@@ -98,17 +103,29 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	}
 
 	@OneToOne(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public RemessaDesistenciaProtesto getRemessaDesistenciaProtesto() {
+		if (this.handler != null) {
+			return (RemessaDesistenciaProtesto) this.handler.readObject(this, "remessaDesistenciaProtesto", remessaDesistenciaProtesto);
+		}
 		return remessaDesistenciaProtesto;
 	}
-	
+
 	@OneToOne(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public RemessaCancelamentoProtesto getRemessaCancelamentoProtesto() {
+		if (this.handler != null) {
+			return (RemessaCancelamentoProtesto) this.handler.readObject(this, "remessaCancelamentoProtesto", remessaCancelamentoProtesto);
+		}
 		return remessaCancelamentoProtesto;
 	}
 
 	@OneToOne(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public RemessaAutorizacaoCancelamento getRemessaAutorizacao() {
+		if (this.handler != null) {
+			return (RemessaAutorizacaoCancelamento) this.handler.readObject(this, "remessaAutorizacao", remessaAutorizacao);
+		}
 		return remessaAutorizacao;
 	}
 
@@ -141,12 +158,12 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	public StatusArquivo getStatusArquivo() {
 		return statusArquivo;
 	}
-	
-	@Column(name = "HORA_ENVIO", nullable=true)
+
+	@Column(name = "HORA_ENVIO", nullable = true)
 	public LocalTime getHoraEnvio() {
 		return horaEnvio;
 	}
-	
+
 	public void setHoraEnvio(LocalTime horaEnvio) {
 		this.horaEnvio = horaEnvio;
 	}
@@ -158,7 +175,7 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
+
 	public void setDataRecebimento(Date dataRecebimento) {
 		this.dataRecebimento = dataRecebimento;
 	}
@@ -200,18 +217,31 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 	}
 
 	public void setRemessaDesistenciaProtesto(RemessaDesistenciaProtesto remessaDesistenciaProtesto) {
+		if (this.handler != null) {
+			this.remessaDesistenciaProtesto = (RemessaDesistenciaProtesto) this.handler.writeObject(this, "remessaDesistenciaProtesto",
+			        this.remessaDesistenciaProtesto, remessaDesistenciaProtesto);
+		}
+
 		this.remessaDesistenciaProtesto = remessaDesistenciaProtesto;
 	}
 
 	public void setInstituicaoEnvio(Instituicao instituicaoEnvio) {
 		this.instituicaoEnvio = instituicaoEnvio;
 	}
-	
+
 	public void setRemessaCancelamentoProtesto(RemessaCancelamentoProtesto remessaCancelamentoProtesto) {
+		if (this.handler != null) {
+			this.remessaCancelamentoProtesto = (RemessaCancelamentoProtesto) this.handler.writeObject(this, "remessaCancelamentoProtesto",
+			        this.remessaCancelamentoProtesto, remessaCancelamentoProtesto);
+		}
 		this.remessaCancelamentoProtesto = remessaCancelamentoProtesto;
 	}
 
 	public void setRemessaAutorizacao(RemessaAutorizacaoCancelamento remessaAutorizacao) {
+		if (this.handler != null) {
+			this.remessaAutorizacao = (RemessaAutorizacaoCancelamento) this.handler.writeObject(this, "remessaAutorizacao",
+			        this.remessaAutorizacao, remessaAutorizacao);
+		}
 		this.remessaAutorizacao = remessaAutorizacao;
 	}
 
@@ -222,14 +252,25 @@ public class Arquivo extends AbstractEntidade<Arquivo> {
 		compareToBuilder.append(this.getNomeArquivo(), entidade.getNomeArquivo());
 		return compareToBuilder.toComparison();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		return super.equals(obj);
+	}
+
+	@Override
+	public void setFieldHandler(FieldHandler handler) {
+		this.handler = handler;
+
+	}
+
+	@Override
+	public FieldHandler getFieldHandler() {
+		return this.handler;
 	}
 }

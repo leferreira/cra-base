@@ -32,19 +32,19 @@ public class AdministracaoMediator {
 	private Instituicao instituicao;
 	private TipoArquivoEnum tipoArquivo;
 	private List<Remessa> remessas;
-	
+
 	public AdministracaoMediator removerArquivo(Arquivo arquivo, Instituicao instituicao) {
 		this.arquivo = arquivo;
 		this.tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
 		this.instituicao = instituicao;
-		
+
 		removerPorTipoArquivo();
 		return this;
 	}
 
 	private void removerPorTipoArquivo() {
 		this.remessas = arquivoDAO.getRemessasArquivo(getArquivo(), getInstituicao());
-		
+
 		getArquivo().setRemessas(getRemessas());
 		if (!isArquivoEnviadoPelaCra()) {
 			if (getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
@@ -81,7 +81,7 @@ public class AdministracaoMediator {
 		return tipoArquivo;
 	}
 
-	public void setTipoArquivo(TipoArquivoEnum tipoArquivo) { 
+	public void setTipoArquivo(TipoArquivoEnum tipoArquivo) {
 		this.tipoArquivo = tipoArquivo;
 	}
 
@@ -101,11 +101,12 @@ public class AdministracaoMediator {
 		this.remessas = remessas;
 	}
 
-	public List<Arquivo> buscarArquivosRemover(Arquivo arquivo2, Usuario user, ArrayList<TipoArquivoEnum> tiposArquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
-			ArrayList<SituacaoArquivo> situacaoArquivos) {
+	public List<Arquivo> buscarArquivosRemover(Arquivo arquivo2, Usuario user, ArrayList<TipoArquivoEnum> tiposArquivo, Municipio municipio,
+	        LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacaoArquivos) {
 		return adminDAO.buscarArquivosRemover(arquivo2, user, tiposArquivo, municipio, dataInicio, dataFim, situacaoArquivos);
 	}
 
 	public void executa() {
+
 	}
 }
