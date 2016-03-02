@@ -6,7 +6,7 @@ package br.com.ieptbto.cra.enumeration;
  */
 public enum StatusRemessa implements CraEnum {
 	
-	AGUARDANDO("A","Aguardando"),ENVIADO("E","Enviado"), RECEBIDO("R","Baixado");
+	AGUARDANDO("A","Aguardando"),ENVIADO("E","Enviado"), RECEBIDO("R","Recebido");
 
 	private String constante;
 	private String label;

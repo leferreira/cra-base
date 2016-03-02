@@ -41,9 +41,6 @@ public class AdministracaoDAO extends AbstractBaseDAO {
 						+ "WHERE tit.id_titulo in ( SELECT anexo.titulo_id FROM tb_anexo AS anexo ) "
 						+ "AND tit.remessa_id= " + r.getId() + ")");
 				query.executeUpdate();
-				query = createSQLQuery("DELETE FROM tb_historico" 
-						+ " WHERE remessa_id=" + r.getId());
-				query.executeUpdate();
 				query = createSQLQuery("DELETE FROM tb_titulo"
 						+ " WHERE remessa_id=" + r.getId());
 				query.executeUpdate();
@@ -73,9 +70,6 @@ public class AdministracaoDAO extends AbstractBaseDAO {
 		Query query;
 		try {
 			for (Remessa r : arquivo.getRemessas()) {
-				query = createSQLQuery("DELETE FROM tb_historico" 
-						+ " WHERE remessa_id=" + r.getId());
-				query.executeUpdate();
 				query = createSQLQuery("DELETE FROM tb_confirmacao"
 						+ " WHERE remessa_id=" + r.getId());
 				query.executeUpdate();
@@ -105,9 +99,6 @@ public class AdministracaoDAO extends AbstractBaseDAO {
 		Query query;
 		try {
 			for (Remessa r : arquivo.getRemessas()) {
-				query = createSQLQuery("DELETE FROM tb_historico" 
-						+ " WHERE remessa_id=" + r.getId());
-				query.executeUpdate();
 				query = createSQLQuery("DELETE FROM tb_retorno"
 						+ " WHERE remessa_id=" + r.getId());
 				query.executeUpdate();

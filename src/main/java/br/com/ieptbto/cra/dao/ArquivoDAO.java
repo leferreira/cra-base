@@ -237,43 +237,39 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Arquivo> buscarArquivosAvancadoConfirmacao(String nomeArquivo, Instituicao instituicaoRecebe) {
+	public Arquivo buscarArquivoInstituicaoConfirmacao(String nomeArquivo, Instituicao instituicaoRecebe) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
 		criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
 		
-		List<Arquivo> arquivos = criteria.list();
-		for (Arquivo arquivo : arquivos) {
-			arquivo.setRemessas(new ArrayList<Remessa>());
-			for (Remessa remessa : arquivo.getRemessaBanco()) {
-				Criteria criteriaTitulo = getCriteria(Confirmacao.class);
-				criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-				
-				remessa.setTitulos(criteriaTitulo.list());
-				arquivo.getRemessas().add(remessa);
-			}
+		Arquivo arquivo = Arquivo.class.cast(criteria.uniqueResult());
+		arquivo.setRemessas(new ArrayList<Remessa>());
+		for (Remessa remessa : arquivo.getRemessaBanco()) {
+			Criteria criteriaTitulo = getCriteria(Confirmacao.class);
+			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+			
+			remessa.setTitulos(criteriaTitulo.list());
+			arquivo.getRemessas().add(remessa);
 		}
-		return arquivos;
+		return arquivo;
 	}
 	
 	@Transactional(readOnly = true)
-	public List<Arquivo> buscarArquivosAvancadoRetorno(String nomeArquivo, Instituicao instituicaoRecebe) {
+	public Arquivo buscarArquivoInstituicaoRetorno(String nomeArquivo, Instituicao instituicaoRecebe) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
 		criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
 		
-		List<Arquivo> arquivos = criteria.list();
-		for (Arquivo arquivo : arquivos) {
-			arquivo.setRemessas(new ArrayList<Remessa>());
-			for (Remessa remessa : arquivo.getRemessaBanco()) {
-				Criteria criteriaTitulo = getCriteria(Retorno.class);
-				criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-				
-				remessa.setTitulos(criteriaTitulo.list());
-				arquivo.getRemessas().add(remessa);
-			}
+		Arquivo arquivo = Arquivo.class.cast(criteria.uniqueResult());
+		arquivo.setRemessas(new ArrayList<Remessa>());
+		for (Remessa remessa : arquivo.getRemessaBanco()) {
+			Criteria criteriaTitulo = getCriteria(Retorno.class);
+			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+			
+			remessa.setTitulos(criteriaTitulo.list());
+			arquivo.getRemessas().add(remessa);
 		}
-		return arquivos;
+		return arquivo;
 	}
 
 	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos,

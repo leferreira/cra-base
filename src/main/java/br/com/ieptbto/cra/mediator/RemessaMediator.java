@@ -119,15 +119,17 @@ public class RemessaMediator {
 		return conversorRemessaArquivo.converter(remessa);
 	}
 
-	@Transactional
-	public RemessaVO buscarRemessaParaCartorio(Instituicao cartorio, String nome) {
-		Remessa remessa = remessaDao.buscarRemessaParaCartorio(cartorio, nome);
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public RemessaVO buscarRemessaParaCartorio(Remessa remessa, Instituicao cartorio, String nome) {
+		remessa = remessaDao.buscarRemessaParaCartorio(cartorio, nome);
 		if (remessa == null) {
 			return null;
 		}
+		remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
+		remessaDao.alterarSituacaoRemessa(remessa);
+		
 		ArrayList<Arquivo> arquivos = new ArrayList<>();
 		arquivos.add(remessa.getArquivo());
-
 		return conversorRemessaArquivo.converterRemessaVO(remessa);
 	}
 
@@ -137,7 +139,7 @@ public class RemessaMediator {
 	 * @param usuario
 	 * @param nomeArquivo
 	 * @return object
-	 */
+	 */ 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Object processarArquivoXML(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
 		Arquivo arquivo = processarArquivoXMLManual(arquivoRecebido, usuario, nomeArquivo);
@@ -291,7 +293,7 @@ public class RemessaMediator {
 		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			desistenciaDAO.alterarSituacaoDesistenciaProtesto(desistenciaProtesto, true);
 		}
-		desistenciaProtesto = desistenciaDAO.buscarRemessaDesistenciaProtesto(desistenciaProtesto);
+		desistenciaProtesto = desistenciaDAO.buscarDesistenciaProtesto(desistenciaProtesto);
 
 		BigDecimal valorTotal = BigDecimal.ZERO;
 		int totalRegistro = 0;
@@ -450,14 +452,27 @@ public class RemessaMediator {
 		return autorizacaoCancelamentoDAO.buscarAutorizacaoCancelamento(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<RemessaVO> buscarArquivos(String nomeArquivo, Instituicao instituicao) {
+		Arquivo arquivo = null;
 		List<Arquivo> arquivos = new ArrayList<Arquivo>();
 		
 		if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
-			arquivos = arquivoDAO.buscarArquivosAvancadoConfirmacao(nomeArquivo, instituicao);
+			arquivo = arquivoDAO.buscarArquivoInstituicaoConfirmacao(nomeArquivo, instituicao);
 		} else if (nomeArquivo.startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
-			arquivos = arquivoDAO.buscarArquivosAvancadoRetorno(nomeArquivo, instituicao);
+			arquivo = arquivoDAO.buscarArquivoInstituicaoRetorno(nomeArquivo, instituicao);
 		}
+		
+		if (arquivo == null) {
+			return null;
+		}
+		StatusArquivo statusArquivo = new StatusArquivo();
+		statusArquivo.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
+		statusArquivo.setData(new LocalDateTime());
+		arquivo.setStatusArquivo(statusArquivo);
+		arquivoDAO.alterarStatusArquivo(arquivo);
+		
+		arquivos.add(arquivo);
 		return conversorRemessaArquivo.converter(arquivos);
 	}
 

@@ -38,9 +38,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class RemessaDAO extends AbstractBaseDAO {
 
 	@Autowired
-	TituloDAO tituloDAO;
-	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 
 	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
 	        Usuario usuarioCorrente, ArrayList<TipoArquivoEnum> tiposArquivo, ArrayList<StatusRemessa> situacoes) {
@@ -114,7 +112,6 @@ public class RemessaDAO extends AbstractBaseDAO {
 		}
 
 		Criteria criteriaTitulo = getCriteria(Titulo.class);
-		criteriaTitulo.createAlias("remessa", "remessa");
 		criteriaTitulo.add(Restrictions.eq("remessa", remessa));
 		titulos = criteriaTitulo.list();
 
@@ -139,7 +136,6 @@ public class RemessaDAO extends AbstractBaseDAO {
 		}
 
 		Criteria criteriaTitulo = getCriteria(Titulo.class);
-		criteriaTitulo.createAlias("remessa", "remessa");
 		criteriaTitulo.add(Restrictions.eq("remessa", remessa));
 		titulos = criteriaTitulo.list();
 
@@ -150,7 +146,6 @@ public class RemessaDAO extends AbstractBaseDAO {
 	public Remessa carregarTitulosRemessa(Remessa entidade) {
 		Remessa remessa = super.buscarPorPK(entidade);
 		Criteria criteriaTitulo = getCriteria(Titulo.class);
-		criteriaTitulo.createAlias("remessa", "remessa");
 		criteriaTitulo.add(Restrictions.eq("remessa", remessa));
 		remessa.setTitulos(criteriaTitulo.list());
 		return remessa;

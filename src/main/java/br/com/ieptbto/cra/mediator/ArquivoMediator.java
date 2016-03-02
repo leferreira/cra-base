@@ -50,7 +50,7 @@ public class ArquivoMediator {
 
 	/**
 	 * 
-	 * Salvar documento pela aplicação.
+	 * Salvar arquivo pela aplicação.
 	 * 
 	 * @param arquivo
 	 * @param uploadedFile

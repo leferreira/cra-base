@@ -11,7 +11,6 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
@@ -95,7 +94,7 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 	}
 
 	public DesistenciaProtesto alterarSituacaoDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto, boolean download) {
-		Transaction transaction = getBeginTransation();
+		Transaction transaction = getSession().beginTransaction();
 
 		try {
 			desistenciaProtesto.setDownload(download);
@@ -110,30 +109,17 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 
 	}
 
-	public DesistenciaProtesto buscarRemessaDesistenciaProtesto(DesistenciaProtesto entidade) {
+	public DesistenciaProtesto buscarDesistenciaProtesto(DesistenciaProtesto entidade) {
 		return super.buscarPorPK(entidade);
 	}
 
-	@Transactional(readOnly = true)
-	public Arquivo buscarDesistenciaCancelamentoCartorio(Instituicao cartorio, String nome) {
-		Criteria criteria = getCriteria(Arquivo.class);
-		criteria.add(Restrictions.eq("nomeArquivo", nome));
-		
-		if (nome.contains(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.getConstante())) {
-			criteria.createAlias("remessaDesistenciaProtesto", "remessaDesistenciaProtesto");
-			criteria.createAlias("remessaDesistenciaProtesto.desistenciaProtesto", "desistenciaCancelamento");
-			criteria.createAlias("desistenciaCancelamento.desistencias", "desistencias");
-		} else if (nome.contains(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.getConstante())) {
-			criteria.createAlias("remessaCancelamentoProtesto", "remessaCancelamentoProtesto");
-			criteria.createAlias("remessaCancelamentoProtesto.cancelamentoProtesto", "desistenciaCancelamento");
-			criteria.createAlias("desistenciaCancelamento.cancelamentos", "cancelamentos");
-		} else if (nome.contains(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.getConstante())) {
-			criteria.createAlias("remessaAutorizacao", "remessaAutorizacao");
-			criteria.createAlias("remessaAutorizacao.autorizacaoCancelamento", "desistenciaCancelamento");
-			criteria.createAlias("autorizacaoCancelamento.autorizacoesCancelamentos", "autorizacoesCancelamentos");
-		}
-		criteria.createAlias("desistenciaCancelamento.cabecalhoCartorio", "cabecalhoCartorio");
+	public DesistenciaProtesto buscarDesistenciaProtesto(Instituicao cartorio, String nomeArquivo) {
+		Criteria criteria = getCriteria(DesistenciaProtesto.class);
+		criteria.createAlias("remessaDesistenciaProtesto", "remessaDesistenciaProtesto");
+		criteria.createAlias("remessaDesistenciaProtesto.arquivo", "arquivo");
+		criteria.createAlias("cabecalhoCartorio", "cabecalhoCartorio");
 		criteria.add(Restrictions.eq("cabecalhoCartorio.codigoMunicipio", cartorio.getMunicipio().getCodigoIBGE()));
-		return Arquivo.class.cast(criteria.uniqueResult());
+		criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
+		return DesistenciaProtesto.class.cast(criteria.uniqueResult());
 	}
 }

@@ -217,4 +217,14 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 	public CancelamentoProtesto buscarRemessaCancelamentoProtesto(CancelamentoProtesto entidade) {
 		return super.buscarPorPK(entidade);
 	}
+
+	public CancelamentoProtesto buscarCancelamentoProtesto(Instituicao cartorio, String nomeArquivo) {
+		Criteria criteria = getCriteria(CancelamentoProtesto.class);
+		criteria.createAlias("remessaCancelamentoProtesto", "remessaCancelamentoProtesto");
+		criteria.createAlias("remessaCancelamentoProtesto.arquivo", "arquivo");
+		criteria.createAlias("cabecalhoCartorio", "cabecalhoCartorio"); 
+		criteria.add(Restrictions.eq("cabecalhoCartorio.codigoMunicipio", cartorio.getMunicipio().getCodigoIBGE()));
+		criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
+		return CancelamentoProtesto.class.cast(criteria.uniqueResult());
+	}
 }
