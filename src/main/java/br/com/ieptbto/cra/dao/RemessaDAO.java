@@ -219,6 +219,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 
 	@SuppressWarnings("rawtypes")
 	public List<Remessa> confirmacoesPendentes(Instituicao instituicao) {
+		instituicao = instituicaoDAO.buscarPorPK(instituicao);
 		List<Remessa> remessas = new ArrayList<Remessa>();
 		String sql = "";
 

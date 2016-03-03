@@ -13,6 +13,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
+import org.hibernate.bytecode.internal.javassist.FieldHandled;
+import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
 
 /**
@@ -25,13 +29,14 @@ import org.hibernate.envers.Audited;
 @Audited
 @Table(name = "TB_REMESSA_DESISTENCIA_PROTESTO")
 @org.hibernate.annotations.Table(appliesTo = "TB_REMESSA_DESISTENCIA_PROTESTO")
-public class RemessaDesistenciaProtesto extends AbstractEntidade<RemessaDesistenciaProtesto> {
+public class RemessaDesistenciaProtesto extends AbstractEntidade<RemessaDesistenciaProtesto> implements FieldHandled {
 
 	private int id;
 	private CabecalhoArquivo cabecalho;
 	private List<DesistenciaProtesto> desistenciaProtesto;
 	private RodapeArquivo rodape;
 	private Arquivo arquivo;
+	private FieldHandler handler;
 
 	@Override
 	@Id
@@ -43,7 +48,11 @@ public class RemessaDesistenciaProtesto extends AbstractEntidade<RemessaDesisten
 
 	@OneToOne
 	@JoinColumn(name = "ARQUIVO_ID")
+	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public Arquivo getArquivo() {
+		if (this.handler != null) {
+			return (Arquivo) this.handler.readObject(this, "arquivo", arquivo);
+		}
 		return arquivo;
 	}
 
@@ -57,7 +66,7 @@ public class RemessaDesistenciaProtesto extends AbstractEntidade<RemessaDesisten
 	public List<DesistenciaProtesto> getDesistenciaProtesto() {
 		return desistenciaProtesto;
 	}
-	
+
 	@OneToOne
 	@JoinColumn(name = "RODAPE_DESISTENCIA_PROTESTO_ID")
 	public RodapeArquivo getRodape() {
@@ -81,6 +90,9 @@ public class RemessaDesistenciaProtesto extends AbstractEntidade<RemessaDesisten
 	}
 
 	public void setArquivo(Arquivo arquivo) {
+		if (this.handler != null) {
+			this.arquivo = (Arquivo) this.handler.writeObject(this, "arquivo", this.arquivo, arquivo);
+		}
 		this.arquivo = arquivo;
 	}
 
@@ -88,6 +100,17 @@ public class RemessaDesistenciaProtesto extends AbstractEntidade<RemessaDesisten
 	public int compareTo(RemessaDesistenciaProtesto entidade) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public void setFieldHandler(FieldHandler handler) {
+		this.handler = handler;
+
+	}
+
+	@Override
+	public FieldHandler getFieldHandler() {
+		return this.handler;
 	}
 
 }

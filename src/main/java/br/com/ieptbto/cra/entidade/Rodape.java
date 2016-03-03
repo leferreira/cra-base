@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,6 +13,10 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
+import org.hibernate.bytecode.internal.javassist.FieldHandled;
+import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
@@ -28,7 +33,7 @@ import br.com.ieptbto.cra.util.DataUtil;
 @Audited
 @Table(name = "TB_RODAPE")
 @org.hibernate.annotations.Table(appliesTo = "TB_RODAPE")
-public class Rodape extends AbstractEntidade<Rodape> {
+public class Rodape extends AbstractEntidade<Rodape> implements FieldHandled {
 
 	/** **/
 	private static final long serialVersionUID = 1L;
@@ -36,7 +41,7 @@ public class Rodape extends AbstractEntidade<Rodape> {
 	private Remessa remessa;
 	/**
 	 * Registros do rodape
-	 * */
+	 */
 	private TipoRegistro identificacaoRegistro;
 	private String numeroCodigoPortador;
 	private String nomePortador;
@@ -45,6 +50,7 @@ public class Rodape extends AbstractEntidade<Rodape> {
 	private BigDecimal somatorioValorRemessa;
 	private String complementoRegistro;
 	private String numeroSequencialRegistroArquivo;
+	private FieldHandler handler;
 
 	@Override
 	public int compareTo(Rodape entidade) {
@@ -60,8 +66,12 @@ public class Rodape extends AbstractEntidade<Rodape> {
 		return id;
 	}
 
-	@OneToOne(mappedBy = "rodape")
+	@OneToOne(mappedBy = "rodape", fetch = FetchType.LAZY)
+	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public Remessa getRemessa() {
+		if (this.handler != null) {
+			return (Remessa) this.handler.readObject(this, "remessa", remessa);
+		}
 		return remessa;
 	}
 
@@ -96,12 +106,12 @@ public class Rodape extends AbstractEntidade<Rodape> {
 		if (somatorioQtdRemessa == null) {
 			somatorioQtdRemessa = BigDecimal.ZERO;
 		}
-		
+
 		if (this.remessa != null) {
 			if (this.remessa.getCabecalho() != null) {
-				somatorioQtdRemessa = new BigDecimal(
-						this.remessa.getCabecalho().getQtdRegistrosRemessa() + this.remessa.getCabecalho().getQtdTitulosRemessa() + 
-						this.remessa.getCabecalho().getQtdIndicacoesRemessa() + this.remessa.getCabecalho().getQtdOriginaisRemessa());
+				somatorioQtdRemessa = new BigDecimal(this.remessa.getCabecalho().getQtdRegistrosRemessa()
+				        + this.remessa.getCabecalho().getQtdTitulosRemessa() + this.remessa.getCabecalho().getQtdIndicacoesRemessa()
+				        + this.remessa.getCabecalho().getQtdOriginaisRemessa());
 			}
 		}
 		return somatorioQtdRemessa;
@@ -136,6 +146,9 @@ public class Rodape extends AbstractEntidade<Rodape> {
 	}
 
 	public void setRemessa(Remessa remessa) {
+		if (this.handler != null) {
+			this.remessa = (Remessa) this.handler.writeObject(this, "remessa", this.remessa, remessa);
+		}
 		this.remessa = remessa;
 	}
 
@@ -188,19 +201,30 @@ public class Rodape extends AbstractEntidade<Rodape> {
 	private static Integer getValorTotalTitulos(String valor) {
 		if (valor != null) {
 			if (valor.contains(".")) {
-				valor = valor.replace(".","");
+				valor = valor.replace(".", "");
 			}
 			if (valor.contains(",")) {
-				valor = valor.replace(",","");
+				valor = valor.replace(",", "");
 			}
 		}
 		return Integer.parseInt(valor) / 100;
 	}
-	
+
 	private static LocalDate verificaDataMovimento(String dataMovimento) {
 		if (dataMovimento.equals("00000000") || dataMovimento == null) {
 			return new LocalDate();
 		}
 		return DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, dataMovimento);
+	}
+
+	@Override
+	public void setFieldHandler(FieldHandler handler) {
+		this.handler = handler;
+
+	}
+
+	@Override
+	public FieldHandler getFieldHandler() {
+		return this.handler;
 	}
 }

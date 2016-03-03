@@ -59,7 +59,7 @@ public class DesistenciaProtesto extends AbstractEntidade<DesistenciaProtesto> {
 		return rodapeCartorio;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "REMESSA_DESISTENCIA_PROTESTO_ID")
 	public RemessaDesistenciaProtesto getRemessaDesistenciaProtesto() {
 		return remessaDesistenciaProtesto;

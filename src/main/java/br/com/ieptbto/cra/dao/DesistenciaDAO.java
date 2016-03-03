@@ -10,6 +10,7 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
@@ -28,9 +29,12 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class DesistenciaDAO extends AbstractBaseDAO {
 
+	@Autowired
+	private InstituicaoDAO instituicaoDAO;
+
 	@SuppressWarnings("unchecked")
-	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
-	        ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio,
+	        LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 
 		Criteria criteria = getCriteria(DesistenciaProtesto.class);
 		criteria.createAlias("remessaDesistenciaProtesto", "remessa");
@@ -38,13 +42,13 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 
 		if (StringUtils.isNotBlank(arquivo.getNomeArquivo())) {
 			criteria.add(Restrictions.ilike("arquivo.nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
-		} 
-		
+		}
+
 		if (tiposArquivo != null && !tiposArquivo.isEmpty()) {
 			criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
 			criteria.add(filtrarRemessaPorTipoArquivo(tiposArquivo));
 		}
-		
+
 		if (dataInicio != null && dataFim != null) {
 			criteria.add((Restrictions.between("arquivo.dataEnvio", dataInicio, dataFim)));
 		}
@@ -53,7 +57,7 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 			criteria.createAlias("remessa.cabecalho", "cabecalhoArquivo");
 			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", portador.getCodigoCompensacao()));
 		}
-		
+
 		if (municipio != null) {
 			criteria.createAlias("cabecalhoCartorio", "cabecalho");
 			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", municipio.getCodigoIBGE()));
@@ -68,7 +72,7 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 		}
 		return criteria.list();
 	}
-	
+
 	private Disjunction filtrarRemessaPorTipoArquivo(ArrayList<TipoArquivoEnum> tiposArquivo) {
 		Disjunction disjunction = Restrictions.disjunction();
 		for (TipoArquivoEnum tipo : tiposArquivo) {
@@ -76,12 +80,13 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 		}
 		return disjunction;
 	}
-	
+
 	@SuppressWarnings({ "unchecked" })
 	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtestoPendenteDownload(Instituicao instituicao) {
+		instituicao = instituicaoDAO.buscarPorPK(instituicao);
 		Criteria criteria = getCriteria(DesistenciaProtesto.class);
 		criteria.createAlias("cabecalhoCartorio", "cabecalho");
-		
+
 		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
 			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", instituicao.getMunicipio().getCodigoIBGE()));
 		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {

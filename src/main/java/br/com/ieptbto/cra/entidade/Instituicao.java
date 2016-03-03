@@ -56,7 +56,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	private TipoInstituicao tipoInstituicao;
 	private List<Arquivo> arquivoEnviados;
 	private List<Usuario> listaUsuarios;
-	private TipoBatimento tipoBatimento; 
+	private TipoBatimento tipoBatimento;
 	private Municipio municipio;
 	private TipoCampo51 tipoCampo51;
 	private LayoutPadraoXML layoutPadraoXML;
@@ -104,7 +104,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		return contato;
 	}
 
-	@Column(name = "VALOR_CONFIRMACAO", precision = 2, columnDefinition="double precision")
+	@Column(name = "VALOR_CONFIRMACAO", precision = 2, columnDefinition = "double precision")
 	public BigDecimal getValorConfirmacao() {
 		return valorConfirmacao;
 	}
@@ -157,18 +157,18 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		return arquivoEnviados;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "TIPO_INSTITUICAO_ID")
 	public TipoInstituicao getTipoInstituicao() {
 		return tipoInstituicao;
 	}
 
-	@OneToMany(mappedBy = "instituicao")
+	@OneToMany(mappedBy = "instituicao", fetch = FetchType.LAZY)
 	public List<Usuario> getListaUsuarios() {
 		return listaUsuarios;
 	}
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "MUNICIPIO_ID")
 	public Municipio getMunicipio() {
 		return municipio;
@@ -179,7 +179,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		return codigoCartorio;
 	}
 
-	@Column(name="PERMITIDO_SETORES_CONVENIO")
+	@Column(name = "PERMITIDO_SETORES_CONVENIO")
 	@Enumerated(EnumType.STRING)
 	public EnumerationSimNao getPermitidoSetoresConvenio() {
 		return permitidoSetoresConvenio;
@@ -208,7 +208,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	public void setCnpj(String cnpj) {
 		this.cnpj = cnpj;
 	}
-	
+
 	public void setPermitidoSetoresConvenio(EnumerationSimNao permitidoSetoresConvenio) {
 		this.permitidoSetoresConvenio = permitidoSetoresConvenio;
 	}
@@ -272,8 +272,8 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	public void setListaUsuarios(List<Usuario> listaUsuarios) {
 		this.listaUsuarios = listaUsuarios;
 	}
-	
-	@Column(name="TIPO_CAMPO_51")
+
+	@Column(name = "TIPO_CAMPO_51")
 	@Enumerated(EnumType.STRING)
 	public TipoCampo51 getTipoCampo51() {
 		if (tipoCampo51 == null) {
@@ -281,7 +281,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		}
 		return tipoCampo51;
 	}
-	
+
 	public void setTipoCampo51(TipoCampo51 tipoCampo51) {
 		this.tipoCampo51 = tipoCampo51;
 	}
@@ -329,7 +329,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		}
 	}
 
-	@Column(name="LAYOUT_PADRAO_XML")
+	@Column(name = "LAYOUT_PADRAO_XML")
 	@Enumerated(EnumType.STRING)
 	public LayoutPadraoXML getLayoutPadraoXML() {
 		if (layoutPadraoXML == null) {
@@ -341,8 +341,8 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	public void setLayoutPadraoXML(LayoutPadraoXML layoutPadraoXML) {
 		this.layoutPadraoXML = layoutPadraoXML;
 	}
-	
-	@Column(name="TIPO_BATIMENTO")
+
+	@Column(name = "TIPO_BATIMENTO")
 	@Enumerated(EnumType.STRING)
 	public TipoBatimento getTipoBatimento() {
 		if (tipoBatimento == null) {
@@ -350,7 +350,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		}
 		return tipoBatimento;
 	}
-	
+
 	public void setTipoBatimento(TipoBatimento tipoBatimento) {
 		this.tipoBatimento = tipoBatimento;
 	}

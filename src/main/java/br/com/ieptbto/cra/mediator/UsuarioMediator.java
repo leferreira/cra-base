@@ -16,7 +16,7 @@ import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
 
-@Service  
+@Service
 public class UsuarioMediator {
 
 	private static final Logger logger = Logger.getLogger(UsuarioMediator.class);
@@ -209,6 +209,10 @@ public class UsuarioMediator {
 
 	public boolean isUsuatioAtivo(Usuario usuario) {
 		return usuario.isStatus();
+	}
+
+	public Usuario buscarUsuarioPorPK(Usuario usuario) {
+		return usuarioDao.buscarPorPK(usuario);
 	}
 
 }

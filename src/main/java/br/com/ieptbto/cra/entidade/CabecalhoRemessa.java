@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.entidade;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -10,6 +11,10 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
+import org.hibernate.bytecode.internal.javassist.FieldHandled;
+import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
@@ -27,7 +32,7 @@ import br.com.ieptbto.cra.util.DataUtil;
 @Audited
 @Table(name = "TB_CABECALHO")
 @org.hibernate.annotations.Table(appliesTo = "TB_CABECALHO")
-public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
+public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> implements FieldHandled {
 
 	/*** */
 	private static final long serialVersionUID = 1L;
@@ -48,6 +53,7 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 	private String codigoMunicipio;
 	private String complementoRegistro;
 	private String numeroSequencialRegistroArquivo;
+	private FieldHandler handler;
 
 	@Override
 	@Id
@@ -57,8 +63,12 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 		return id;
 	}
 
-	@OneToOne(mappedBy = "cabecalho")
+	@OneToOne(mappedBy = "cabecalho", fetch = FetchType.LAZY)
+	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public Remessa getRemessa() {
+		if (this.handler != null) {
+			return (Remessa) this.handler.readObject(this, "remessa", remessa);
+		}
 		return remessa;
 	}
 
@@ -137,8 +147,9 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 		if (agenciaCentralizadora == null) {
 			agenciaCentralizadora = StringUtils.EMPTY;
 		}
-		
-		BancoAgenciaCentralizadoraCodigoCartorio agencia = BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(this.numeroCodigoPortador);
+
+		BancoAgenciaCentralizadoraCodigoCartorio agencia = BancoAgenciaCentralizadoraCodigoCartorio
+		        .getBancoAgenciaCodigoCartorio(this.numeroCodigoPortador);
 		if (agencia != null) {
 			agenciaCentralizadora = agencia.getAgenciaCentralizadora();
 		}
@@ -176,6 +187,9 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 	}
 
 	public void setRemessa(Remessa remessa) {
+		if (this.handler != null) {
+			this.remessa = (Remessa) this.handler.writeObject(this, "remessa", this.remessa, remessa);
+		}
 		this.remessa = remessa;
 	}
 
@@ -266,7 +280,7 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 	}
 
 	private static Integer verificarNumeroSequencialRemessa(CabecalhoVO cabecalhoVO) {
-		
+
 		Integer.parseInt(cabecalhoVO.getNumeroSequencialRemessa());
 		return null;
 	}
@@ -276,5 +290,16 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> {
 			return new LocalDate();
 		}
 		return DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, dataMovimento);
+	}
+
+	@Override
+	public void setFieldHandler(FieldHandler handler) {
+		this.handler = handler;
+
+	}
+
+	@Override
+	public FieldHandler getFieldHandler() {
+		return this.handler;
 	}
 }
