@@ -27,7 +27,7 @@ import org.joda.time.LocalDateTime;
 @Audited
 @Table(name = "TB_BATIMENTO")
 @org.hibernate.annotations.Table(appliesTo = "TB_BATIMENTO")
-public class Batimento extends AbstractEntidade<Batimento>{
+public class Batimento extends AbstractEntidade<Batimento> {
 
 	/***/
 	private static final long serialVersionUID = 1L;
@@ -49,7 +49,7 @@ public class Batimento extends AbstractEntidade<Batimento>{
 		return dataBatimento;
 	}
 	
-	@OneToOne
+	@OneToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name = "REMESSA_ID")
 	public Remessa getRemessa() {
 		return remessa;

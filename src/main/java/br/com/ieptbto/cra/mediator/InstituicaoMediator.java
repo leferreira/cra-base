@@ -17,6 +17,10 @@ public class InstituicaoMediator {
 	@Autowired
 	private InstituicaoDAO instituicaoDAO;
 
+	public Instituicao carregarInstituicaoPorId(int id) {
+		return null;
+	}
+	
 	public Instituicao salvar(Instituicao instituicao) {
 		return instituicaoDAO.salvar(instituicao);
 	}

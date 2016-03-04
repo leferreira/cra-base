@@ -12,6 +12,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
@@ -37,6 +38,16 @@ import br.com.ieptbto.cra.exception.InfraException;
  */
 @Repository
 public class RetornoDAO extends AbstractBaseDAO {
+	
+	@Autowired
+	private RemessaDAO remessaDAO;
+
+	public Retorno carregarTituloRetornoPorId(Retorno retorno) {
+		Criteria criteria = getCriteria(Retorno.class);
+		criteria.createAlias("remessa", "remessa");
+		criteria.add(Restrictions.eq("id", retorno.getId()));
+		return Retorno.class.cast(criteria.uniqueResult()); 
+	}
 	
 	@SuppressWarnings("unchecked")
 	public List<Remessa> buscarRetornosParaBatimento(){
@@ -99,7 +110,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.createAlias("remessa.batimento", "batimento");
 		
 		if (dataComoDataLimite == true) {
-			criteria.add(Restrictions.lt("batimento.data", dataBatimento));
+			criteria.add(Restrictions.le("batimento.data", dataBatimento));
 		} else {
 			criteria.add(Restrictions.eq("batimento.data", dataBatimento));
 		}
@@ -167,7 +178,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 		Transaction transaction = getBeginTransation();
 		
 		try {
-			Remessa remessa = batimento.getRemessa();
+			Remessa remessa = remessaDAO.buscarPorPK(batimento.getRemessa());
 			remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);	
 			if (remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA) || 
 					remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO) ) {
@@ -303,16 +314,19 @@ public class RetornoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public void liberarRetornoBatimento(List<Remessa> retornoLiberados) {
-		Transaction transaction = getBeginTransation();
+	public void liberarRetornoBatimento(List<Remessa> arquivosLIberados) {
+//		Transaction transaction = getBeginTransation();
 		
 		try {
-			for (Remessa retorno : retornoLiberados) {
-				retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
-				update(retorno);
+			for (Remessa retorno : arquivosLIberados) {
+				String sql = "UPDATE tb_remessa AS rem SET situacao_batimento_retorno='CONFIRMADO' WHERE rem.id_remessa=" + retorno.getId();
+				Query query = getSession().createSQLQuery(sql);
+				query.executeUpdate();
+//				retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
+//				update(retorno); 
 			}
 			
-			transaction.commit();
+//			transaction.commit();
 		} catch (InfraException ex) {
 			logger.error(ex.getMessage());
 			throw new InfraException(ex.getMessage());

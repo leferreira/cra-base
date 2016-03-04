@@ -138,7 +138,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 								pedidosDesistenciaComErro.add(pedido);
 							}
 						}
-						if (!pedidosProcessados.isEmpty()) {
+						if (pedidosDesistenciaComErro.isEmpty()) {
 							desistenciaProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(quantidadeDesistenciasCartorio);
 							desistenciaProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(quantidadeDesistenciasCartorio*2);
 							desistenciaProtestos.setDesistencias(pedidosProcessados);
@@ -172,7 +172,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 							save(pedido);
 						}
 					}
-					transaction.commit();
+//					transaction.commit();
 				}
 			} else if (TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
 				new InfraException("Não foi possivel enviar o Cancelamento de Protesto! Entre em contato com a CRA!");
@@ -234,6 +234,75 @@ public class ArquivoDAO extends AbstractBaseDAO {
 				remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.NAO_CONFIRMADO);
 			}
 		}
+	}
+	
+	@Transactional(readOnly = true)
+	public List<Remessa> baixarArquivoInstituicaoRemessa(Arquivo arquivo) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.add(Restrictions.eq("arquivo", arquivo));
+		
+		List<Remessa> remessas = criteria.list();
+		arquivo.setRemessas(new ArrayList<Remessa>());
+		for (Remessa remessa : remessas) {
+			Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
+			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+			
+			remessa.setTitulos(criteriaTitulo.list());
+			arquivo.getRemessas().add(remessa);
+		}
+		return arquivo.getRemessas(); 
+	}
+	
+	@Transactional(readOnly = true)
+	public List<Remessa> baixarArquivoInstituicaoConfirmacao(Arquivo arquivo) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
+		
+		List<Remessa> remessas = criteria.list();
+		arquivo.setRemessas(new ArrayList<Remessa>());
+		for (Remessa remessa : remessas) {
+			Criteria criteriaTitulo = getCriteria(Confirmacao.class);
+			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+			
+			remessa.setTitulos(criteriaTitulo.list());
+			arquivo.getRemessas().add(remessa);
+		}
+		return arquivo.getRemessas();
+	}
+	
+	@Transactional(readOnly = true)
+	public List<Remessa> baixarArquivoInstituicaoRetorno(Arquivo arquivo) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
+		
+		List<Remessa> remessas = criteria.list();
+		arquivo.setRemessas(new ArrayList<Remessa>());
+		for (Remessa remessa : remessas) {
+			Criteria criteriaTitulo = getCriteria(Retorno.class);
+			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+			
+			remessa.setTitulos(criteriaTitulo.list());
+			arquivo.getRemessas().add(remessa);
+		}
+		return arquivo.getRemessas();
+	}
+	
+	@Transactional(readOnly = true)
+	public Arquivo buscarArquivoInstituicaoRemessa(String nomeArquivo, Instituicao instituicaoRecebe) {
+		Criteria criteria = getCriteria(Arquivo.class);
+		criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
+		criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
+		
+		Arquivo arquivo = Arquivo.class.cast(criteria.uniqueResult());
+		arquivo.setRemessas(new ArrayList<Remessa>());
+		for (Remessa remessa : arquivo.getRemessaBanco()) {
+			Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
+			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+			
+			remessa.setTitulos(criteriaTitulo.list());
+			arquivo.getRemessas().add(remessa);
+		}
+		return arquivo;
 	}
 
 	@Transactional(readOnly = true)
@@ -326,60 +395,5 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("nomeArquivo", nomeArquivo));
 
 		return Arquivo.class.cast(criteria.uniqueResult());
-	}
-
-	@Transactional(readOnly = true)
-	public List<Remessa> buscarRemessasArquivo(Instituicao instituicao, Arquivo arquivo) {
-		Criteria criteria = getCriteria(Remessa.class);
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)
-		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)
-		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
-			criteria.add(Restrictions.eq("arquivo", arquivo));
-		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)
-		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-			criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
-		}
-		List<Remessa> remessas = criteria.list();
-
-		for (Remessa remessa : remessas) {
-			List<Titulo> titulos = new ArrayList<Titulo>();
-
-			Criteria criteriaTitulo = getCriteria(Titulo.class);
-			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-			titulos = criteriaTitulo.list();
-
-			remessa.setTitulos(new ArrayList<Titulo>());
-			remessa.getTitulos().addAll(titulos);
-		}
-		return remessas;
-	}
-
-	public List<Remessa> getRemessasArquivo(Arquivo arquivo, Instituicao instituicao) {
-		Criteria criteria = getCriteria(Remessa.class);
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)
-		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)
-		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
-			criteria.add(Restrictions.eq("arquivo", arquivo));
-		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)
-		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-			criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
-		}
-		return criteria.list();
-	}
-
-	public Arquivo buscarArquivoPorNome(Instituicao instituicao, String nomeArquivo) {
-		Criteria criteria = getCriteria(Arquivo.class);
-		criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
-		criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));
-		return Arquivo.class.cast(criteria.uniqueResult());
-	}
-
-	public List<Arquivo> buscarArquivosPorNome(Instituicao instituicao, Arquivo arquivo) {
-		Criteria criteria = getCriteria(Arquivo.class);
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", instituicao), Restrictions.eq("instituicaoRecebe", instituicao)));
-		}
-		criteria.add(Restrictions.ilike("nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
-		return criteria.list();
 	}
 }

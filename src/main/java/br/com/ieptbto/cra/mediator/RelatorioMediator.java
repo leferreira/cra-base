@@ -151,37 +151,6 @@ public class RelatorioMediator {
 
 	public JasperPrint relatorioRetorno(JasperReport jasperReport, Arquivo arquivo, Instituicao instituicaoCorrente) throws JRException {
 		initParams();
-		
-		List<TituloRemessa> titulos = tituloDAO.buscarTitulosPorArquivo(arquivo, instituicaoCorrente);
-		
-		if (titulos.isEmpty())
-			throw new InfraException("Não foi possível gerar o relatório. O arquivo não contém titulos !");
-		
-		Integer numeroPagos = 0;
-		Integer numeroProtestadosRetirados = 0;
-		List<TituloBean> titulosJR = new ArrayList<TituloBean>();
-		for (TituloRemessa tituloRemessa : titulos) {
-			TituloBean tituloJR = new TituloBean();
-			tituloJR.parseToTituloRemessa(tituloRemessa);
-			if (TipoOcorrencia.getTipoOcorrencia(tituloRemessa.getRetorno().getTipoOcorrencia()).equals(TipoOcorrencia.PAGO)) {
-				numeroPagos = numeroPagos + 1;
-			} else if ((TipoOcorrencia.getTipoOcorrencia(tituloRemessa.getRetorno().getTipoOcorrencia()).equals(TipoOcorrencia.PROTESTADO)) ||
-					(TipoOcorrencia.getTipoOcorrencia(tituloRemessa.getRetorno().getTipoOcorrencia()).equals(TipoOcorrencia.RETIRADO))) {
-				numeroProtestadosRetirados = numeroProtestadosRetirados + 1;
-			}
-			titulosJR.add(tituloJR);
-		}
-		params.put("NOME_ARQUIVO", arquivo.getNomeArquivo());
-		params.put("DATA_ENVIO", DataUtil.localDateToString(arquivo.getDataEnvio()));
-		params.put("INSTITUICAO", arquivo.getInstituicaoEnvio().getNomeFantasia().toUpperCase());
-		params.put("TOTAL_TITULOS", Integer.class.cast(titulosJR.size()));
-		params.put("TOTAL_PAGOS", retornoDAO.buscarValorDeTitulosPagos(arquivo));
-		params.put("TOTAL_DEMAIS_DESPESAS", retornoDAO.buscarValorDemaisDespesas(arquivo));
-		params.put("TOTAL_CUSTAS", retornoDAO.buscarValorDeCustasCartorio(arquivo));
-		params.put("QTD_PAGOS", numeroPagos);
-		params.put("QTD_PROTESTADOS_RETIRADOS", numeroProtestadosRetirados);
-
-		JRBeanCollectionDataSource beanCollection = new JRBeanCollectionDataSource(titulosJR);
-		return JasperFillManager.fillReport(jasperReport, params, beanCollection);
+		return null;
 	}
 }

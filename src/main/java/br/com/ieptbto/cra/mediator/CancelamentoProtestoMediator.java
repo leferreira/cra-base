@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.mediator;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -72,11 +74,40 @@ public class CancelamentoProtestoMediator {
 	private InstituicaoDAO instituicaoDAO;
 	@Autowired
 	private TipoArquivoDAO tipoArquivoDAO;
+	@Autowired
+	private ProcessadorArquivo processadorArquivo;
 	
 	private int sequenciaRegistro = 2;
 	private int quantidadeDesistencias = 0;
 	private int quantidadeRegistrosTipo2 = 0;
 	private BigDecimal somatorioValor;
+	
+	public File baixarCancelamentoTXT(Usuario usuario, CancelamentoProtesto cancelamentoProtesto) {
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			cancelamentoDAO.alterarSituacaoCancelamentoProtesto(cancelamentoProtesto, true);
+		}
+
+		cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoProtesto(cancelamentoProtesto);
+
+		BigDecimal valorTotal = BigDecimal.ZERO;
+		int totalRegistro = 0;
+		for (PedidoCancelamento pedido : cancelamentoProtesto.getCancelamentos()) {
+			valorTotal = valorTotal.add(pedido.getValorTitulo());
+			totalRegistro++;
+		}
+
+		RemessaCancelamentoProtesto remessa = new RemessaCancelamentoProtesto();
+		remessa.setCabecalho(cancelamentoProtesto.getRemessaCancelamentoProtesto().getCabecalho());
+		remessa.getCabecalho().setQuantidadeDesistencia(1);
+		remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
+		remessa.setCancelamentoProtesto(new ArrayList<CancelamentoProtesto>());
+		remessa.getCancelamentoProtesto().add(cancelamentoProtesto);
+		remessa.setRodape(cancelamentoProtesto.getRemessaCancelamentoProtesto().getRodape());
+		remessa.getRodape().setQuantidadeDesistencia(1);
+		remessa.getRodape().setSomatorioValorTitulo(valorTotal);
+		remessa.setArquivo(cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo());
+		return processadorArquivo.processarRemessaCancelamentoProtestoTXT(remessa, usuario);
+	}
 	
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Arquivo processarCancelamento(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados, List<Exception> erros, Usuario usuario) {

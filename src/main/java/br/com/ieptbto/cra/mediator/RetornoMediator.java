@@ -30,6 +30,7 @@ import br.com.ieptbto.cra.entidade.BatimentoDeposito;
 import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -60,7 +61,7 @@ public class RetornoMediator {
 	@Autowired
 	private TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
-	private RetornoDAO retornoDao;
+	private RetornoDAO retornoDAO;
 	@Autowired
 	private BatimentoDAO batimentoDAO;
 	@Autowired
@@ -74,33 +75,39 @@ public class RetornoMediator {
 	private Arquivo arquivo;
 	private List<Exception> erros;
 	
+	public Retorno carregarTituloRetornoPorId(int id) {
+		Retorno retorno = new Retorno();
+		retorno.setId(id);  
+		return retornoDAO.carregarTituloRetornoPorId(retorno);
+	}
+	
 	public List<Remessa> buscarRetornosParaBatimento(){
-		return retornoDao.buscarRetornosParaBatimento();
+		return retornoDAO.buscarRetornosParaBatimento();
 	}
 	
 	public List<Remessa> buscarRetornosAguardandoLiberacao(Instituicao instiuicao, LocalDate dataBatimento, boolean dataComoDataLimite){
-		return retornoDao.buscarRetornosAguardandoLiberacao(instiuicao ,dataBatimento, dataComoDataLimite);
+		return retornoDAO.buscarRetornosAguardandoLiberacao(instiuicao ,dataBatimento, dataComoDataLimite);
 	}
 	
 	public List<Remessa> buscarRetornosConfirmados(){
-		return retornoDao.buscarRetornosConfirmados();
+		return retornoDAO.buscarRetornosConfirmados();
 	}
 	
 	public BigDecimal buscarValorDeTitulosPagos(Remessa retorno){
-		return retornoDao.buscarValorDeTitulosPagos(retorno);
+		return retornoDAO.buscarValorDeTitulosPagos(retorno);
 	}
 	
 	public BigDecimal buscarSomaValorTitulosPagosRemessas(Instituicao instituicao, LocalDate dataBatimento, boolean dataComoDataLimite) {
-		return retornoDao.buscarSomaValorTitulosPagosRemessas(instituicao, dataBatimento, dataComoDataLimite);
+		return retornoDAO.buscarSomaValorTitulosPagosRemessas(instituicao, dataBatimento, dataComoDataLimite);
 	}
 	
 	public BigDecimal buscarValorDeCustasCartorio(Remessa retorno){
-		return retornoDao.buscarValorDeCustasCartorio(retorno);
+		return retornoDAO.buscarValorDeCustasCartorio(retorno);
 	}
 	
 	public Boolean verificarArquivoRetornoGeradoCra(){
 		this.cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
-		return retornoDao.verificarArquivoRetornoGeradoCra(getCra());
+		return retornoDAO.verificarArquivoRetornoGeradoCra(getCra());
 	}
 	
 	public void salvarBatimentos(List<Remessa> retornos){
@@ -119,7 +126,7 @@ public class RetornoMediator {
 				
 				batimento.getDepositosBatimento().add(depositosBatimento);
 			}
-			retornoDao.salvarBatimento(batimento);
+			retornoDAO.salvarBatimento(batimento);
 		}
 	}
 	
@@ -157,11 +164,11 @@ public class RetornoMediator {
 				batimentoDAO.atualizarDeposito(deposito);
 			}
 		}
-		retornoDao.removerBatimento(retorno, batimento);
+		retornoDAO.removerBatimento(retorno, batimento);
 	}
 	
 	public void liberarRetornoBatimentoInstituicao(List<Remessa> retornoLiberados) {
-		retornoDao.liberarRetornoBatimento(retornoLiberados);
+		retornoDAO.liberarRetornoBatimento(retornoLiberados);
 	}
 	
 	public void gerarRetornos(Usuario usuarioAcao, List<Remessa> retornos){
@@ -172,19 +179,20 @@ public class RetornoMediator {
 		Instituicao instituicaoDestino = new Instituicao();
 		for (Remessa retorno: retornos){
 			
+			retorno = retornoDAO.buscarPorPK(retorno);
 			if (arquivo == null || !instituicaoDestino.equals(retorno.getInstituicaoDestino())){
 				instituicaoDestino = retorno.getInstituicaoDestino();
 				criarNovoArquivoDeRetorno(instituicaoDestino, retorno);
 				
 				if (!arquivosRetorno.containsKey(instituicaoDestino.getCodigoCompensacao()) && arquivo != null) {
-					List<Remessa> retornosDaInstituicao = retornoDao.buscarRetornosConfirmadosPorInstituicao(instituicaoDestino);
+					List<Remessa> retornosDaInstituicao = retornoDAO.buscarRetornosConfirmadosPorInstituicao(instituicaoDestino);
 					arquivo.setRemessas(retornosDaInstituicao);
 					arquivosRetorno.put(instituicaoDestino.getCodigoCompensacao(), arquivo);
 				}
 			} 
 		}
 		List<Arquivo> retornosArquivos = new ArrayList<Arquivo>(arquivosRetorno.values());
-		retornoDao.gerarRetornos(usuarioAcao ,retornosArquivos);
+		retornoDAO.gerarRetornos(usuarioAcao ,retornosArquivos);
 	}
 	
 	private void criarNovoArquivoDeRetorno(Instituicao destino, Remessa retorno) {

@@ -29,7 +29,7 @@ public class DesistenciaException extends RuntimeException {
 		return municipio;
 	}
 
-	/**
+	/** 
 	 * @return the codigoErro
 	 */
 	public String getCodigoErro() {
@@ -38,6 +38,6 @@ public class DesistenciaException extends RuntimeException {
 	
 	@Override
 	public String toString() {
-		return "Comarca Rejeitada: Município=["+getMunicipio()+"] Código=[ "+getCodigoErro()+" ] Descrição=[ "+getMessage()+" ]";
+		return "COMARCA "+ getMunicipio() +" REJEITADA. "+ getMessage() +""; 
 	}
 }

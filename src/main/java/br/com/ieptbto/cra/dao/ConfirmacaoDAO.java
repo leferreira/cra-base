@@ -11,6 +11,7 @@ import org.joda.time.LocalDateTime;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
@@ -26,6 +27,13 @@ import br.com.ieptbto.cra.exception.InfraException;
 @SuppressWarnings("unchecked")
 @Repository
 public class ConfirmacaoDAO extends AbstractBaseDAO {
+
+	public Confirmacao carregarTituloConfirmacaoPorId(Confirmacao confirmacao) {
+		Criteria criteria = getCriteria(Confirmacao.class);
+		criteria.createAlias("remessa", "remessa");
+		criteria.add(Restrictions.eq("id", confirmacao.getId()));
+		return Confirmacao.class.cast(criteria.uniqueResult()); 
+	}
 	
 	public void salvarArquivosDeConfirmacaoGerados(Usuario usuarioAcao, List<Arquivo> arquivosDeConfirmacao) {
 		Transaction transaction = getBeginTransation();

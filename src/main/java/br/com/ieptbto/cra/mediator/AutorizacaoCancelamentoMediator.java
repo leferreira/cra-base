@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.mediator;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -72,11 +74,39 @@ public class AutorizacaoCancelamentoMediator {
 	private InstituicaoDAO instituicaoDAO;
 	@Autowired
 	private TipoArquivoDAO tipoArquivoDAO;
+	@Autowired
+	private ProcessadorArquivo processadorArquivo;
 	
 	private int sequenciaRegistro = 2;
 	private int quantidadeDesistencias = 0;
 	private int quantidadeRegistrosTipo2 = 0;
 	private BigDecimal somatorioValor;
+	
+	public File baixarAutorizacaoTXT(Usuario usuario, AutorizacaoCancelamento autorizacaoCancelamento) {
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			autorizacaoCancelamentoDAO.alterarSituacaoAutorizacaoCancelamento(autorizacaoCancelamento, true);
+		}
+		autorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamento(autorizacaoCancelamento);
+
+		BigDecimal valorTotal = BigDecimal.ZERO;
+		int totalRegistro = 0;
+		for (PedidoAutorizacaoCancelamento pedido : autorizacaoCancelamento.getAutorizacoesCancelamentos()) {
+			valorTotal = valorTotal.add(pedido.getValorTitulo());
+			totalRegistro++;
+		}
+
+		RemessaAutorizacaoCancelamento remessa = new RemessaAutorizacaoCancelamento();
+		remessa.setCabecalho(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getCabecalho());
+		remessa.getCabecalho().setQuantidadeDesistencia(1);
+		remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
+		remessa.setAutorizacaoCancelamento(new ArrayList<AutorizacaoCancelamento>());
+		remessa.getAutorizacaoCancelamento().add(autorizacaoCancelamento);
+		remessa.setRodape(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getRodape());
+		remessa.getRodape().setQuantidadeDesistencia(1);
+		remessa.getRodape().setSomatorioValorTitulo(valorTotal);
+		remessa.setArquivo(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo());
+		return processadorArquivo.processarRemessaAutorizacaoCancelamentoTXT(remessa, usuario);
+	}
 	
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Arquivo processarAutorizacaoCancelamento(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados, List<Exception> erros, Usuario usuario) {

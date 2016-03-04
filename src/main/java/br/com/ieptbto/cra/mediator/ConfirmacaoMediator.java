@@ -21,6 +21,7 @@ import br.com.ieptbto.cra.dao.ConfirmacaoDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.dao.TipoArquivoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
@@ -64,6 +65,12 @@ public class ConfirmacaoMediator {
 	private Arquivo arquivo;
 	private List<Exception> erros;
 
+	public Confirmacao carregarTituloConfirmacaoPorId(int id) {
+		Confirmacao confirmacao = new Confirmacao();
+		confirmacao.setId(id); 
+		return confirmacaoDAO.carregarTituloConfirmacaoPorId(confirmacao);
+	}
+	
 	public List<Remessa> buscarConfirmacoesPendentesDeEnvio() {
 		return confirmacaoDAO.buscarConfirmacoesPendentesDeEnvio();
 	}

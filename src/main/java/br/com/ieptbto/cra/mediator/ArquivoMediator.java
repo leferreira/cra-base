@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.mediator;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,6 +22,7 @@ import br.com.ieptbto.cra.dao.TipoArquivoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -150,13 +152,43 @@ public class ArquivoMediator {
 	public Arquivo getArquivo() {
 		return arquivo;
 	}
+	
+	public Arquivo carregarArquivoPorId(int id) {
+		Arquivo arquivo = new Arquivo();
+		arquivo.setId((int) id);
+		return arquivoDAO.buscarPorPK(arquivo);
+	}
+	
+	/**
+	 * Download de arquivos TXT de instituições e convênios
+	 * 
+	 * @param instituicao
+	 * @param arquivo
+	 * @return
+	 */
+	public File baixarArquivoTXT(Instituicao instituicao, Arquivo arquivo) {
+		List<Remessa> remessas = null;
+		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
+		        && !arquivo.getStatusArquivo().getSituacaoArquivo().equals(SituacaoArquivo.ENVIADO)) {
+			StatusArquivo status = new StatusArquivo();
+			status.setData(new LocalDateTime());
+			status.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
+			arquivo.setStatusArquivo(status);
+			arquivoDAO.alterarStatusArquivo(arquivo);
+		} 
+		
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
+			remessas = arquivoDAO.baixarArquivoInstituicaoRemessa(arquivo);
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
+			remessas = arquivoDAO.baixarArquivoInstituicaoConfirmacao(arquivo);
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+			remessas = arquivoDAO.baixarArquivoInstituicaoRetorno(arquivo); 
+		}
+		return processadorArquivo.processarArquivoTXT(arquivo, remessas);
+	}
 
 	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos,
 	        Municipio pracaProtesto, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		return arquivoDAO.buscarArquivosAvancado(arquivo, usuario, tipoArquivos, pracaProtesto, dataInicio, dataFim, situacoes);
-	}
-
-	public Arquivo buscarArquivoPorNome(Instituicao instituicao, String nomeArquivo) {
-		return arquivoDAO.buscarArquivoPorNome(instituicao, nomeArquivo);
 	}
 }

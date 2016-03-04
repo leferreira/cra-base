@@ -62,7 +62,6 @@ public class Confirmacao extends Titulo<Confirmacao> implements FieldHandled {
 
 	@OneToOne
 	@JoinColumn(name = "TITULO_ID")
-	// @LazyToOne(LazyToOneOption.NO_PROXY)
 	public TituloRemessa getTitulo() {
 		if (this.handler != null) {
 			return (TituloRemessa) this.handler.readObject(this, "tituloRemessa", tituloRemessa);

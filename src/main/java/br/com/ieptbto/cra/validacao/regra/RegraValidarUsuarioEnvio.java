@@ -40,7 +40,7 @@ public class RegraValidarUsuarioEnvio extends RegrasDeEntrada {
 	 * Verifica se o usuário tem permissão para enviar o arquivo.
 	 */
 	private void verificarPermissaoDoUsuario() {
-		if (!usuarioMediator.isUsuatioAtivo(getUsuario())) {
+		if (!usuarioMediator.isUsuarioAtivo(getUsuario())) {
 			throw new InfraException(Erro.USUARIO_INATIVO.getMensagemErro());
 		}
 	}

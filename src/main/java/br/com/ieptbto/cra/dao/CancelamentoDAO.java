@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
@@ -38,6 +39,10 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 	@Autowired
 	private InstituicaoDAO instituicaoDAO;
 
+	public CancelamentoProtesto buscarRemessaCancelamentoProtesto(CancelamentoProtesto entidade) {
+		return super.buscarPorPK(entidade);
+	}
+
 	public Arquivo salvarCancelamentoSerpro(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		Arquivo arquivoSalvo = new Arquivo();
 		Transaction transaction = getSession().beginTransaction();
@@ -60,7 +65,6 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 					cancelamento.setDownload(false);
 					for (PedidoCancelamento pedido : cancelamento.getCancelamentos()) {
 						pedido.setCancelamentoProtesto(cancelamento);
-						;
 						pedido.setTitulo(tituloDAO.buscarTituloCancelamentoProtesto(pedido));
 						if (pedido.getTitulo() != null) {
 							if (pedido.getTitulo().getPedidoCancelamento() == null) {
@@ -117,9 +121,7 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 					}
 				}
 				if (!erros.isEmpty()) {
-					throw new CancelamentoException(
-					        "Não foi possível enviar o arquivo de cancelamento! Por favor, corriga os erros no arquivo abaixo...", erros,
-					        pedidosCancelamentoComErros);
+					throw new CancelamentoException("Não foi possível enviar o arquivo de cancelamento! Por favor, corriga os erros no arquivo abaixo...", erros, pedidosCancelamentoComErros);
 				}
 				transaction.commit();
 			}
@@ -209,7 +211,7 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 
 	public CancelamentoProtesto alterarSituacaoCancelamentoProtesto(CancelamentoProtesto cancelamentoProtesto, boolean download) {
 		Transaction transaction = getBeginTransation();
-
+ 
 		try {
 			cancelamentoProtesto.setDownload(download);
 			update(cancelamentoProtesto);
@@ -219,12 +221,28 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 			logger.error(ex.getMessage(), ex);
 			throw new InfraException("Não foi possível atualizar o status da DP.");
 		}
-		return cancelamentoProtesto;
+		return cancelamentoProtesto; 
 
 	}
-
-	public CancelamentoProtesto buscarRemessaCancelamentoProtesto(CancelamentoProtesto entidade) {
-		return super.buscarPorPK(entidade);
+	
+	public void alterarSituacaoCancelamentoProtesto(Instituicao cartorio, String nomeArquivo) {
+		StringBuffer  sql = new StringBuffer();
+		
+		try {
+			sql.append("UPDATE tb_cancelamento AS cp ");
+			sql.append("SET download_realizado=true ");
+			sql.append("FROM tb_remessa_cancelamento_protesto AS rem, tb_cabecalho AS cab, tb_arquivo AS arq ");
+			sql.append("WHERE cp.remessa_cancelamento_protesto_id=rem.id_remessa_cancelamento_protesto ");
+			sql.append("AND rem.arquivo_id=arq.id_arquivo ");
+			sql.append("AND arq.nome_arquivo LIKE '"+ nomeArquivo +"' ");
+			sql.append("AND cab.codigo_municipio='"+ cartorio.getMunicipio().getCodigoIBGE() +"'");
+			
+			Query query = getSession().createSQLQuery(sql.toString());
+			query.executeUpdate();
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível alterar a desistência para recebido.");
+		}
 	}
 
 	public CancelamentoProtesto buscarCancelamentoProtesto(Instituicao cartorio, String nomeArquivo) {

@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +27,7 @@ import br.com.ieptbto.cra.dao.AutorizacaoCancelamentoDAO;
 import br.com.ieptbto.cra.dao.CancelamentoDAO;
 import br.com.ieptbto.cra.dao.DesistenciaDAO;
 import br.com.ieptbto.cra.dao.RemessaDAO;
+import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
@@ -35,9 +35,6 @@ import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.entidade.PedidoAutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.PedidoCancelamento;
-import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
@@ -46,7 +43,6 @@ import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
@@ -76,15 +72,17 @@ public class RemessaMediator {
 	protected static final Logger logger = Logger.getLogger(RemessaMediator.class);
 
 	@Autowired
-	private RemessaDAO remessaDao;
+	private RemessaDAO remessaDAO;
 	@Autowired
 	private ArquivoDAO arquivoDAO;
+	@Autowired
+	private TituloDAO tituloDAO;
 	@Autowired
 	private DesistenciaDAO desistenciaDAO;
 	@Autowired
 	private CancelamentoDAO cancelamentoDAO;
 	@Autowired
-	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
+	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO; 
 	@Autowired
 	private ConversorRemessaArquivo conversorRemessaArquivo;
 	@Autowired
@@ -93,41 +91,31 @@ public class RemessaMediator {
 
 	public List<Remessa> buscarRemessas(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
 	        ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario, ArrayList<StatusRemessa> situacoes) {
-		return remessaDao.buscarRemessaAvancado(arquivo, municipio, dataInicio, dataFim, usuario, tiposArquivo, situacoes);
+		return remessaDAO.buscarRemessaAvancado(arquivo, municipio, dataInicio, dataFim, usuario, tiposArquivo, situacoes);
 	}
-
-	public Remessa carregarTitulosRemessa(Remessa remessa) {
-		return remessaDao.carregarTitulosRemessa(remessa);
-	}
-
-	public int buscarTotalRemessas() {
-		return 0;
-	}
-
-	public Remessa buscarRemessaPorId(long id) {
+	
+	public Remessa carregarRemessaPorId(int id) {
 		Remessa remessa = new Remessa();
 		remessa.setId((int) id);
-		return remessaDao.buscarPorPK(remessa);
-	}
-
-	public ArquivoVO buscarArquivos(String nome) {
-		Remessa remessa = remessaDao.buscarArquivosPorNome(nome);
-		if (remessa == null) {
-			return null;
-		}
-
-		return conversorRemessaArquivo.converter(remessa);
+		return remessaDAO.buscarPorPK(remessa);
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public RemessaVO buscarRemessaParaCartorio(Remessa remessa, Instituicao cartorio, String nome) {
-		remessa = remessaDao.buscarRemessaParaCartorio(cartorio, nome);
+	public RemessaVO buscarRemessaParaCartorio(Remessa remessa, Instituicao instituicao, String nomeArquivo) {
+		if (nomeArquivo.startsWith(TipoArquivoEnum.REMESSA.getConstante())) {
+			remessa = remessaDAO.baixarArquivoCartorioRemessa(instituicao, nomeArquivo);
+		} else if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
+			remessa = remessaDAO.baixarArquivoCartorioConfirmacao(instituicao, nomeArquivo);
+		} else if (nomeArquivo.startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
+			remessa = remessaDAO.baixarArquivoCartorioRetorno(instituicao, nomeArquivo); 
+		}
+		
 		if (remessa == null) {
 			return null;
 		}
 		remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
-		remessaDao.alterarSituacaoRemessa(remessa);
-
+		remessaDAO.alterarSituacaoRemessa(remessa);
+		
 		ArrayList<Arquivo> arquivos = new ArrayList<>();
 		arquivos.add(remessa.getArquivo());
 		return conversorRemessaArquivo.converterRemessaVO(remessa);
@@ -139,7 +127,7 @@ public class RemessaMediator {
 	 * @param usuario
 	 * @param nomeArquivo
 	 * @return object
-	 */
+	 */ 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Object processarArquivoXML(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
 		Arquivo arquivo = processarArquivoXMLManual(arquivoRecebido, usuario, nomeArquivo);
@@ -212,38 +200,37 @@ public class RemessaMediator {
 
 		return mensagemRetorno;
 	}
-
+	
 	private MensagemXmlSerpro gerarRespostaSerpro(Arquivo arquivo, Usuario usuario) {
 		MensagemXmlSerpro msgSucesso = new MensagemXmlSerpro();
 		msgSucesso.setNomeArquivo(arquivo.getNomeArquivo());
-
+		
 		List<ComarcaDetalhamentoSerpro> listaComarcas = new ArrayList<ComarcaDetalhamentoSerpro>();
-		for (Remessa remessa : arquivo.getRemessas()) {
+		for (Remessa remessa: arquivo.getRemessas()) {
 			ComarcaDetalhamentoSerpro comarcaDetalhamento = new ComarcaDetalhamentoSerpro();
 			comarcaDetalhamento.setCodigoMunicipio(remessa.getCabecalho().getCodigoMunicipio());
-			comarcaDetalhamento
-			        .setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
+			comarcaDetalhamento.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
 			comarcaDetalhamento.setRegistro(StringUtils.EMPTY);
-
+			
 			CodigoErro codigoErroSerpro = getCodigoErroSucessoSerpro(arquivo.getNomeArquivo());
 			comarcaDetalhamento.setCodigo(codigoErroSerpro.getCodigo());
 			comarcaDetalhamento.setOcorrencia(codigoErroSerpro.getDescricao());
 			comarcaDetalhamento.setTotalRegistros(remessa.getCabecalho().getQtdRegistrosRemessa());
 			listaComarcas.add(comarcaDetalhamento);
 		}
-
+		
 		msgSucesso.setComarca(listaComarcas);
 		return msgSucesso;
 	}
 
 	private CodigoErro getCodigoErroSucessoSerpro(String nomeArquivo) {
 		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(nomeArquivo);
-
+		
 		CodigoErro codigoErro = null;
 		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
 			codigoErro = CodigoErro.SERPRO_SUCESSO_REMESSA;
-		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)
-		        || TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
+		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo) || 
+				TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)){
 			codigoErro = CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO;
 		} else {
 			codigoErro = CodigoErro.CRA_SUCESSO;
@@ -289,144 +276,48 @@ public class RemessaMediator {
 	public void setErros(List<Exception> erros) {
 		this.erros = erros;
 	}
-
-	public File baixarDesistenciaTXT(Usuario usuario, DesistenciaProtesto desistenciaProtesto) {
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			desistenciaDAO.alterarSituacaoDesistenciaProtesto(desistenciaProtesto, true);
-		}
-		desistenciaProtesto = desistenciaDAO.buscarDesistenciaProtesto(desistenciaProtesto);
-
-		BigDecimal valorTotal = BigDecimal.ZERO;
-		int totalRegistro = 0;
-		for (PedidoDesistencia pedido : desistenciaProtesto.getDesistencias()) {
-			valorTotal = valorTotal.add(pedido.getValorTitulo());
-			totalRegistro++;
-		}
-
-		RemessaDesistenciaProtesto remessa = new RemessaDesistenciaProtesto();
-		remessa.setCabecalho(desistenciaProtesto.getRemessaDesistenciaProtesto().getCabecalho());
-		remessa.getCabecalho().setQuantidadeDesistencia(1);
-		remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
-		remessa.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
-		remessa.getDesistenciaProtesto().add(desistenciaProtesto);
-		remessa.setRodape(desistenciaProtesto.getRemessaDesistenciaProtesto().getRodape());
-		remessa.getRodape().setQuantidadeDesistencia(1);
-		remessa.getRodape().setSomatorioValorTitulo(valorTotal);
-		remessa.setArquivo(desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo());
-		return processadorArquivo.processarRemessaDesistenciaProtestoTXT(remessa, usuario);
-	}
-
-	public File baixarCancelamentoTXT(Usuario usuario, CancelamentoProtesto cancelamentoProtesto) {
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			cancelamentoDAO.alterarSituacaoCancelamentoProtesto(cancelamentoProtesto, true);
-		}
-
-		cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoProtesto(cancelamentoProtesto);
-
-		BigDecimal valorTotal = BigDecimal.ZERO;
-		int totalRegistro = 0;
-		for (PedidoCancelamento pedido : cancelamentoProtesto.getCancelamentos()) {
-			valorTotal = valorTotal.add(pedido.getValorTitulo());
-			totalRegistro++;
-		}
-
-		RemessaCancelamentoProtesto remessa = new RemessaCancelamentoProtesto();
-		remessa.setCabecalho(cancelamentoProtesto.getRemessaCancelamentoProtesto().getCabecalho());
-		remessa.getCabecalho().setQuantidadeDesistencia(1);
-		remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
-		remessa.setCancelamentoProtesto(new ArrayList<CancelamentoProtesto>());
-		remessa.getCancelamentoProtesto().add(cancelamentoProtesto);
-		remessa.setRodape(cancelamentoProtesto.getRemessaCancelamentoProtesto().getRodape());
-		remessa.getRodape().setQuantidadeDesistencia(1);
-		remessa.getRodape().setSomatorioValorTitulo(valorTotal);
-		remessa.setArquivo(cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo());
-		return processadorArquivo.processarRemessaCancelamentoProtestoTXT(remessa, usuario);
-	}
-
-	public File baixarAutorizacaoTXT(Usuario usuario, AutorizacaoCancelamento autorizacaoCancelamento) {
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			autorizacaoCancelamentoDAO.alterarSituacaoAutorizacaoCancelamento(autorizacaoCancelamento, true);
-		}
-
-		autorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamento(autorizacaoCancelamento);
-
-		BigDecimal valorTotal = BigDecimal.ZERO;
-		int totalRegistro = 0;
-		for (PedidoAutorizacaoCancelamento pedido : autorizacaoCancelamento.getAutorizacoesCancelamentos()) {
-			valorTotal = valorTotal.add(pedido.getValorTitulo());
-			totalRegistro++;
-		}
-
-		RemessaAutorizacaoCancelamento remessa = new RemessaAutorizacaoCancelamento();
-		remessa.setCabecalho(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getCabecalho());
-		remessa.getCabecalho().setQuantidadeDesistencia(1);
-		remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
-		remessa.setAutorizacaoCancelamento(new ArrayList<AutorizacaoCancelamento>());
-		remessa.getAutorizacaoCancelamento().add(autorizacaoCancelamento);
-		remessa.setRodape(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getRodape());
-		remessa.getRodape().setQuantidadeDesistencia(1);
-		remessa.getRodape().setSomatorioValorTitulo(valorTotal);
-		remessa.setArquivo(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo());
-		return processadorArquivo.processarRemessaAutorizacaoCancelamentoTXT(remessa, usuario);
-	}
-
+ 
 	public File baixarRemessaTXT(Usuario usuario, Remessa remessa) {
-		Remessa remesaParaBaixar = null;
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
-		        && !remessa.getStatusRemessa().equals(StatusRemessa.ENVIADO)) {
+		TipoInstituicaoCRA tipoInstituicaoUsuario = usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao();	
+		if (!tipoInstituicaoUsuario.equals(TipoInstituicaoCRA.CRA) && !remessa.getStatusRemessa().equals(StatusRemessa.ENVIADO)) {
 			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
-			remessaDao.alterarSituacaoRemessa(remessa);
+			remessaDAO.alterarSituacaoRemessa(remessa);
 		}
-		if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)
-		        && remessa.getDevolvidoPelaCRA().equals(true)) {
+		if (tipoInstituicaoUsuario.equals(TipoInstituicaoCRA.CARTORIO) && remessa.getDevolvidoPelaCRA().equals(true)) {
 			throw new InfraException("O arquivo " + remessa.getArquivo().getNomeArquivo() + " já foi devolvido pela CRA !");
 		}
-		remesaParaBaixar = remessaDao.carregarTitulosRemessa(remessa);
-		return processadorArquivo.processarArquivoTXT(remesaParaBaixar);
-	}
-
-	public File baixarArquivoTXT(Instituicao instituicao, Arquivo arquivo) {
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
-		        && !arquivo.getStatusArquivo().getSituacaoArquivo().equals(SituacaoArquivo.ENVIADO)) {
-			arquivo.setStatusArquivo(gerarStatusArquivoRecebido());
-			arquivoDAO.alterarStatusArquivo(arquivo);
+		
+		TipoArquivoEnum tipoArquivo = remessa.getArquivo().getTipoArquivo().getTipoArquivo();
+		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA)) {
+			remessa = remessaDAO.baixarArquivoCartorioRemessa(remessa);
+		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO)) {
+			remessa = remessaDAO.baixarArquivoCartorioConfirmacao(remessa);
+		} else if (tipoArquivo.equals(TipoArquivoEnum.RETORNO)) {
+			remessa = remessaDAO.baixarArquivoCartorioRetorno(remessa); 
 		}
-		List<Remessa> remessas = arquivoDAO.buscarRemessasArquivo(instituicao, arquivo);
-		return processadorArquivo.processarArquivoTXT(arquivo, remessas);
+		return processadorArquivo.processarArquivoTXT(remessa);
 	}
-
-	private StatusArquivo gerarStatusArquivoRecebido() {
-		StatusArquivo status = new StatusArquivo();
-		status.setData(new LocalDateTime());
-		status.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
-		return status;
-	}
-
+	
 	public int getNumeroSequencialConvenio(Instituicao convenio, Instituicao instituicaoDestino) {
-		return remessaDao.getNumeroSequencialConvenio(convenio, instituicaoDestino);
-	}
-
-	public List<Remessa> buscarRemessasPorArquivo(Instituicao instituicao, Arquivo arquivo) {
-		return remessaDao.buscarRemessasPorArquivo(instituicao, arquivo);
+		return remessaDAO.getNumeroSequencialConvenio(convenio, instituicaoDestino);
 	}
 
 	@Transactional
 	public Arquivo arquivosPendentes(Instituicao instituicao) {
-		List<Remessa> remessas = remessaDao.confirmacoesPendentes(instituicao);
+		List<Remessa> remessas = remessaDAO.confirmacoesPendentes(instituicao);
 		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
 		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
-		List<AutorizacaoCancelamento> autorizacaoCancelamento = autorizacaoCancelamentoDAO
-		        .buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
-
+		List<AutorizacaoCancelamento> autorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
+		
 		Arquivo arquivo = new Arquivo();
 		arquivo.setRemessas(remessas);
 
 		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
 		remessaDesistenciaProtesto.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>(desistenciasProtesto));
 		arquivo.setRemessaDesistenciaProtesto(remessaDesistenciaProtesto);
-
+		
 		RemessaAutorizacaoCancelamento remessaAutorizacaoCancelamento = new RemessaAutorizacaoCancelamento();
-		remessaAutorizacaoCancelamento.setAutorizacaoCancelamento(autorizacaoCancelamento);
+		remessaAutorizacaoCancelamento.setAutorizacaoCancelamento(autorizacaoCancelamento); 
 		arquivo.setRemessaAutorizacao(remessaAutorizacaoCancelamento);
 
 		RemessaCancelamentoProtesto remessaCancelamento = new RemessaCancelamentoProtesto();
@@ -436,36 +327,35 @@ public class RemessaMediator {
 	}
 
 	public List<Remessa> confirmacoesPendentesRelatorio(Instituicao instituicao) {
-		return remessaDao.confirmacoesPendentes(instituicao);
+		return remessaDAO.confirmacoesPendentes(instituicao);
 	}
 
 	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio,
 	        LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		return desistenciaDAO.buscarDesistenciaProtesto(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
-
+	
 	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio,
 	        LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		return cancelamentoDAO.buscarCancelamentoProtesto(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
-
+	
 	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador, Municipio municipio,
 	        LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
-		return autorizacaoCancelamentoDAO.buscarAutorizacaoCancelamento(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo,
-		        usuario);
+		return autorizacaoCancelamentoDAO.buscarAutorizacaoCancelamento(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<RemessaVO> buscarArquivos(String nomeArquivo, Instituicao instituicao) {
 		Arquivo arquivo = null;
 		List<Arquivo> arquivos = new ArrayList<Arquivo>();
-
+		
 		if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
 			arquivo = arquivoDAO.buscarArquivoInstituicaoConfirmacao(nomeArquivo, instituicao);
 		} else if (nomeArquivo.startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
 			arquivo = arquivoDAO.buscarArquivoInstituicaoRetorno(nomeArquivo, instituicao);
 		}
-
+		
 		if (arquivo == null) {
 			return null;
 		}
@@ -474,7 +364,7 @@ public class RemessaMediator {
 		statusArquivo.setData(new LocalDateTime());
 		arquivo.setStatusArquivo(statusArquivo);
 		arquivoDAO.alterarStatusArquivo(arquivo);
-
+		
 		arquivos.add(arquivo);
 		return conversorRemessaArquivo.converter(arquivos);
 	}
@@ -482,7 +372,7 @@ public class RemessaMediator {
 	public void alterarParaDevolvidoPelaCRA(Remessa remessa) {
 		remessa.setDevolvidoPelaCRA(true);
 		remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
-		remessaDao.update(remessa);
+		remessaDAO.update(remessa);
 	}
 
 	@SuppressWarnings("resource")
@@ -512,7 +402,7 @@ public class RemessaMediator {
 		if (!diretorioRemessa.exists()) {
 			diretorioRemessa.mkdirs();
 
-			decodificarArquivosAnexos(user, pathDiretorioIdRemessa, remessa);
+			decodificarArquivosAnexos(user ,pathDiretorioIdRemessa, remessa);
 		}
 
 		try {
@@ -536,35 +426,33 @@ public class RemessaMediator {
 					}
 					zipOut.close();
 
-					return new File(
-					        pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+					return new File(pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		return null;
 	}
 
 	@SuppressWarnings("rawtypes")
 	private void decodificarArquivosAnexos(Usuario user, String path, Remessa remessa) {
-
+		
 		try {
-			List<Titulo> titulos = remessaDao.carregarTitulosRemessa(remessa).getTitulos();
-			if (!titulos.isEmpty()) {
-				for (Titulo titulo : titulos) {
+			List<Titulo> titulos = tituloDAO.carregarTitulosGenerico(remessa);
+			if (!titulos.isEmpty()) { 
+				for (Titulo titulo : titulos) {   
 					TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
 					if (tituloRemessa.getAnexo() != null) {
 						DecoderString decoderString = new DecoderString();
 						String nomeArquivoZip = tituloRemessa.getNomeDevedor() + "_"
 						        + tituloRemessa.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
-
+		
 						decoderString.decode(tituloRemessa.getAnexo().getDocumentoAnexo(),
-						        ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId()
-						                + ConfiguracaoBase.BARRA + remessa.getArquivo().getId() + ConfiguracaoBase.BARRA + remessa.getId()
-						                + ConfiguracaoBase.BARRA,
-						        nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+						        ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA
+						                + remessa.getArquivo().getId() + ConfiguracaoBase.BARRA
+						                + remessa.getId() + ConfiguracaoBase.BARRA,
+						        nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP); 
 					}
 				}
 			}
@@ -579,6 +467,6 @@ public class RemessaMediator {
 	}
 
 	public List<Anexo> verificarAnexosRemessa(Remessa remessa) {
-		return remessaDao.verificarAnexosRemessa(remessa);
+		return remessaDAO.verificarAnexosRemessa(remessa);
 	}
 }
