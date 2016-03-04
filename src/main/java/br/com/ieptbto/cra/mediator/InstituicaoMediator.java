@@ -17,8 +17,9 @@ public class InstituicaoMediator {
 	@Autowired
 	private InstituicaoDAO instituicaoDAO;
 
-	public Instituicao carregarInstituicaoPorId(int id) {
-		return null;
+	@Transactional
+	public Instituicao carregarInstituicaoPorId(Instituicao instituicao) {
+		return instituicaoDAO.buscarPorPK(instituicao);
 	}
 	
 	public Instituicao salvar(Instituicao instituicao) {
@@ -31,14 +32,14 @@ public class InstituicaoMediator {
 
 	public boolean isInstituicaoNaoExiste(Instituicao instituicao) {
 		Instituicao instituicaoNova = instituicaoDAO.buscarInstituicao(instituicao.getNomeFantasia());
-		if (instituicaoNova == null) {
+		if (instituicaoNova == null) { 
 			return true;
 		}
 		return false;
 	}
 
 	public Instituicao buscarInstituicao(Instituicao instituicao) {
-		return instituicaoDAO.buscarInstituicao(instituicao);
+		return instituicaoDAO.buscarPorPK(instituicao);
 	}
 
 	public Instituicao buscarInstituicaoIncial(String instituicao) {
@@ -108,9 +109,7 @@ public class InstituicaoMediator {
 	}
 
 	public Instituicao buscarCRA() {
-		Instituicao instituicao = new Instituicao();
-		instituicao.setNomeFantasia("CRA");
-		return instituicaoDAO.buscarInstituicao(instituicao);
+		return instituicaoDAO.buscarInstituicao("CRA");
 	}
 
 	public Instituicao buscarInstituicaoPorNomeCidade(String cidade) {

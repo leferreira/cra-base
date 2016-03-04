@@ -26,11 +26,13 @@ import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.AutorizacaoCancelamentoDAO;
 import br.com.ieptbto.cra.dao.CancelamentoDAO;
 import br.com.ieptbto.cra.dao.DesistenciaDAO;
+import br.com.ieptbto.cra.dao.MunicipioDAO;
 import br.com.ieptbto.cra.dao.RemessaDAO;
 import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
+import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -39,6 +41,7 @@ import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
+import br.com.ieptbto.cra.entidade.Rodape;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
@@ -82,6 +85,8 @@ public class RemessaMediator {
 	@Autowired
 	private CancelamentoDAO cancelamentoDAO;
 	@Autowired
+	private MunicipioDAO municipioDAO;
+	@Autowired
 	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO; 
 	@Autowired
 	private ConversorRemessaArquivo conversorRemessaArquivo;
@@ -89,15 +94,30 @@ public class RemessaMediator {
 	private ProcessadorArquivo processadorArquivo;
 	private List<Exception> erros;
 
-	public List<Remessa> buscarRemessas(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
-	        ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario, ArrayList<StatusRemessa> situacoes) {
-		return remessaDAO.buscarRemessaAvancado(arquivo, municipio, dataInicio, dataFim, usuario, tiposArquivo, situacoes);
+	@Transactional
+	public CabecalhoRemessa carregarCabecalhoRemessaPorId(int id) {
+		CabecalhoRemessa cabecalho = new CabecalhoRemessa();
+		cabecalho.setId(id);
+		return remessaDAO.buscarPorPK(cabecalho, CabecalhoRemessa.class); 
 	}
 	
+	@Transactional
 	public Remessa carregarRemessaPorId(int id) {
 		Remessa remessa = new Remessa();
 		remessa.setId((int) id);
 		return remessaDAO.buscarPorPK(remessa);
+	}
+
+	@Transactional
+	public Rodape carregarRodapeRemessaPorId(int id){
+		Rodape rodape = new Rodape();
+		rodape.setId(id);
+		return remessaDAO.buscarPorPK(rodape, Rodape.class); 
+	}
+	
+	public List<Remessa> buscarRemessas(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
+	        ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario, ArrayList<StatusRemessa> situacoes) {
+		return remessaDAO.buscarRemessaAvancado(arquivo, municipio, dataInicio, dataFim, usuario, tiposArquivo, situacoes);
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
@@ -304,6 +324,8 @@ public class RemessaMediator {
 
 	@Transactional
 	public Arquivo arquivosPendentes(Instituicao instituicao) {
+		instituicao.setMunicipio(municipioDAO.buscarPorPK(instituicao.getMunicipio(), Municipio.class));
+		
 		List<Remessa> remessas = remessaDAO.confirmacoesPendentes(instituicao);
 		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
 		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);

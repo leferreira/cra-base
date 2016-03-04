@@ -112,10 +112,6 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		}
 	}
 
-	public Instituicao buscarInstituicao(Instituicao instituicao) {
-		return buscarInstituicao(instituicao.getNomeFantasia());
-	}
-
 	public Instituicao buscarInstituicao(String nome) {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.add(Restrictions.eq("nomeFantasia", nome));

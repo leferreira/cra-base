@@ -4,6 +4,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 
 public enum TipoEspecieTitulo implements CraEnum {
 	
+	ATC("ATC", "ATC - Acórdão do Tribunal de Contas da União"),
 	CBI("CBI","CBI - Cédula de Crédito Bancário por Indicação"),
 	CDA("CDA","CDA - Certidão Dívida Ativa"),
 	CH("CH","CH - Cheque"),

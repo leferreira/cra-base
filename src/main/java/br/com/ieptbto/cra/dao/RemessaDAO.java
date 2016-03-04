@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
@@ -126,6 +127,7 @@ public class RemessaDAO extends AbstractBaseDAO {
 		List<Remessa> remessas = new ArrayList<Remessa>();
 		String sql = "";
 		
+		Hibernate.initialize(instituicao.getTipoInstituicao());
 		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			sql = "select rem.instituicao_destino_id, t.remessa_id "
 					+ "from TB_TITULO t "

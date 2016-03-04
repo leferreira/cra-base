@@ -21,6 +21,7 @@ import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
+import br.com.ieptbto.cra.mediator.RemessaMediator;
 
 /**
  * 
@@ -34,6 +35,8 @@ public class ConversorRemessaArquivo {
 	protected static final Logger logger = Logger.getLogger(ConversorRemessaArquivo.class);
 	@Autowired
 	private FabricaDeArquivo fabricaDeArquivo;
+	@Autowired
+	private RemessaMediator remessaMediator;
 
 	public ArquivoVO converter(Remessa remessa) {
 		ArquivoVO arquivo = new ArquivoVO();
@@ -102,7 +105,7 @@ public class ConversorRemessaArquivo {
 			remessaVO.setTitulos(new ArrayList<TituloVO>());
 			remessaVO.setCabecalho(CabecalhoVO.parseCabecalho(remessa.getCabecalho()));
 			remessaVO.getTitulos().addAll(converterTitulos(remessa.getTitulos()));
-			remessaVO.setRodapes(RodapeVO.parseRodape(remessa.getRodape()));
+			remessaVO.setRodapes(RodapeVO.parseRodape(remessaMediator.carregarRodapeRemessaPorId(remessa.getRodape().getId())));
 			remessasVO.add(remessaVO);
 		}
 

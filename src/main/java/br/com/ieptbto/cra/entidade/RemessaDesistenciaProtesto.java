@@ -13,8 +13,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.LazyToOne;
-import org.hibernate.annotations.LazyToOneOption;
 import org.hibernate.bytecode.internal.javassist.FieldHandled;
 import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
@@ -48,7 +46,7 @@ public class RemessaDesistenciaProtesto extends AbstractEntidade<RemessaDesisten
 
 	@OneToOne
 	@JoinColumn(name = "ARQUIVO_ID")
-	@LazyToOne(LazyToOneOption.NO_PROXY)
+//	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public Arquivo getArquivo() {
 		if (this.handler != null) {
 			return (Arquivo) this.handler.readObject(this, "arquivo", arquivo);

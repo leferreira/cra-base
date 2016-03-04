@@ -15,6 +15,7 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
@@ -40,15 +41,20 @@ import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 public class ArquivoMediator {
 
 	@Autowired
-	private TipoArquivoDAO tipoArquivoDAO;
-	@Autowired
-	private ProcessadorArquivo processadorArquivo;
-	@Autowired
 	private ArquivoDAO arquivoDAO;
 	@Autowired
+	private TipoArquivoDAO tipoArquivoDAO;
+	@Autowired
 	private InstituicaoDAO instituicaoDAO;
+	@Autowired
+	private ProcessadorArquivo processadorArquivo;
 	private List<Exception> erros;
 	private Arquivo arquivo;
+	
+	@Transactional
+	public Arquivo carregarArquivoPorId(Arquivo arquivo) {
+		return arquivoDAO.buscarPorPK(arquivo, Arquivo.class);
+	}
 
 	/**
 	 * 
@@ -151,12 +157,6 @@ public class ArquivoMediator {
 
 	public Arquivo getArquivo() {
 		return arquivo;
-	}
-	
-	public Arquivo carregarArquivoPorId(int id) {
-		Arquivo arquivo = new Arquivo();
-		arquivo.setId((int) id);
-		return arquivoDAO.buscarPorPK(arquivo);
 	}
 	
 	/**

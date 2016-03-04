@@ -157,7 +157,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		return arquivoEnviados;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "TIPO_INSTITUICAO_ID")
 	public TipoInstituicao getTipoInstituicao() {
 		return tipoInstituicao;
