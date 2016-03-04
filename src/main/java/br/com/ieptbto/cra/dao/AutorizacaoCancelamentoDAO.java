@@ -14,6 +14,7 @@ import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
@@ -229,9 +230,11 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 		return AutorizacaoCancelamento.class.cast(criteria.uniqueResult()); 
 	}
 
+	@Transactional
 	public void alterarSituacaoAutorizacaoCancelamento(Instituicao cartorio, String nomeArquivo) {
 		StringBuffer  sql = new StringBuffer();
 		
+		cartorio.setMunicipio(buscarPorPK(cartorio.getMunicipio(), Municipio.class));
 		try {
 			sql.append("UPDATE tb_autorizacao_cancelamento AS ac ");
 			sql.append("SET download_realizado=true ");
