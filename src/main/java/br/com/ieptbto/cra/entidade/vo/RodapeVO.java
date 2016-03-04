@@ -124,7 +124,7 @@ public class RodapeVO extends AbstractArquivoVO {
 		this.numeroSequencialRegistroArquivo = numeroSequencialRegistroArquivo;
 	}
 
-	public static RodapeVO parseRodape(Rodape rodape) {
+	public static RodapeVO parseRodape(Rodape rodape, CabecalhoRemessa cabecalhoRemessa) {
 		RodapeVO rodapeVO = new RodapeVO();
 		rodapeVO.setComplementoRegistro(rodape.getComplementoRegistro());
 		rodapeVO.setDataMovimento(rodape.getDataMovimento().toString(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY));
@@ -132,14 +132,15 @@ public class RodapeVO extends AbstractArquivoVO {
 		rodapeVO.setNomePortador(rodape.getNomePortador());
 		rodapeVO.setNumeroCodigoPortador(rodape.getNumeroCodigoPortador());
 		rodapeVO.setNumeroSequencialRegistroArquivo(rodape.getNumeroSequencialRegistroArquivo());
-		rodapeVO.setSomatorioQtdRemessa(somatorioSegurancaRegistrosCabecalho(rodape.getRemessa().getCabecalho()));
+		rodapeVO.setSomatorioQtdRemessa(somatorioSegurancaRegistrosCabecalho(cabecalhoRemessa));
 		rodapeVO.setSomatorioValorRemessa(StringUtils.leftPad(rodape.getSomatorioValorRemessa().toString().replaceAll("\\D", ""), 5, "0"));
 
 		return rodapeVO;
 	}
 
 	private static String somatorioSegurancaRegistrosCabecalho(CabecalhoRemessa cabecalho) {
-		int somatorioSeguranca = cabecalho.getQtdRegistrosRemessa() + cabecalho.getQtdTitulosRemessa() + cabecalho.getQtdIndicacoesRemessa() + cabecalho.getQtdOriginaisRemessa();
+		int somatorioSeguranca = cabecalho.getQtdRegistrosRemessa() + cabecalho.getQtdTitulosRemessa() + cabecalho.getQtdIndicacoesRemessa()
+		        + cabecalho.getQtdOriginaisRemessa();
 		return StringUtils.leftPad(Integer.toString(somatorioSeguranca), 5, "0");
 	}
 }
