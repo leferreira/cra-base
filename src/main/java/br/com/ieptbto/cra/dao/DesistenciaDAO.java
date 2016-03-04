@@ -12,6 +12,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
@@ -132,9 +133,11 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 		return DesistenciaProtesto.class.cast(criteria.uniqueResult());
 	}
 
+	@Transactional
 	public void alterarSituacaoDesistenciaProtesto(Instituicao cartorio, String nomeArquivo) {
 		StringBuffer  sql = new StringBuffer();
 		
+		cartorio.setMunicipio(buscarPorPK(cartorio.getMunicipio(), Municipio.class));
 		try {
 			sql.append("UPDATE tb_desistencia_protesto AS dp ");
 			sql.append("SET download_realizado=true ");
