@@ -21,7 +21,6 @@ import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
-import br.com.ieptbto.cra.mediator.RemessaMediator;
 
 /**
  * 
@@ -35,8 +34,6 @@ public class ConversorRemessaArquivo {
 	protected static final Logger logger = Logger.getLogger(ConversorRemessaArquivo.class);
 	@Autowired
 	private FabricaDeArquivo fabricaDeArquivo;
-	@Autowired
-	private RemessaMediator remessaMediator;
 
 	public ArquivoVO converter(Remessa remessa) {
 		ArquivoVO arquivo = new ArquivoVO();
@@ -68,7 +65,7 @@ public class ConversorRemessaArquivo {
 
 	private List<RodapeVO> converterRodape(Rodape rodape) {
 		List<RodapeVO> rodapes = new ArrayList<RodapeVO>();
-		RodapeVO rodapeVO = RodapeVO.parseRodape(rodape);
+		RodapeVO rodapeVO = RodapeVO.parseRodape(rodape, rodape.getRemessa().getCabecalho());
 		rodapes.add(rodapeVO);
 		return rodapes;
 	}
@@ -105,7 +102,7 @@ public class ConversorRemessaArquivo {
 			remessaVO.setTitulos(new ArrayList<TituloVO>());
 			remessaVO.setCabecalho(CabecalhoVO.parseCabecalho(remessa.getCabecalho()));
 			remessaVO.getTitulos().addAll(converterTitulos(remessa.getTitulos()));
-			remessaVO.setRodapes(RodapeVO.parseRodape(remessaMediator.carregarRodapeRemessaPorId(remessa.getRodape().getId())));
+			remessaVO.setRodapes(RodapeVO.parseRodape(remessa.getRodape(), remessa.getCabecalho()));
 			remessasVO.add(remessaVO);
 		}
 
@@ -117,7 +114,7 @@ public class ConversorRemessaArquivo {
 		remessaVO.setTitulos(new ArrayList<TituloVO>());
 		remessaVO.setCabecalho(CabecalhoVO.parseCabecalho(remessa.getCabecalho()));
 		remessaVO.getTitulos().addAll(converterTitulos(remessa.getTitulos()));
-		remessaVO.setRodapes(RodapeVO.parseRodape(remessa.getRodape()));
+		remessaVO.setRodapes(RodapeVO.parseRodape(remessa.getRodape(), remessa.getCabecalho()));
 
 		return remessaVO;
 	}
