@@ -17,38 +17,38 @@ import br.com.ieptbto.cra.entidade.SetorFiliado;
 @Service
 public class FiliadoMediator {
 
-	@Autowired
-	private FiliadoDAO filiadoDAO;
+    @Autowired
+    private FiliadoDAO filiadoDAO;
 
-	public Filiado salvarFiliado(Filiado filiado) {
-		return filiadoDAO.salvar(filiado);
-	}
+    public Filiado salvarFiliado(Filiado filiado) {
+	return filiadoDAO.salvar(filiado);
+    }
 
-	public Filiado alterarFiliado(Filiado filiado) {
-		return filiadoDAO.alterar(filiado);
-	}
+    public Filiado alterarFiliado(Filiado filiado) {
+	return filiadoDAO.alterar(filiado);
+    }
 
-	public List<Filiado> buscarListaFiliados(Instituicao instituicao) {
-		return filiadoDAO.buscarListaFiliadosPorConvenio(instituicao);
-	}
+    public List<Filiado> buscarListaFiliados(Instituicao instituicao) {
+	return filiadoDAO.buscarListaFiliadosPorConvenio(instituicao);
+    }
 
-	public List<Filiado> buscarTodosFiliados() {
-		return filiadoDAO.getAll(Filiado.class);
-	}
-	
-	public void removerSetor(SetorFiliado setor) {
-		filiadoDAO.removerSertorFiliado(setor);
-	}
+    public List<Filiado> buscarTodosFiliados() {
+	return filiadoDAO.getAll(Filiado.class);
+    }
 
-	public List<SetorFiliado> buscarSetoresFiliado(Filiado filiado) {
-		return filiadoDAO.buscarSetoresFiliado(filiado);
-	}
-	
-	public List<SetorFiliado> buscarSetoresAtivosFiliado(Filiado filiado) {
-		return filiadoDAO.buscarSetoresAtivosFiliado(filiado);
-	}
+    public void removerSetor(SetorFiliado setor) {
+	filiadoDAO.removerSertorFiliado(setor);
+    }
 
-	public SetorFiliado buscarSetorPadraoFiliado(Filiado filiado) {
-		return filiadoDAO.buscarSetorPadraoFiliado(filiado);
-	}
+    public List<SetorFiliado> buscarSetoresFiliado(Filiado filiado) {
+	return filiadoDAO.buscarSetoresFiliado(filiado);
+    }
+
+    public List<SetorFiliado> buscarSetoresAtivosFiliado(Filiado filiado) {
+	return filiadoDAO.buscarSetoresAtivosFiliado(filiado);
+    }
+
+    public SetorFiliado buscarSetorPadraoFiliado(Filiado filiado) {
+	return filiadoDAO.buscarSetorPadraoFiliado(filiado);
+    }
 }

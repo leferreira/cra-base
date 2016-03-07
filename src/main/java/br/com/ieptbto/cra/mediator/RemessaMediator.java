@@ -72,430 +72,429 @@ import br.com.ieptbto.cra.webservice.VO.MensagemXmlSerpro;
 @Service
 public class RemessaMediator {
 
-	protected static final Logger logger = Logger.getLogger(RemessaMediator.class);
+    protected static final Logger logger = Logger.getLogger(RemessaMediator.class);
 
-	@Autowired
-	private RemessaDAO remessaDAO;
-	@Autowired
-	private ArquivoDAO arquivoDAO;
-	@Autowired
-	private TituloDAO tituloDAO;
-	@Autowired
-	private DesistenciaDAO desistenciaDAO;
-	@Autowired
-	private CancelamentoDAO cancelamentoDAO;
-	@Autowired
-	private MunicipioDAO municipioDAO;
-	@Autowired
-	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
-	@Autowired
-	private ConversorRemessaArquivo conversorRemessaArquivo;
-	@Autowired
-	private ProcessadorArquivo processadorArquivo;
-	private List<Exception> erros;
+    @Autowired
+    private RemessaDAO remessaDAO;
+    @Autowired
+    private ArquivoDAO arquivoDAO;
+    @Autowired
+    private TituloDAO tituloDAO;
+    @Autowired
+    private DesistenciaDAO desistenciaDAO;
+    @Autowired
+    private CancelamentoDAO cancelamentoDAO;
+    @Autowired
+    private MunicipioDAO municipioDAO;
+    @Autowired
+    private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
+    @Autowired
+    private ConversorRemessaArquivo conversorRemessaArquivo;
+    @Autowired
+    private ProcessadorArquivo processadorArquivo;
+    private List<Exception> erros;
 
-	@Transactional
-	public CabecalhoRemessa carregarCabecalhoRemessaPorId(int id) {
-		CabecalhoRemessa cabecalho = new CabecalhoRemessa();
-		cabecalho.setId(id);
-		return remessaDAO.buscarPorPK(cabecalho, CabecalhoRemessa.class);
+    @Transactional
+    public CabecalhoRemessa carregarCabecalhoRemessaPorId(int id) {
+	CabecalhoRemessa cabecalho = new CabecalhoRemessa();
+	cabecalho.setId(id);
+	return remessaDAO.buscarPorPK(cabecalho, CabecalhoRemessa.class);
+    }
+
+    @Transactional
+    public Remessa carregarRemessaPorId(int id) {
+	Remessa remessa = new Remessa();
+	remessa.setId((int) id);
+	return remessaDAO.buscarPorPK(remessa);
+    }
+
+    @Transactional
+    public Rodape carregarRodapeRemessaPorId(int id) {
+	Rodape rodape = new Rodape();
+	rodape.setId(id);
+	return remessaDAO.buscarPorPK(rodape, Rodape.class);
+    }
+
+    public List<Remessa> buscarRemessas(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario, ArrayList<StatusRemessa> situacoes) {
+	return remessaDAO.buscarRemessaAvancado(arquivo, municipio, dataInicio, dataFim, usuario, tiposArquivo, situacoes);
+    }
+
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public RemessaVO buscarRemessaParaCartorio(Remessa remessa, Instituicao instituicao, String nomeArquivo) {
+	if (nomeArquivo.startsWith(TipoArquivoEnum.REMESSA.getConstante())) {
+	    remessa = remessaDAO.baixarArquivoCartorioRemessa(instituicao, nomeArquivo);
+	} else if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
+	    remessa = remessaDAO.baixarArquivoCartorioConfirmacao(instituicao, nomeArquivo);
+	} else if (nomeArquivo.startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
+	    remessa = remessaDAO.baixarArquivoCartorioRetorno(instituicao, nomeArquivo);
 	}
 
-	@Transactional
-	public Remessa carregarRemessaPorId(int id) {
-		Remessa remessa = new Remessa();
-		remessa.setId((int) id);
-		return remessaDAO.buscarPorPK(remessa);
+	if (remessa == null) {
+	    return null;
+	}
+	remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
+	remessaDAO.alterarSituacaoRemessa(remessa);
+
+	ArrayList<Arquivo> arquivos = new ArrayList<>();
+	arquivos.add(remessa.getArquivo());
+	return conversorRemessaArquivo.converterRemessaVO(remessa);
+    }
+
+    /**
+     * 
+     * @param arquivoRecebido
+     * @param usuario
+     * @param nomeArquivo
+     * @return object
+     */
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public Object processarArquivoXML(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
+	Arquivo arquivo = processarArquivoXMLManual(arquivoRecebido, usuario, nomeArquivo);
+
+	if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.SERPRO)) {
+	    return gerarRespostaSerpro(arquivo, usuario);
+	}
+	return gerarResposta(arquivo, usuario);
+    }
+
+    /**
+     * 
+     * @param arquivoRecebido
+     * @param usuario
+     * @param nomeArquivo
+     * @return
+     */
+    public Arquivo processarArquivoXMLManual(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
+	Arquivo arquivo = new Arquivo();
+	arquivo.setUsuarioEnvio(usuario);
+	arquivo.setRemessas(new ArrayList<Remessa>());
+	arquivo.setHoraEnvio(new LocalTime());
+	arquivo.setDataEnvio(new LocalDate());
+	arquivo.setDataRecebimento(new LocalDate().toDate());
+	arquivo.setInstituicaoEnvio(usuario.getInstituicao());
+
+	logger.info("Iniciar processador do arquivo " + nomeArquivo);
+	processadorArquivo.processarArquivo(arquivoRecebido, usuario, nomeArquivo, arquivo, getErros());
+	logger.info("Fim processador do arquivo " + nomeArquivo);
+
+	arquivo = salvarArquivo(arquivo, usuario);
+	return arquivo;
+    }
+
+    private MensagemXml gerarResposta(Arquivo arquivo, Usuario usuario) {
+	List<Mensagem> mensagens = new ArrayList<Mensagem>();
+	MensagemXml mensagemRetorno = new MensagemXml();
+	Descricao desc = new Descricao();
+	Detalhamento detal = new Detalhamento();
+	detal.setMensagem(mensagens);
+
+	mensagemRetorno.setDescricao(desc);
+	mensagemRetorno.setDetalhamento(detal);
+	mensagemRetorno.setCodigoFinal("0000");
+	mensagemRetorno.setDescricaoFinal("Arquivo processado com sucesso");
+
+	desc.setDataEnvio(LocalDateTime.now().toString(DataUtil.PADRAO_FORMATACAO_DATAHORASEG));
+	desc.setTipoArquivo(Descricao.XML_UPLOAD_REMESSA);
+	desc.setDataMovimento(arquivo.getDataEnvio().toString(DataUtil.PADRAO_FORMATACAO_DATA));
+	desc.setPortador(arquivo.getInstituicaoEnvio().getCodigoCompensacao());
+	desc.setUsuario(usuario.getNome());
+
+	for (Remessa remessa : arquivo.getRemessas()) {
+	    Mensagem mensagem = new Mensagem();
+	    mensagem.setCodigo("0000");
+	    mensagem.setMunicipio(getMunicipio(remessa));
+	    mensagem.setDescricao(formatarMensagemRetorno(remessa));
+	    mensagens.add(mensagem);
 	}
 
-	@Transactional
-	public Rodape carregarRodapeRemessaPorId(int id) {
-		Rodape rodape = new Rodape();
-		rodape.setId(id);
-		return remessaDAO.buscarPorPK(rodape, Rodape.class);
+	for (Exception ex : getErros()) {
+	    XmlCraException exception = XmlCraException.class.cast(ex);
+	    Mensagem mensagem = new Mensagem();
+	    mensagem.setCodigo(exception.getErro().getCodigo());
+	    mensagem.setMunicipio(exception.getCodigoIbge());
+	    mensagem.setDescricao("Município: " + exception.getCodigoIbge() + " - " + exception.getMunicipio() + " - "
+		    + exception.getErro().getDescricao());
+	    mensagens.add(mensagem);
 	}
 
-	public List<Remessa> buscarRemessas(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
-	        ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario, ArrayList<StatusRemessa> situacoes) {
-		return remessaDAO.buscarRemessaAvancado(arquivo, municipio, dataInicio, dataFim, usuario, tiposArquivo, situacoes);
+	return mensagemRetorno;
+    }
+
+    private MensagemXmlSerpro gerarRespostaSerpro(Arquivo arquivo, Usuario usuario) {
+	MensagemXmlSerpro msgSucesso = new MensagemXmlSerpro();
+	msgSucesso.setNomeArquivo(arquivo.getNomeArquivo());
+
+	List<ComarcaDetalhamentoSerpro> listaComarcas = new ArrayList<ComarcaDetalhamentoSerpro>();
+	for (Remessa remessa : arquivo.getRemessas()) {
+	    ComarcaDetalhamentoSerpro comarcaDetalhamento = new ComarcaDetalhamentoSerpro();
+	    comarcaDetalhamento.setCodigoMunicipio(remessa.getCabecalho().getCodigoMunicipio());
+	    comarcaDetalhamento.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate())
+		    + DataUtil.localTimeToStringMMmm(new LocalTime()));
+	    comarcaDetalhamento.setRegistro(StringUtils.EMPTY);
+
+	    CodigoErro codigoErroSerpro = getCodigoErroSucessoSerpro(arquivo.getNomeArquivo());
+	    comarcaDetalhamento.setCodigo(codigoErroSerpro.getCodigo());
+	    comarcaDetalhamento.setOcorrencia(codigoErroSerpro.getDescricao());
+	    comarcaDetalhamento.setTotalRegistros(remessa.getCabecalho().getQtdRegistrosRemessa());
+	    listaComarcas.add(comarcaDetalhamento);
 	}
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public RemessaVO buscarRemessaParaCartorio(Remessa remessa, Instituicao instituicao, String nomeArquivo) {
-		if (nomeArquivo.startsWith(TipoArquivoEnum.REMESSA.getConstante())) {
-			remessa = remessaDAO.baixarArquivoCartorioRemessa(instituicao, nomeArquivo);
-		} else if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
-			remessa = remessaDAO.baixarArquivoCartorioConfirmacao(instituicao, nomeArquivo);
-		} else if (nomeArquivo.startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
-			remessa = remessaDAO.baixarArquivoCartorioRetorno(instituicao, nomeArquivo);
-		}
+	msgSucesso.setComarca(listaComarcas);
+	return msgSucesso;
+    }
 
-		if (remessa == null) {
-			return null;
-		}
-		remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
-		remessaDAO.alterarSituacaoRemessa(remessa);
+    private CodigoErro getCodigoErroSucessoSerpro(String nomeArquivo) {
+	TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(nomeArquivo);
 
-		ArrayList<Arquivo> arquivos = new ArrayList<>();
-		arquivos.add(remessa.getArquivo());
-		return conversorRemessaArquivo.converterRemessaVO(remessa);
+	CodigoErro codigoErro = null;
+	if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
+	    codigoErro = CodigoErro.SERPRO_SUCESSO_REMESSA;
+	} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)
+		|| TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
+	    codigoErro = CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO;
+	} else {
+	    codigoErro = CodigoErro.CRA_SUCESSO;
+	}
+	return codigoErro;
+    }
+
+    private String getMunicipio(Remessa remessa) {
+	if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+	    return remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString();
+	} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
+		|| TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+	    return remessa.getCabecalho().getNumeroCodigoPortador();
+	}
+	return StringUtils.EMPTY;
+    }
+
+    private String formatarMensagemRetorno(Remessa remessa) {
+	if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+	    return "Município: " + remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString() + " - "
+		    + remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - "
+		    + remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.";
+	} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
+		|| TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+	    return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
+		    + remessa.getCabecalho().getQtdTitulosRemessa() + " títulos confirmados.";
+	}
+	return StringUtils.EMPTY;
+
+    }
+
+    public Arquivo salvarArquivo(Arquivo arquivo, Usuario usuario) {
+	return arquivoDAO.salvar(arquivo, usuario, new ArrayList<Exception>());
+    }
+
+    public List<Exception> getErros() {
+	if (erros == null) {
+	    erros = new ArrayList<Exception>();
+	}
+	return erros;
+    }
+
+    public void setErros(List<Exception> erros) {
+	this.erros = erros;
+    }
+
+    public File baixarRemessaTXT(Usuario usuario, Remessa remessa) {
+	TipoInstituicaoCRA tipoInstituicaoUsuario = usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao();
+	if (!tipoInstituicaoUsuario.equals(TipoInstituicaoCRA.CRA)
+		&& !remessa.getStatusRemessa().equals(StatusRemessa.ENVIADO)) {
+	    remessa = remessaDAO.buscarPorPK(remessa, Remessa.class);
+	    remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
+	    remessaDAO.alterarSituacaoRemessa(remessa);
+	}
+	if (tipoInstituicaoUsuario.equals(TipoInstituicaoCRA.CARTORIO) && remessa.getDevolvidoPelaCRA().equals(true)) {
+	    throw new InfraException("O arquivo " + remessa.getArquivo().getNomeArquivo()
+		    + " já foi devolvido pela CRA !");
 	}
 
-	/**
-	 * 
-	 * @param arquivoRecebido
-	 * @param usuario
-	 * @param nomeArquivo
-	 * @return object
-	 */
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Object processarArquivoXML(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
-		Arquivo arquivo = processarArquivoXMLManual(arquivoRecebido, usuario, nomeArquivo);
+	TipoArquivoEnum tipoArquivo = remessa.getArquivo().getTipoArquivo().getTipoArquivo();
+	if (tipoArquivo.equals(TipoArquivoEnum.REMESSA)) {
+	    remessa = remessaDAO.baixarArquivoCartorioRemessa(remessa);
+	} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO)) {
+	    remessa = remessaDAO.baixarArquivoCartorioConfirmacao(remessa);
+	} else if (tipoArquivo.equals(TipoArquivoEnum.RETORNO)) {
+	    remessa = remessaDAO.baixarArquivoCartorioRetorno(remessa);
+	}
+	return processadorArquivo.processarArquivoTXT(remessa);
+    }
 
-		if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.SERPRO)) {
-			return gerarRespostaSerpro(arquivo, usuario);
-		}
-		return gerarResposta(arquivo, usuario);
+    public int getNumeroSequencialConvenio(Instituicao convenio, Instituicao instituicaoDestino) {
+	return remessaDAO.getNumeroSequencialConvenio(convenio, instituicaoDestino);
+    }
+
+    @Transactional
+    public Arquivo arquivosPendentes(Instituicao instituicao) {
+	instituicao.setMunicipio(municipioDAO.buscarPorPK(instituicao.getMunicipio(), Municipio.class));
+
+	List<Remessa> remessas = remessaDAO.confirmacoesPendentes(instituicao);
+	List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
+	List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
+	List<AutorizacaoCancelamento> autorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
+
+	Arquivo arquivo = new Arquivo();
+	arquivo.setRemessas(remessas);
+
+	RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
+	remessaDesistenciaProtesto.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>(desistenciasProtesto));
+	arquivo.setRemessaDesistenciaProtesto(remessaDesistenciaProtesto);
+
+	RemessaAutorizacaoCancelamento remessaAutorizacaoCancelamento = new RemessaAutorizacaoCancelamento();
+	remessaAutorizacaoCancelamento.setAutorizacaoCancelamento(autorizacaoCancelamento);
+	arquivo.setRemessaAutorizacao(remessaAutorizacaoCancelamento);
+
+	RemessaCancelamentoProtesto remessaCancelamento = new RemessaCancelamentoProtesto();
+	remessaCancelamento.setCancelamentoProtesto(cancelamentoProtesto);
+	arquivo.setRemessaCancelamentoProtesto(remessaCancelamento);
+	return arquivo;
+    }
+
+    public List<Remessa> confirmacoesPendentesRelatorio(Instituicao instituicao) {
+	return remessaDAO.confirmacoesPendentes(instituicao);
+    }
+
+    public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	return desistenciaDAO.buscarDesistenciaProtesto(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
+    }
+
+    public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	return cancelamentoDAO.buscarCancelamentoProtesto(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
+    }
+
+    public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	return autorizacaoCancelamentoDAO.buscarAutorizacaoCancelamento(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
+    }
+
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public List<RemessaVO> buscarArquivos(String nomeArquivo, Instituicao instituicao) {
+	Arquivo arquivo = null;
+	List<Arquivo> arquivos = new ArrayList<Arquivo>();
+
+	if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
+	    arquivo = arquivoDAO.buscarArquivoInstituicaoConfirmacao(nomeArquivo, instituicao);
+	} else if (nomeArquivo.startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
+	    arquivo = arquivoDAO.buscarArquivoInstituicaoRetorno(nomeArquivo, instituicao);
 	}
 
-	/**
-	 * 
-	 * @param arquivoRecebido
-	 * @param usuario
-	 * @param nomeArquivo
-	 * @return
-	 */
-	public Arquivo processarArquivoXMLManual(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
-		Arquivo arquivo = new Arquivo();
-		arquivo.setUsuarioEnvio(usuario);
-		arquivo.setRemessas(new ArrayList<Remessa>());
-		arquivo.setHoraEnvio(new LocalTime());
-		arquivo.setDataEnvio(new LocalDate());
-		arquivo.setDataRecebimento(new LocalDate().toDate());
-		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
+	if (arquivo == null) {
+	    return null;
+	}
+	StatusArquivo statusArquivo = new StatusArquivo();
+	statusArquivo.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
+	statusArquivo.setData(new LocalDateTime());
+	arquivo.setStatusArquivo(statusArquivo);
+	arquivoDAO.alterarStatusArquivo(arquivo);
 
-		logger.info("Iniciar processador do arquivo " + nomeArquivo);
-		processadorArquivo.processarArquivo(arquivoRecebido, usuario, nomeArquivo, arquivo, getErros());
-		logger.info("Fim processador do arquivo " + nomeArquivo);
+	arquivos.add(arquivo);
+	return conversorRemessaArquivo.converter(arquivos);
+    }
 
-		arquivo = salvarArquivo(arquivo, usuario);
-		return arquivo;
+    public void alterarParaDevolvidoPelaCRA(Remessa remessa) {
+	remessa.setDevolvidoPelaCRA(true);
+	remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
+	remessaDAO.update(remessa);
+    }
+
+    @SuppressWarnings("resource")
+    public File processarArquivosAnexos(Usuario user, Remessa remessa) {
+	String pathDiretorioIdInstituicao = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO
+		+ remessa.getInstituicaoOrigem().getId();
+	String pathDiretorioIdArquivo = pathDiretorioIdInstituicao + ConfiguracaoBase.BARRA
+		+ remessa.getArquivo().getId();
+	String pathDiretorioIdRemessa = pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + remessa.getId();
+
+	File diretorioBaseArquivo = new File(ConfiguracaoBase.DIRETORIO_BASE);
+	File diretorioBaseInstituicao = new File(ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO);
+	File diretorioInstituicaoEnvio = new File(pathDiretorioIdInstituicao);
+	File diretorioArquivo = new File(pathDiretorioIdArquivo);
+	File diretorioRemessa = new File(pathDiretorioIdRemessa);
+
+	if (!diretorioBaseArquivo.exists()) {
+	    diretorioBaseArquivo.mkdirs();
+	}
+	if (!diretorioBaseInstituicao.exists()) {
+	    diretorioBaseInstituicao.mkdirs();
+	}
+	if (!diretorioInstituicaoEnvio.exists()) {
+	    diretorioInstituicaoEnvio.mkdirs();
+	}
+	if (!diretorioArquivo.exists()) {
+	    diretorioArquivo.mkdirs();
+	}
+	if (!diretorioRemessa.exists()) {
+	    diretorioRemessa.mkdirs();
+
+	    decodificarArquivosAnexos(user, pathDiretorioIdRemessa, remessa);
 	}
 
-	private MensagemXml gerarResposta(Arquivo arquivo, Usuario usuario) {
-		List<Mensagem> mensagens = new ArrayList<Mensagem>();
-		MensagemXml mensagemRetorno = new MensagemXml();
-		Descricao desc = new Descricao();
-		Detalhamento detal = new Detalhamento();
-		detal.setMensagem(mensagens);
+	try {
+	    if (diretorioRemessa.exists()) {
+		if (!Arrays.asList(diretorioRemessa.listFiles()).isEmpty()) {
 
-		mensagemRetorno.setDescricao(desc);
-		mensagemRetorno.setDetalhamento(detal);
-		mensagemRetorno.setCodigoFinal("0000");
-		mensagemRetorno.setDescricaoFinal("Arquivo processado com sucesso");
+		    String nomeArquivoZip = remessa.getArquivo().getNomeArquivo().replace(".", "_") + "_"
+			    + remessa.getCabecalho().getCodigoMunicipio();
+		    FileOutputStream fileOutputStream = new FileOutputStream(pathDiretorioIdArquivo
+			    + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+		    ZipOutputStream zipOut = new ZipOutputStream(fileOutputStream);
 
-		desc.setDataEnvio(LocalDateTime.now().toString(DataUtil.PADRAO_FORMATACAO_DATAHORASEG));
-		desc.setTipoArquivo(Descricao.XML_UPLOAD_REMESSA);
-		desc.setDataMovimento(arquivo.getDataEnvio().toString(DataUtil.PADRAO_FORMATACAO_DATA));
-		desc.setPortador(arquivo.getInstituicaoEnvio().getCodigoCompensacao());
-		desc.setUsuario(usuario.getNome());
-
-		for (Remessa remessa : arquivo.getRemessas()) {
-			Mensagem mensagem = new Mensagem();
-			mensagem.setCodigo("0000");
-			mensagem.setMunicipio(getMunicipio(remessa));
-			mensagem.setDescricao(formatarMensagemRetorno(remessa));
-			mensagens.add(mensagem);
-		}
-
-		for (Exception ex : getErros()) {
-			XmlCraException exception = XmlCraException.class.cast(ex);
-			Mensagem mensagem = new Mensagem();
-			mensagem.setCodigo(exception.getErro().getCodigo());
-			mensagem.setMunicipio(exception.getCodigoIbge());
-			mensagem.setDescricao("Município: " + exception.getCodigoIbge() + " - " + exception.getMunicipio() + " - "
-			        + exception.getErro().getDescricao());
-			mensagens.add(mensagem);
-		}
-
-		return mensagemRetorno;
-	}
-
-	private MensagemXmlSerpro gerarRespostaSerpro(Arquivo arquivo, Usuario usuario) {
-		MensagemXmlSerpro msgSucesso = new MensagemXmlSerpro();
-		msgSucesso.setNomeArquivo(arquivo.getNomeArquivo());
-
-		List<ComarcaDetalhamentoSerpro> listaComarcas = new ArrayList<ComarcaDetalhamentoSerpro>();
-		for (Remessa remessa : arquivo.getRemessas()) {
-			ComarcaDetalhamentoSerpro comarcaDetalhamento = new ComarcaDetalhamentoSerpro();
-			comarcaDetalhamento.setCodigoMunicipio(remessa.getCabecalho().getCodigoMunicipio());
-			comarcaDetalhamento
-			        .setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
-			comarcaDetalhamento.setRegistro(StringUtils.EMPTY);
-
-			CodigoErro codigoErroSerpro = getCodigoErroSucessoSerpro(arquivo.getNomeArquivo());
-			comarcaDetalhamento.setCodigo(codigoErroSerpro.getCodigo());
-			comarcaDetalhamento.setOcorrencia(codigoErroSerpro.getDescricao());
-			comarcaDetalhamento.setTotalRegistros(remessa.getCabecalho().getQtdRegistrosRemessa());
-			listaComarcas.add(comarcaDetalhamento);
-		}
-
-		msgSucesso.setComarca(listaComarcas);
-		return msgSucesso;
-	}
-
-	private CodigoErro getCodigoErroSucessoSerpro(String nomeArquivo) {
-		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(nomeArquivo);
-
-		CodigoErro codigoErro = null;
-		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
-			codigoErro = CodigoErro.SERPRO_SUCESSO_REMESSA;
-		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)
-		        || TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
-			codigoErro = CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO;
-		} else {
-			codigoErro = CodigoErro.CRA_SUCESSO;
-		}
-		return codigoErro;
-	}
-
-	private String getMunicipio(Remessa remessa) {
-		if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-			return remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString();
-		} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
-		        || TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-			return remessa.getCabecalho().getNumeroCodigoPortador();
-		}
-		return StringUtils.EMPTY;
-	}
-
-	private String formatarMensagemRetorno(Remessa remessa) {
-		if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-			return "Município: " + remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString() + " - "
-			        + remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - "
-			        + remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.";
-		} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
-		        || TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-			return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
-			        + remessa.getCabecalho().getQtdTitulosRemessa() + " títulos confirmados.";
-		}
-		return StringUtils.EMPTY;
-
-	}
-
-	public Arquivo salvarArquivo(Arquivo arquivo, Usuario usuario) {
-		return arquivoDAO.salvar(arquivo, usuario, new ArrayList<Exception>());
-	}
-
-	public List<Exception> getErros() {
-		if (erros == null) {
-			erros = new ArrayList<Exception>();
-		}
-		return erros;
-	}
-
-	public void setErros(List<Exception> erros) {
-		this.erros = erros;
-	}
-
-	public File baixarRemessaTXT(Usuario usuario, Remessa remessa) {
-		TipoInstituicaoCRA tipoInstituicaoUsuario = usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao();
-		if (!tipoInstituicaoUsuario.equals(TipoInstituicaoCRA.CRA) && !remessa.getStatusRemessa().equals(StatusRemessa.ENVIADO)) {
-			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
-			remessaDAO.alterarSituacaoRemessa(remessa);
-		}
-		if (tipoInstituicaoUsuario.equals(TipoInstituicaoCRA.CARTORIO) && remessa.getDevolvidoPelaCRA().equals(true)) {
-			throw new InfraException("O arquivo " + remessa.getArquivo().getNomeArquivo() + " já foi devolvido pela CRA !");
-		}
-
-		TipoArquivoEnum tipoArquivo = remessa.getArquivo().getTipoArquivo().getTipoArquivo();
-		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA)) {
-			remessa = remessaDAO.baixarArquivoCartorioRemessa(remessa);
-		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO)) {
-			remessa = remessaDAO.baixarArquivoCartorioConfirmacao(remessa);
-		} else if (tipoArquivo.equals(TipoArquivoEnum.RETORNO)) {
-			remessa = remessaDAO.baixarArquivoCartorioRetorno(remessa);
-		}
-		return processadorArquivo.processarArquivoTXT(remessa);
-	}
-
-	public int getNumeroSequencialConvenio(Instituicao convenio, Instituicao instituicaoDestino) {
-		return remessaDAO.getNumeroSequencialConvenio(convenio, instituicaoDestino);
-	}
-
-	@Transactional
-	public Arquivo arquivosPendentes(Instituicao instituicao) {
-		instituicao.setMunicipio(municipioDAO.buscarPorPK(instituicao.getMunicipio(), Municipio.class));
-
-		List<Remessa> remessas = remessaDAO.confirmacoesPendentes(instituicao);
-		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
-		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
-		List<AutorizacaoCancelamento> autorizacaoCancelamento = autorizacaoCancelamentoDAO
-		        .buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
-
-		Arquivo arquivo = new Arquivo();
-		arquivo.setRemessas(remessas);
-
-		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
-		remessaDesistenciaProtesto.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>(desistenciasProtesto));
-		arquivo.setRemessaDesistenciaProtesto(remessaDesistenciaProtesto);
-
-		RemessaAutorizacaoCancelamento remessaAutorizacaoCancelamento = new RemessaAutorizacaoCancelamento();
-		remessaAutorizacaoCancelamento.setAutorizacaoCancelamento(autorizacaoCancelamento);
-		arquivo.setRemessaAutorizacao(remessaAutorizacaoCancelamento);
-
-		RemessaCancelamentoProtesto remessaCancelamento = new RemessaCancelamentoProtesto();
-		remessaCancelamento.setCancelamentoProtesto(cancelamentoProtesto);
-		arquivo.setRemessaCancelamentoProtesto(remessaCancelamento);
-		return arquivo;
-	}
-
-	public List<Remessa> confirmacoesPendentesRelatorio(Instituicao instituicao) {
-		return remessaDAO.confirmacoesPendentes(instituicao);
-	}
-
-	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio,
-	        LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
-		return desistenciaDAO.buscarDesistenciaProtesto(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
-	}
-
-	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio,
-	        LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
-		return cancelamentoDAO.buscarCancelamentoProtesto(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
-	}
-
-	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador, Municipio municipio,
-	        LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
-		return autorizacaoCancelamentoDAO.buscarAutorizacaoCancelamento(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo,
-		        usuario);
-	}
-
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public List<RemessaVO> buscarArquivos(String nomeArquivo, Instituicao instituicao) {
-		Arquivo arquivo = null;
-		List<Arquivo> arquivos = new ArrayList<Arquivo>();
-
-		if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
-			arquivo = arquivoDAO.buscarArquivoInstituicaoConfirmacao(nomeArquivo, instituicao);
-		} else if (nomeArquivo.startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
-			arquivo = arquivoDAO.buscarArquivoInstituicaoRetorno(nomeArquivo, instituicao);
-		}
-
-		if (arquivo == null) {
-			return null;
-		}
-		StatusArquivo statusArquivo = new StatusArquivo();
-		statusArquivo.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
-		statusArquivo.setData(new LocalDateTime());
-		arquivo.setStatusArquivo(statusArquivo);
-		arquivoDAO.alterarStatusArquivo(arquivo);
-
-		arquivos.add(arquivo);
-		return conversorRemessaArquivo.converter(arquivos);
-	}
-
-	public void alterarParaDevolvidoPelaCRA(Remessa remessa) {
-		remessa.setDevolvidoPelaCRA(true);
-		remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
-		remessaDAO.update(remessa);
-	}
-
-	@SuppressWarnings("resource")
-	public File processarArquivosAnexos(Usuario user, Remessa remessa) {
-		String pathDiretorioIdInstituicao = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId();
-		String pathDiretorioIdArquivo = pathDiretorioIdInstituicao + ConfiguracaoBase.BARRA + remessa.getArquivo().getId();
-		String pathDiretorioIdRemessa = pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + remessa.getId();
-
-		File diretorioBaseArquivo = new File(ConfiguracaoBase.DIRETORIO_BASE);
-		File diretorioBaseInstituicao = new File(ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO);
-		File diretorioInstituicaoEnvio = new File(pathDiretorioIdInstituicao);
-		File diretorioArquivo = new File(pathDiretorioIdArquivo);
-		File diretorioRemessa = new File(pathDiretorioIdRemessa);
-
-		if (!diretorioBaseArquivo.exists()) {
-			diretorioBaseArquivo.mkdirs();
-		}
-		if (!diretorioBaseInstituicao.exists()) {
-			diretorioBaseInstituicao.mkdirs();
-		}
-		if (!diretorioInstituicaoEnvio.exists()) {
-			diretorioInstituicaoEnvio.mkdirs();
-		}
-		if (!diretorioArquivo.exists()) {
-			diretorioArquivo.mkdirs();
-		}
-		if (!diretorioRemessa.exists()) {
-			diretorioRemessa.mkdirs();
-
-			decodificarArquivosAnexos(user, pathDiretorioIdRemessa, remessa);
-		}
-
-		try {
-			if (diretorioRemessa.exists()) {
-				if (!Arrays.asList(diretorioRemessa.listFiles()).isEmpty()) {
-
-					String nomeArquivoZip = remessa.getArquivo().getNomeArquivo().replace(".", "_") + "_"
-					        + remessa.getCabecalho().getCodigoMunicipio();
-					FileOutputStream fileOutputStream = new FileOutputStream(
-					        pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
-					ZipOutputStream zipOut = new ZipOutputStream(fileOutputStream);
-
-					for (File arq : diretorioRemessa.listFiles()) {
-						zipOut.putNextEntry(new ZipEntry(arq.getName().toString()));
-						FileInputStream fis = new FileInputStream(arq);
-						int content;
-						while ((content = fis.read()) != -1) {
-							zipOut.write(content);
-						}
-						zipOut.closeEntry();
-					}
-					zipOut.close();
-
-					return new File(
-					        pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
-				}
+		    for (File arq : diretorioRemessa.listFiles()) {
+			zipOut.putNextEntry(new ZipEntry(arq.getName().toString()));
+			FileInputStream fis = new FileInputStream(arq);
+			int content;
+			while ((content = fis.read()) != -1) {
+			    zipOut.write(content);
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+			zipOut.closeEntry();
+		    }
+		    zipOut.close();
+
+		    return new File(pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip
+			    + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 		}
-		return null;
+	    }
+	} catch (IOException e) {
+	    e.printStackTrace();
 	}
+	return null;
+    }
 
-	@SuppressWarnings("rawtypes")
-	private void decodificarArquivosAnexos(Usuario user, String path, Remessa remessa) {
+    @SuppressWarnings("rawtypes")
+    private void decodificarArquivosAnexos(Usuario user, String path, Remessa remessa) {
 
-		try {
-			List<Titulo> titulos = tituloDAO.carregarTitulosGenerico(remessa);
-			if (!titulos.isEmpty()) {
-				for (Titulo titulo : titulos) {
-					TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
-					if (tituloRemessa.getAnexo() != null) {
-						DecoderString decoderString = new DecoderString();
-						String nomeArquivoZip = tituloRemessa.getNomeDevedor() + "_" + tituloRemessa.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
+	try {
+	    List<Titulo> titulos = tituloDAO.carregarTitulosGenerico(remessa);
+	    if (!titulos.isEmpty()) {
+		for (Titulo titulo : titulos) {
+		    TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
+		    if (tituloRemessa.getAnexo() != null) {
+			DecoderString decoderString = new DecoderString();
+			String nomeArquivoZip = tituloRemessa.getNomeDevedor() + "_"
+				+ tituloRemessa.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
 
-						decoderString.decode(tituloRemessa.getAnexo().getDocumentoAnexo(),
-						        ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId()
-						                + ConfiguracaoBase.BARRA + remessa.getArquivo().getId() + ConfiguracaoBase.BARRA + remessa.getId()
-						                + ConfiguracaoBase.BARRA,
-						        nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
-					}
-				}
-			}
-
-		} catch (FileNotFoundException e) {
-			logger.info("O arquivo ZIP em anexo não pode ser criado.");
-			e.printStackTrace();
-		} catch (IOException e) {
-			logger.info("O arquivo ZIP em anexo não pode ser criado.");
-			e.printStackTrace();
+			decoderString.decode(tituloRemessa.getAnexo().getDocumentoAnexo(), ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO
+				+ remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA
+				+ remessa.getArquivo().getId() + ConfiguracaoBase.BARRA + remessa.getId()
+				+ ConfiguracaoBase.BARRA, nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+		    }
 		}
-	}
+	    }
 
-	public List<Anexo> verificarAnexosRemessa(Remessa remessa) {
-		return remessaDAO.verificarAnexosRemessa(remessa);
+	} catch (FileNotFoundException e) {
+	    logger.info("O arquivo ZIP em anexo não pode ser criado.");
+	    e.printStackTrace();
+	} catch (IOException e) {
+	    logger.info("O arquivo ZIP em anexo não pode ser criado.");
+	    e.printStackTrace();
 	}
+    }
 
-	public List<Remessa> buscarRemssasPorArquivo(Arquivo arquivo) {
-		return remessaDAO.buscarRemessasPorArquivo(arquivo);
-	}
+    public List<Anexo> verificarAnexosRemessa(Remessa remessa) {
+	return remessaDAO.verificarAnexosRemessa(remessa);
+    }
+
+    public List<Remessa> buscarRemssasPorArquivo(Arquivo arquivo) {
+	return remessaDAO.buscarRemessasPorArquivo(arquivo);
+    }
 }
