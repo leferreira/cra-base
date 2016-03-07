@@ -244,7 +244,7 @@ public class RetornoMediator {
 	getArquivo().setTipoArquivo(getTipoArquivo());
 	getArquivo().setUsuarioEnvio(usuario);
 	getArquivo().setRemessas(new ArrayList<Remessa>());
-	getArquivo().setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.CONFIRMACAO));
+	getArquivo().setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.RETORNO));
 	getArquivo().setStatusArquivo(getStatusEnviado());
 
 	logger.info("Iniciar processo do arquivo [" + nomeArquivo + "] do usuário [" + usuario.getLogin() + "]");

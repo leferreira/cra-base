@@ -40,319 +40,318 @@ import br.com.ieptbto.cra.enumeration.TipoEspecieTitulo;
 @org.hibernate.annotations.Table(appliesTo = "TB_TITULO_FILIADO")
 public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 
-	/***/
-	private static final long serialVersionUID = 1L;
-	private int id;
-	private String numeroTitulo;
-	private LocalDate dataEmissao;
-	private LocalDate dataVencimento;
-	private BigDecimal valorTitulo;
-	private BigDecimal valorSaldoTitulo;
-	private Municipio pracaProtesto;
-	private String nomeDevedor;
-	private String tipoDocumentoDevedor;
-	private String documentoDevedor;
-	private String enderecoDevedor;
-	private String cidadeDevedor;
-	private String cepDevedor;
-	private String ufDevedor;
-	private String bairroDevedor;
-	private List<Avalista> avalistas;
-	private TipoAlineaCheque alinea;
-	private Filiado filiado;
-	private SituacaoTituloConvenio situacaoTituloConvenio;
-	private LocalDate dataEnvioCRA;
-	private Date dataEntrada;
-	private TipoEspecieTitulo especieTitulo;
-	private String CpfCnpj;
-	private Usuario usuarioEntradaManual;
-	private SetorFiliado setor;
-	
-	private SolicitacaoDesistenciaCancelamentoConvenio solicitacaoDesistenciaCancelamento;
+    /***/
+    private static final long serialVersionUID = 1L;
+    private int id;
+    private String numeroTitulo;
+    private LocalDate dataEmissao;
+    private LocalDate dataVencimento;
+    private BigDecimal valorTitulo;
+    private BigDecimal valorSaldoTitulo;
+    private Municipio pracaProtesto;
+    private String nomeDevedor;
+    private String tipoDocumentoDevedor;
+    private String documentoDevedor;
+    private String enderecoDevedor;
+    private String cidadeDevedor;
+    private String cepDevedor;
+    private String ufDevedor;
+    private String bairroDevedor;
+    private List<Avalista> avalistas;
+    private TipoAlineaCheque alinea;
+    private Filiado filiado;
+    private SituacaoTituloConvenio situacaoTituloConvenio;
+    private LocalDate dataEnvioCRA;
+    private Date dataEntrada;
+    private TipoEspecieTitulo especieTitulo;
+    private String CpfCnpj;
+    private Usuario usuarioEntradaManual;
+    private SetorFiliado setor;
 
-	@Override
-	@Id
-	@Column(name = "ID_TITULO_FILIADO", columnDefinition = "serial")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public int getId() {
-		return id;
-	}
+    private SolicitacaoDesistenciaCancelamentoConvenio solicitacaoDesistenciaCancelamento;
 
-	@Column(name = "NUMERO_TITULO", length = 11, nullable = false)
-	public String getNumeroTitulo() {
-		return numeroTitulo;
-	}
+    @Override
+    @Id
+    @Column(name = "ID_TITULO_FILIADO", columnDefinition = "serial")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public int getId() {
+	return id;
+    }
 
-	@Column(name = "VALOR_TITULO", precision = 19, scale = 2)
-	public BigDecimal getValorTitulo() {
-		return valorTitulo;
-	}
+    @Column(name = "NUMERO_TITULO", length = 11, nullable = false)
+    public String getNumeroTitulo() {
+	return numeroTitulo;
+    }
 
-	@Column(name = "VALOR_SALDO_TITULO", precision = 19, scale = 2)
-	public BigDecimal getValorSaldoTitulo() {
-		return valorSaldoTitulo;
-	}
+    @Column(name = "VALOR_TITULO", precision = 19, scale = 2)
+    public BigDecimal getValorTitulo() {
+	return valorTitulo;
+    }
 
-	@Column(name = "DATA_VENCIMENTO", nullable = false)
-	public LocalDate getDataVencimento() {
-		return dataVencimento;
-	}
+    @Column(name = "VALOR_SALDO_TITULO", precision = 19, scale = 2)
+    public BigDecimal getValorSaldoTitulo() {
+	return valorSaldoTitulo;
+    }
 
-	@Column(name = "DATA_EMISSAO", nullable = false)
-	public LocalDate getDataEmissao() {
-		return dataEmissao;
-	}
+    @Column(name = "DATA_VENCIMENTO", nullable = false)
+    public LocalDate getDataVencimento() {
+	return dataVencimento;
+    }
 
-	@Column(name = "NOME_DEVEDOR", length = 45)
-	public String getNomeDevedor() {
-		return nomeDevedor;
-	}
+    @Column(name = "DATA_EMISSAO", nullable = false)
+    public LocalDate getDataEmissao() {
+	return dataEmissao;
+    }
 
-	@Column(name = "TIPO_DOCUMENTO_DEVEDOR", length = 3)
-	public String getTipoDocumentoDevedor() {
-		return tipoDocumentoDevedor;
-	}
+    @Column(name = "NOME_DEVEDOR", length = 45)
+    public String getNomeDevedor() {
+	return nomeDevedor;
+    }
 
-	@Column(name = "DOCUMENTO_DEVEDOR", length = 11)
-	public String getDocumentoDevedor() {
-		return documentoDevedor;
-	}
+    @Column(name = "TIPO_DOCUMENTO_DEVEDOR", length = 3)
+    public String getTipoDocumentoDevedor() {
+	return tipoDocumentoDevedor;
+    }
 
-	@Column(name = "ENDERECO_DEVEDOR", length = 45)
-	public String getEnderecoDevedor() {
-		if (enderecoDevedor != null) {
-			return enderecoDevedor.replaceAll("\n", "").replaceAll("\t", "").replaceAll("\r", "");
-		}
-		return enderecoDevedor;
-	}
-	
-	@OneToOne(mappedBy="tituloFiliado")
-	public SolicitacaoDesistenciaCancelamentoConvenio getSolicitacaoDesistenciaCancelamento() {
-		return solicitacaoDesistenciaCancelamento;
-	}
+    @Column(name = "DOCUMENTO_DEVEDOR", length = 11)
+    public String getDocumentoDevedor() {
+	return documentoDevedor;
+    }
 
-	@Column(name = "CIDADE_DEVEDOR", length = 20)
-	public String getCidadeDevedor() {
-		return cidadeDevedor;
+    @Column(name = "ENDERECO_DEVEDOR", length = 45)
+    public String getEnderecoDevedor() {
+	if (enderecoDevedor != null) {
+	    return enderecoDevedor.replaceAll("\n", "").replaceAll("\t", "").replaceAll("\r", "");
 	}
+	return enderecoDevedor;
+    }
 
-	@Column(name = "CEP_DEVEDOR", length = 10)
-	public String getCepDevedor() {
-		if (cepDevedor == null) {
-			cepDevedor = StringUtils.EMPTY;
-		}
-		return cepDevedor.replace(".", "").replace("-", "").trim();
-	}
-	
-	@ManyToOne
-	@JoinColumn(name = "USUARIO_ID")
-	public Usuario getUsuarioEntradaManual() {
-		return usuarioEntradaManual;
-	}
+    @OneToOne(mappedBy = "tituloFiliado")
+    public SolicitacaoDesistenciaCancelamentoConvenio getSolicitacaoDesistenciaCancelamento() {
+	return solicitacaoDesistenciaCancelamento;
+    }
 
-	@Column(name = "UF_DEVEDOR", length = 2)
-	public String getUfDevedor() {
-		return ufDevedor;
-	}
-	
-	@OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "SETOR_ID", nullable = false)
-	public SetorFiliado getSetor() {
-		return setor;
-	}
+    @Column(name = "CIDADE_DEVEDOR", length = 20)
+    public String getCidadeDevedor() {
+	return cidadeDevedor;
+    }
 
-	@ManyToOne
-	@JoinColumn(name = "MUNICIPIO_ID")
-	public Municipio getPracaProtesto() {
-		return pracaProtesto;
+    @Column(name = "CEP_DEVEDOR", length = 10)
+    public String getCepDevedor() {
+	if (cepDevedor == null) {
+	    cepDevedor = StringUtils.EMPTY;
 	}
+	return cepDevedor.replace(".", "").replace("-", "").trim();
+    }
 
-	@ManyToOne
-	@JoinColumn(name = "FILIADO_ID")
-	public Filiado getFiliado() {
-		return filiado;
-	}
+    @ManyToOne
+    @JoinColumn(name = "USUARIO_ID")
+    public Usuario getUsuarioEntradaManual() {
+	return usuarioEntradaManual;
+    }
 
-	@Column(name = "SITUACAO_TITULO_CONVENIO")
-	@Enumerated(EnumType.STRING)
-	public SituacaoTituloConvenio getSituacaoTituloConvenio() {
-		return situacaoTituloConvenio;
-	}
+    @Column(name = "UF_DEVEDOR", length = 2)
+    public String getUfDevedor() {
+	return ufDevedor;
+    }
 
-	@Column(name = "ESPECIE_TITULO")
-	@Enumerated(EnumType.STRING)
-	public TipoEspecieTitulo getEspecieTitulo() {
-		return especieTitulo;
-	}
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinColumn(name = "SETOR_ID", nullable = false)
+    public SetorFiliado getSetor() {
+	return setor;
+    }
 
-	@Column(name = "DATA_ENVIO_CRA")
-	public LocalDate getDataEnvioCRA() {
-		return dataEnvioCRA;
-	}
-	
-	@Column(name = "DATA_ENTRADA")
-	@Temporal(TemporalType.DATE)
-	public Date getDataEntrada() {
-		if (dataEntrada == null) {
-			dataEntrada = new LocalDate().toDate();
-		}
-		return dataEntrada;
-	}
+    @ManyToOne
+    @JoinColumn(name = "MUNICIPIO_ID")
+    public Municipio getPracaProtesto() {
+	return pracaProtesto;
+    }
 
-	@Column(name = "CPF_CNPJ_DEVEDOR", length = 18)
-	public String getCpfCnpj() {
-		if (CpfCnpj == null) {
-			CpfCnpj = StringUtils.EMPTY;
-		}
-		return CpfCnpj.replace(".", "").replace("-", "").replace("/", "").trim();
-	}
+    @ManyToOne
+    @JoinColumn(name = "FILIADO_ID")
+    public Filiado getFiliado() {
+	return filiado;
+    }
 
-	public void setCpfCnpj(String cpfCnpj) {
-		CpfCnpj = cpfCnpj;
-	}
-	
-	public void setSolicitacaoDesistenciaCancelamento(
-			SolicitacaoDesistenciaCancelamentoConvenio solicitacaoDesistenciaCancelamento) {
-		this.solicitacaoDesistenciaCancelamento = solicitacaoDesistenciaCancelamento;
-	}
+    @Column(name = "SITUACAO_TITULO_CONVENIO")
+    @Enumerated(EnumType.STRING)
+    public SituacaoTituloConvenio getSituacaoTituloConvenio() {
+	return situacaoTituloConvenio;
+    }
 
-	public void setDataEnvioCRA(LocalDate dataEnvioCRA) {
-		this.dataEnvioCRA = dataEnvioCRA;
-	}
+    @Column(name = "ESPECIE_TITULO")
+    @Enumerated(EnumType.STRING)
+    public TipoEspecieTitulo getEspecieTitulo() {
+	return especieTitulo;
+    }
 
-	public void setUsuarioEntradaManual(Usuario usuarioEntradaManual) {
-		this.usuarioEntradaManual = usuarioEntradaManual;
-	}
-	
-	public void setSetor(SetorFiliado setor) {
-		this.setor = setor;
-	}
+    @Column(name = "DATA_ENVIO_CRA")
+    public LocalDate getDataEnvioCRA() {
+	return dataEnvioCRA;
+    }
 
-	public void setId(int id) {
-		this.id = id;
+    @Column(name = "DATA_ENTRADA")
+    @Temporal(TemporalType.DATE)
+    public Date getDataEntrada() {
+	if (dataEntrada == null) {
+	    dataEntrada = new LocalDate().toDate();
 	}
+	return dataEntrada;
+    }
 
-	public void setNumeroTitulo(String numeroTitulo) {
-		this.numeroTitulo = numeroTitulo;
+    @Column(name = "CPF_CNPJ_DEVEDOR", length = 18)
+    public String getCpfCnpj() {
+	if (CpfCnpj == null) {
+	    CpfCnpj = StringUtils.EMPTY;
 	}
+	return CpfCnpj.replace(".", "").replace("-", "").replace("/", "").trim();
+    }
 
-	public void setValorTitulo(BigDecimal valorTitulo) {
-		this.valorTitulo = valorTitulo;
-	}
-	
-	public void setDataEntrada(Date dataEntrada) {
-		this.dataEntrada = dataEntrada;
-	}
+    public void setCpfCnpj(String cpfCnpj) {
+	CpfCnpj = cpfCnpj;
+    }
 
-	public void setValorSaldoTitulo(BigDecimal valorSaldoTitulo) {
-		this.valorSaldoTitulo = valorSaldoTitulo;
-	}
+    public void setSolicitacaoDesistenciaCancelamento(SolicitacaoDesistenciaCancelamentoConvenio solicitacaoDesistenciaCancelamento) {
+	this.solicitacaoDesistenciaCancelamento = solicitacaoDesistenciaCancelamento;
+    }
 
-	public void setDataVencimento(LocalDate dataVencimento) {
-		this.dataVencimento = dataVencimento;
-	}
+    public void setDataEnvioCRA(LocalDate dataEnvioCRA) {
+	this.dataEnvioCRA = dataEnvioCRA;
+    }
 
-	public void setDataEmissao(LocalDate dataEmissao) {
-		this.dataEmissao = dataEmissao;
-	}
+    public void setUsuarioEntradaManual(Usuario usuarioEntradaManual) {
+	this.usuarioEntradaManual = usuarioEntradaManual;
+    }
 
-	public void setNomeDevedor(String nomeDevedor) {
-		this.nomeDevedor = nomeDevedor;
-	}
+    public void setSetor(SetorFiliado setor) {
+	this.setor = setor;
+    }
 
-	public void setDocumentoDevedor(String documentoDevedor) {
-		this.documentoDevedor = documentoDevedor;
-	}
+    public void setId(int id) {
+	this.id = id;
+    }
 
-	public void setTipoDocumentoDevedor(String tipoDocumentoDevedor) {
-		this.tipoDocumentoDevedor = tipoDocumentoDevedor;
-	}
+    public void setNumeroTitulo(String numeroTitulo) {
+	this.numeroTitulo = numeroTitulo;
+    }
 
-	public void setEnderecoDevedor(String enderecoDevedor) {
-		this.enderecoDevedor = enderecoDevedor;
-	}
+    public void setValorTitulo(BigDecimal valorTitulo) {
+	this.valorTitulo = valorTitulo;
+    }
 
-	public void setCidadeDevedor(String cidadeDevedor) {
-		this.cidadeDevedor = cidadeDevedor;
-	}
+    public void setDataEntrada(Date dataEntrada) {
+	this.dataEntrada = dataEntrada;
+    }
 
-	public void setEspecieTitulo(TipoEspecieTitulo especieTitulo) {
-		this.especieTitulo = especieTitulo;
-	}
+    public void setValorSaldoTitulo(BigDecimal valorSaldoTitulo) {
+	this.valorSaldoTitulo = valorSaldoTitulo;
+    }
 
-	public void setCepDevedor(String cepDevedor) {
-		this.cepDevedor = cepDevedor;
-	}
+    public void setDataVencimento(LocalDate dataVencimento) {
+	this.dataVencimento = dataVencimento;
+    }
 
-	public void setUfDevedor(String ufDevedor) {
-		this.ufDevedor = ufDevedor;
-	}
+    public void setDataEmissao(LocalDate dataEmissao) {
+	this.dataEmissao = dataEmissao;
+    }
 
-	public void setPracaProtesto(Municipio pracaProtesto) {
-		this.pracaProtesto = pracaProtesto;
-	}
+    public void setNomeDevedor(String nomeDevedor) {
+	this.nomeDevedor = nomeDevedor;
+    }
 
-	public void setFiliado(Filiado filiado) {
-		this.filiado = filiado;
-	}
+    public void setDocumentoDevedor(String documentoDevedor) {
+	this.documentoDevedor = documentoDevedor;
+    }
 
-	public void setSituacaoTituloConvenio(SituacaoTituloConvenio situacaoTituloConvenio) {
-		this.situacaoTituloConvenio = situacaoTituloConvenio;
-	}
+    public void setTipoDocumentoDevedor(String tipoDocumentoDevedor) {
+	this.tipoDocumentoDevedor = tipoDocumentoDevedor;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof TituloFiliado) {
-			TituloFiliado modalidade = TituloFiliado.class.cast(obj);
-			EqualsBuilder equalsBuilder = new EqualsBuilder();
-			equalsBuilder.append(this.getId(), modalidade.getId());
-			equalsBuilder.append(this.getFiliado(), modalidade.getFiliado());
-			equalsBuilder.append(this.getNomeDevedor(), modalidade.getNomeDevedor());
-			equalsBuilder.append(this.getNumeroTitulo(), modalidade.getNumeroTitulo());
-			return equalsBuilder.isEquals();
-		}
-		return false;
-	}
-	
-	@Override
-	public int hashCode() {
-		if (getId() == 0) {
-			return 0;
-		}
-		return getId();
-	}
-	
-	@Override
-	public int compareTo(TituloFiliado tituloFiliado) {
-		CompareToBuilder compareTo = new CompareToBuilder();
-		return compareTo.toComparison();
-	}
+    public void setEnderecoDevedor(String enderecoDevedor) {
+	this.enderecoDevedor = enderecoDevedor;
+    }
 
-	@Column(name="ALINEA")
-	@Enumerated(EnumType.STRING)
-	public TipoAlineaCheque getAlinea() {
-		return alinea;
-	}
+    public void setCidadeDevedor(String cidadeDevedor) {
+	this.cidadeDevedor = cidadeDevedor;
+    }
 
-	public void setAlinea(TipoAlineaCheque alinea) {
-		this.alinea = alinea;
-	}
+    public void setEspecieTitulo(TipoEspecieTitulo especieTitulo) {
+	this.especieTitulo = especieTitulo;
+    }
 
-	@Column(name="BAIRRO_DEVEDOR", length=20)
-	public String getBairroDevedor() {
-		return bairroDevedor;
-	}
+    public void setCepDevedor(String cepDevedor) {
+	this.cepDevedor = cepDevedor;
+    }
 
-	public void setBairroDevedor(String bairroDevedor) {
-		this.bairroDevedor = bairroDevedor;
-	}
+    public void setUfDevedor(String ufDevedor) {
+	this.ufDevedor = ufDevedor;
+    }
 
-	@OneToMany(mappedBy="tituloFiliado")
-	public List<Avalista> getAvalistas() {
-		return avalistas;
-	}
+    public void setPracaProtesto(Municipio pracaProtesto) {
+	this.pracaProtesto = pracaProtesto;
+    }
 
-	public void setAvalistas(List<Avalista> avalistas) {
-		this.avalistas = avalistas;
+    public void setFiliado(Filiado filiado) {
+	this.filiado = filiado;
+    }
+
+    public void setSituacaoTituloConvenio(SituacaoTituloConvenio situacaoTituloConvenio) {
+	this.situacaoTituloConvenio = situacaoTituloConvenio;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+	if (obj instanceof TituloFiliado) {
+	    TituloFiliado modalidade = TituloFiliado.class.cast(obj);
+	    EqualsBuilder equalsBuilder = new EqualsBuilder();
+	    equalsBuilder.append(this.getId(), modalidade.getId());
+	    equalsBuilder.append(this.getFiliado(), modalidade.getFiliado());
+	    equalsBuilder.append(this.getNomeDevedor(), modalidade.getNomeDevedor());
+	    equalsBuilder.append(this.getNumeroTitulo(), modalidade.getNumeroTitulo());
+	    return equalsBuilder.isEquals();
 	}
+	return false;
+    }
+
+    @Override
+    public int hashCode() {
+	if (getId() == 0) {
+	    return 0;
+	}
+	return getId();
+    }
+
+    @Override
+    public int compareTo(TituloFiliado tituloFiliado) {
+	CompareToBuilder compareTo = new CompareToBuilder();
+	return compareTo.toComparison();
+    }
+
+    @Column(name = "ALINEA")
+    @Enumerated(EnumType.STRING)
+    public TipoAlineaCheque getAlinea() {
+	return alinea;
+    }
+
+    public void setAlinea(TipoAlineaCheque alinea) {
+	this.alinea = alinea;
+    }
+
+    @Column(name = "BAIRRO_DEVEDOR", length = 20)
+    public String getBairroDevedor() {
+	return bairroDevedor;
+    }
+
+    public void setBairroDevedor(String bairroDevedor) {
+	this.bairroDevedor = bairroDevedor;
+    }
+
+    @OneToMany(mappedBy = "tituloFiliado")
+    public List<Avalista> getAvalistas() {
+	return avalistas;
+    }
+
+    public void setAvalistas(List<Avalista> avalistas) {
+	this.avalistas = avalistas;
+    }
 }
