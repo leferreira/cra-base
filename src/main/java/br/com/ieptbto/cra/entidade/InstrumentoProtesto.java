@@ -26,97 +26,97 @@ import org.joda.time.LocalTime;
 @org.hibernate.annotations.Table(appliesTo = "TB_INSTRUMENTO_PROTESTO")
 public class InstrumentoProtesto extends AbstractEntidade<InstrumentoProtesto> {
 
-	/***/
-	private static final long serialVersionUID = 1L;
-	private int id;
-	private Retorno tituloRetorno;
-	private LocalDate dataDeEntrada;
-	private LocalTime horaEntrada;
-	private Boolean gerado;
-	private Usuario usuario;
-	
-	@Id
-	@Column(name = "ID_INSTRUMENTO_PROTESTO", columnDefinition = "serial")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public int getId() {
-		return id;
-	}
+    /***/
+    private static final long serialVersionUID = 1L;
+    private int id;
+    private Retorno tituloRetorno;
+    private LocalDate dataDeEntrada;
+    private LocalTime horaEntrada;
+    private Boolean gerado;
+    private Usuario usuario;
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    @Id
+    @Column(name = "ID_INSTRUMENTO_PROTESTO", columnDefinition = "serial")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public int getId() {
+	return id;
+    }
 
-	@OneToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="RETORNO_ID")
-	public Retorno getTituloRetorno() {
-		return tituloRetorno;
-	}
-	
-	@OneToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="USUARIO_ID")
-	public Usuario getUsuario() {
-		return usuario;
-	}
+    public void setId(int id) {
+	this.id = id;
+    }
 
-	public void setTituloRetorno(Retorno tituloRetorno) {
-		this.tituloRetorno = tituloRetorno;
-	} 
-	
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
-	} 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "RETORNO_ID")
+    public Retorno getTituloRetorno() {
+	return tituloRetorno;
+    }
 
-	@Column(name = "DATA_ENTRADA")
-	public LocalDate getDataDeEntrada() {
-		return dataDeEntrada;
-	}
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USUARIO_ID")
+    public Usuario getUsuario() {
+	return usuario;
+    }
 
-	public void setDataDeEntrada(LocalDate dataDeEntrada) {
-		this.dataDeEntrada = dataDeEntrada;
-	}
+    public void setTituloRetorno(Retorno tituloRetorno) {
+	this.tituloRetorno = tituloRetorno;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof InstrumentoProtesto) {
-			InstrumentoProtesto modalidade = InstrumentoProtesto.class.cast(obj);
-			EqualsBuilder equalsBuilder = new EqualsBuilder();
-			equalsBuilder.append(this.getId(), modalidade.getId());
-			equalsBuilder.append(this.getDataDeEntrada(), modalidade.getDataDeEntrada());
-			return equalsBuilder.isEquals();
-		}
-		return false;
-	}
-	
-	@Override
-	public int hashCode() {
-		if (getId() == 0) {
-			return 0;
-		}
-		return getId();
-	}
-	
-	@Override
-	public int compareTo(InstrumentoProtesto entidade) {
-		CompareToBuilder compareTo = new CompareToBuilder();
-		return compareTo.toComparison();
-	}
+    public void setUsuario(Usuario usuario) {
+	this.usuario = usuario;
+    }
 
-	@Column(name = "GERADO")
-	public Boolean getGerado() {
-		return gerado;
-	}
+    @Column(name = "DATA_ENTRADA")
+    public LocalDate getDataDeEntrada() {
+	return dataDeEntrada;
+    }
 
-	public void setGerado(Boolean gerado) {
-		this.gerado = gerado;
-	}
+    public void setDataDeEntrada(LocalDate dataDeEntrada) {
+	this.dataDeEntrada = dataDeEntrada;
+    }
 
-	@Column(name = "HORA_ENTRADA")
-	public LocalTime getHoraEntrada() {
-		return horaEntrada;
+    @Override
+    public boolean equals(Object obj) {
+	if (obj instanceof InstrumentoProtesto) {
+	    InstrumentoProtesto modalidade = InstrumentoProtesto.class.cast(obj);
+	    EqualsBuilder equalsBuilder = new EqualsBuilder();
+	    equalsBuilder.append(this.getId(), modalidade.getId());
+	    equalsBuilder.append(this.getDataDeEntrada(), modalidade.getDataDeEntrada());
+	    return equalsBuilder.isEquals();
 	}
+	return false;
+    }
 
-	public void setHoraEntrada(LocalTime horaEntrada) {
-		this.horaEntrada = horaEntrada;
+    @Override
+    public int hashCode() {
+	if (getId() == 0) {
+	    return 0;
 	}
+	return getId();
+    }
+
+    @Override
+    public int compareTo(InstrumentoProtesto entidade) {
+	CompareToBuilder compareTo = new CompareToBuilder();
+	return compareTo.toComparison();
+    }
+
+    @Column(name = "GERADO")
+    public Boolean getGerado() {
+	return gerado;
+    }
+
+    public void setGerado(Boolean gerado) {
+	this.gerado = gerado;
+    }
+
+    @Column(name = "HORA_ENTRADA")
+    public LocalTime getHoraEntrada() {
+	return horaEntrada;
+    }
+
+    public void setHoraEntrada(LocalTime horaEntrada) {
+	this.horaEntrada = horaEntrada;
+    }
 
 }

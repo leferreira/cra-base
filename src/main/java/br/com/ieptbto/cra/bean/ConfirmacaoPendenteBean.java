@@ -5,48 +5,48 @@ import br.com.ieptbto.cra.util.DataUtil;
 
 public class ConfirmacaoPendenteBean {
 
-	private String arquivo;
-	private String instituicao;
-	private String cartorio;
-	private String dataArquivo;
-	
-	public String getArquivo() {
-		return arquivo;
-	}
+    private String arquivo;
+    private String instituicao;
+    private String cartorio;
+    private String dataArquivo;
 
-	public String getInstituicao() {
-		return instituicao;
-	}
+    public String getArquivo() {
+	return arquivo;
+    }
 
-	public String getCartorio() {
-		return cartorio;
-	}
+    public String getInstituicao() {
+	return instituicao;
+    }
 
-	public String getDataArquivo() {
-		return dataArquivo;
-	}
+    public String getCartorio() {
+	return cartorio;
+    }
 
-	public void setArquivo(String arquivo) {
-		this.arquivo = arquivo;
-	}
+    public String getDataArquivo() {
+	return dataArquivo;
+    }
 
-	public void setInstituicao(String instituicao) {
-		this.instituicao = instituicao;
-	}
+    public void setArquivo(String arquivo) {
+	this.arquivo = arquivo;
+    }
 
-	public void setCartorio(String cartorio) {
-		this.cartorio = cartorio;
-	}
+    public void setInstituicao(String instituicao) {
+	this.instituicao = instituicao;
+    }
 
-	public void setDataArquivo(String dataArquivo) {
-		this.dataArquivo = dataArquivo;
-	}
-	
-	public void parseToRemessa(Remessa remessa){
-		this.arquivo = remessa.getArquivo().getNomeArquivo();
-		this.instituicao = remessa.getInstituicaoOrigem().getNomeFantasia();
-		this.cartorio = remessa.getInstituicaoDestino().getNomeFantasia();
-		this.dataArquivo = DataUtil.localDateToString(remessa.getDataRecebimento());
-	}
-	
+    public void setCartorio(String cartorio) {
+	this.cartorio = cartorio;
+    }
+
+    public void setDataArquivo(String dataArquivo) {
+	this.dataArquivo = dataArquivo;
+    }
+
+    public void parseToRemessa(Remessa remessa) {
+	this.arquivo = remessa.getArquivo().getNomeArquivo();
+	this.instituicao = remessa.getInstituicaoOrigem().getNomeFantasia();
+	this.cartorio = remessa.getInstituicaoDestino().getNomeFantasia();
+	this.dataArquivo = DataUtil.localDateToString(remessa.getDataRecebimento());
+    }
+
 }

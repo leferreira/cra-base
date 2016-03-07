@@ -19,7 +19,7 @@ public class InstituicaoMediator {
 
 	@Transactional
 	public Instituicao carregarInstituicaoPorId(Instituicao instituicao) {
-		return instituicaoDAO.buscarPorPK(instituicao);
+		return instituicaoDAO.buscarPorPK(instituicao, Instituicao.class);
 	}
 	
 	public Instituicao salvar(Instituicao instituicao) {

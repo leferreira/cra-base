@@ -14,145 +14,145 @@ import br.com.ieptbto.cra.util.DataUtil;
  */
 public class ArquivoDesistenciaCancelamento implements Serializable {
 
-	/***/
-	private static final long serialVersionUID = 1L;
-	private TipoArquivoEnum tipoArquivo;
-	private String nomeArquivo;
-	private String dataEnvio;
-	private String instituicao;
-	private String codigoMunicipioDestino;
-	private String envio;
-	private String horaEnvio;
-	private Boolean status;
+    /***/
+    private static final long serialVersionUID = 1L;
+    private TipoArquivoEnum tipoArquivo;
+    private String nomeArquivo;
+    private String dataEnvio;
+    private String instituicao;
+    private String codigoMunicipioDestino;
+    private String envio;
+    private String horaEnvio;
+    private Boolean status;
 
-	private DesistenciaProtesto desistenciaProtesto;
-	private CancelamentoProtesto cancelamentoProtesto;
-	private AutorizacaoCancelamento autorizacaoCancelamento;
+    private DesistenciaProtesto desistenciaProtesto;
+    private CancelamentoProtesto cancelamentoProtesto;
+    private AutorizacaoCancelamento autorizacaoCancelamento;
 
-	public void parseDesistenciaProtesto(DesistenciaProtesto desistencia){
-		this.tipoArquivo = TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO;
-		this.nomeArquivo = desistencia.getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo();
-		this.dataEnvio = DataUtil.localDateToString(desistencia.getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento());
-		this.instituicao = desistencia.getRemessaDesistenciaProtesto().getArquivo().getInstituicaoEnvio().getNomeFantasia();
-		this.codigoMunicipioDestino = desistencia.getCabecalhoCartorio().getCodigoMunicipio();
-		this.envio = desistencia.getRemessaDesistenciaProtesto().getArquivo().getInstituicaoRecebe().getNomeFantasia();
-		this.horaEnvio = DataUtil.localTimeToString(desistencia.getRemessaDesistenciaProtesto().getArquivo().getHoraEnvio());
-		this.status = desistencia.getDownload();
-		
-		this.desistenciaProtesto = desistencia;
-	}
+    public void parseDesistenciaProtesto(DesistenciaProtesto desistencia) {
+	this.tipoArquivo = TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO;
+	this.nomeArquivo = desistencia.getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo();
+	this.dataEnvio = DataUtil.localDateToString(desistencia.getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento());
+	this.instituicao = desistencia.getRemessaDesistenciaProtesto().getArquivo().getInstituicaoEnvio().getNomeFantasia();
+	this.codigoMunicipioDestino = desistencia.getCabecalhoCartorio().getCodigoMunicipio();
+	this.envio = desistencia.getRemessaDesistenciaProtesto().getArquivo().getInstituicaoRecebe().getNomeFantasia();
+	this.horaEnvio = DataUtil.localTimeToString(desistencia.getRemessaDesistenciaProtesto().getArquivo().getHoraEnvio());
+	this.status = desistencia.getDownload();
 
-	public void parseCancelamentoProtesto(CancelamentoProtesto cancelamentoProtesto) {
-		this.tipoArquivo = TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO;
-		this.nomeArquivo = cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo().getNomeArquivo();
-		this.dataEnvio = DataUtil.localDateToString(cancelamentoProtesto.getRemessaCancelamentoProtesto().getCabecalho().getDataMovimento());
-		this.instituicao = cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo().getInstituicaoEnvio().getNomeFantasia();
-		this.codigoMunicipioDestino = cancelamentoProtesto.getCabecalhoCartorio().getCodigoMunicipio();
-		this.envio = cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo().getInstituicaoRecebe().getNomeFantasia();
-		this.horaEnvio = DataUtil.localTimeToString(cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo().getHoraEnvio());
-		this.status = cancelamentoProtesto.getDownload();
-		
-		this.cancelamentoProtesto = cancelamentoProtesto;
-	}
+	this.desistenciaProtesto = desistencia;
+    }
 
-	public void parseAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento) {
-		this.tipoArquivo = TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO;
-		this.nomeArquivo = autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo().getNomeArquivo();
-		this.dataEnvio = DataUtil.localDateToString(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getCabecalho().getDataMovimento());
-		this.instituicao = autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo().getInstituicaoEnvio().getNomeFantasia();
-		this.codigoMunicipioDestino = autorizacaoCancelamento.getCabecalhoCartorio().getCodigoMunicipio();
-		this.envio = autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo().getInstituicaoRecebe().getNomeFantasia();
-		this.horaEnvio = DataUtil.localTimeToString(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo().getHoraEnvio());
-		this.status = autorizacaoCancelamento.getDownload();
-		
-		this.autorizacaoCancelamento = autorizacaoCancelamento;
-	}
+    public void parseCancelamentoProtesto(CancelamentoProtesto cancelamentoProtesto) {
+	this.tipoArquivo = TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO;
+	this.nomeArquivo = cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo().getNomeArquivo();
+	this.dataEnvio = DataUtil.localDateToString(cancelamentoProtesto.getRemessaCancelamentoProtesto().getCabecalho().getDataMovimento());
+	this.instituicao = cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo().getInstituicaoEnvio().getNomeFantasia();
+	this.codigoMunicipioDestino = cancelamentoProtesto.getCabecalhoCartorio().getCodigoMunicipio();
+	this.envio = cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo().getInstituicaoRecebe().getNomeFantasia();
+	this.horaEnvio = DataUtil.localTimeToString(cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo().getHoraEnvio());
+	this.status = cancelamentoProtesto.getDownload();
 
-	public String getNomeArquivo() {
-		return nomeArquivo;
-	}
+	this.cancelamentoProtesto = cancelamentoProtesto;
+    }
 
-	public String getDataEnvio() {
-		return dataEnvio;
-	}
+    public void parseAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento) {
+	this.tipoArquivo = TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO;
+	this.nomeArquivo = autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo().getNomeArquivo();
+	this.dataEnvio = DataUtil.localDateToString(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getCabecalho().getDataMovimento());
+	this.instituicao = autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo().getInstituicaoEnvio().getNomeFantasia();
+	this.codigoMunicipioDestino = autorizacaoCancelamento.getCabecalhoCartorio().getCodigoMunicipio();
+	this.envio = autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo().getInstituicaoRecebe().getNomeFantasia();
+	this.horaEnvio = DataUtil.localTimeToString(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo().getHoraEnvio());
+	this.status = autorizacaoCancelamento.getDownload();
 
-	public String getInstituicao() {
-		return instituicao;
-	}
+	this.autorizacaoCancelamento = autorizacaoCancelamento;
+    }
 
-	public String getEnvio() {
-		return envio;
-	}
+    public String getNomeArquivo() {
+	return nomeArquivo;
+    }
 
-	public String getHoraEnvio() {
-		return horaEnvio;
-	}
+    public String getDataEnvio() {
+	return dataEnvio;
+    }
 
-	public DesistenciaProtesto getDesistenciaProtesto() {
-		return desistenciaProtesto;
-	}
+    public String getInstituicao() {
+	return instituicao;
+    }
 
-	public CancelamentoProtesto getCancelamentoProtesto() {
-		return cancelamentoProtesto;
-	}
+    public String getEnvio() {
+	return envio;
+    }
 
-	public AutorizacaoCancelamento getAutorizacaoCancelamento() {
-		return autorizacaoCancelamento;
-	}
+    public String getHoraEnvio() {
+	return horaEnvio;
+    }
 
-	public void setNomeArquivo(String nomeArquivo) {
-		this.nomeArquivo = nomeArquivo;
-	}
+    public DesistenciaProtesto getDesistenciaProtesto() {
+	return desistenciaProtesto;
+    }
 
-	public void setDataEnvio(String dataEnvio) {
-		this.dataEnvio = dataEnvio;
-	}
+    public CancelamentoProtesto getCancelamentoProtesto() {
+	return cancelamentoProtesto;
+    }
 
-	public void setInstituicao(String instituicao) {
-		this.instituicao = instituicao;
-	}
+    public AutorizacaoCancelamento getAutorizacaoCancelamento() {
+	return autorizacaoCancelamento;
+    }
 
-	public void setEnvio(String envio) {
-		this.envio = envio;
-	}
+    public void setNomeArquivo(String nomeArquivo) {
+	this.nomeArquivo = nomeArquivo;
+    }
 
-	public void setHoraEnvio(String horaEnvio) {
-		this.horaEnvio = horaEnvio;
-	}
+    public void setDataEnvio(String dataEnvio) {
+	this.dataEnvio = dataEnvio;
+    }
 
-	public void setDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto) {
-		this.desistenciaProtesto = desistenciaProtesto;
-	}
+    public void setInstituicao(String instituicao) {
+	this.instituicao = instituicao;
+    }
 
-	public void setCancelamentoProtesto(CancelamentoProtesto cancelamentoProtesto) {
-		this.cancelamentoProtesto = cancelamentoProtesto;
-	}
+    public void setEnvio(String envio) {
+	this.envio = envio;
+    }
 
-	public void setAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento) {
-		this.autorizacaoCancelamento = autorizacaoCancelamento;
-	}
+    public void setHoraEnvio(String horaEnvio) {
+	this.horaEnvio = horaEnvio;
+    }
 
-	public Boolean getStatus() {
-		return status;
-	}
+    public void setDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto) {
+	this.desistenciaProtesto = desistenciaProtesto;
+    }
 
-	public void setStatus(Boolean status) {
-		this.status = status;
-	}
+    public void setCancelamentoProtesto(CancelamentoProtesto cancelamentoProtesto) {
+	this.cancelamentoProtesto = cancelamentoProtesto;
+    }
 
-	public TipoArquivoEnum getTipoArquivo() {
-		return tipoArquivo;
-	}
+    public void setAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento) {
+	this.autorizacaoCancelamento = autorizacaoCancelamento;
+    }
 
-	public void setTipoArquivo(TipoArquivoEnum tipoArquivo) {
-		this.tipoArquivo = tipoArquivo;
-	}
+    public Boolean getStatus() {
+	return status;
+    }
 
-	public String getCodigoMunicipioDestino() {
-		return codigoMunicipioDestino;
-	}
+    public void setStatus(Boolean status) {
+	this.status = status;
+    }
 
-	public void setCodigoMunicipioDestino(String codigoMunicipioDestino) {
-		this.codigoMunicipioDestino = codigoMunicipioDestino;
-	}
+    public TipoArquivoEnum getTipoArquivo() {
+	return tipoArquivo;
+    }
+
+    public void setTipoArquivo(TipoArquivoEnum tipoArquivo) {
+	this.tipoArquivo = tipoArquivo;
+    }
+
+    public String getCodigoMunicipioDestino() {
+	return codigoMunicipioDestino;
+    }
+
+    public void setCodigoMunicipioDestino(String codigoMunicipioDestino) {
+	this.codigoMunicipioDestino = codigoMunicipioDestino;
+    }
 }

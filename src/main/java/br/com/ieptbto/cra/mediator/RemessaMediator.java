@@ -471,8 +471,7 @@ public class RemessaMediator {
 					TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
 					if (tituloRemessa.getAnexo() != null) {
 						DecoderString decoderString = new DecoderString();
-						String nomeArquivoZip = tituloRemessa.getNomeDevedor() + "_"
-						        + tituloRemessa.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
+						String nomeArquivoZip = tituloRemessa.getNomeDevedor() + "_" + tituloRemessa.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
 
 						decoderString.decode(tituloRemessa.getAnexo().getDocumentoAnexo(),
 						        ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId()

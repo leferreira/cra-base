@@ -13,99 +13,100 @@ import br.com.ieptbto.cra.util.DataUtil;
  */
 public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOcorrenciaBean> {
 
-	private static final long serialVersionUID = 1L;
-	private Arquivo arquivo;
-	private Remessa remessa;
-	private DesistenciaProtesto desistencia;
-	private String dataHora;
-	private String arquivoGerado;
-	private String nomeUsuario;
-	private DesistenciaProtesto desistenciaProtesto;
+    private static final long serialVersionUID = 1L;
+    private Arquivo arquivo;
+    private Remessa remessa;
+    private DesistenciaProtesto desistencia;
+    private String dataHora;
+    private String arquivoGerado;
+    private String nomeUsuario;
+    private DesistenciaProtesto desistenciaProtesto;
 
-	public void parseToRemessa(Remessa remessa) {
-		this.arquivo = remessa.getArquivo();
-		this.remessa = remessa;
-		this.dataHora = DataUtil.localDateToString(remessa.getArquivo().getDataEnvio()) + " " + DataUtil.localTimeToString(remessa.getArquivo().getHoraEnvio());
-		this.nomeUsuario = remessa.getArquivo().getUsuarioEnvio().getNome(); 
-	}
+    public void parseToRemessa(Remessa remessa) {
+	this.arquivo = remessa.getArquivo();
+	this.remessa = remessa;
+	this.dataHora = DataUtil.localDateToString(remessa.getArquivo().getDataEnvio()) + " "
+		+ DataUtil.localTimeToString(remessa.getArquivo().getHoraEnvio());
+	this.nomeUsuario = remessa.getArquivo().getUsuarioEnvio().getNome();
+    }
 
-	public void parseToDesistenciaProtesto(DesistenciaProtesto dp) {
-		this.arquivo = dp.getRemessaDesistenciaProtesto().getArquivo();
-		this.desistenciaProtesto = dp;
-		this.dataHora = DataUtil.localDateToString(dp.getRemessaDesistenciaProtesto().getArquivo().getDataEnvio()) + " " +
-				DataUtil.localTimeToString(dp.getRemessaDesistenciaProtesto().getArquivo().getHoraEnvio());
-		this.nomeUsuario = dp.getRemessaDesistenciaProtesto().getArquivo().getUsuarioEnvio().getNome(); 
-	}
+    public void parseToDesistenciaProtesto(DesistenciaProtesto dp) {
+	this.arquivo = dp.getRemessaDesistenciaProtesto().getArquivo();
+	this.desistenciaProtesto = dp;
+	this.dataHora = DataUtil.localDateToString(dp.getRemessaDesistenciaProtesto().getArquivo().getDataEnvio()) + " "
+		+ DataUtil.localTimeToString(dp.getRemessaDesistenciaProtesto().getArquivo().getHoraEnvio());
+	this.nomeUsuario = dp.getRemessaDesistenciaProtesto().getArquivo().getUsuarioEnvio().getNome();
+    }
 
-	public void parseToArquivoGerado(Arquivo arquivoGerado) {
-		this.arquivo = arquivoGerado;
-		this.arquivoGerado = arquivoGerado.getNomeArquivo();
-		this.dataHora = DataUtil.localDateToString(arquivoGerado.getDataEnvio()) + " " +
-				DataUtil.localTimeToString(arquivoGerado.getHoraEnvio());
-		this.nomeUsuario = arquivoGerado.getUsuarioEnvio().getNome();
-	}
+    public void parseToArquivoGerado(Arquivo arquivoGerado) {
+	this.arquivo = arquivoGerado;
+	this.arquivoGerado = arquivoGerado.getNomeArquivo();
+	this.dataHora = DataUtil.localDateToString(arquivoGerado.getDataEnvio()) + " "
+		+ DataUtil.localTimeToString(arquivoGerado.getHoraEnvio());
+	this.nomeUsuario = arquivoGerado.getUsuarioEnvio().getNome();
+    }
 
-	public Arquivo getArquivo() {
-		return arquivo;
-	}
-	
-	public void setArquivo(Arquivo arquivo) {
-		this.arquivo = arquivo;
-	}
-	
-	public Remessa getRemessa() {
-		return remessa;
-	}
+    public Arquivo getArquivo() {
+	return arquivo;
+    }
 
-	public DesistenciaProtesto getDesistencia() {
-		return desistencia;
-	}
+    public void setArquivo(Arquivo arquivo) {
+	this.arquivo = arquivo;
+    }
 
-	public String getDataHora() {
-		return dataHora;
-	}
+    public Remessa getRemessa() {
+	return remessa;
+    }
 
-	public String getArquivoGerado() {
-		return arquivoGerado;
-	}
+    public DesistenciaProtesto getDesistencia() {
+	return desistencia;
+    }
 
-	public String getNomeUsuario() {
-		return nomeUsuario;
-	}
+    public String getDataHora() {
+	return dataHora;
+    }
 
-	public DesistenciaProtesto getDesistenciaProtesto() {
-		return desistenciaProtesto;
-	}
+    public String getArquivoGerado() {
+	return arquivoGerado;
+    }
 
-	public void setRemessa(Remessa remessa) {
-		this.remessa = remessa;
-	}
+    public String getNomeUsuario() {
+	return nomeUsuario;
+    }
 
-	public void setDesistencia(DesistenciaProtesto desistencia) {
-		this.desistencia = desistencia;
-	}
+    public DesistenciaProtesto getDesistenciaProtesto() {
+	return desistenciaProtesto;
+    }
 
-	public void setDataHora(String dataHora) {
-		this.dataHora = dataHora;
-	}
+    public void setRemessa(Remessa remessa) {
+	this.remessa = remessa;
+    }
 
-	public void setArquivoGerado(String arquivoGerado) {
-		this.arquivoGerado = arquivoGerado;
-	}
+    public void setDesistencia(DesistenciaProtesto desistencia) {
+	this.desistencia = desistencia;
+    }
 
-	public void setNomeUsuario(String nomeUsuario) {
-		this.nomeUsuario = nomeUsuario;
-	}
+    public void setDataHora(String dataHora) {
+	this.dataHora = dataHora;
+    }
 
-	public void setDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto) {
-		this.desistenciaProtesto = desistenciaProtesto;
-	}
+    public void setArquivoGerado(String arquivoGerado) {
+	this.arquivoGerado = arquivoGerado;
+    }
 
-	@Override
-	public int compareTo(ArquivoOcorrenciaBean bean) {
-		if (this.getArquivo().getId() < bean.getArquivo().getId()) {
-			return -1;
-		}			
-		return 1;
+    public void setNomeUsuario(String nomeUsuario) {
+	this.nomeUsuario = nomeUsuario;
+    }
+
+    public void setDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto) {
+	this.desistenciaProtesto = desistenciaProtesto;
+    }
+
+    @Override
+    public int compareTo(ArquivoOcorrenciaBean bean) {
+	if (this.getArquivo().getId() < bean.getArquivo().getId()) {
+	    return -1;
 	}
+	return 1;
+    }
 }

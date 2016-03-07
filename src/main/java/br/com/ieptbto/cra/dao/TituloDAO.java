@@ -40,374 +40,377 @@ import br.com.ieptbto.cra.util.DataUtil;
 @Repository
 public class TituloDAO extends AbstractBaseDAO {
 
-	public List<TituloRemessa> buscarListaTitulos(TituloRemessa titulo, Municipio pracaProtesto, Usuario user) {
-		Instituicao instituicaoUsuario = user.getInstituicao();
+    public List<TituloRemessa> buscarListaTitulos(TituloRemessa titulo, Municipio pracaProtesto, Usuario user) {
+	Instituicao instituicaoUsuario = user.getInstituicao();
 
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("remessa", "remessa");
-		if (!instituicaoUsuario.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoUsuario),
-			        Restrictions.eq("remessa.instituicaoDestino", instituicaoUsuario)));
-		}
-
-		if (titulo.getCodigoPortador() != StringUtils.EMPTY) {
-			criteria.add(Restrictions.ilike("codigoPortador", titulo.getCodigoPortador(), MatchMode.ANYWHERE));
-		}
-
-		if (titulo.getNumeroProtocoloCartorio() != null && titulo.getNumeroProtocoloCartorio() != StringUtils.EMPTY) {
-			criteria.createAlias("confirmacao", "confirmacao");
-			criteria.add(
-			        Restrictions.ilike("confirmacao.numeroProtocoloCartorio", titulo.getNumeroProtocoloCartorio(), MatchMode.ANYWHERE));
-		}
-
-		if (titulo.getNumeroTitulo() != null && titulo.getNumeroTitulo() != StringUtils.EMPTY)
-			criteria.add(Restrictions.ilike("numeroTitulo", titulo.getNumeroTitulo(), MatchMode.EXACT));
-
-		if (titulo.getNomeSacadorVendedor() != null && titulo.getNomeSacadorVendedor() != StringUtils.EMPTY)
-			criteria.add(Restrictions.ilike("nomeSacadorVendedor", titulo.getNomeSacadorVendedor(), MatchMode.ANYWHERE));
-
-		if (titulo.getDocumentoSacador() != null && titulo.getDocumentoSacador() != StringUtils.EMPTY)
-			criteria.add(Restrictions.ilike("documentoSacador", titulo.getDocumentoSacador(), MatchMode.ANYWHERE));
-
-		if (titulo.getNomeDevedor() != null && titulo.getNomeDevedor() != StringUtils.EMPTY)
-			criteria.add(Restrictions.ilike("nomeDevedor", titulo.getNomeDevedor(), MatchMode.ANYWHERE));
-
-		if (titulo.getNumeroIdentificacaoDevedor() != null && titulo.getNumeroIdentificacaoDevedor() != StringUtils.EMPTY)
-			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor(), MatchMode.ANYWHERE));
-
-		if (titulo.getDataCadastro() != null)
-			criteria.add(Restrictions.between("dataCadastro", titulo.getDataCadastro(), titulo.getDataCadastro()));
-
-		if (titulo.getDataOcorrencia() != null)
-			criteria.add(Restrictions.between("dataOcorrencia", titulo.getDataOcorrencia(), titulo.getDataEmissaoTitulo()));
-
-		if (titulo.getNossoNumero() != null && titulo.getNossoNumero() != StringUtils.EMPTY)
-			criteria.add(Restrictions.ilike("nossoNumero", titulo.getNossoNumero(), MatchMode.ANYWHERE));
-
-		if (pracaProtesto != null) {
-			criteria.createAlias("remessa.cabecalho", "cabecalho");
-			criteria.add(Restrictions.ilike("cabecalho.codigoMunicipio", pracaProtesto.getCodigoIBGE()));
-		}
-		criteria.addOrder(Order.asc("nomeDevedor"));
-		return criteria.list();
+	Criteria criteria = getCriteria(TituloRemessa.class);
+	criteria.createAlias("remessa", "remessa");
+	if (!instituicaoUsuario.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+	    criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoUsuario), Restrictions.eq("remessa.instituicaoDestino", instituicaoUsuario)));
 	}
 
-	public List<TituloRemessa> buscarTitulosPorRemessa(Remessa remessa, Instituicao instituicaoCorrente) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("remessa.arquivo", "arquivo");
-
-		if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
-			criteria.add(Restrictions.eq("remessa", remessa));
-			criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("nomeDevedor"));
-		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
-			criteria.createAlias("confirmacao", "confirmacao");
-			criteria.add(Restrictions.eq("confirmacao.remessa", remessa));
-			criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto"))
-			        .addOrder(Order.asc("confirmacao.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
-		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-			criteria.createAlias("retorno", "retorno");
-			criteria.add(Restrictions.eq("retorno.remessa", remessa));
-			criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto"))
-			        .addOrder(Order.asc("retorno.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
-		}
-		if (!instituicaoCorrente.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoCorrente),
-			        Restrictions.eq("remessa.instituicaoDestino", instituicaoCorrente)));
-		}
-		return criteria.list();
+	if (titulo.getCodigoPortador() != StringUtils.EMPTY) {
+	    criteria.add(Restrictions.ilike("codigoPortador", titulo.getCodigoPortador(), MatchMode.ANYWHERE));
 	}
 
-	public TituloRemessa buscarTituloPorChave(TituloRemessa titulo) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.add(Restrictions.eq("dataCadastro", titulo.getDataCadastro()));
-		criteria.add(Restrictions.eq("codigoPortador", titulo.getCodigoPortador()));
-		criteria.add(Restrictions.eq("nossoNumero", titulo.getNossoNumero()));
-		if (titulo.getNumeroTitulo() != null)
-			criteria.add(Restrictions.eq("numeroTitulo", titulo.getNumeroTitulo()));
-
-		TituloRemessa tituloRemessa = TituloRemessa.class.cast(criteria.uniqueResult());
-		if (tituloRemessa == null)
-			throw new InfraException("O Título [ Nosso Número : " + titulo.getNossoNumero() + " ] não existe na CRA !");
-		return tituloRemessa;
-	}
-	
-	public List<Titulo> carregarTitulosGenerico(Remessa remessa) {
-		Criteria criteriaTitulo = getCriteria(Titulo.class);
-		criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-		return criteriaTitulo.list();
-	}
-	
-	public List<Titulo> carregarTitulosGenerico(Arquivo arquivo) {
-		Criteria criteria = getCriteria(Remessa.class);
-		criteria.add(Restrictions.eq("arquivo", arquivo));
-		List<Remessa> remessas = criteria.list();
-		
-		List<Titulo> titulos = new ArrayList<Titulo>();
-		for (Remessa remessa : remessas) {
-			Criteria criteriaTitulo = getCriteria(Titulo.class);
-			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-			titulos.addAll(criteriaTitulo.list());
-		}
-		return titulos;
+	if (titulo.getNumeroProtocoloCartorio() != null && titulo.getNumeroProtocoloCartorio() != StringUtils.EMPTY) {
+	    criteria.createAlias("confirmacao", "confirmacao");
+	    criteria.add(Restrictions.ilike("confirmacao.numeroProtocoloCartorio", titulo.getNumeroProtocoloCartorio(), MatchMode.ANYWHERE));
 	}
 
-	public TituloRemessa salvar(Titulo titulo, Transaction transaction) {
-		if (TituloRemessa.class.isInstance(titulo)) {
-			TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
-			return salvarTituloRemessa(tituloRemessa, transaction);
-		}
-		if (Confirmacao.class.isInstance(titulo)) {
-			Confirmacao tituloConfirmacao = Confirmacao.class.cast(titulo);
-			return salvarTituloConfirmacao(tituloConfirmacao);
-		}
-		if (Retorno.class.isInstance(titulo)) {
-			Retorno tituloConfirmacao = Retorno.class.cast(titulo);
-			return salvarTituloRetorno(tituloConfirmacao, transaction);
-		}
-		return null;
+	if (titulo.getNumeroTitulo() != null && titulo.getNumeroTitulo() != StringUtils.EMPTY)
+	    criteria.add(Restrictions.ilike("numeroTitulo", titulo.getNumeroTitulo(), MatchMode.EXACT));
+
+	if (titulo.getNomeSacadorVendedor() != null && titulo.getNomeSacadorVendedor() != StringUtils.EMPTY)
+	    criteria.add(Restrictions.ilike("nomeSacadorVendedor", titulo.getNomeSacadorVendedor(), MatchMode.ANYWHERE));
+
+	if (titulo.getDocumentoSacador() != null && titulo.getDocumentoSacador() != StringUtils.EMPTY)
+	    criteria.add(Restrictions.ilike("documentoSacador", titulo.getDocumentoSacador(), MatchMode.ANYWHERE));
+
+	if (titulo.getNomeDevedor() != null && titulo.getNomeDevedor() != StringUtils.EMPTY)
+	    criteria.add(Restrictions.ilike("nomeDevedor", titulo.getNomeDevedor(), MatchMode.ANYWHERE));
+
+	if (titulo.getNumeroIdentificacaoDevedor() != null
+		&& titulo.getNumeroIdentificacaoDevedor() != StringUtils.EMPTY)
+	    criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor(), MatchMode.ANYWHERE));
+
+	if (titulo.getDataCadastro() != null)
+	    criteria.add(Restrictions.between("dataCadastro", titulo.getDataCadastro(), titulo.getDataCadastro()));
+
+	if (titulo.getDataOcorrencia() != null)
+	    criteria.add(Restrictions.between("dataOcorrencia", titulo.getDataOcorrencia(), titulo.getDataEmissaoTitulo()));
+
+	if (titulo.getNossoNumero() != null && titulo.getNossoNumero() != StringUtils.EMPTY)
+	    criteria.add(Restrictions.ilike("nossoNumero", titulo.getNossoNumero(), MatchMode.ANYWHERE));
+
+	if (pracaProtesto != null) {
+	    criteria.createAlias("remessa.cabecalho", "cabecalho");
+	    criteria.add(Restrictions.ilike("cabecalho.codigoMunicipio", pracaProtesto.getCodigoIBGE()));
 	}
+	criteria.addOrder(Order.asc("nomeDevedor"));
+	return criteria.list();
+    }
 
-	private TituloRemessa salvarTituloRetorno(Retorno tituloRetorno, Transaction transaction) {
-		TituloRemessa titulo = buscaTituloRetornoSalvo(tituloRetorno);
+    public List<TituloRemessa> buscarTitulosPorRemessa(Remessa remessa, Instituicao instituicaoCorrente) {
+	Criteria criteria = getCriteria(TituloRemessa.class);
+	criteria.createAlias("remessa", "remessa");
+	criteria.createAlias("remessa.arquivo", "arquivo");
 
-		if (titulo == null) {
-			throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] não existe em nossa base de dados.");
-		} 
-		if (titulo.getPedidosDesistencia() != null) {
-			for (PedidoDesistencia pedido : titulo.getPedidosDesistencia()) {
-				
-				LocalDate dataOcorrenciaRetorno = tituloRetorno.getDataOcorrencia();
-				LocalDate dataMovimentoDesistencia = pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
-				if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
-					if (dataOcorrenciaRetorno.isAfter(dataMovimentoDesistencia)	|| dataOcorrenciaRetorno.equals(dataMovimentoDesistencia)) {
-						throw new InfraException("PROTESTO INDEVIDO! O título com o protocolo " + tituloRetorno.getNumeroProtocoloCartorio() + ", protestado em "
-								+ DataUtil.localDateToString(tituloRetorno.getDataOcorrencia())	+ ", já contém um pedido de desistência. Faça o CANCELAMENTO!");
-					}
-				}  
+	if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
+	    criteria.add(Restrictions.eq("remessa", remessa));
+	    criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("nomeDevedor"));
+	} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
+	    criteria.createAlias("confirmacao", "confirmacao");
+	    criteria.add(Restrictions.eq("confirmacao.remessa", remessa));
+	    criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("confirmacao.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
+	} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+	    criteria.createAlias("retorno", "retorno");
+	    criteria.add(Restrictions.eq("retorno.remessa", remessa));
+	    criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("retorno.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
+	}
+	if (!instituicaoCorrente.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+	    criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoCorrente), Restrictions.eq("remessa.instituicaoDestino", instituicaoCorrente)));
+	}
+	return criteria.list();
+    }
+
+    public TituloRemessa buscarTituloPorChave(TituloRemessa titulo) {
+	Criteria criteria = getCriteria(TituloRemessa.class);
+	criteria.add(Restrictions.eq("dataCadastro", titulo.getDataCadastro()));
+	criteria.add(Restrictions.eq("codigoPortador", titulo.getCodigoPortador()));
+	criteria.add(Restrictions.eq("nossoNumero", titulo.getNossoNumero()));
+	if (titulo.getNumeroTitulo() != null)
+	    criteria.add(Restrictions.eq("numeroTitulo", titulo.getNumeroTitulo()));
+
+	TituloRemessa tituloRemessa = TituloRemessa.class.cast(criteria.uniqueResult());
+	if (tituloRemessa == null)
+	    throw new InfraException("O Título [ Nosso Número : " + titulo.getNossoNumero() + " ] não existe na CRA !");
+	return tituloRemessa;
+    }
+
+    public List<Titulo> carregarTitulosGenerico(Remessa remessa) {
+	Criteria criteriaTitulo = getCriteria(Titulo.class);
+	criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+	return criteriaTitulo.list();
+    }
+
+    public List<Titulo> carregarTitulosGenerico(Arquivo arquivo) {
+	Criteria criteria = getCriteria(Remessa.class);
+	criteria.add(Restrictions.eq("arquivo", arquivo));
+	List<Remessa> remessas = criteria.list();
+
+	List<Titulo> titulos = new ArrayList<Titulo>();
+	for (Remessa remessa : remessas) {
+	    Criteria criteriaTitulo = getCriteria(Titulo.class);
+	    criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+	    titulos.addAll(criteriaTitulo.list());
+	}
+	return titulos;
+    }
+
+    public TituloRemessa salvar(Titulo titulo, Transaction transaction) {
+	if (TituloRemessa.class.isInstance(titulo)) {
+	    TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
+	    return salvarTituloRemessa(tituloRemessa, transaction);
+	}
+	if (Confirmacao.class.isInstance(titulo)) {
+	    Confirmacao tituloConfirmacao = Confirmacao.class.cast(titulo);
+	    return salvarTituloConfirmacao(tituloConfirmacao);
+	}
+	if (Retorno.class.isInstance(titulo)) {
+	    Retorno tituloConfirmacao = Retorno.class.cast(titulo);
+	    return salvarTituloRetorno(tituloConfirmacao, transaction);
+	}
+	return null;
+    }
+
+    private TituloRemessa salvarTituloRetorno(Retorno tituloRetorno, Transaction transaction) {
+	TituloRemessa titulo = buscaTituloRetornoSalvo(tituloRetorno);
+
+	if (titulo == null) {
+	    throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero()
+		    + "] não existe em nossa base de dados.");
+	}
+	if (titulo.getPedidosDesistencia() != null) {
+	    for (PedidoDesistencia pedido : titulo.getPedidosDesistencia()) {
+
+		LocalDate dataOcorrenciaRetorno = tituloRetorno.getDataOcorrencia();
+		LocalDate dataMovimentoDesistencia = pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
+		if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
+		    if (dataOcorrenciaRetorno.isAfter(dataMovimentoDesistencia)
+			    || dataOcorrenciaRetorno.equals(dataMovimentoDesistencia)) {
+			throw new InfraException("PROTESTO INDEVIDO! O título com o protocolo "
+				+ tituloRetorno.getNumeroProtocoloCartorio() + ", protestado em "
+				+ DataUtil.localDateToString(tituloRetorno.getDataOcorrencia())
+				+ ", já contém um pedido de desistência. Faça o CANCELAMENTO!");
+		    }
+		}
+	    }
+	}
+	if (tituloRetorno.getTipoOcorrencia() != null) {
+	    if (tituloRetorno.getNumeroProtocoloCartorio() != null) {
+		if (!StringUtils.isBlank(tituloRetorno.getNumeroProtocoloCartorio().trim())) {
+		    Integer numeroProtocolo = Integer.valueOf(tituloRetorno.getNumeroProtocoloCartorio().trim());
+		    tituloRetorno.setNumeroProtocoloCartorio(numeroProtocolo.toString());
+		    if (numeroProtocolo.equals(0)) {
+			if (!tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+			    throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero()
+				    + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");
 			}
-		}
-		if (tituloRetorno.getTipoOcorrencia() != null) {
-			if (tituloRetorno.getNumeroProtocoloCartorio() != null) {
-				if (!StringUtils.isBlank(tituloRetorno.getNumeroProtocoloCartorio().trim())) {
-					Integer numeroProtocolo = Integer.valueOf(tituloRetorno.getNumeroProtocoloCartorio().trim());
-					tituloRetorno.setNumeroProtocoloCartorio(numeroProtocolo.toString());
-					if (numeroProtocolo.equals(0)) {
-						if (!tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-							throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");						
-						}
-						if (tituloRetorno.getCodigoIrregularidade() != null){
-							if (StringUtils.isBlank(tituloRetorno.getCodigoIrregularidade().trim()) ||
-									tituloRetorno.getCodigoIrregularidade().equals("00")) {
-								throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] foi devolvido e não contém o código da irregularidade!");						
-							}
-						}
-					}
-				}
+			if (tituloRetorno.getCodigoIrregularidade() != null) {
+			    if (StringUtils.isBlank(tituloRetorno.getCodigoIrregularidade().trim())
+				    || tituloRetorno.getCodigoIrregularidade().equals("00")) {
+				throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero()
+					+ "] foi devolvido e não contém o código da irregularidade!");
+			    }
 			}
+		    }
 		}
-		BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(tituloRetorno.getCodigoPortador());
-		if (banco != null) {
-			tituloRetorno.setCodigoCartorio(banco.getCodigoCartorio());
-		}
-		
-		try {
-			tituloRetorno.setTitulo(titulo);
-			titulo.setRetorno(save(tituloRetorno));
-			save(titulo);
-			return titulo;
-
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex.getCause());
-			new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] não existe em nossa base de dados.");
-		}
-		return null;
+	    }
+	}
+	BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(tituloRetorno.getCodigoPortador());
+	if (banco != null) {
+	    tituloRetorno.setCodigoCartorio(banco.getCodigoCartorio());
 	}
 
-	public TituloRemessa buscaTituloRetornoSalvo(Retorno tituloRetorno) {
-		Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio().trim());
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.add(Restrictions.ilike("codigoPortador", tituloRetorno.getCodigoPortador(), MatchMode.EXACT));
-		criteria.add(Restrictions.ilike("agenciaCodigoCedente", tituloRetorno.getAgenciaCodigoCedente(), MatchMode.EXACT));
-		criteria.add(Restrictions.like("nossoNumero", tituloRetorno.getNossoNumero().trim(), MatchMode.EXACT));
-		criteria.createAlias("confirmacao", "confirmacao");
-		criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", numeroProtocolo.toString(), MatchMode.ANYWHERE));
+	try {
+	    tituloRetorno.setTitulo(titulo);
+	    titulo.setRetorno(save(tituloRetorno));
+	    save(titulo);
+	    return titulo;
 
-		List<TituloRemessa> titulos = criteria.list();
-		for (TituloRemessa titulo : titulos) {
-			if (titulo.getRetorno() == null) {
-				return titulo;
-			} else {
-				logger.error(new InfraException("Titulo nº" + titulo.getNumeroTitulo() + " já tem retorno!"));
-			}
-		}
-		return null;
+	} catch (Exception ex) {
+	    logger.error(ex.getMessage(), ex.getCause());
+	    new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero()
+		    + "] não existe em nossa base de dados.");
 	}
+	return null;
+    }
 
-	private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao) {
-		TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao);
+    public TituloRemessa buscaTituloRetornoSalvo(Retorno tituloRetorno) {
+	Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio().trim());
+	Criteria criteria = getCriteria(TituloRemessa.class);
+	criteria.add(Restrictions.ilike("codigoPortador", tituloRetorno.getCodigoPortador(), MatchMode.EXACT));
+	criteria.add(Restrictions.ilike("agenciaCodigoCedente", tituloRetorno.getAgenciaCodigoCedente(), MatchMode.EXACT));
+	criteria.add(Restrictions.like("nossoNumero", tituloRetorno.getNossoNumero().trim(), MatchMode.EXACT));
+	criteria.createAlias("confirmacao", "confirmacao");
+	criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", numeroProtocolo.toString(), MatchMode.ANYWHERE));
 
-		if (titulo == null) {
-			throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] não existe em nossa base de dados.");
-		}
-		if (tituloConfirmacao.getTipoOcorrencia() != null) {
-			if (tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante()) &&
-					tituloConfirmacao.getCodigoIrregularidade().equals("00")) {
-				throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] foi devolvido e não contém código irregularidade!");
-			}
-			if (tituloConfirmacao.getNumeroProtocoloCartorio() != null) {
-				if (!StringUtils.isBlank(tituloConfirmacao.getNumeroProtocoloCartorio().trim())) {
-					Integer numeroProtocolo = Integer.valueOf(tituloConfirmacao.getNumeroProtocoloCartorio().trim());
-					tituloConfirmacao.setNumeroProtocoloCartorio(numeroProtocolo.toString());
-					if (numeroProtocolo.equals(0)) {
-						if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-							throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");						
-						}
-						if (tituloConfirmacao.getCodigoIrregularidade() != null){
-							if (StringUtils.isBlank(tituloConfirmacao.getCodigoIrregularidade().trim()) ||
-									tituloConfirmacao.getCodigoIrregularidade().equals("00")) {
-								throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] foi devolvido e não contém o código da irregularidade!");						
-							}
-						}
-					}
-				}
-			}
-			
-			if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-				tituloConfirmacao.setValorGravacaoEletronica(titulo.getRemessa().getInstituicaoOrigem().getValorConfirmacao());
-			}
-		}
-		BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(tituloConfirmacao.getCodigoPortador());
-		if (banco != null) {
-			tituloConfirmacao.setCodigoCartorio(banco.getCodigoCartorio());
-		}
-		
-		try {
-			tituloConfirmacao.setTitulo(titulo);
-			titulo.setConfirmacao(save(tituloConfirmacao));
-			save(titulo);
-
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex.getCause());
-			new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] não existe em nossa base de dados.");
-		}
+	List<TituloRemessa> titulos = criteria.list();
+	for (TituloRemessa titulo : titulos) {
+	    if (titulo.getRetorno() == null) {
 		return titulo;
+	    } else {
+		logger.error(new InfraException("Titulo nº" + titulo.getNumeroTitulo() + " já tem retorno!"));
+	    }
+	}
+	return null;
+    }
+
+    private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao) {
+	TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao);
+
+	if (titulo == null) {
+	    throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero()
+		    + "] não existe em nossa base de dados.");
+	}
+	if (tituloConfirmacao.getTipoOcorrencia() != null) {
+	    if (tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())
+		    && tituloConfirmacao.getCodigoIrregularidade().equals("00")) {
+		throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero()
+			+ "] foi devolvido e não contém código irregularidade!");
+	    }
+	    if (tituloConfirmacao.getNumeroProtocoloCartorio() != null) {
+		if (!StringUtils.isBlank(tituloConfirmacao.getNumeroProtocoloCartorio().trim())) {
+		    Integer numeroProtocolo = Integer.valueOf(tituloConfirmacao.getNumeroProtocoloCartorio().trim());
+		    tituloConfirmacao.setNumeroProtocoloCartorio(numeroProtocolo.toString());
+		    if (numeroProtocolo.equals(0)) {
+			if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+			    throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero()
+				    + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");
+			}
+			if (tituloConfirmacao.getCodigoIrregularidade() != null) {
+			    if (StringUtils.isBlank(tituloConfirmacao.getCodigoIrregularidade().trim())
+				    || tituloConfirmacao.getCodigoIrregularidade().equals("00")) {
+				throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero()
+					+ "] foi devolvido e não contém o código da irregularidade!");
+			    }
+			}
+		    }
+		}
+	    }
+
+	    if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+		tituloConfirmacao.setValorGravacaoEletronica(titulo.getRemessa().getInstituicaoOrigem().getValorConfirmacao());
+	    }
+	}
+	BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(tituloConfirmacao.getCodigoPortador());
+	if (banco != null) {
+	    tituloConfirmacao.setCodigoCartorio(banco.getCodigoCartorio());
 	}
 
-	public TituloRemessa buscaTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.add(Restrictions.like("codigoPortador", tituloConfirmacao.getCodigoPortador().trim(), MatchMode.EXACT));
-		criteria.add(Restrictions.like("nossoNumero", tituloConfirmacao.getNossoNumero(), MatchMode.EXACT));
-		criteria.add(Restrictions.like("numeroTitulo", tituloConfirmacao.getNumeroTitulo(), MatchMode.EXACT));
-		criteria.add(Restrictions.like("agenciaCodigoCedente", tituloConfirmacao.getAgenciaCodigoCedente(), MatchMode.EXACT));
+	try {
+	    tituloConfirmacao.setTitulo(titulo);
+	    titulo.setConfirmacao(save(tituloConfirmacao));
+	    save(titulo);
 
-		List<TituloRemessa> titulos = criteria.list();
-		for (TituloRemessa titulo : titulos) {
-			if (titulo.getConfirmacao() == null) {
-				return titulo;
-			} else {
-				logger.error(new InfraException("Titulo nº" + titulo.getNumeroTitulo() + " já tem confirmação"));
-			}
-		}
+	} catch (Exception ex) {
+	    logger.error(ex.getMessage(), ex.getCause());
+	    new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero()
+		    + "] não existe em nossa base de dados.");
+	}
+	return titulo;
+    }
+
+    public TituloRemessa buscaTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao) {
+	Criteria criteria = getCriteria(TituloRemessa.class);
+	criteria.add(Restrictions.like("codigoPortador", tituloConfirmacao.getCodigoPortador().trim(), MatchMode.EXACT));
+	criteria.add(Restrictions.like("nossoNumero", tituloConfirmacao.getNossoNumero(), MatchMode.EXACT));
+	criteria.add(Restrictions.like("numeroTitulo", tituloConfirmacao.getNumeroTitulo(), MatchMode.EXACT));
+	criteria.add(Restrictions.like("agenciaCodigoCedente", tituloConfirmacao.getAgenciaCodigoCedente(), MatchMode.EXACT));
+
+	List<TituloRemessa> titulos = criteria.list();
+	for (TituloRemessa titulo : titulos) {
+	    if (titulo.getConfirmacao() == null) {
+		return titulo;
+	    } else {
+		logger.error(new InfraException("Titulo nº" + titulo.getNumeroTitulo() + " já tem confirmação"));
+	    }
+	}
+	return null;
+    }
+
+    private TituloRemessa salvarTituloRemessa(TituloRemessa tituloRemessa, Transaction transaction) {
+	try {
+
+	    tituloRemessa.setDataCadastro(tituloRemessa.getRemessa().getCabecalho().getDataMovimento().toDate());
+	    TituloRemessa tituloSalvo = save(tituloRemessa);
+
+	    if (tituloRemessa.getAnexo() != null) {
+		tituloRemessa.getAnexo().setTitulo(tituloSalvo);
+		save(tituloRemessa.getAnexo());
+	    }
+	    return save(tituloRemessa);
+	} catch (Exception ex) {
+	    if (PSQLException.class.isInstance(ex)) {
+		logger.error(ex.getMessage(), ex.getCause());
+		new InfraException("O Título número: " + tituloRemessa.getNumeroTitulo()
+			+ " já existe na base de dados.");
 		return null;
+	    } else {
+		transaction.rollback();
+		logger.error(ex.getMessage(), ex.getCause());
+		throw new InfraException("O Título número: " + tituloRemessa.getNumeroTitulo()
+			+ " não pode ser inserido ! O Título já existe na base ou está duplicado no arquivo !");
+	    }
 	}
+    }
 
-	private TituloRemessa salvarTituloRemessa(TituloRemessa tituloRemessa, Transaction transaction) {
-		try {
-			
-			tituloRemessa.setDataCadastro(tituloRemessa.getRemessa().getCabecalho().getDataMovimento().toDate());
-			TituloRemessa tituloSalvo = save(tituloRemessa);
+    public Retorno buscarTituloProtestado(String numeroProtocolo, String codigoIBGE) {
+	Integer numProtocolo = Integer.parseInt(numeroProtocolo);
+	Criteria criteria = getCriteria(Retorno.class);
+	criteria.createAlias("titulo", "titulo");
+	criteria.createAlias("cabecalho", "cabecalho");
+	criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", codigoIBGE));
+	criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
+	criteria.setMaxResults(1);
+	return Retorno.class.cast(criteria.uniqueResult());
+    }
 
-			if (tituloRemessa.getAnexo() != null) {
-				tituloRemessa.getAnexo().setTitulo(tituloSalvo);
-				save(tituloRemessa.getAnexo());
-			}
-			return save(tituloRemessa);
-		} catch (Exception ex) {
-			if (PSQLException.class.isInstance(ex)) {
-				logger.error(ex.getMessage(), ex.getCause());
-				new InfraException("O Título número: " + tituloRemessa.getNumeroTitulo() + " já existe na base de dados.");
-				return null;
-			} else {
-				transaction.rollback();
-				logger.error(ex.getMessage(), ex.getCause());
-				throw new InfraException("O Título número: " + tituloRemessa.getNumeroTitulo()
-				        + " não pode ser inserido ! O Título já existe na base ou está duplicado no arquivo !");
-			}
-		}
+    public TituloRemessa buscarTituloDesistenciaProtesto(PedidoDesistencia pedidoDesistenciaCancelamento) {
+	Integer numProtocolo = Integer.parseInt(pedidoDesistenciaCancelamento.getNumeroProtocolo());
+
+	Criteria criteria = getCriteria(Confirmacao.class);
+	criteria.createAlias("titulo", "titulo");
+	criteria.createAlias("remessa", "remessa");
+	criteria.createAlias("remessa.cabecalho", "cabecalho");
+	criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedidoDesistenciaCancelamento.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
+	criteria.add(Restrictions.ilike("numeroTitulo", pedidoDesistenciaCancelamento.getNumeroTitulo(), MatchMode.EXACT));
+	criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
+	criteria.add(Restrictions.eq("dataProtocolo", pedidoDesistenciaCancelamento.getDataProtocolagem()));
+	Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
+
+	if (confirmacao == null) {
+	    return null;
 	}
+	return confirmacao.getTitulo();
+    }
 
-	public Retorno buscarTituloProtestado(String numeroProtocolo, String codigoIBGE) {
-		Integer numProtocolo = Integer.parseInt(numeroProtocolo);
-		Criteria criteria = getCriteria(Retorno.class);
-		criteria.createAlias("titulo", "titulo");
-		criteria.createAlias("cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", codigoIBGE));
-		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
-		criteria.setMaxResults(1);
-		return Retorno.class.cast(criteria.uniqueResult());
+    public TituloRemessa buscarTituloCancelamentoProtesto(PedidoCancelamento pedido) {
+	Integer numProtocolo = Integer.parseInt(pedido.getNumeroProtocolo());
+
+	Criteria criteria = getCriteria(Confirmacao.class);
+	criteria.createAlias("titulo", "titulo");
+	criteria.createAlias("remessa", "remessa");
+	criteria.createAlias("remessa.cabecalho", "cabecalho");
+	criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
+	criteria.add(Restrictions.ilike("numeroTitulo", pedido.getNumeroTitulo(), MatchMode.EXACT));
+	criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
+	criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
+	Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
+
+	if (confirmacao == null) {
+	    return null;
 	}
+	return confirmacao.getTitulo();
+    }
 
-	public TituloRemessa carregarTituloRemessaPorId(TituloRemessa titulo) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.add(Restrictions.eq("id", titulo.getId()));
-		return TituloRemessa.class.cast(criteria.uniqueResult());
+    public TituloRemessa buscarTituloAutorizacaoCancelamento(PedidoAutorizacaoCancelamento pedido) {
+	Long numProtocolo = Long.parseLong(pedido.getNumeroProtocolo());
+
+	Criteria criteria = getCriteria(Confirmacao.class);
+	criteria.createAlias("titulo", "titulo");
+	criteria.createAlias("remessa", "remessa");
+	criteria.createAlias("remessa.cabecalho", "cabecalho");
+	criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio()));
+	criteria.add(Restrictions.ilike("numeroTitulo", pedido.getNumeroTitulo(), MatchMode.EXACT));
+	criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
+	criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
+	Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
+
+	if (confirmacao == null) {
+	    return null;
 	}
-
-	public TituloRemessa buscarTituloDesistenciaProtesto(PedidoDesistencia pedidoDesistenciaCancelamento) {
-		Integer numProtocolo = Integer.parseInt(pedidoDesistenciaCancelamento.getNumeroProtocolo());
-
-		Criteria criteria = getCriteria(Confirmacao.class);
-		criteria.createAlias("titulo", "titulo");
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedidoDesistenciaCancelamento.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
-		criteria.add(Restrictions.ilike("numeroTitulo", pedidoDesistenciaCancelamento.getNumeroTitulo(), MatchMode.EXACT));
-		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
-		criteria.add(Restrictions.eq("dataProtocolo", pedidoDesistenciaCancelamento.getDataProtocolagem()));
-		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
-
-		if (confirmacao == null) {
-			return null;
-		}
-		return confirmacao.getTitulo();
-	}
-
-	public TituloRemessa buscarTituloCancelamentoProtesto(PedidoCancelamento pedido) {
-		Integer numProtocolo = Integer.parseInt(pedido.getNumeroProtocolo());
-
-		Criteria criteria = getCriteria(Confirmacao.class);
-		criteria.createAlias("titulo", "titulo");
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
-		criteria.add(Restrictions.ilike("numeroTitulo", pedido.getNumeroTitulo(), MatchMode.EXACT));
-		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
-		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
-		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
-
-		if (confirmacao == null) {
-			return null;
-		}
-		return confirmacao.getTitulo();
-	}
-	
-	public TituloRemessa buscarTituloAutorizacaoCancelamento(PedidoAutorizacaoCancelamento pedido) {
-		Long numProtocolo = Long.parseLong(pedido.getNumeroProtocolo());
-
-		Criteria criteria = getCriteria(Confirmacao.class);
-		criteria.createAlias("titulo", "titulo");
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio()));
-		criteria.add(Restrictions.ilike("numeroTitulo", pedido.getNumeroTitulo(), MatchMode.EXACT));
-		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
-		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
-		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
-
-		if (confirmacao == null) {
-			return null;
-		}
-		return confirmacao.getTitulo();
-	}
+	return confirmacao.getTitulo();
+    }
 }

@@ -14,6 +14,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Batimento;
@@ -314,19 +315,17 @@ public class RetornoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
+	@Transactional
 	public void liberarRetornoBatimento(List<Remessa> arquivosLIberados) {
-//		Transaction transaction = getBeginTransation();
+		Transaction transaction = getBeginTransation();
 		
 		try {
 			for (Remessa retorno : arquivosLIberados) {
-				String sql = "UPDATE tb_remessa AS rem SET situacao_batimento_retorno='CONFIRMADO' WHERE rem.id_remessa=" + retorno.getId();
-				Query query = getSession().createSQLQuery(sql);
-				query.executeUpdate();
-//				retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
-//				update(retorno); 
+				retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
+				update(retorno); 
 			}
 			
-//			transaction.commit();
+			transaction.commit();
 		} catch (InfraException ex) {
 			logger.error(ex.getMessage());
 			throw new InfraException(ex.getMessage());
