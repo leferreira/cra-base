@@ -49,351 +49,352 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class ArquivoDAO extends AbstractBaseDAO {
 
-	@Autowired
-	private TituloDAO tituloDAO;
-	@Autowired
-	private InstituicaoDAO instituicaoDAO;
+    @Autowired
+    private TituloDAO tituloDAO;
+    @Autowired
+    private InstituicaoDAO instituicaoDAO;
 
-	public Arquivo salvar(Arquivo arquivo, Usuario usuarioAcao, List<Exception> erros) {
-		Arquivo arquivoSalvo = new Arquivo();
-		Transaction transaction = getSession().beginTransaction();
-		BigDecimal valorTotalSaldo = BigDecimal.ZERO;
-		TipoArquivoEnum tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
-		Boolean retornoContemTituloPago = false;
+    public Arquivo salvar(Arquivo arquivo, Usuario usuarioAcao, List<Exception> erros) {
+	Arquivo arquivoSalvo = new Arquivo();
+	Transaction transaction = getSession().beginTransaction();
+	BigDecimal valorTotalSaldo = BigDecimal.ZERO;
+	TipoArquivoEnum tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
+	Boolean retornoContemTituloPago = false;
 
-		try {
-			arquivo.setStatusArquivo(save(arquivo.getStatusArquivo()));
-			arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
-			arquivoSalvo = save(arquivo);
-			
-			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo) || TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
-				if (arquivo.getRemessas() != null) {
-					for (Remessa remessa : arquivo.getRemessas()) {
-						remessa.setArquivo(arquivoSalvo);
-						remessa.setCabecalho(save(remessa.getCabecalho()));
-						remessa.setRodape(save(remessa.getRodape()));
-						remessa.setArquivoGeradoProBanco(arquivoSalvo);
-						remessa.setDataRecebimento(remessa.getCabecalho().getDataMovimento());
-						remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
-						setDevolvidoPelaCRA(remessa);
-						setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
-						setSituacaoLiberadoProBancoEBatimentoRetorno(arquivo, remessa);
-						save(remessa);
-						for (Titulo titulo : remessa.getTitulos()) {
-							titulo.setRemessa(remessa);
-							if (Retorno.class.isInstance(titulo)) {
-								if (titulo.getTipoOcorrencia().equals(TipoOcorrencia.PAGO.getConstante())) {
-									retornoContemTituloPago = true;
-								}
-								Retorno.class.cast(titulo).setCabecalho(remessa.getCabecalho());
-							}
-							TituloRemessa tituloSalvo = tituloDAO.salvar(titulo, transaction);
-							if(TituloRemessa.class.isInstance(titulo)) {
-								if (TituloRemessa.class.cast(titulo).getAnexo() != null) {
-									Anexo anexo = TituloRemessa.class.cast(titulo).getAnexo();
-									tituloSalvo.setAnexo(anexo);
-									anexo.setTitulo(tituloSalvo);
-									save(anexo);
-								}
-							}
-							if (tituloSalvo == null) {
-								titulo.setSaldoTitulo(BigDecimal.ZERO);
-								remessa.getTitulos().remove(titulo);
-							}
-							valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
-						}
-						if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-							if (retornoContemTituloPago.equals(false)) {
-								remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
-								update(remessa);
-							}
-						}
-						remessa.getCabecalho().setQtdTitulosRemessa(remessa.getTitulos().size());
-						remessa.getRodape().setSomatorioValorRemessa(valorTotalSaldo);
-						remessa.setCabecalho(save(remessa.getCabecalho()));
-						remessa.setRodape(save(remessa.getRodape()));
-					}
-					transaction.commit();
+	try {
+	    arquivo.setStatusArquivo(save(arquivo.getStatusArquivo()));
+	    arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
+	    arquivoSalvo = save(arquivo);
+
+	    if (TipoArquivoEnum.REMESSA.equals(tipoArquivo) || TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)
+		    || TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
+		if (arquivo.getRemessas() != null) {
+		    for (Remessa remessa : arquivo.getRemessas()) {
+			remessa.setArquivo(arquivoSalvo);
+			remessa.setCabecalho(save(remessa.getCabecalho()));
+			remessa.setRodape(save(remessa.getRodape()));
+			remessa.setArquivoGeradoProBanco(arquivoSalvo);
+			remessa.setDataRecebimento(remessa.getCabecalho().getDataMovimento());
+			remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
+			setDevolvidoPelaCRA(remessa);
+			setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
+			setSituacaoLiberadoProBancoEBatimentoRetorno(arquivo, remessa);
+			save(remessa);
+			for (Titulo titulo : remessa.getTitulos()) {
+			    titulo.setRemessa(remessa);
+			    if (Retorno.class.isInstance(titulo)) {
+				if (titulo.getTipoOcorrencia().equals(TipoOcorrencia.PAGO.getConstante())) {
+				    retornoContemTituloPago = true;
 				}
-			} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
-				if (arquivo.getRemessaDesistenciaProtesto() != null) {
-					List<DesistenciaProtesto> desistenciasProtesto = new ArrayList<DesistenciaProtesto>();
-					BigDecimal valorTotalDesistenciaArquivo = BigDecimal.ZERO;
-					int quantidadeDesistenciasArquivo = 0;
-					for (DesistenciaProtesto desistenciaProtestos : arquivo.getRemessaDesistenciaProtesto().getDesistenciaProtesto()) {
-						List<PedidoDesistencia> pedidosDesistenciaComErro = new ArrayList<PedidoDesistencia>();
-						List<PedidoDesistencia> pedidosProcessados = new ArrayList<PedidoDesistencia>();
-						int quantidadeDesistenciasCartorio = 0;
-						desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
-						desistenciaProtestos.setDownload(false);
-						for (PedidoDesistencia pedido : desistenciaProtestos.getDesistencias()) {
-							pedido.setDesistenciaProtesto(desistenciaProtestos);
-							pedido.setTitulo(tituloDAO.buscarTituloDesistenciaProtesto(pedido));
-							if (pedido.getTitulo() != null) {
-								pedidosProcessados.add(pedido);
-								quantidadeDesistenciasCartorio = quantidadeDesistenciasCartorio + 1;
-								valorTotalDesistenciaArquivo = valorTotalDesistenciaArquivo.add(pedido.getValorTitulo());
-								quantidadeDesistenciasArquivo = quantidadeDesistenciasArquivo + 1;
-							} else {
-								pedidosDesistenciaComErro.add(pedido);
-							}
-						}
-						if (pedidosDesistenciaComErro.isEmpty()) {
-							desistenciaProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(quantidadeDesistenciasCartorio);
-							desistenciaProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(quantidadeDesistenciasCartorio*2);
-							desistenciaProtestos.setDesistencias(pedidosProcessados);
-							desistenciasProtesto.add(desistenciaProtestos);
-						} else {
-							StringBuffer descricao = new StringBuffer();
-							String municipio = StringUtils.EMPTY;
-							for (PedidoDesistencia pedidoDesistencia : pedidosDesistenciaComErro) {
-								descricao.append("Protocolo Inválido ("+pedidoDesistencia.getNumeroProtocolo()+").");
-								municipio = pedidoDesistencia.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio();
-							}
-							erros.add(new DesistenciaException(descricao.toString(), municipio, CodigoErro.CRA_PROTOCOLO_INVALIDO.getCodigo()));
-							pedidosDesistenciaComErro.clear();
-						}
-					}
-					arquivo.getRemessaDesistenciaProtesto().getCabecalho().setQuantidadeDesistencia(quantidadeDesistenciasArquivo);
-					arquivo.getRemessaDesistenciaProtesto().getCabecalho().setQuantidadeRegistro(quantidadeDesistenciasArquivo);
-					arquivo.getRemessaDesistenciaProtesto().getRodape().setQuantidadeDesistencia((quantidadeDesistenciasArquivo*2));
-					arquivo.getRemessaDesistenciaProtesto().getRodape().setSomatorioValorTitulo(valorTotalDesistenciaArquivo);
-					
-					arquivo.getRemessaDesistenciaProtesto().setDesistenciaProtesto(desistenciasProtesto);
-					arquivo.getRemessaDesistenciaProtesto().setCabecalho(save(arquivo.getRemessaDesistenciaProtesto().getCabecalho()));
-					arquivo.getRemessaDesistenciaProtesto().setRodape(save(arquivo.getRemessaDesistenciaProtesto().getRodape()));
-					save(arquivo.getRemessaDesistenciaProtesto());
-					for (DesistenciaProtesto desistenciaProtestos : desistenciasProtesto) {
-						desistenciaProtestos.setCabecalhoCartorio(save(desistenciaProtestos.getCabecalhoCartorio()));
-						desistenciaProtestos.setRodapeCartorio(save(desistenciaProtestos.getRodapeCartorio()));
-						desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
-						save(desistenciaProtestos);
-						for (PedidoDesistencia pedido : desistenciaProtestos.getDesistencias()) {
-							save(pedido);
-						}
-					}
-//					transaction.commit();
+				Retorno.class.cast(titulo).setCabecalho(remessa.getCabecalho());
+			    }
+			    TituloRemessa tituloSalvo = tituloDAO.salvar(titulo, transaction);
+			    if (TituloRemessa.class.isInstance(titulo)) {
+				if (TituloRemessa.class.cast(titulo).getAnexo() != null) {
+				    Anexo anexo = TituloRemessa.class.cast(titulo).getAnexo();
+				    tituloSalvo.setAnexo(anexo);
+				    anexo.setTitulo(tituloSalvo);
+				    save(anexo);
 				}
-			} else if (TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
-				new InfraException("Não foi possivel enviar o Cancelamento de Protesto! Entre em contato com a CRA!");
-			} else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
-				new InfraException("Não foi possivel enviar a Autorização de Cancelamento! Entre em contato com a CRA!");
+			    }
+			    if (tituloSalvo == null) {
+				titulo.setSaldoTitulo(BigDecimal.ZERO);
+				remessa.getTitulos().remove(titulo);
+			    }
+			    valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
 			}
-			logger.info("O arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
-			        + " salvo com sucesso.");
-
-		} catch (InfraException ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage());
-			throw new InfraException(ex.getMessage());
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex);
-			transaction.rollback();
-			throw new InfraException("Não foi possível inserir esse arquivo na base de dados.");
-		}
-		return arquivoSalvo;
-	}
-	
-	public Arquivo alterarStatusArquivo(Arquivo arquivo) {
-		Transaction transaction = getBeginTransation();
-
-		try {
-			StatusArquivo statusArquivo = save(arquivo.getStatusArquivo());
-			arquivo.setStatusArquivo(statusArquivo);
-			update(arquivo);
-
-			transaction.commit();
-		} catch (Exception ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível inserir esses dados na base.");
-		}
-		return arquivo; 
-	}
-
-	private void setDevolvidoPelaCRA(Remessa remessa) {
-		if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
-			remessa.setDevolvidoPelaCRA(false);
-		}
-	}
-
-	private void setStatusRemessa(TipoInstituicao tipoInstituicao, Remessa remessa) {
-		if (tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)
-		        || tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
-			remessa.setStatusRemessa(StatusRemessa.AGUARDANDO);
-		} else if (tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
-			remessa.setStatusRemessa(StatusRemessa.ENVIADO);
-		}
-	}
-
-	private void setSituacaoLiberadoProBancoEBatimentoRetorno(Arquivo arquivo, Remessa remessa) {
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)
-		        || arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
-			remessa.setSituacao(false);
-			if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-				remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.NAO_CONFIRMADO);
+			if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+			    if (retornoContemTituloPago.equals(false)) {
+				remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
+				update(remessa);
+			    }
 			}
+			remessa.getCabecalho().setQtdTitulosRemessa(remessa.getTitulos().size());
+			remessa.getRodape().setSomatorioValorRemessa(valorTotalSaldo);
+			remessa.setCabecalho(save(remessa.getCabecalho()));
+			remessa.setRodape(save(remessa.getRodape()));
+		    }
+		    transaction.commit();
 		}
-	}
-	
-	@Transactional(readOnly = true)
-	public List<Remessa> baixarArquivoInstituicaoRemessa(Arquivo arquivo) {
-		Criteria criteria = getCriteria(Remessa.class);
-		criteria.add(Restrictions.eq("arquivo", arquivo));
-		
-		List<Remessa> remessas = criteria.list();
-		arquivo.setRemessas(new ArrayList<Remessa>());
-		for (Remessa remessa : remessas) {
-			Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
-			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-			
-			remessa.setTitulos(criteriaTitulo.list());
-			arquivo.getRemessas().add(remessa);
-		}
-		return arquivo.getRemessas(); 
-	}
-	
-	@Transactional(readOnly = true)
-	public List<Remessa> baixarArquivoInstituicaoConfirmacao(Arquivo arquivo) {
-		Criteria criteria = getCriteria(Remessa.class);
-		criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
-		
-		List<Remessa> remessas = criteria.list();
-		arquivo.setRemessas(new ArrayList<Remessa>());
-		for (Remessa remessa : remessas) {
-			Criteria criteriaTitulo = getCriteria(Confirmacao.class);
-			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-			
-			remessa.setTitulos(criteriaTitulo.list());
-			arquivo.getRemessas().add(remessa);
-		}
-		return arquivo.getRemessas();
-	}
-	
-	@Transactional(readOnly = true)
-	public List<Remessa> baixarArquivoInstituicaoRetorno(Arquivo arquivo) {
-		Criteria criteria = getCriteria(Remessa.class);
-		criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
-		
-		List<Remessa> remessas = criteria.list();
-		arquivo.setRemessas(new ArrayList<Remessa>());
-		for (Remessa remessa : remessas) {
-			Criteria criteriaTitulo = getCriteria(Retorno.class);
-			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-			
-			remessa.setTitulos(criteriaTitulo.list());
-			arquivo.getRemessas().add(remessa);
-		}
-		return arquivo.getRemessas();
-	}
-	
-	@Transactional(readOnly = true)
-	public Arquivo buscarArquivoInstituicaoRemessa(String nomeArquivo, Instituicao instituicaoRecebe) {
-		Criteria criteria = getCriteria(Arquivo.class);
-		criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
-		criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
-		
-		Arquivo arquivo = Arquivo.class.cast(criteria.uniqueResult());
-		arquivo.setRemessas(new ArrayList<Remessa>());
-		for (Remessa remessa : arquivo.getRemessaBanco()) {
-			Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
-			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-			
-			remessa.setTitulos(criteriaTitulo.list());
-			arquivo.getRemessas().add(remessa);
-		}
-		return arquivo;
-	}
-
-	@Transactional(readOnly = true)
-	public Arquivo buscarArquivoInstituicaoConfirmacao(String nomeArquivo, Instituicao instituicaoRecebe) {
-		Criteria criteria = getCriteria(Arquivo.class);
-		criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
-		criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
-		
-		Arquivo arquivo = Arquivo.class.cast(criteria.uniqueResult());
-		arquivo.setRemessas(new ArrayList<Remessa>());
-		for (Remessa remessa : arquivo.getRemessaBanco()) {
-			Criteria criteriaTitulo = getCriteria(Confirmacao.class);
-			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-			
-			remessa.setTitulos(criteriaTitulo.list());
-			arquivo.getRemessas().add(remessa);
-		}
-		return arquivo;
-	}
-	
-	@Transactional(readOnly = true)
-	public Arquivo buscarArquivoInstituicaoRetorno(String nomeArquivo, Instituicao instituicaoRecebe) {
-		Criteria criteria = getCriteria(Arquivo.class);
-		criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
-		criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
-		
-		Arquivo arquivo = Arquivo.class.cast(criteria.uniqueResult());
-		arquivo.setRemessas(new ArrayList<Remessa>());
-		for (Remessa remessa : arquivo.getRemessaBanco()) {
-			Criteria criteriaTitulo = getCriteria(Retorno.class);
-			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-			
-			remessa.setTitulos(criteriaTitulo.list());
-			arquivo.getRemessas().add(remessa);
-		}
-		return arquivo;
-	}
-
-	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos,
-	        Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
-		Criteria criteria = getCriteria(Arquivo.class);
-		criteria.createAlias("instituicaoEnvio", "instituicaoEnvio");
-		criteria.createAlias("tipoArquivo", "tipoArquivo");
-		criteria.createAlias("instituicaoEnvio.tipoInstituicao", "tipoInstituicao");
-		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
-		criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", usuario.getInstituicao()),
-		        Restrictions.eq("instituicaoRecebe", usuario.getInstituicao())));
-
-		if (arquivo.getInstituicaoEnvio() != null) {
-			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", arquivo.getInstituicaoEnvio()),
-			        Restrictions.eq("instituicaoRecebe", arquivo.getInstituicaoEnvio())));
-		}
-
-		if (!situacoes.isEmpty()) {
-			Disjunction disjunction = Restrictions.disjunction();
-			criteria.createAlias("statusArquivo", "statusArquivo");
-			Disjunction disj = Restrictions.disjunction();
-			for (SituacaoArquivo status : situacoes) {
-				disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", status));
+	    } else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
+		if (arquivo.getRemessaDesistenciaProtesto() != null) {
+		    List<DesistenciaProtesto> desistenciasProtesto = new ArrayList<DesistenciaProtesto>();
+		    BigDecimal valorTotalDesistenciaArquivo = BigDecimal.ZERO;
+		    int quantidadeDesistenciasArquivo = 0;
+		    for (DesistenciaProtesto desistenciaProtestos : arquivo.getRemessaDesistenciaProtesto().getDesistenciaProtesto()) {
+			List<PedidoDesistencia> pedidosDesistenciaComErro = new ArrayList<PedidoDesistencia>();
+			List<PedidoDesistencia> pedidosProcessados = new ArrayList<PedidoDesistencia>();
+			int quantidadeDesistenciasCartorio = 0;
+			desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
+			desistenciaProtestos.setDownload(false);
+			for (PedidoDesistencia pedido : desistenciaProtestos.getDesistencias()) {
+			    pedido.setDesistenciaProtesto(desistenciaProtestos);
+			    pedido.setTitulo(tituloDAO.buscarTituloDesistenciaProtesto(pedido));
+			    if (pedido.getTitulo() != null) {
+				pedidosProcessados.add(pedido);
+				quantidadeDesistenciasCartorio = quantidadeDesistenciasCartorio + 1;
+				valorTotalDesistenciaArquivo = valorTotalDesistenciaArquivo.add(pedido.getValorTitulo());
+				quantidadeDesistenciasArquivo = quantidadeDesistenciasArquivo + 1;
+			    } else {
+				pedidosDesistenciaComErro.add(pedido);
+			    }
 			}
-			criteria.add(disj);
-		}
-
-		if (arquivo.getNomeArquivo() != null && arquivo.getNomeArquivo() != StringUtils.EMPTY) {
-			criteria.add(Restrictions.ilike("nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
-		}
-
-		if (!tipoArquivos.isEmpty()) {
-			Disjunction disjunction = Restrictions.disjunction();
-			for (TipoArquivoEnum tipoArquivo : tipoArquivos) {
-				disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipoArquivo));
+			if (pedidosDesistenciaComErro.isEmpty()) {
+			    desistenciaProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(quantidadeDesistenciasCartorio);
+			    desistenciaProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(quantidadeDesistenciasCartorio
+				    * 2);
+			    desistenciaProtestos.setDesistencias(pedidosProcessados);
+			    desistenciasProtesto.add(desistenciaProtestos);
+			} else {
+			    StringBuffer descricao = new StringBuffer();
+			    String municipio = StringUtils.EMPTY;
+			    for (PedidoDesistencia pedidoDesistencia : pedidosDesistenciaComErro) {
+				descricao.append("Protocolo Inválido (" + pedidoDesistencia.getNumeroProtocolo()
+					+ ").");
+				municipio = pedidoDesistencia.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio();
+			    }
+			    erros.add(new DesistenciaException(descricao.toString(), municipio, CodigoErro.CRA_PROTOCOLO_INVALIDO.getCodigo()));
+			    pedidosDesistenciaComErro.clear();
 			}
-			criteria.add(disjunction);
-		}
+		    }
+		    arquivo.getRemessaDesistenciaProtesto().getCabecalho().setQuantidadeDesistencia(quantidadeDesistenciasArquivo);
+		    arquivo.getRemessaDesistenciaProtesto().getCabecalho().setQuantidadeRegistro(quantidadeDesistenciasArquivo);
+		    arquivo.getRemessaDesistenciaProtesto().getRodape().setQuantidadeDesistencia((quantidadeDesistenciasArquivo
+			    * 2));
+		    arquivo.getRemessaDesistenciaProtesto().getRodape().setSomatorioValorTitulo(valorTotalDesistenciaArquivo);
 
-		if (dataInicio != null) {
-			criteria.add(Restrictions.between("dataEnvio", dataInicio, dataFim));
+		    arquivo.getRemessaDesistenciaProtesto().setDesistenciaProtesto(desistenciasProtesto);
+		    arquivo.getRemessaDesistenciaProtesto().setCabecalho(save(arquivo.getRemessaDesistenciaProtesto().getCabecalho()));
+		    arquivo.getRemessaDesistenciaProtesto().setRodape(save(arquivo.getRemessaDesistenciaProtesto().getRodape()));
+		    save(arquivo.getRemessaDesistenciaProtesto());
+		    for (DesistenciaProtesto desistenciaProtestos : desistenciasProtesto) {
+			desistenciaProtestos.setCabecalhoCartorio(save(desistenciaProtestos.getCabecalhoCartorio()));
+			desistenciaProtestos.setRodapeCartorio(save(desistenciaProtestos.getRodapeCartorio()));
+			desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
+			save(desistenciaProtestos);
+			for (PedidoDesistencia pedido : desistenciaProtestos.getDesistencias()) {
+			    save(pedido);
+			}
+		    }
+		    transaction.commit();
 		}
-		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO));
-		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO));
-		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO));
-		criteria.addOrder(Order.desc("dataEnvio"));
-		return criteria.list();
+	    } else if (TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
+		new InfraException("Não foi possivel enviar o Cancelamento de Protesto! Entre em contato com a CRA!");
+	    } else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
+		new InfraException("Não foi possivel enviar a Autorização de Cancelamento! Entre em contato com a CRA!");
+	    }
+	    logger.info("O arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário "
+		    + arquivo.getUsuarioEnvio().getLogin() + " salvo com sucesso.");
+
+	} catch (InfraException ex) {
+	    transaction.rollback();
+	    logger.error(ex.getMessage());
+	    throw new InfraException(ex.getMessage());
+	} catch (Exception ex) {
+	    logger.error(ex.getMessage(), ex);
+	    transaction.rollback();
+	    throw new InfraException("Não foi possível inserir esse arquivo na base de dados.");
+	}
+	return arquivoSalvo;
+    }
+
+    public Arquivo alterarStatusArquivo(Arquivo arquivo) {
+	Transaction transaction = getBeginTransation();
+
+	try {
+	    StatusArquivo statusArquivo = save(arquivo.getStatusArquivo());
+	    arquivo.setStatusArquivo(statusArquivo);
+	    update(arquivo);
+
+	    transaction.commit();
+	} catch (Exception ex) {
+	    transaction.rollback();
+	    logger.error(ex.getMessage(), ex);
+	    throw new InfraException("Não foi possível inserir esses dados na base.");
+	}
+	return arquivo;
+    }
+
+    private void setDevolvidoPelaCRA(Remessa remessa) {
+	if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
+	    remessa.setDevolvidoPelaCRA(false);
+	}
+    }
+
+    private void setStatusRemessa(TipoInstituicao tipoInstituicao, Remessa remessa) {
+	if (tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)
+		|| tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
+	    remessa.setStatusRemessa(StatusRemessa.AGUARDANDO);
+	} else if (tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
+	    remessa.setStatusRemessa(StatusRemessa.ENVIADO);
+	}
+    }
+
+    private void setSituacaoLiberadoProBancoEBatimentoRetorno(Arquivo arquivo, Remessa remessa) {
+	if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)
+		|| arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
+	    remessa.setSituacao(false);
+	    if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+		remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.NAO_CONFIRMADO);
+	    }
+	}
+    }
+
+    @Transactional(readOnly = true)
+    public List<Remessa> baixarArquivoInstituicaoRemessa(Arquivo arquivo) {
+	Criteria criteria = getCriteria(Remessa.class);
+	criteria.add(Restrictions.eq("arquivo", arquivo));
+
+	List<Remessa> remessas = criteria.list();
+	arquivo.setRemessas(new ArrayList<Remessa>());
+	for (Remessa remessa : remessas) {
+	    Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
+	    criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+
+	    remessa.setTitulos(criteriaTitulo.list());
+	    arquivo.getRemessas().add(remessa);
+	}
+	return arquivo.getRemessas();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Remessa> baixarArquivoInstituicaoConfirmacao(Arquivo arquivo) {
+	Criteria criteria = getCriteria(Remessa.class);
+	criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
+
+	List<Remessa> remessas = criteria.list();
+	arquivo.setRemessas(new ArrayList<Remessa>());
+	for (Remessa remessa : remessas) {
+	    Criteria criteriaTitulo = getCriteria(Confirmacao.class);
+	    criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+
+	    remessa.setTitulos(criteriaTitulo.list());
+	    arquivo.getRemessas().add(remessa);
+	}
+	return arquivo.getRemessas();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Remessa> baixarArquivoInstituicaoRetorno(Arquivo arquivo) {
+	Criteria criteria = getCriteria(Remessa.class);
+	criteria.add(Restrictions.eq("arquivoGeradoProBanco", arquivo));
+
+	List<Remessa> remessas = criteria.list();
+	arquivo.setRemessas(new ArrayList<Remessa>());
+	for (Remessa remessa : remessas) {
+	    Criteria criteriaTitulo = getCriteria(Retorno.class);
+	    criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+
+	    remessa.setTitulos(criteriaTitulo.list());
+	    arquivo.getRemessas().add(remessa);
+	}
+	return arquivo.getRemessas();
+    }
+
+    @Transactional(readOnly = true)
+    public Arquivo buscarArquivoInstituicaoRemessa(String nomeArquivo, Instituicao instituicaoRecebe) {
+	Criteria criteria = getCriteria(Arquivo.class);
+	criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
+	criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
+
+	Arquivo arquivo = Arquivo.class.cast(criteria.uniqueResult());
+	arquivo.setRemessas(new ArrayList<Remessa>());
+	for (Remessa remessa : arquivo.getRemessaBanco()) {
+	    Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
+	    criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+
+	    remessa.setTitulos(criteriaTitulo.list());
+	    arquivo.getRemessas().add(remessa);
+	}
+	return arquivo;
+    }
+
+    @Transactional(readOnly = true)
+    public Arquivo buscarArquivoInstituicaoConfirmacao(String nomeArquivo, Instituicao instituicaoRecebe) {
+	Criteria criteria = getCriteria(Arquivo.class);
+	criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
+	criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
+
+	Arquivo arquivo = Arquivo.class.cast(criteria.uniqueResult());
+	arquivo.setRemessas(new ArrayList<Remessa>());
+	for (Remessa remessa : arquivo.getRemessaBanco()) {
+	    Criteria criteriaTitulo = getCriteria(Confirmacao.class);
+	    criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+
+	    remessa.setTitulos(criteriaTitulo.list());
+	    arquivo.getRemessas().add(remessa);
+	}
+	return arquivo;
+    }
+
+    @Transactional(readOnly = true)
+    public Arquivo buscarArquivoInstituicaoRetorno(String nomeArquivo, Instituicao instituicaoRecebe) {
+	Criteria criteria = getCriteria(Arquivo.class);
+	criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
+	criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
+
+	Arquivo arquivo = Arquivo.class.cast(criteria.uniqueResult());
+	arquivo.setRemessas(new ArrayList<Remessa>());
+	for (Remessa remessa : arquivo.getRemessaBanco()) {
+	    Criteria criteriaTitulo = getCriteria(Retorno.class);
+	    criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+
+	    remessa.setTitulos(criteriaTitulo.list());
+	    arquivo.getRemessas().add(remessa);
+	}
+	return arquivo;
+    }
+
+    public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos, Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
+	Criteria criteria = getCriteria(Arquivo.class);
+	criteria.createAlias("instituicaoEnvio", "instituicaoEnvio");
+	criteria.createAlias("tipoArquivo", "tipoArquivo");
+	criteria.createAlias("instituicaoEnvio.tipoInstituicao", "tipoInstituicao");
+	criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
+	criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", usuario.getInstituicao()), Restrictions.eq("instituicaoRecebe", usuario.getInstituicao())));
+
+	if (arquivo.getInstituicaoEnvio() != null) {
+	    criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", arquivo.getInstituicaoEnvio()), Restrictions.eq("instituicaoRecebe", arquivo.getInstituicaoEnvio())));
 	}
 
-	@Transactional(readOnly = true)
-	public Arquivo buscarArquivosPorNomeArquivoInstituicaoEnvio(Instituicao instituicao, String nomeArquivo) {
-		Criteria criteria = getCriteria(Arquivo.class);
-		criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));
-		criteria.add(Restrictions.eq("nomeArquivo", nomeArquivo));
-
-		return Arquivo.class.cast(criteria.uniqueResult());
+	if (!situacoes.isEmpty()) {
+	    Disjunction disjunction = Restrictions.disjunction();
+	    criteria.createAlias("statusArquivo", "statusArquivo");
+	    Disjunction disj = Restrictions.disjunction();
+	    for (SituacaoArquivo status : situacoes) {
+		disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", status));
+	    }
+	    criteria.add(disj);
 	}
+
+	if (arquivo.getNomeArquivo() != null && arquivo.getNomeArquivo() != StringUtils.EMPTY) {
+	    criteria.add(Restrictions.ilike("nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
+	}
+
+	if (!tipoArquivos.isEmpty()) {
+	    Disjunction disjunction = Restrictions.disjunction();
+	    for (TipoArquivoEnum tipoArquivo : tipoArquivos) {
+		disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipoArquivo));
+	    }
+	    criteria.add(disjunction);
+	}
+
+	if (dataInicio != null) {
+	    criteria.add(Restrictions.between("dataEnvio", dataInicio, dataFim));
+	}
+	criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO));
+	criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO));
+	criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO));
+	criteria.addOrder(Order.desc("dataEnvio"));
+	return criteria.list();
+    }
+
+    @Transactional(readOnly = true)
+    public Arquivo buscarArquivosPorNomeArquivoInstituicaoEnvio(Instituicao instituicao, String nomeArquivo) {
+	Criteria criteria = getCriteria(Arquivo.class);
+	criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));
+	criteria.add(Restrictions.eq("nomeArquivo", nomeArquivo));
+
+	return Arquivo.class.cast(criteria.uniqueResult());
+    }
 }
