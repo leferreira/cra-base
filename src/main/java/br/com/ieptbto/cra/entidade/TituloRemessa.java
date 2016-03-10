@@ -523,8 +523,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		+ tituloFiliado.getId()));
 	this.setEspecieTitulo(tituloFiliado.getEspecieTitulo().getConstante());
 	this.setNumeroTitulo(tituloFiliado.getNumeroTitulo());
-	this.setDataEmissaoTitulo(tituloFiliado.getDataEmissao());
-	this.setDataVencimentoTitulo(tituloFiliado.getDataVencimento());
+	this.setDataEmissaoTitulo(new LocalDate(tituloFiliado.getDataEmissao()));
+	this.setDataVencimentoTitulo(new LocalDate(tituloFiliado.getDataVencimento()));
 	this.setTipoMoeda("001");
 	this.setValorTitulo(tituloFiliado.getValorTitulo());
 	this.setSaldoTitulo(tituloFiliado.getValorSaldoTitulo());
@@ -559,8 +559,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		+ avalista.getTituloFiliado().getId()));
 	this.setEspecieTitulo(avalista.getTituloFiliado().getEspecieTitulo().getConstante());
 	this.setNumeroTitulo(avalista.getTituloFiliado().getNumeroTitulo());
-	this.setDataEmissaoTitulo(avalista.getTituloFiliado().getDataEmissao());
-	this.setDataVencimentoTitulo(avalista.getTituloFiliado().getDataVencimento());
+	this.setDataEmissaoTitulo(new LocalDate(avalista.getTituloFiliado().getDataEmissao()));
+	this.setDataVencimentoTitulo(new LocalDate(avalista.getTituloFiliado().getDataVencimento()));
 	this.setTipoMoeda("001");
 	this.setValorTitulo(avalista.getTituloFiliado().getValorTitulo());
 	this.setSaldoTitulo(avalista.getTituloFiliado().getValorSaldoTitulo());

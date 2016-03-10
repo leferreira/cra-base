@@ -102,10 +102,8 @@ public class RemessaMediator {
     }
 
     @Transactional
-    public Remessa carregarRemessaPorId(int id) {
-	Remessa remessa = new Remessa();
-	remessa.setId((int) id);
-	return remessaDAO.buscarPorPK(remessa);
+    public Remessa carregarRemessaPorId(Remessa remessa) {
+	return remessaDAO.buscarPorPK(remessa, Remessa.class);
     }
 
     @Transactional
@@ -176,7 +174,6 @@ public class RemessaMediator {
 	logger.info("Iniciar processador do arquivo " + nomeArquivo);
 	processadorArquivo.processarArquivo(arquivoRecebido, usuario, nomeArquivo, arquivo, getErros());
 	logger.info("Fim processador do arquivo " + nomeArquivo);
-
 	arquivo = salvarArquivo(arquivo, usuario);
 	return arquivo;
     }
@@ -379,7 +376,7 @@ public class RemessaMediator {
 	}
 
 	if (arquivo == null) {
-	    return null;
+	    return new ArrayList<RemessaVO>();
 	}
 	StatusArquivo statusArquivo = new StatusArquivo();
 	statusArquivo.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
@@ -392,6 +389,7 @@ public class RemessaMediator {
     }
 
     public void alterarParaDevolvidoPelaCRA(Remessa remessa) {
+	remessa = carregarRemessaPorId(remessa);
 	remessa.setDevolvidoPelaCRA(true);
 	remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
 	remessaDAO.update(remessa);

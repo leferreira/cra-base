@@ -44,8 +44,8 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
     private static final long serialVersionUID = 1L;
     private int id;
     private String numeroTitulo;
-    private LocalDate dataEmissao;
-    private LocalDate dataVencimento;
+    private Date dataEmissao;
+    private Date dataVencimento;
     private BigDecimal valorTitulo;
     private BigDecimal valorSaldoTitulo;
     private Municipio pracaProtesto;
@@ -61,14 +61,14 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
     private TipoAlineaCheque alinea;
     private Filiado filiado;
     private SituacaoTituloConvenio situacaoTituloConvenio;
-    private LocalDate dataEnvioCRA;
+    private Date dataEnvioCRA;
     private Date dataEntrada;
     private TipoEspecieTitulo especieTitulo;
     private String CpfCnpj;
     private Usuario usuarioEntradaManual;
     private SetorFiliado setor;
-
-    private SolicitacaoDesistenciaCancelamentoConvenio solicitacaoDesistenciaCancelamento;
+    // private SolicitacaoDesistenciaCancelamentoConvenio
+    // solicitacaoDesistenciaCancelamento;
 
     @Override
     @Id
@@ -94,12 +94,14 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
     }
 
     @Column(name = "DATA_VENCIMENTO", nullable = false)
-    public LocalDate getDataVencimento() {
+    @Temporal(TemporalType.DATE)
+    public Date getDataVencimento() {
 	return dataVencimento;
     }
 
     @Column(name = "DATA_EMISSAO", nullable = false)
-    public LocalDate getDataEmissao() {
+    @Temporal(TemporalType.DATE)
+    public Date getDataEmissao() {
 	return dataEmissao;
     }
 
@@ -126,10 +128,11 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	return enderecoDevedor;
     }
 
-    @OneToOne(mappedBy = "tituloFiliado")
-    public SolicitacaoDesistenciaCancelamentoConvenio getSolicitacaoDesistenciaCancelamento() {
-	return solicitacaoDesistenciaCancelamento;
-    }
+    // @OneToOne(mappedBy = "tituloFiliado")
+    // public SolicitacaoDesistenciaCancelamentoConvenio
+    // getSolicitacaoDesistenciaCancelamento() {
+    // return solicitacaoDesistenciaCancelamento;
+    // }
 
     @Column(name = "CIDADE_DEVEDOR", length = 20)
     public String getCidadeDevedor() {
@@ -186,7 +189,8 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
     }
 
     @Column(name = "DATA_ENVIO_CRA")
-    public LocalDate getDataEnvioCRA() {
+    @Temporal(TemporalType.DATE)
+    public Date getDataEnvioCRA() {
 	return dataEnvioCRA;
     }
 
@@ -211,11 +215,14 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	CpfCnpj = cpfCnpj;
     }
 
-    public void setSolicitacaoDesistenciaCancelamento(SolicitacaoDesistenciaCancelamentoConvenio solicitacaoDesistenciaCancelamento) {
-	this.solicitacaoDesistenciaCancelamento = solicitacaoDesistenciaCancelamento;
-    }
+    // public void
+    // setSolicitacaoDesistenciaCancelamento(SolicitacaoDesistenciaCancelamentoConvenio
+    // solicitacaoDesistenciaCancelamento) {
+    // this.solicitacaoDesistenciaCancelamento =
+    // solicitacaoDesistenciaCancelamento;
+    // }
 
-    public void setDataEnvioCRA(LocalDate dataEnvioCRA) {
+    public void setDataEnvioCRA(Date dataEnvioCRA) {
 	this.dataEnvioCRA = dataEnvioCRA;
     }
 
@@ -247,11 +254,11 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	this.valorSaldoTitulo = valorSaldoTitulo;
     }
 
-    public void setDataVencimento(LocalDate dataVencimento) {
+    public void setDataVencimento(Date dataVencimento) {
 	this.dataVencimento = dataVencimento;
     }
 
-    public void setDataEmissao(LocalDate dataEmissao) {
+    public void setDataEmissao(Date dataEmissao) {
 	this.dataEmissao = dataEmissao;
     }
 

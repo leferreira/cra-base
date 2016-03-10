@@ -32,7 +32,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class TituloFiliadoDAO extends AbstractBaseDAO {
 
     @Autowired
-    AvalistaDAO avalistaDAO;
+    private AvalistaDAO avalistaDAO;
 
     public TituloFiliado salvar(TituloFiliado titulo) {
 	TituloFiliado novoTitulo = new TituloFiliado();
@@ -113,7 +113,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 	try {
 	    for (TituloFiliado titulo : listaTitulosFiliado) {
 		titulo.setSituacaoTituloConvenio(SituacaoTituloConvenio.ENVIADO);
-		titulo.setDataEnvioCRA(new LocalDate());
+		titulo.setDataEnvioCRA(new LocalDate().toDate());
 		update(titulo);
 	    }
 	    transaction.commit();
@@ -301,7 +301,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
     public SolicitacaoDesistenciaCancelamentoConvenio enviarSolicitacaoDesistenciaCancelamento(SolicitacaoDesistenciaCancelamentoConvenio solicitacao) {
 	Transaction transaction = getBeginTransation();
 	try {
-	    solicitacao.getTituloFiliado().setSolicitacaoDesistenciaCancelamento(solicitacao);
+	    // solicitacao.getTituloFiliado().setSolicitacaoDesistenciaCancelamento(solicitacao);
 	    solicitacao.setTituloFiliado(update(solicitacao.getTituloFiliado()));
 	    save(solicitacao);
 	    logger.info("Solicitação de Desistência ou Cancelamento enviada !");

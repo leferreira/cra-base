@@ -8,9 +8,9 @@ import br.com.ieptbto.cra.entidade.TituloRemessa;
  */
 public class RegraBancoDoBrasilAgencia extends RegraAgenciaBanco {
 
-	@Override
-	public String aplicarRegraEspecifica(TituloRemessa titulo) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String aplicarRegraEspecifica(TituloRemessa titulo) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 }

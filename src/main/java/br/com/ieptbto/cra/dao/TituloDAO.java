@@ -26,7 +26,6 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.BancoAgenciaCentralizadoraCodigoCartorio;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -55,7 +54,7 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	if (titulo.getNumeroProtocoloCartorio() != null && titulo.getNumeroProtocoloCartorio() != StringUtils.EMPTY) {
 	    criteria.createAlias("confirmacao", "confirmacao");
-	    criteria.add(Restrictions.ilike("confirmacao.numeroProtocoloCartorio", titulo.getNumeroProtocoloCartorio(), MatchMode.ANYWHERE));
+	    criteria.add(Restrictions.eq("confirmacao.numeroProtocoloCartorio", titulo.getNumeroProtocoloCartorio()));
 	}
 
 	if (titulo.getNumeroTitulo() != null && titulo.getNumeroTitulo() != StringUtils.EMPTY)
@@ -91,37 +90,14 @@ public class TituloDAO extends AbstractBaseDAO {
 	return criteria.list();
     }
 
-    public List<TituloRemessa> buscarTitulosPorRemessa(Remessa remessa, Instituicao instituicaoCorrente) {
-	Criteria criteria = getCriteria(TituloRemessa.class);
-	criteria.createAlias("remessa", "remessa");
-	criteria.createAlias("remessa.arquivo", "arquivo");
-
-	if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
-	    criteria.add(Restrictions.eq("remessa", remessa));
-	    criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("nomeDevedor"));
-	} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
-	    criteria.createAlias("confirmacao", "confirmacao");
-	    criteria.add(Restrictions.eq("confirmacao.remessa", remessa));
-	    criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("confirmacao.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
-	} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-	    criteria.createAlias("retorno", "retorno");
-	    criteria.add(Restrictions.eq("retorno.remessa", remessa));
-	    criteria.addOrder(Order.asc("codigoPortador")).addOrder(Order.asc("pracaProtesto")).addOrder(Order.asc("retorno.tipoOcorrencia")).addOrder(Order.asc("nomeDevedor"));
-	}
-	if (!instituicaoCorrente.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-	    criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoCorrente), Restrictions.eq("remessa.instituicaoDestino", instituicaoCorrente)));
-	}
-	return criteria.list();
-    }
-
     public TituloRemessa buscarTituloPorChave(TituloRemessa titulo) {
 	Criteria criteria = getCriteria(TituloRemessa.class);
 	criteria.add(Restrictions.eq("dataCadastro", titulo.getDataCadastro()));
 	criteria.add(Restrictions.eq("codigoPortador", titulo.getCodigoPortador()));
 	criteria.add(Restrictions.eq("nossoNumero", titulo.getNossoNumero()));
-	if (titulo.getNumeroTitulo() != null)
+	if (titulo.getNumeroTitulo() != null) {
 	    criteria.add(Restrictions.eq("numeroTitulo", titulo.getNumeroTitulo()));
-
+	}
 	TituloRemessa tituloRemessa = TituloRemessa.class.cast(criteria.uniqueResult());
 	if (tituloRemessa == null)
 	    throw new InfraException("O Título [ Nosso Número : " + titulo.getNossoNumero() + " ] não existe na CRA !");
@@ -168,8 +144,9 @@ public class TituloDAO extends AbstractBaseDAO {
 	TituloRemessa titulo = buscaTituloRetornoSalvo(tituloRetorno);
 
 	if (titulo == null) {
-	    throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero()
-		    + "] não existe em nossa base de dados.");
+	    throw new InfraException("O título com o Nosso Número " + tituloRetorno.getNossoNumero() + " e Protocolo "
+		    + tituloRetorno.getNumeroProtocoloCartorio()
+		    + ", não foi localizado na CRA. Verifique se já enviou a CONFIRMAÇÃO !");
 	}
 	if (titulo.getPedidosDesistencia() != null) {
 	    for (PedidoDesistencia pedido : titulo.getPedidosDesistencia()) {
@@ -194,14 +171,14 @@ public class TituloDAO extends AbstractBaseDAO {
 		    tituloRetorno.setNumeroProtocoloCartorio(numeroProtocolo.toString());
 		    if (numeroProtocolo.equals(0)) {
 			if (!tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-			    throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero()
-				    + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");
+			    throw new InfraException("O título com o Nosso Número " + tituloRetorno.getNossoNumero()
+				    + ", está com o número de protocolo vazio e está sem o código de ocorrência!");
 			}
 			if (tituloRetorno.getCodigoIrregularidade() != null) {
 			    if (StringUtils.isBlank(tituloRetorno.getCodigoIrregularidade().trim())
 				    || tituloRetorno.getCodigoIrregularidade().equals("00")) {
 				throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero()
-					+ "] foi devolvido e não contém o código da irregularidade!");
+					+ "] foi devolvido e não contém o código de irregularidade!");
 			    }
 			}
 		    }
@@ -221,8 +198,7 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	} catch (Exception ex) {
 	    logger.error(ex.getMessage(), ex.getCause());
-	    new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero()
-		    + "] não existe em nossa base de dados.");
+	    new InfraException("Não foi possível salvar o título do arquivo de retorno! Entre em contato com a CRA !");
 	}
 	return null;
     }
@@ -242,6 +218,9 @@ public class TituloDAO extends AbstractBaseDAO {
 		return titulo;
 	    } else {
 		logger.error(new InfraException("Titulo nº" + titulo.getNumeroTitulo() + " já tem retorno!"));
+		throw new InfraException("O título com o \b Nosso Número " + tituloRetorno.getNossoNumero()
+			+ "\b e Protocolo " + tituloRetorno.getNumeroProtocoloCartorio()
+			+ ", já foi enviado em outro arquivo de retorno!");
 	    }
 	}
 	return null;

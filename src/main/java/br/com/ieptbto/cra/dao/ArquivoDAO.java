@@ -316,6 +316,9 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
 
 	Arquivo arquivo = Arquivo.class.cast(criteria.uniqueResult());
+	if (arquivo == null) {
+	    return null;
+	}
 	arquivo.setRemessas(new ArrayList<Remessa>());
 	for (Remessa remessa : arquivo.getRemessaBanco()) {
 	    Criteria criteriaTitulo = getCriteria(Confirmacao.class);
@@ -334,6 +337,9 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
 
 	Arquivo arquivo = Arquivo.class.cast(criteria.uniqueResult());
+	if (arquivo == null) {
+	    return null;
+	}
 	arquivo.setRemessas(new ArrayList<Remessa>());
 	for (Remessa remessa : arquivo.getRemessaBanco()) {
 	    Criteria criteriaTitulo = getCriteria(Retorno.class);
