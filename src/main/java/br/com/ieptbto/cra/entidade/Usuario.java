@@ -49,7 +49,7 @@ public class Usuario extends AbstractEntidade<Usuario> implements IClusterable, 
     private GrupoUsuario grupoUsuario;
     private Instituicao instituicao;
     private List<TituloFiliado> titulosEntradaManual;
-    private List<RegistroAcao> registrosAcoes;
+    private List<LogAcao> registrosAcoes;
 
     @Override
     @Id
@@ -92,7 +92,7 @@ public class Usuario extends AbstractEntidade<Usuario> implements IClusterable, 
     }
 
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
-    public List<RegistroAcao> getRegistrosAcoes() {
+    public List<LogAcao> getRegistrosAcoes() {
 	return registrosAcoes;
     }
 
@@ -127,7 +127,7 @@ public class Usuario extends AbstractEntidade<Usuario> implements IClusterable, 
 	this.nome = nome;
     }
 
-    public void setRegistrosAcoes(List<RegistroAcao> registrosAcoes) {
+    public void setRegistrosAcoes(List<LogAcao> registrosAcoes) {
 	this.registrosAcoes = registrosAcoes;
     }
 

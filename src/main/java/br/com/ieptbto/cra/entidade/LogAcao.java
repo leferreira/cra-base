@@ -26,9 +26,9 @@ import br.com.ieptbto.cra.exception.InfraException;
  */
 @Entity
 @Audited
-@Table(name = "TB_REGISTRO_ACAO")
-@org.hibernate.annotations.Table(appliesTo = "TB_REGISTRO_ACAO")
-public class RegistroAcao extends AbstractEntidade<RegistroAcao> {
+@Table(name = "TB_LOG_ACAO")
+@org.hibernate.annotations.Table(appliesTo = "TB_LOG_ACAO")
+public class LogAcao extends AbstractEntidade<LogAcao> {
 
     /***/
     private static final long serialVersionUID = 1L;
@@ -40,7 +40,7 @@ public class RegistroAcao extends AbstractEntidade<RegistroAcao> {
     private Usuario usuario;
     private Date data;
 
-    public RegistroAcao(String acao, String descricao, Exception exception, TipoAcao tipoAcao, Usuario usuario) {
+    public LogAcao(String acao, String descricao, Exception exception, TipoAcao tipoAcao, Usuario usuario) {
 	this.acao = acao;
 	this.descricao = descricao;
 	this.excecao = exception;
@@ -49,7 +49,7 @@ public class RegistroAcao extends AbstractEntidade<RegistroAcao> {
 	this.data = new Date();
     }
 
-    public RegistroAcao(String acao, String descricao, TipoAcao tipoAcao, Usuario usuario) {
+    public LogAcao(String acao, String descricao, TipoAcao tipoAcao, Usuario usuario) {
 	this.acao = acao;
 	this.acao = acao;
 	this.descricao = descricao;
@@ -129,14 +129,14 @@ public class RegistroAcao extends AbstractEntidade<RegistroAcao> {
     }
 
     @Override
-    public int compareTo(RegistroAcao entidade) {
+    public int compareTo(LogAcao entidade) {
 	return 0;
     }
 
     @Override
     public boolean equals(Object user) {
-	if (getId() != 0 && user instanceof RegistroAcao) {
-	    return getId() == ((RegistroAcao) user).getId();
+	if (getId() != 0 && user instanceof LogAcao) {
+	    return getId() == ((LogAcao) user).getId();
 	}
 	return false;
     }
