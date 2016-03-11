@@ -18,7 +18,6 @@ import javax.persistence.TemporalType;
 import org.hibernate.envers.Audited;
 
 import br.com.ieptbto.cra.enumeration.TipoAcao;
-import br.com.ieptbto.cra.exception.InfraException;
 
 /**
  * @author Thasso Aráujo
@@ -40,26 +39,6 @@ public class LogAcao extends AbstractEntidade<LogAcao> {
     private Usuario usuario;
     private Date data;
 
-    public LogAcao(String acao, String descricao, Exception exception, TipoAcao tipoAcao, Usuario usuario) {
-	this.acao = acao;
-	this.descricao = descricao;
-	this.excecao = exception;
-	this.tipoAcao = tipoAcao;
-	this.usuario = usuario;
-	this.data = new Date();
-    }
-
-    public LogAcao(String acao, String descricao, TipoAcao tipoAcao, Usuario usuario) {
-	this.acao = acao;
-	this.acao = acao;
-	this.descricao = descricao;
-	this.excecao = new InfraException(descricao);
-	this.tipoAcao = tipoAcao;
-	this.usuario = usuario;
-	this.data = new Date();
-    }
-
-    @Override
     @Id
     @Column(name = "ID_REGISTRO_ACAO", columnDefinition = "serial")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
