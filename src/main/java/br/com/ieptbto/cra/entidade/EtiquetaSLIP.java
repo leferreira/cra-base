@@ -146,7 +146,7 @@ public class EtiquetaSLIP extends AbstractEntidade<EtiquetaSLIP> {
 	return numeroProtocoloCartorio;
     }
 
-    @Column(name = "PRACA_PROTESTO", length = 20)
+    @Column(name = "PRACA_PROTESTO", length = 30)
     public String getPracaProtesto() {
 	return pracaProtesto;
     }

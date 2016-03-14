@@ -6,10 +6,9 @@ package br.com.ieptbto.cra.enumeration;
  */
 public enum TipoAcao {
 
-	SUCESSO("Sucesso","ocorrencia_sucesso"),
-	OCORRECIA_ERRO("Ocorrência Erro","ocorrencia_erro"),
-	ALERTA("Alerta","ocorrencia_alerta"),
-	INFORMACAO("Informação","ocorrencia_info");
+	SUCESSO("Sucesso","ocorrencia-sucesso"),
+	OCORRECIA_ERRO("Ocorrência Erro","ocorrencia-erro"),
+	ALERTA("Alerta","ocorrencia-alerta");
 
     private String label;
     private String idHtml;
