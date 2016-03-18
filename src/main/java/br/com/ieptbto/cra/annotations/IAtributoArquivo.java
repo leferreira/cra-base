@@ -19,82 +19,82 @@ import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
 @Documented
 public @interface IAtributoArquivo {
 
-	/**
-	 * Define o tamanho do campo
-	 * 
-	 * @return
-	 */
-	int tamanho();
+    /**
+     * Define o tamanho do campo
+     * 
+     * @return
+     */
+    int tamanho();
 
-	/**
-	 * Define a posição inicial dos campos
-	 * 
-	 * @return
-	 */
-	int posicao();
+    /**
+     * Define a posição inicial dos campos
+     * 
+     * @return
+     */
+    int posicao();
 
-	/**
-	 * Define qual o lado dos campo vazio (se esquerdo ou direito do conteudo)
-	 * 
-	 * @return
-	 */
-	PosicaoCampoVazio posicaoCampoVazio() default PosicaoCampoVazio.DIREITO;
+    /**
+     * Define qual o lado dos campo vazio (se esquerdo ou direito do conteudo)
+     * 
+     * @return
+     */
+    PosicaoCampoVazio posicaoCampoVazio() default PosicaoCampoVazio.DIREITO;
 
-	/**
-	 * 
-	 * Define a ordem do campo
-	 * 
-	 * @return
-	 */
-	int ordem();
+    /**
+     * 
+     * Define a ordem do campo
+     * 
+     * @return
+     */
+    int ordem();
 
-	/**
-	 * Definição das validações dos campos
-	 * 
-	 * @return
-	 */
-	String validacao() default "";
+    /**
+     * Definição das validações dos campos
+     * 
+     * @return
+     */
+    String validacao() default "";
 
-	/**
-	 * Formato do dado, se existir.
-	 * 
-	 * @return
-	 */
-	String formato() default " ";
+    /**
+     * Formato do dado, se existir.
+     * 
+     * @return
+     */
+    String formato() default " ";
 
-	/**
-	 * Espaços em branco após o campo.
-	 * 
-	 * @return
-	 */
-	int filler() default 0;
+    /**
+     * Espaços em branco após o campo.
+     * 
+     * @return
+     */
+    int filler() default 0;
 
-	/**
-	 * Define se o campo é obrigatório
-	 * 
-	 * @return
-	 */
-	boolean obrigatoriedade() default false;
+    /**
+     * Define se o campo é obrigatório
+     * 
+     * @return
+     */
+    boolean obrigatoriedade() default false;
 
-	/**
-	 * Descrição do campo.
-	 * 
-	 * @return
-	 */
-	String descricao();
+    /**
+     * Descrição do campo.
+     * 
+     * @return
+     */
+    String descricao();
 
-	/**
-	 * Quando se tratar de um campo multivalorado (lista), deverá ser informado
-	 * a quantidade máxima de itens.
-	 * 
-	 * @return
-	 */
-	int quantidadeItens() default 1;
+    /**
+     * Quando se tratar de um campo multivalorado (lista), deverá ser informado
+     * a quantidade máxima de itens.
+     * 
+     * @return
+     */
+    int quantidadeItens() default 1;
 
-	/**
-	 * Definite o tipo do campo
-	 * 
-	 * @return
-	 */
-	Class<?> tipo() default Object.class;
+    /**
+     * Definite o tipo do campo
+     * 
+     * @return
+     */
+    Class<?> tipo() default Object.class;
 }

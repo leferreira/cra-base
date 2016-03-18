@@ -4,7 +4,7 @@ package br.com.ieptbto.cra.enumeration;
  * @author Thasso Aráujo
  *
  */
-public enum TipoAcao {
+public enum TipoLog {
 
 	SUCESSO("Sucesso","ocorrencia-sucesso"),
 	OCORRECIA_ERRO("Ocorrência Erro","ocorrencia-erro"),
@@ -13,7 +13,7 @@ public enum TipoAcao {
     private String label;
     private String idHtml;
 
-    private TipoAcao(String label, String idHtml) {
+    private TipoLog(String label, String idHtml) {
 	this.label = label;
 	this.idHtml = idHtml;
     }

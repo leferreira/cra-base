@@ -17,7 +17,8 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.enumeration.TipoAcao;
+import br.com.ieptbto.cra.enumeration.TipoAcaoLog;
+import br.com.ieptbto.cra.enumeration.TipoLog;
 
 /**
  * @author Thasso Aráujo
@@ -25,17 +26,17 @@ import br.com.ieptbto.cra.enumeration.TipoAcao;
  */
 @Entity
 @Audited
-@Table(name = "TB_LOG_ACAO")
-@org.hibernate.annotations.Table(appliesTo = "TB_LOG_ACAO")
-public class LogAcao extends AbstractEntidade<LogAcao> {
+@Table(name = "TB_LOG_CRA")
+@org.hibernate.annotations.Table(appliesTo = "TB_LOG_CRA")
+public class LogCra extends AbstractEntidade<LogCra> {
 
     /***/
     private static final long serialVersionUID = 1L;
     private int id;
-    private String acao;
+    private TipoAcaoLog acao;
     private String descricao;
     private Exception excecao;
-    private TipoAcao tipoAcao;
+    private TipoLog tipoLog;
     private Usuario usuario;
     private Date data;
 
@@ -46,8 +47,9 @@ public class LogAcao extends AbstractEntidade<LogAcao> {
 	return id;
     }
 
-    @Column(name = "ACAO", nullable = false, length = 20)
-    public String getAcao() {
+    @Column(name = "ACAO", nullable = false, length = 50)
+    @Enumerated(EnumType.STRING)
+    public TipoAcaoLog getAcao() {
 	return acao;
     }
 
@@ -61,10 +63,10 @@ public class LogAcao extends AbstractEntidade<LogAcao> {
 	return excecao;
     }
 
-    @Column(name = "TIPO_ACAO", length = 150)
+    @Column(name = "TIPO_LOG", length = 150)
     @Enumerated(EnumType.STRING)
-    public TipoAcao getTipoAcao() {
-	return tipoAcao;
+    public TipoLog getTipoLog() {
+	return tipoLog;
     }
 
     @ManyToOne
@@ -83,7 +85,7 @@ public class LogAcao extends AbstractEntidade<LogAcao> {
 	this.id = id;
     }
 
-    public void setAcao(String acao) {
+    public void setAcao(TipoAcaoLog acao) {
 	this.acao = acao;
     }
 
@@ -95,8 +97,8 @@ public class LogAcao extends AbstractEntidade<LogAcao> {
 	this.excecao = excecao;
     }
 
-    public void setTipoAcao(TipoAcao tipoAcao) {
-	this.tipoAcao = tipoAcao;
+    public void setTipoLog(TipoLog tipoL) {
+	this.tipoLog = tipoL;
     }
 
     public void setUsuario(Usuario usuario) {
@@ -108,14 +110,14 @@ public class LogAcao extends AbstractEntidade<LogAcao> {
     }
 
     @Override
-    public int compareTo(LogAcao entidade) {
+    public int compareTo(LogCra entidade) {
 	return 0;
     }
 
     @Override
     public boolean equals(Object user) {
-	if (getId() != 0 && user instanceof LogAcao) {
-	    return getId() == ((LogAcao) user).getId();
+	if (getId() != 0 && user instanceof LogCra) {
+	    return getId() == ((LogCra) user).getId();
 	}
 	return false;
     }
@@ -126,5 +128,10 @@ public class LogAcao extends AbstractEntidade<LogAcao> {
 	    return 0;
 	}
 	return getId();
+    }
+
+    @Override
+    public String toString() {
+	return "CraLog Registrado: [" + tipoLog.getLabel() + "] " + descricao;
     }
 }

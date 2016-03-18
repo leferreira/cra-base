@@ -17,29 +17,29 @@ import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
  */
 public class ArquivoBancoDoBrasil extends AbstractDePara {
 
-	private List<AgenciaBancoDoBrasil> listaAgencias = new ArrayList<AgenciaBancoDoBrasil>();
-	
-	@Override
-	public List<AgenciaBancoDoBrasil> processar(FileUpload file) {
-		
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), "ISO-8859-1"));
-			String linha = "";
+    private List<AgenciaBancoDoBrasil> listaAgencias = new ArrayList<AgenciaBancoDoBrasil>();
 
-			while ((linha = reader.readLine()) != null) {
-				AgenciaBancoDoBrasil agenciaBancoDoBrasil = new AgenciaBancoDoBrasil();
-				agenciaBancoDoBrasil.setNumeroContrato(linha.substring(1, 9));
-				agenciaBancoDoBrasil.setAgenciaDestino(linha.substring(10, 13));
-				
-				listaAgencias.add(agenciaBancoDoBrasil);
-			}
-			reader.close();
-			
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return listaAgencias;
+    @Override
+    public List<AgenciaBancoDoBrasil> processar(FileUpload file) {
+
+	try {
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), "ISO-8859-1"));
+	    String linha = "";
+
+	    while ((linha = reader.readLine()) != null) {
+		AgenciaBancoDoBrasil agenciaBancoDoBrasil = new AgenciaBancoDoBrasil();
+		agenciaBancoDoBrasil.setNumeroContrato(linha.substring(1, 9));
+		agenciaBancoDoBrasil.setAgenciaDestino(linha.substring(10, 13));
+
+		listaAgencias.add(agenciaBancoDoBrasil);
+	    }
+	    reader.close();
+
+	} catch (UnsupportedEncodingException e) {
+	    e.printStackTrace();
+	} catch (IOException e) {
+	    e.printStackTrace();
 	}
+	return listaAgencias;
+    }
 }

@@ -95,10 +95,8 @@ public class RemessaMediator {
     private List<Exception> erros;
 
     @Transactional
-    public CabecalhoRemessa carregarCabecalhoRemessaPorId(int id) {
-	CabecalhoRemessa cabecalho = new CabecalhoRemessa();
-	cabecalho.setId(id);
-	return remessaDAO.buscarPorPK(cabecalho, CabecalhoRemessa.class);
+    public CabecalhoRemessa carregarCabecalhoRemessaPorId(CabecalhoRemessa cabecalhoRemessa) {
+	return remessaDAO.buscarPorPK(cabecalhoRemessa, CabecalhoRemessa.class);
     }
 
     @Transactional
@@ -107,9 +105,7 @@ public class RemessaMediator {
     }
 
     @Transactional
-    public Rodape carregarRodapeRemessaPorId(int id) {
-	Rodape rodape = new Rodape();
-	rodape.setId(id);
+    public Rodape carregarRodapeRemessaPorId(Rodape rodape) {
 	return remessaDAO.buscarPorPK(rodape, Rodape.class);
     }
 
@@ -333,15 +329,12 @@ public class RemessaMediator {
 
 	Arquivo arquivo = new Arquivo();
 	arquivo.setRemessas(remessas);
-
 	RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
 	remessaDesistenciaProtesto.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>(desistenciasProtesto));
 	arquivo.setRemessaDesistenciaProtesto(remessaDesistenciaProtesto);
-
 	RemessaAutorizacaoCancelamento remessaAutorizacaoCancelamento = new RemessaAutorizacaoCancelamento();
 	remessaAutorizacaoCancelamento.setAutorizacaoCancelamento(autorizacaoCancelamento);
 	arquivo.setRemessaAutorizacao(remessaAutorizacaoCancelamento);
-
 	RemessaCancelamentoProtesto remessaCancelamento = new RemessaCancelamentoProtesto();
 	remessaCancelamento.setCancelamentoProtesto(cancelamentoProtesto);
 	arquivo.setRemessaCancelamentoProtesto(remessaCancelamento);

@@ -13,11 +13,11 @@ import br.com.ieptbto.cra.enumeration.PadraoArquivoDePara;
  */
 public abstract class AbstractDePara {
 
-	protected PadraoArquivoDePara padrao;
+    protected PadraoArquivoDePara padrao;
 
-	public PadraoArquivoDePara getPadrao() {
-		return this.padrao;
-	}
+    public PadraoArquivoDePara getPadrao() {
+	return this.padrao;
+    }
 
-	public abstract List<?> processar(FileUpload file);
+    public abstract List<?> processar(FileUpload file);
 }

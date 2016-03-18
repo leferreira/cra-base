@@ -230,14 +230,14 @@ public class TituloDAO extends AbstractBaseDAO {
 	TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao);
 
 	if (titulo == null) {
-	    throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero()
-		    + "] não existe em nossa base de dados.");
+	    throw new InfraException("O título Nosso número =" + tituloConfirmacao.getNossoNumero()
+		    + "não foi localizado na CRA. Verifique os dados do arquivo!.");
 	}
 	if (tituloConfirmacao.getTipoOcorrencia() != null) {
 	    if (tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())
 		    && tituloConfirmacao.getCodigoIrregularidade().equals("00")) {
-		throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero()
-			+ "] foi devolvido e não contém código irregularidade!");
+		throw new InfraException("O título com o Nosso número " + tituloConfirmacao.getNossoNumero()
+			+ " foi devolvido e não contém código irregularidade!");
 	    }
 	    if (tituloConfirmacao.getNumeroProtocoloCartorio() != null) {
 		if (!StringUtils.isBlank(tituloConfirmacao.getNumeroProtocoloCartorio().trim())) {
@@ -245,14 +245,15 @@ public class TituloDAO extends AbstractBaseDAO {
 		    tituloConfirmacao.setNumeroProtocoloCartorio(numeroProtocolo.toString());
 		    if (numeroProtocolo.equals(0)) {
 			if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-			    throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero()
-				    + "] está com o número de protocolo vazio e não está com a ocorrência de devolvido!");
+			    throw new InfraException("O título com o Nosso número " + tituloConfirmacao.getNossoNumero()
+				    + " está com o número de protocolo vazio ou zerado e não está com a ocorrência de devolvido!");
 			}
 			if (tituloConfirmacao.getCodigoIrregularidade() != null) {
 			    if (StringUtils.isBlank(tituloConfirmacao.getCodigoIrregularidade().trim())
 				    || tituloConfirmacao.getCodigoIrregularidade().equals("00")) {
-				throw new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero()
-					+ "] foi devolvido e não contém o código da irregularidade!");
+				throw new InfraException("O título com o Nosso número "
+					+ tituloConfirmacao.getNossoNumero()
+					+ " foi devolvido e não contém o código da irregularidade!");
 			    }
 			}
 		    }

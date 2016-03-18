@@ -23,238 +23,238 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 @XmlAccessorType(XmlAccessType.NONE)
 public class CabecalhoVO extends AbstractArquivoVO {
 
-	@XmlAttribute(name = "h01", required = true)
-	@IAtributoArquivo(ordem = 1, posicao = 1, tamanho = 1, descricao = "Identificar o registro header no arquivo. Constante 0.", obrigatoriedade = true, validacao = "0", tipo = Integer.class)
-	private String identificacaoRegistro;
+    @XmlAttribute(name = "h01", required = true)
+    @IAtributoArquivo(ordem = 1, posicao = 1, tamanho = 1, descricao = "Identificar o registro header no arquivo. Constante 0.", obrigatoriedade = true, validacao = "0", tipo = Integer.class)
+    private String identificacaoRegistro;
 
-	@XmlAttribute(name = "h02", required = true)
-	@IAtributoArquivo(ordem = 2, posicao = 2, tamanho = 3, descricao = "Identificar o código do banco/portador. Preencher com o código compensação do Banco ou número de identificação do portador.", obrigatoriedade = true)
-	private String numeroCodigoPortador;
+    @XmlAttribute(name = "h02", required = true)
+    @IAtributoArquivo(ordem = 2, posicao = 2, tamanho = 3, descricao = "Identificar o código do banco/portador. Preencher com o código compensação do Banco ou número de identificação do portador.", obrigatoriedade = true)
+    private String numeroCodigoPortador;
 
-	@XmlAttribute(name = "h03", required = true)
-	@IAtributoArquivo(ordem = 3, posicao = 5, tamanho = 40, descricao = "Preencher com o nome do Portador.('Razão Social')", obrigatoriedade = true)
-	private String nomePortador;
+    @XmlAttribute(name = "h03", required = true)
+    @IAtributoArquivo(ordem = 3, posicao = 5, tamanho = 40, descricao = "Preencher com o nome do Portador.('Razão Social')", obrigatoriedade = true)
+    private String nomePortador;
 
-	@XmlAttribute(name = "h04", required = true)
-	@IAtributoArquivo(ordem = 4, posicao = 45, tamanho = 8, formato = "", descricao = "Identificar a data de envio da Remessa ao serviço de distribuição, no formato DDMMAAAA.", obrigatoriedade = true)
-	private String dataMovimento;
+    @XmlAttribute(name = "h04", required = true)
+    @IAtributoArquivo(ordem = 4, posicao = 45, tamanho = 8, formato = "", descricao = "Identificar a data de envio da Remessa ao serviço de distribuição, no formato DDMMAAAA.", obrigatoriedade = true)
+    private String dataMovimento;
 
-	@XmlAttribute(name = "h05", required = true)
-	@IAtributoArquivo(ordem = 5, posicao = 53, tamanho = 3, descricao = "Preencher com a sigla do remetente do arquivo. BFO - Banco,Instituição Financeira e outros.", obrigatoriedade = true)
-	private String identificacaoTransacaoRemetente;
+    @XmlAttribute(name = "h05", required = true)
+    @IAtributoArquivo(ordem = 5, posicao = 53, tamanho = 3, descricao = "Preencher com a sigla do remetente do arquivo. BFO - Banco,Instituição Financeira e outros.", obrigatoriedade = true)
+    private String identificacaoTransacaoRemetente;
 
-	@XmlAttribute(name = "h06", required = true)
-	@IAtributoArquivo(ordem = 6, posicao = 56, tamanho = 3, descricao = "Preencher com a sigla do destinatário do arquivo. SDT - Serviços de Distribuição de Títulos.", obrigatoriedade = true)
-	private String identificacaoTransacaoDestinatario;
+    @XmlAttribute(name = "h06", required = true)
+    @IAtributoArquivo(ordem = 6, posicao = 56, tamanho = 3, descricao = "Preencher com a sigla do destinatário do arquivo. SDT - Serviços de Distribuição de Títulos.", obrigatoriedade = true)
+    private String identificacaoTransacaoDestinatario;
 
-	@XmlAttribute(name = "h07", required = true)
-	@IAtributoArquivo(ordem = 7, posicao = 59, tamanho = 3, descricao = "Preencher com a sigla de identificação da transação. TPR - Remessa de títulos para protesto.", obrigatoriedade = true)
-	private String identificacaoTransacaoTipo;
+    @XmlAttribute(name = "h07", required = true)
+    @IAtributoArquivo(ordem = 7, posicao = 59, tamanho = 3, descricao = "Preencher com a sigla de identificação da transação. TPR - Remessa de títulos para protesto.", obrigatoriedade = true)
+    private String identificacaoTransacaoTipo;
 
-	@XmlAttribute(name = "h08", required = true)
-	@IAtributoArquivo(ordem = 8, posicao = 62, tamanho = 6, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Controlar o sequencial de remessas, que deverá ser contínuo.", obrigatoriedade = true)
-	private String numeroSequencialRemessa;
+    @XmlAttribute(name = "h08", required = true)
+    @IAtributoArquivo(ordem = 8, posicao = 62, tamanho = 6, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Controlar o sequencial de remessas, que deverá ser contínuo.", obrigatoriedade = true)
+    private String numeroSequencialRemessa;
 
-	@XmlAttribute(name = "h09", required = true)
-	@IAtributoArquivo(ordem = 9, posicao = 68, tamanho = 4, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Preencher com o somatório da quantidade de registros constantes no arquivo.", obrigatoriedade = true)
-	private String qtdRegistrosRemessa;
+    @XmlAttribute(name = "h09", required = true)
+    @IAtributoArquivo(ordem = 9, posicao = 68, tamanho = 4, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Preencher com o somatório da quantidade de registros constantes no arquivo.", obrigatoriedade = true)
+    private String qtdRegistrosRemessa;
 
-	@XmlAttribute(name = "h10", required = true)
-	@IAtributoArquivo(ordem = 10, posicao = 72, tamanho = 4, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Preencher com o somatório da quantidade de registros constantes no arquivo. Devem constar o somatório de todos os registros, cujo o campo 22 for igual a 1.", obrigatoriedade = true)
-	private String qtdTitulosRemessa;;
+    @XmlAttribute(name = "h10", required = true)
+    @IAtributoArquivo(ordem = 10, posicao = 72, tamanho = 4, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Preencher com o somatório da quantidade de registros constantes no arquivo. Devem constar o somatório de todos os registros, cujo o campo 22 for igual a 1.", obrigatoriedade = true)
+    private String qtdTitulosRemessa;;
 
-	@XmlAttribute(name = "h11", required = true)
-	@IAtributoArquivo(ordem = 11, posicao = 76, tamanho = 4, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Preencher com o somatório da quantidade de títulos do tipo 'DMI', 'DRI' e 'CBI'.", obrigatoriedade = true)
-	private String qtdIndicacoesRemessa;
+    @XmlAttribute(name = "h11", required = true)
+    @IAtributoArquivo(ordem = 11, posicao = 76, tamanho = 4, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Preencher com o somatório da quantidade de títulos do tipo 'DMI', 'DRI' e 'CBI'.", obrigatoriedade = true)
+    private String qtdIndicacoesRemessa;
 
-	@XmlAttribute(name = "h12", required = true)
-	@IAtributoArquivo(ordem = 12, posicao = 80, tamanho = 4, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Preencher com o somatório da quantidade dos demais títulos.", obrigatoriedade = true)
-	private String qtdOriginaisRemessa;
+    @XmlAttribute(name = "h12", required = true)
+    @IAtributoArquivo(ordem = 12, posicao = 80, tamanho = 4, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Preencher com o somatório da quantidade dos demais títulos.", obrigatoriedade = true)
+    private String qtdOriginaisRemessa;
 
-	@XmlAttribute(name = "h13", required = true)
-	@IAtributoArquivo(ordem = 13, posicao = 84, tamanho = 6, posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Identificar a agência centralizadora - Uso do banco.", obrigatoriedade = true)
-	private String agenciaCentralizadora;
+    @XmlAttribute(name = "h13", required = true)
+    @IAtributoArquivo(ordem = 13, posicao = 84, tamanho = 6, posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Identificar a agência centralizadora - Uso do banco.", obrigatoriedade = true)
+    private String agenciaCentralizadora;
 
-	@XmlAttribute(name = "h14", required = true)
-	@IAtributoArquivo(ordem = 14, posicao = 90, tamanho = 3, descricao = "Identificação da versão vigente do layout.", obrigatoriedade = true)
-	private String versaoLayout;
+    @XmlAttribute(name = "h14", required = true)
+    @IAtributoArquivo(ordem = 14, posicao = 90, tamanho = 3, descricao = "Identificação da versão vigente do layout.", obrigatoriedade = true)
+    private String versaoLayout;
 
-	@XmlAttribute(name = "h15", required = true)
-	@IAtributoArquivo(ordem = 15, posicao = 93, tamanho = 7, posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Preencher com dois dígitos para o Código da Unidade da Federação e 5 para Código do Município.", obrigatoriedade = true)
-	private String codigoMunicipio;
+    @XmlAttribute(name = "h15", required = true)
+    @IAtributoArquivo(ordem = 15, posicao = 93, tamanho = 7, posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Preencher com dois dígitos para o Código da Unidade da Federação e 5 para Código do Município.", obrigatoriedade = true)
+    private String codigoMunicipio;
 
-	@XmlAttribute(name = "h16", required = true)
-	@IAtributoArquivo(ordem = 16, posicao = 100, tamanho = 497, descricao = "Ajustar o tamanho do registro do header com o tamanho do registro de transação. Preencher com brancos.", obrigatoriedade = true)
-	private String complementoRegistro;
+    @XmlAttribute(name = "h16", required = true)
+    @IAtributoArquivo(ordem = 16, posicao = 100, tamanho = 497, descricao = "Ajustar o tamanho do registro do header com o tamanho do registro de transação. Preencher com brancos.", obrigatoriedade = true)
+    private String complementoRegistro;
 
-	@XmlAttribute(name = "h17", required = true)
-	@IAtributoArquivo(ordem = 17, posicao = 597, tamanho = 4, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Constante 0001. Sempre reiniciar a contagem do lote de registros para as praças implantadas no processo de centralização.", obrigatoriedade = true, validacao = "0001")
-	private String numeroSequencialRegistroArquivo;
+    @XmlAttribute(name = "h17", required = true)
+    @IAtributoArquivo(ordem = 17, posicao = 597, tamanho = 4, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, descricao = "Constante 0001. Sempre reiniciar a contagem do lote de registros para as praças implantadas no processo de centralização.", obrigatoriedade = true, validacao = "0001")
+    private String numeroSequencialRegistroArquivo;
 
-	public String getNumeroCodigoPortador() {
-		return numeroCodigoPortador;
+    public String getNumeroCodigoPortador() {
+	return numeroCodigoPortador;
+    }
+
+    public String getNomePortador() {
+	if (nomePortador != null) {
+	    nomePortador = RemoverAcentosUtil.removeAcentos(nomePortador);
 	}
+	return nomePortador;
+    }
 
-	public String getNomePortador() {
-		if (nomePortador != null) {
-			nomePortador = RemoverAcentosUtil.removeAcentos(nomePortador);
-		}
-		return nomePortador;
+    public String getDataMovimento() {
+	return dataMovimento;
+    }
+
+    public String getIdentificacaoTransacaoRemetente() {
+	return identificacaoTransacaoRemetente;
+    }
+
+    public String getIdentificacaoTransacaoDestinatario() {
+	return identificacaoTransacaoDestinatario;
+    }
+
+    public String getIdentificacaoTransacaoTipo() {
+	return identificacaoTransacaoTipo;
+    }
+
+    public String getNumeroSequencialRemessa() {
+	if (numeroSequencialRemessa == null) {
+	    numeroSequencialRemessa = StringUtils.EMPTY;
 	}
+	return numeroSequencialRemessa;
+    }
 
-	public String getDataMovimento() {
-		return dataMovimento;
-	}
+    public String getQtdRegistrosRemessa() {
+	return qtdRegistrosRemessa;
+    }
 
-	public String getIdentificacaoTransacaoRemetente() {
-		return identificacaoTransacaoRemetente;
-	}
+    public String getQtdTitulosRemessa() {
+	return qtdTitulosRemessa;
+    }
 
-	public String getIdentificacaoTransacaoDestinatario() {
-		return identificacaoTransacaoDestinatario;
-	}
+    public String getQtdIndicacoesRemessa() {
+	return qtdIndicacoesRemessa;
+    }
 
-	public String getIdentificacaoTransacaoTipo() {
-		return identificacaoTransacaoTipo;
-	}
+    public String getQtdOriginaisRemessa() {
+	return qtdOriginaisRemessa;
+    }
 
-	public String getNumeroSequencialRemessa() {
-		if (numeroSequencialRemessa == null) {
-			numeroSequencialRemessa = StringUtils.EMPTY;
-		}
-		return numeroSequencialRemessa;
-	}
+    public String getAgenciaCentralizadora() {
+	return agenciaCentralizadora;
+    }
 
-	public String getQtdRegistrosRemessa() {
-		return qtdRegistrosRemessa;
-	}
+    public String getVersaoLayout() {
+	return versaoLayout;
+    }
 
-	public String getQtdTitulosRemessa() {
-		return qtdTitulosRemessa;
-	}
+    public String getCodigoMunicipio() {
+	return codigoMunicipio;
+    }
 
-	public String getQtdIndicacoesRemessa() {
-		return qtdIndicacoesRemessa;
-	}
+    public String getComplementoRegistro() {
+	return complementoRegistro;
+    }
 
-	public String getQtdOriginaisRemessa() {
-		return qtdOriginaisRemessa;
-	}
+    public String getNumeroSequencialRegistroArquivo() {
+	return numeroSequencialRegistroArquivo;
+    }
 
-	public String getAgenciaCentralizadora() {
-		return agenciaCentralizadora;
-	}
+    public String getIdentificacaoRegistro() {
+	return identificacaoRegistro;
+    }
 
-	public String getVersaoLayout() {
-		return versaoLayout;
-	}
+    public void setIdentificacaoRegistro(String identificacaoRegistro) {
+	this.identificacaoRegistro = identificacaoRegistro;
+    }
 
-	public String getCodigoMunicipio() {
-		return codigoMunicipio;
-	}
+    public void setNumeroCodigoPortador(String numeroCodigoPortador) {
+	this.numeroCodigoPortador = numeroCodigoPortador;
+    }
 
-	public String getComplementoRegistro() {
-		return complementoRegistro;
-	}
+    public void setNomePortador(String nomePortador) {
+	this.nomePortador = nomePortador;
+    }
 
-	public String getNumeroSequencialRegistroArquivo() {
-		return numeroSequencialRegistroArquivo;
-	}
+    public void setDataMovimento(String dataMovimento) {
+	this.dataMovimento = dataMovimento;
+    }
 
-	public String getIdentificacaoRegistro() {
-		return identificacaoRegistro;
-	}
+    public void setIdentificacaoTransacaoRemetente(String identificacaoTransacaoRemetente) {
+	this.identificacaoTransacaoRemetente = identificacaoTransacaoRemetente;
+    }
 
-	public void setIdentificacaoRegistro(String identificacaoRegistro) {
-		this.identificacaoRegistro = identificacaoRegistro;
-	}
+    public void setIdentificacaoTransacaoDestinatario(String identificacaoTransacaoDestinatario) {
+	this.identificacaoTransacaoDestinatario = identificacaoTransacaoDestinatario;
+    }
 
-	public void setNumeroCodigoPortador(String numeroCodigoPortador) {
-		this.numeroCodigoPortador = numeroCodigoPortador;
-	}
+    public void setIdentificacaoTransacaoTipo(String identificacaoTransacaoTipo) {
+	this.identificacaoTransacaoTipo = identificacaoTransacaoTipo;
+    }
 
-	public void setNomePortador(String nomePortador) {
-		this.nomePortador = nomePortador;
-	}
+    public void setNumeroSequencialRemessa(String numeroSequencialRemessa) {
+	this.numeroSequencialRemessa = numeroSequencialRemessa;
+    }
 
-	public void setDataMovimento(String dataMovimento) {
-		this.dataMovimento = dataMovimento;
-	}
+    public void setQtdRegistrosRemessa(String qtdRegistrosRemessa) {
+	this.qtdRegistrosRemessa = qtdRegistrosRemessa;
+    }
 
-	public void setIdentificacaoTransacaoRemetente(String identificacaoTransacaoRemetente) {
-		this.identificacaoTransacaoRemetente = identificacaoTransacaoRemetente;
-	}
+    public void setQtdTitulosRemessa(String qtdTitulosRemessa) {
+	this.qtdTitulosRemessa = qtdTitulosRemessa;
+    }
 
-	public void setIdentificacaoTransacaoDestinatario(String identificacaoTransacaoDestinatario) {
-		this.identificacaoTransacaoDestinatario = identificacaoTransacaoDestinatario;
-	}
+    public void setQtdIndicacoesRemessa(String qtdIndicacoesRemessa) {
+	this.qtdIndicacoesRemessa = qtdIndicacoesRemessa;
+    }
 
-	public void setIdentificacaoTransacaoTipo(String identificacaoTransacaoTipo) {
-		this.identificacaoTransacaoTipo = identificacaoTransacaoTipo;
-	}
+    public void setQtdOriginaisRemessa(String qtdOriginaisRemessa) {
+	this.qtdOriginaisRemessa = qtdOriginaisRemessa;
+    }
 
-	public void setNumeroSequencialRemessa(String numeroSequencialRemessa) {
-		this.numeroSequencialRemessa = numeroSequencialRemessa;
-	}
+    public void setAgenciaCentralizadora(String agenciaCentralizadora) {
+	this.agenciaCentralizadora = agenciaCentralizadora;
+    }
 
-	public void setQtdRegistrosRemessa(String qtdRegistrosRemessa) {
-		this.qtdRegistrosRemessa = qtdRegistrosRemessa;
-	}
+    public void setVersaoLayout(String versaoLayout) {
+	this.versaoLayout = versaoLayout;
+    }
 
-	public void setQtdTitulosRemessa(String qtdTitulosRemessa) {
-		this.qtdTitulosRemessa = qtdTitulosRemessa;
-	}
+    public void setCodigoMunicipio(String codigoMunicipio) {
+	this.codigoMunicipio = codigoMunicipio;
+    }
 
-	public void setQtdIndicacoesRemessa(String qtdIndicacoesRemessa) {
-		this.qtdIndicacoesRemessa = qtdIndicacoesRemessa;
-	}
+    public void setComplementoRegistro(String complementoRegistro) {
+	this.complementoRegistro = complementoRegistro;
+    }
 
-	public void setQtdOriginaisRemessa(String qtdOriginaisRemessa) {
-		this.qtdOriginaisRemessa = qtdOriginaisRemessa;
-	}
+    public void setNumeroSequencialRegistroArquivo(String numeroSequencialRegistroArquivo) {
+	this.numeroSequencialRegistroArquivo = numeroSequencialRegistroArquivo;
+    }
 
-	public void setAgenciaCentralizadora(String agenciaCentralizadora) {
-		this.agenciaCentralizadora = agenciaCentralizadora;
-	}
+    public static CabecalhoVO parseCabecalho(CabecalhoRemessa cabecalho) {
+	CabecalhoVO cabecalhoVO = new CabecalhoVO();
+	cabecalhoVO.setAgenciaCentralizadora(cabecalho.getAgenciaCentralizadora());
+	cabecalhoVO.setCodigoMunicipio(cabecalho.getCodigoMunicipio().toString());
+	cabecalhoVO.setComplementoRegistro(cabecalho.getComplementoRegistro());
+	cabecalhoVO.setDataMovimento(cabecalho.getDataMovimento().toString(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY));
+	cabecalhoVO.setIdentificacaoRegistro(cabecalho.getIdentificacaoRegistro().getConstante());
+	cabecalhoVO.setIdentificacaoTransacaoDestinatario(cabecalho.getIdentificacaoTransacaoDestinatario());
+	cabecalhoVO.setIdentificacaoTransacaoRemetente(cabecalho.getIdentificacaoTransacaoRemetente());
+	cabecalhoVO.setIdentificacaoTransacaoTipo(cabecalho.getIdentificacaoTransacaoTipo());
+	cabecalhoVO.setNomePortador(cabecalho.getNomePortador().trim());
+	cabecalhoVO.setNumeroCodigoPortador(cabecalho.getNumeroCodigoPortador());
+	cabecalhoVO.setNumeroSequencialRegistroArquivo(cabecalho.getNumeroSequencialRegistroArquivo());
+	cabecalhoVO.setNumeroSequencialRemessa(cabecalho.getNumeroSequencialRemessa().toString());
+	cabecalhoVO.setQtdIndicacoesRemessa(StringUtils.leftPad(cabecalho.getQtdIndicacoesRemessa().toString(), 4, "0"));
+	cabecalhoVO.setQtdOriginaisRemessa(StringUtils.leftPad(cabecalho.getQtdOriginaisRemessa().toString(), 4, "0"));
+	cabecalhoVO.setQtdRegistrosRemessa(StringUtils.leftPad(cabecalho.getQtdRegistrosRemessa().toString(), 4, "0"));
+	cabecalhoVO.setQtdTitulosRemessa(StringUtils.leftPad(cabecalho.getQtdTitulosRemessa().toString(), 4, "0"));
+	cabecalhoVO.setVersaoLayout(cabecalho.getVersaoLayout());
 
-	public void setVersaoLayout(String versaoLayout) {
-		this.versaoLayout = versaoLayout;
-	}
+	return cabecalhoVO;
 
-	public void setCodigoMunicipio(String codigoMunicipio) {
-		this.codigoMunicipio = codigoMunicipio;
-	}
-
-	public void setComplementoRegistro(String complementoRegistro) {
-		this.complementoRegistro = complementoRegistro;
-	}
-
-	public void setNumeroSequencialRegistroArquivo(String numeroSequencialRegistroArquivo) {
-		this.numeroSequencialRegistroArquivo = numeroSequencialRegistroArquivo;
-	}
-
-	public static CabecalhoVO parseCabecalho(CabecalhoRemessa cabecalho) {
-		CabecalhoVO cabecalhoVO = new CabecalhoVO();
-		cabecalhoVO.setAgenciaCentralizadora(cabecalho.getAgenciaCentralizadora());
-		cabecalhoVO.setCodigoMunicipio(cabecalho.getCodigoMunicipio().toString());
-		cabecalhoVO.setComplementoRegistro(cabecalho.getComplementoRegistro());
-		cabecalhoVO.setDataMovimento(cabecalho.getDataMovimento().toString(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY));
-		cabecalhoVO.setIdentificacaoRegistro(cabecalho.getIdentificacaoRegistro().getConstante());
-		cabecalhoVO.setIdentificacaoTransacaoDestinatario(cabecalho.getIdentificacaoTransacaoDestinatario());
-		cabecalhoVO.setIdentificacaoTransacaoRemetente(cabecalho.getIdentificacaoTransacaoRemetente());
-		cabecalhoVO.setIdentificacaoTransacaoTipo(cabecalho.getIdentificacaoTransacaoTipo());
-		cabecalhoVO.setNomePortador(cabecalho.getNomePortador().trim());
-		cabecalhoVO.setNumeroCodigoPortador(cabecalho.getNumeroCodigoPortador());
-		cabecalhoVO.setNumeroSequencialRegistroArquivo(cabecalho.getNumeroSequencialRegistroArquivo());
-		cabecalhoVO.setNumeroSequencialRemessa(cabecalho.getNumeroSequencialRemessa().toString());
-		cabecalhoVO.setQtdIndicacoesRemessa(StringUtils.leftPad(cabecalho.getQtdIndicacoesRemessa().toString(), 4, "0"));
-		cabecalhoVO.setQtdOriginaisRemessa(StringUtils.leftPad(cabecalho.getQtdOriginaisRemessa().toString(), 4, "0"));
-		cabecalhoVO.setQtdRegistrosRemessa(StringUtils.leftPad(cabecalho.getQtdRegistrosRemessa().toString(), 4, "0"));
-		cabecalhoVO.setQtdTitulosRemessa(StringUtils.leftPad(cabecalho.getQtdTitulosRemessa().toString(), 4, "0"));
-		cabecalhoVO.setVersaoLayout(cabecalho.getVersaoLayout());
-
-		return cabecalhoVO;
-
-	}
+    }
 
 }
