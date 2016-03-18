@@ -9,8 +9,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -37,7 +35,8 @@ public class LogCra extends AbstractEntidade<LogCra> {
     private String descricao;
     private Exception excecao;
     private TipoLog tipoLog;
-    private Usuario usuario;
+    private String usuario;
+    private String instituicao;
     private Date data;
 
     @Id
@@ -69,9 +68,13 @@ public class LogCra extends AbstractEntidade<LogCra> {
 	return tipoLog;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "USUARIO_ID")
-    public Usuario getUsuario() {
+    @Column(name = "INSTITUICAO", length = 45)
+    public String getInstituicao() {
+	return instituicao;
+    }
+
+    @Column(name = "USUARIO", length = 45)
+    public String getUsuario() {
 	return usuario;
     }
 
@@ -101,8 +104,12 @@ public class LogCra extends AbstractEntidade<LogCra> {
 	this.tipoLog = tipoL;
     }
 
-    public void setUsuario(Usuario usuario) {
+    public void setUsuario(String usuario) {
 	this.usuario = usuario;
+    }
+
+    public void setInstituicao(String instituicao) {
+	this.instituicao = instituicao;
     }
 
     public void setData(Date data) {

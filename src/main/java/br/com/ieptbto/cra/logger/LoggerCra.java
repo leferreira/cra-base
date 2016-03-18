@@ -27,7 +27,8 @@ public class LoggerCra {
 	logCra.setDescricao(descricao);
 	logCra.setTipoLog(TipoLog.ALERTA);
 	logCra.setData(new Date());
-	logCra.setUsuario(user);
+	logCra.setUsuario(user.getNome());
+	logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
 	return loggerMediator.salvar(logCra);
     }
 
@@ -37,7 +38,8 @@ public class LoggerCra {
 	logCra.setDescricao(descricao);
 	logCra.setTipoLog(TipoLog.OCORRECIA_ERRO);
 	logCra.setData(new Date());
-	logCra.setUsuario(user);
+	logCra.setUsuario(user.getNome());
+	logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
 	return loggerMediator.salvar(logCra);
     }
 
@@ -48,7 +50,8 @@ public class LoggerCra {
 	logCra.setTipoLog(TipoLog.OCORRECIA_ERRO);
 	logCra.setExcecao(ex);
 	logCra.setData(new Date());
-	logCra.setUsuario(user);
+	logCra.setUsuario(user.getNome());
+	logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
 	return loggerMediator.salvar(logCra);
     }
 
@@ -58,7 +61,8 @@ public class LoggerCra {
 	logCra.setDescricao(descricao);
 	logCra.setTipoLog(TipoLog.SUCESSO);
 	logCra.setData(new Date());
-	logCra.setUsuario(user);
+	logCra.setUsuario(user.getNome());
+	logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
 	return loggerMediator.salvar(logCra);
     }
 }
