@@ -1,7 +1,7 @@
 package br.com.ieptbto.cra.logger;
 
-import java.util.Date;
-
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +26,20 @@ public class LoggerCra {
 	logCra.setAcao(acao);
 	logCra.setDescricao(descricao);
 	logCra.setTipoLog(TipoLog.ALERTA);
-	logCra.setData(new Date());
+	logCra.setData(new LocalDate());
+	logCra.setHora(new LocalTime());
 	logCra.setUsuario(user.getNome());
 	logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
+	return loggerMediator.salvar(logCra);
+    }
+
+    public LogCra error(TipoAcaoLog acao, String descricao) {
+	LogCra logCra = new LogCra();
+	logCra.setAcao(acao);
+	logCra.setDescricao(descricao);
+	logCra.setTipoLog(TipoLog.OCORRENCIA_ERRO);
+	logCra.setData(new LocalDate());
+	logCra.setHora(new LocalTime());
 	return loggerMediator.salvar(logCra);
     }
 
@@ -36,8 +47,9 @@ public class LoggerCra {
 	LogCra logCra = new LogCra();
 	logCra.setAcao(acao);
 	logCra.setDescricao(descricao);
-	logCra.setTipoLog(TipoLog.OCORRECIA_ERRO);
-	logCra.setData(new Date());
+	logCra.setTipoLog(TipoLog.OCORRENCIA_ERRO);
+	logCra.setData(new LocalDate());
+	logCra.setHora(new LocalTime());
 	logCra.setUsuario(user.getNome());
 	logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
 	return loggerMediator.salvar(logCra);
@@ -47,9 +59,10 @@ public class LoggerCra {
 	LogCra logCra = new LogCra();
 	logCra.setAcao(acao);
 	logCra.setDescricao(descricao);
-	logCra.setTipoLog(TipoLog.OCORRECIA_ERRO);
+	logCra.setTipoLog(TipoLog.OCORRENCIA_ERRO);
 	logCra.setExcecao(ex);
-	logCra.setData(new Date());
+	logCra.setData(new LocalDate());
+	logCra.setHora(new LocalTime());
 	logCra.setUsuario(user.getNome());
 	logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
 	return loggerMediator.salvar(logCra);
@@ -60,7 +73,8 @@ public class LoggerCra {
 	logCra.setAcao(acao);
 	logCra.setDescricao(descricao);
 	logCra.setTipoLog(TipoLog.SUCESSO);
-	logCra.setData(new Date());
+	logCra.setData(new LocalDate());
+	logCra.setHora(new LocalTime());
 	logCra.setUsuario(user.getNome());
 	logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
 	return loggerMediator.salvar(logCra);

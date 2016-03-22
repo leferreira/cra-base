@@ -7,7 +7,7 @@ package br.com.ieptbto.cra.enumeration;
 public enum TipoLog {
 
 	SUCESSO("Sucesso","ocorrencia-sucesso"),
-	OCORRECIA_ERRO("Ocorrência Erro","ocorrencia-erro"),
+	OCORRENCIA_ERRO("Ocorrência Erro","ocorrencia-erro"),
 	ALERTA("Alerta","ocorrencia-alerta");
 
     private String label;

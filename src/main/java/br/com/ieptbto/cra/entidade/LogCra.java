@@ -1,7 +1,5 @@
 package br.com.ieptbto.cra.entidade;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,10 +8,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.hibernate.envers.Audited;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 import br.com.ieptbto.cra.enumeration.TipoAcaoLog;
 import br.com.ieptbto.cra.enumeration.TipoLog;
@@ -37,7 +35,8 @@ public class LogCra extends AbstractEntidade<LogCra> {
     private TipoLog tipoLog;
     private String usuario;
     private String instituicao;
-    private Date data;
+    private LocalDate data;
+    private LocalTime hora;
 
     @Id
     @Column(name = "ID_REGISTRO_ACAO", columnDefinition = "serial")
@@ -79,9 +78,13 @@ public class LogCra extends AbstractEntidade<LogCra> {
     }
 
     @Column(name = "DATA")
-    @Temporal(TemporalType.TIMESTAMP)
-    public Date getData() {
+    public LocalDate getData() {
 	return data;
+    }
+
+    @Column(name = "HORA")
+    public LocalTime getHora() {
+	return hora;
     }
 
     public void setId(int id) {
@@ -112,8 +115,12 @@ public class LogCra extends AbstractEntidade<LogCra> {
 	this.instituicao = instituicao;
     }
 
-    public void setData(Date data) {
+    public void setData(LocalDate data) {
 	this.data = data;
+    }
+
+    public void setHora(LocalTime hora) {
+	this.hora = hora;
     }
 
     @Override

@@ -225,6 +225,9 @@ public class RemessaDAO extends AbstractBaseDAO {
 	criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
 	criteria.add(Restrictions.eq("instituicaoDestino", instituicao));
 	Remessa remessa = Remessa.class.cast(criteria.uniqueResult());
+	if (remessa == null) {
+	    return null;
+	}
 	remessa.setTitulos(new ArrayList<Titulo>());
 
 	Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
@@ -240,6 +243,9 @@ public class RemessaDAO extends AbstractBaseDAO {
 	criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
 	criteria.add(Restrictions.eq("instituicaoOrigem", instituicao));
 	Remessa remessa = Remessa.class.cast(criteria.uniqueResult());
+	if (remessa == null) {
+	    return null;
+	}
 	remessa.setTitulos(new ArrayList<Titulo>());
 
 	Criteria criteriaTitulo = getCriteria(Confirmacao.class);
@@ -255,6 +261,9 @@ public class RemessaDAO extends AbstractBaseDAO {
 	criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
 	criteria.add(Restrictions.eq("instituicaoOrigem", instituicao));
 	Remessa remessa = Remessa.class.cast(criteria.uniqueResult());
+	if (remessa == null) {
+	    return null;
+	}
 	remessa.setTitulos(new ArrayList<Titulo>());
 
 	Criteria criteriaTitulo = getCriteria(Retorno.class);
