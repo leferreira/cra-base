@@ -345,7 +345,6 @@ public class TituloDAO extends AbstractBaseDAO {
 	criteria.createAlias("remessa", "remessa");
 	criteria.createAlias("remessa.cabecalho", "cabecalho");
 	criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedidoDesistenciaCancelamento.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
-	criteria.add(Restrictions.ilike("numeroTitulo", pedidoDesistenciaCancelamento.getNumeroTitulo(), MatchMode.EXACT));
 	criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 	criteria.add(Restrictions.eq("dataProtocolo", pedidoDesistenciaCancelamento.getDataProtocolagem()));
 	Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
@@ -364,7 +363,6 @@ public class TituloDAO extends AbstractBaseDAO {
 	criteria.createAlias("remessa", "remessa");
 	criteria.createAlias("remessa.cabecalho", "cabecalho");
 	criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
-	criteria.add(Restrictions.ilike("numeroTitulo", pedido.getNumeroTitulo(), MatchMode.EXACT));
 	criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 	criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
 	Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
@@ -383,7 +381,6 @@ public class TituloDAO extends AbstractBaseDAO {
 	criteria.createAlias("remessa", "remessa");
 	criteria.createAlias("remessa.cabecalho", "cabecalho");
 	criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio()));
-	criteria.add(Restrictions.ilike("numeroTitulo", pedido.getNumeroTitulo(), MatchMode.EXACT));
 	criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 	criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
 	Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
