@@ -294,7 +294,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	    if (titulo.getConfirmacao() == null) {
 		return titulo;
 	    } else {
-		logger.error(new InfraException("Titulo nº" + titulo.getNumeroTitulo() + " já tem confirmação"));
+		logger.error(new InfraException("Titulo nº" + titulo.getNumeroTitulo() + " já tem confirmação."));
 	    }
 	}
 	return null;
