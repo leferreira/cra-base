@@ -8,6 +8,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.ArquivoCnp;
@@ -24,25 +25,25 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 
-	@Transactional
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public ArquivoCnp salvarArquivoCartorioCentralNacionalProtesto(Usuario user, ArquivoCnp arquivoCnp) {
 		Transaction transaction = getBeginTransation();
 		try {
 			arquivoCnp = save(arquivoCnp);
-			
+
 			for (RemessaCnp remessaCnp : arquivoCnp.getRemessaCnp()) {
 				remessaCnp.setArquivo(arquivoCnp);
 				remessaCnp.setCabecalho(save(remessaCnp.getCabecalho()));
 				remessaCnp.setRodape(save(remessaCnp.getRodape()));
 				remessaCnp = save(remessaCnp);
-				
+
 				for (TituloCnp tituloCnp : remessaCnp.getTitulos()) {
 					tituloCnp.setRemessa(remessaCnp);
 					save(tituloCnp);
 				}
 			}
 			transaction.commit();
-			logger.info("O arquivo CNP do cartório "+ user.getInstituicao().getNomeFantasia() + " foi salvo na base de dados. ");
+			logger.info("O arquivo CNP do cartório " + user.getInstituicao().getNomeFantasia() + " foi salvo na base de dados. ");
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
@@ -59,17 +60,17 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		return ArquivoCnp.class.cast(criteria.uniqueResult());
 	}
 
-//	@SuppressWarnings("unchecked")
+	// @SuppressWarnings("unchecked")
 	public List<RemessaCnp> buscarRemessasCnpPendentes() {
-//		Criteria criteria =  getCriteria(RemessaCnp.class);
-//		criteria.add(Restrictions.eq("", ""));
-//		return criteria.list();
+		// Criteria criteria = getCriteria(RemessaCnp.class);
+		// criteria.add(Restrictions.eq("", ""));
+		// return criteria.list();
 		return new ArrayList<>();
 	}
 
 	public void salvarArquivoCnpNacional(ArquivoCnp arquivoCnp) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
