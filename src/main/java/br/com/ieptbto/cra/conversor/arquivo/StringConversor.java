@@ -24,14 +24,17 @@ public class StringConversor extends AbstractConversor<String> {
 	 */
 	@Override
 	public String getValorConvertidoParaString(String objeto) {
-		int tamanho = getAnotacaoAtributo().tamanho();
-		if (objeto != null) {
-			if (objeto.length() > tamanho) {
-				return objeto.substring(0, tamanho);
+		if (getAnotacaoAtributo() != null) {
+			int tamanho = getAnotacaoAtributo().tamanho();
+			if (objeto != null) {
+				if (objeto.length() > tamanho) {
+					return objeto.substring(0, tamanho);
+				}
+				return StringUtils.rightPad(objeto, tamanho, ' ');
 			}
-			return StringUtils.rightPad(objeto, tamanho, ' ');
+			return StringUtils.repeat(" ", tamanho);
 		}
-		return StringUtils.repeat(" ", tamanho);
+		return objeto;
 	}
 
 	@Override

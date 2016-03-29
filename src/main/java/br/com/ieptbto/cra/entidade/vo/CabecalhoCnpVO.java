@@ -18,57 +18,55 @@ public class CabecalhoCnpVO extends AbstractArquivoVO {
 	/***/
 	private static final long serialVersionUID = 1L;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String codigoRegistro;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String emBranco2;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String dataMovimento;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String emBranco53;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String numeroRemessaArquivo;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String emBranco68;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String tipoDocumento;
 
-	@XmlAttribute
-	private String numeroCnpjCpfResponsavelCartorio; // ajustar a direita e
-	                                                 // preencher com 0 a
-	                                                 // esquerda
+	@XmlAttribute(required = true)
+	private String numeroCnpjCpfResponsavelCartorio;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String identificacaoDoArquivo;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String codigoRemessa;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String numeroDDD;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String numeroTelefoneInstituicaoInformante;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String numeroRamalContato;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String nomeContatoInstituicaoInformante;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String numeroVersaoSoftware;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String codigoEDI;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String periodicidadeEnvio;
 
 	public String getCodigoRegistro() {

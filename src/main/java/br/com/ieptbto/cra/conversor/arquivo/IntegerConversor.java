@@ -36,11 +36,14 @@ public class IntegerConversor extends AbstractConversor<Integer> {
 	 */
 	@Override
 	public String getValorConvertidoParaString(Integer objeto) {
-		int tamanho = getAnotacaoAtributo().tamanho();
-		if (objeto != null) {
-			return StringUtils.leftPad(objeto.toString(), tamanho, '0');
+		if (getAnotacaoAtributo() != null) {
+			int tamanho = getAnotacaoAtributo().tamanho();
+			if (objeto != null) {
+				return StringUtils.leftPad(objeto.toString(), tamanho, '0');
+			}
+			return StringUtils.repeat("0", tamanho);
 		}
-		return StringUtils.repeat("0", tamanho);
+		return Integer.toString(objeto);
 	}
 
 	@Override

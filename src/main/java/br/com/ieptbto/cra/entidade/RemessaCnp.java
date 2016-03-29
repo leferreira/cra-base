@@ -16,6 +16,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
+import org.joda.time.LocalDate;
 
 /**
  * 
@@ -34,7 +35,9 @@ public class RemessaCnp extends AbstractEntidade<RemessaCnp> {
 	private CabecalhoCnp cabecalho;
 	private List<TituloCnp> titulos;
 	private RodapeCnp rodape;
-	
+	private LocalDate dataLiberacaoConsulta;
+	private boolean arquivoLiberadoConsulta;
+
 	@Override
 	@Id
 	@Column(name = "ID_REMESSA_CNP", columnDefinition = "serial")
@@ -66,6 +69,16 @@ public class RemessaCnp extends AbstractEntidade<RemessaCnp> {
 		return rodape;
 	}
 
+	@Column(name = "DATA_LIBERACAO_CONSULTA")
+	public LocalDate getDataLiberacaoConsulta() {
+		return dataLiberacaoConsulta;
+	}
+
+	@Column(name = "ARQUIVO_LIBERADO_CONSULTA")
+	public boolean isArquivoLiberadoConsulta() {
+		return arquivoLiberadoConsulta;
+	}
+
 	public void setTitulos(List<TituloCnp> titulos) {
 		this.titulos = titulos;
 	}
@@ -84,6 +97,14 @@ public class RemessaCnp extends AbstractEntidade<RemessaCnp> {
 
 	public void setRodape(RodapeCnp rodape) {
 		this.rodape = rodape;
+	}
+
+	public void setArquivoLiberadoConsulta(boolean arquivoLiberadoConsulta) {
+		this.arquivoLiberadoConsulta = arquivoLiberadoConsulta;
+	}
+
+	public void setDataLiberacaoConsulta(LocalDate dataLiberacaoConsulta) {
+		this.dataLiberacaoConsulta = dataLiberacaoConsulta;
 	}
 
 	@Override

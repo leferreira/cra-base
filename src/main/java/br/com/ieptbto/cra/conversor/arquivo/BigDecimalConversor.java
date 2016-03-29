@@ -43,25 +43,27 @@ public class BigDecimalConversor extends AbstractConversor<BigDecimal> {
 	 */
 	public String getValorConvertidoParaString(BigDecimal objeto) {
 		int tamanho = TAMANHO_PADRAO_CAMPO_VALOR;
-		if (getCampoArquivo() != null) {
-			tamanho = getAnotacaoAtributo().tamanho();
-		}
-		if (objeto != null) {
-			BigDecimal retorno = objeto.multiply(VALOR_CEM);
-			String numero = retorno.toPlainString().replace(".00", StringUtils.EMPTY);
-			return StringUtils.leftPad(numero, tamanho, VALOR_ZERO);
+		if (getAnotacaoAtributo() != null) {
+			if (getCampoArquivo() != null) {
+				tamanho = getAnotacaoAtributo().tamanho();
+			}
+			if (objeto != null) {
+				BigDecimal retorno = objeto.multiply(VALOR_CEM);
+				String numero = retorno.toPlainString().replace(".00", StringUtils.EMPTY);
+				return StringUtils.leftPad(numero, tamanho, VALOR_ZERO);
+			}
 		}
 		return StringUtils.repeat(VALOR_ZERO, tamanho);
 	}
 
-	public String getValorConvertidoSegundoLayoutFebraban(BigDecimal valor){
+	public String getValorConvertidoSegundoLayoutFebraban(BigDecimal valor) {
 		int tamanho = TAMANHO_PADRAO_CAMPO_VALOR;
 		if (valor == null) {
 			return StringUtils.EMPTY;
 		}
 		return StringUtils.leftPad(Double.toString(valor.doubleValue()).replace(".", ""), tamanho, VALOR_ZERO);
 	}
-	
+
 	@Override
 	public BigDecimal getValorConvertido(String valor, Class<?> propertyType) throws ConvertException {
 		return getValorConvertido(valor);

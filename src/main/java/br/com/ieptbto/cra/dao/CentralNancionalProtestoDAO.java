@@ -32,6 +32,7 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 			arquivoCnp = save(arquivoCnp);
 
 			for (RemessaCnp remessaCnp : arquivoCnp.getRemessaCnp()) {
+				remessaCnp.setArquivoLiberadoConsulta(false);
 				remessaCnp.setArquivo(arquivoCnp);
 				remessaCnp.setCabecalho(save(remessaCnp.getCabecalho()));
 				remessaCnp.setRodape(save(remessaCnp.getRodape()));
@@ -52,7 +53,7 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		return arquivoCnp;
 	}
 
-	@Transactional
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public ArquivoCnp getArquivoCnpHojeInstituicao(Instituicao instituicao) {
 		Criteria criteria = getCriteria(ArquivoCnp.class);
 		criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));
@@ -60,17 +61,66 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		return ArquivoCnp.class.cast(criteria.uniqueResult());
 	}
 
-	// @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<RemessaCnp> buscarRemessasCnpPendentes() {
-		// Criteria criteria = getCriteria(RemessaCnp.class);
-		// criteria.add(Restrictions.eq("", ""));
-		// return criteria.list();
-		return new ArrayList<>();
+		List<RemessaCnp> remessaGeradas = new ArrayList<RemessaCnp>();
+		Criteria criteria = getCriteria(RemessaCnp.class);
+		criteria.add(Restrictions.eq("arquivoLiberadoConsulta", false));
+
+		List<RemessaCnp> remessas = criteria.list();
+		for (RemessaCnp remessa : remessas) {
+			Criteria criteriaTituloCNP = getCriteria(TituloCnp.class);
+			criteriaTituloCNP.add(Restrictions.eq("remessa", remessa));
+
+			remessa.setTitulos(criteriaTituloCNP.list());
+			remessaGeradas.add(remessa);
+		}
+		return remessaGeradas;
 	}
 
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void salvarArquivoCnpNacional(ArquivoCnp arquivoCnp) {
-		// TODO Auto-generated method stub
+		Transaction transaction = getBeginTransation();
 
+		try {
+			for (RemessaCnp remessaCnp : arquivoCnp.getRemessaCnp()) {
+				remessaCnp.setDataLiberacaoConsulta(new LocalDate());
+				remessaCnp.setArquivoLiberadoConsulta(true);
+				update(remessaCnp);
+			}
+			transaction.commit();
+			logger.info("O arquivo CNP do nacional foi disponibilizado com sucesso. ");
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível inserir esses dados na base.");
+		}
 	}
 
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public RemessaCnp isArquivoJaDisponibilizadoConsultaPorData(LocalDate dataLiberacao) {
+		Criteria criteria = getCriteria(RemessaCnp.class);
+		criteria.add(Restrictions.eq("dataLiberacaoConsulta", dataLiberacao));
+		criteria.setMaxResults(1);
+		return RemessaCnp.class.cast(criteria.uniqueResult());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public List<RemessaCnp> buscarRemessasCnpPorData(LocalDate dataLiberacao) {
+		List<RemessaCnp> remessaGeradas = new ArrayList<RemessaCnp>();
+		Criteria criteria = getCriteria(RemessaCnp.class);
+		criteria.add(Restrictions.eq("dataLiberacaoConsulta", dataLiberacao));
+
+		List<RemessaCnp> remessas = criteria.list();
+		for (RemessaCnp remessa : remessas) {
+			Criteria criteriaTituloCNP = getCriteria(TituloCnp.class);
+			criteriaTituloCNP.add(Restrictions.eq("remessa", remessa));
+
+			remessa.setTitulos(criteriaTituloCNP.list());
+			remessaGeradas.add(remessa);
+		}
+		return remessaGeradas;
+	}
 }
