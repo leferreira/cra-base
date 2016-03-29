@@ -18,13 +18,13 @@ public class RodapeCnpVO extends AbstractArquivoVO {
 	/***/
 	private static final long serialVersionUID = 1L;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String codigoRegistro;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String emBranco2;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String sequenciaRegistro;
 
 	public String getCodigoRegistro() {

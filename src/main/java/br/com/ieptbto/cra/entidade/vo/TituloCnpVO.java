@@ -13,135 +13,135 @@ import br.com.ieptbto.cra.enumeration.TipoRegistro;
  */
 @XmlRootElement(name = "titulo")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class TituloCnpVO extends AbstractArquivoVO{
+public class TituloCnpVO extends AbstractArquivoVO {
 
 	/***/
 	private static final long serialVersionUID = 1L;
 
-	@XmlAttribute
+	@XmlAttribute(required = true)
 	private String codigoRegistro;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String tipoInformacao;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String codigoOperacao;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String codigoUnidadeFederativa;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String codigoPracaEmbratel;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String emBranco10;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String nomeCredor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String numeroDocumentoCredor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String complementoDocumentoCredor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String digitoControleDocumentoCredor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String enderecoCredor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String cepCredor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String cidadeCredor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String ufCredor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String municipioEnderecoCredor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String tipoPessoaCredor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String tipoDocumentoCredor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String emBranco226;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String valorProtesto;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String dataProtesto;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String tipoPessoaDevedor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String tipoDocumentoDevedor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String numeroCoResponsavel;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String emBranco273;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String nomeDevedor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String emBranco343;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String numeroDocumentoDevedor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String complementoDocumentoDevedor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String digitoControleDocumentoDevedor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String emBranco361;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String enderecoDevedor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String cepDevedor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String cidadeDevedor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String ufDevedor;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String numeroCartorio;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String numeroProtocoloCartorio;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String emBranco458;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String dataCancelamentoProtesto;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String especieProtesto;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String emBranco487;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String codigoErro3Posicoes;
-	
-	@XmlAttribute
+
+	@XmlAttribute(required = true)
 	private String sequenciaRegistro;
 
 	public String getCodigoRegistro() {
@@ -471,11 +471,11 @@ public class TituloCnpVO extends AbstractArquivoVO{
 	public void setSequenciaRegistro(String sequenciaRegistro) {
 		this.sequenciaRegistro = sequenciaRegistro;
 	}
-	
+
 	public String getEmBranco487() {
 		return emBranco487;
 	}
-	
+
 	public void setEmBranco487(String emBranco487) {
 		this.emBranco487 = emBranco487;
 	}
