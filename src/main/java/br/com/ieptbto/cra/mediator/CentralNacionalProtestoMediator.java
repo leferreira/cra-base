@@ -1,5 +1,7 @@
 package br.com.ieptbto.cra.mediator;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.conversor.ConversorArquivoCnpVO;
 import br.com.ieptbto.cra.dao.CentralNancionalProtestoDAO;
+import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.ArquivoCnp;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.RemessaCnp;
@@ -26,6 +29,8 @@ public class CentralNacionalProtestoMediator {
 
 	@Autowired
 	CentralNancionalProtestoDAO centralNancionalProtestoDAO;
+	@Autowired
+	TituloDAO tituloDAO;
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public ArquivoCnpVO gerarArquivoNacional() {
@@ -72,5 +77,9 @@ public class CentralNacionalProtestoMediator {
 		ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
 		arquivoCnpVO.setRemessasCnpVO(ConversorArquivoCnpVO.converterParaRemessaCnpVO(arquivoCnp.getRemessaCnp()));
 		return arquivoCnpVO;
+	}
+
+	public List<String> consultarProtestos(String documentoDevedor) {
+		return centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
 	}
 }

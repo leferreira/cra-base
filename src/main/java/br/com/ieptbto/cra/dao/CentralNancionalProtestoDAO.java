@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
@@ -122,5 +124,14 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 			remessaGeradas.add(remessa);
 		}
 		return remessaGeradas;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<String> consultarProtestos(String documentoDevedor) {
+		Criteria criteria = getCriteria(TituloCnp.class);
+		criteria.add(Restrictions.ilike("numeroDocumentoDevedor", documentoDevedor, MatchMode.EXACT));
+		criteria.add(Restrictions.eq("tipoInformacao", "P"));
+		criteria.setProjection(Projections.groupProperty("cidadeDevedor"));
+		return criteria.list();
 	}
 }

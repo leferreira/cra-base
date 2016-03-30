@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
@@ -370,6 +371,17 @@ public class TituloCnp extends AbstractEntidade<TituloCnp> {
 	public int compareTo(TituloCnp entidade) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Transient
+	public String getSituacao() {
+		if (this.getTipoInformacao().equals("P")) {
+			return "PROTESTADO";
+		}
+		if (this.getTipoInformacao().equals("C")) {
+			return "CANCELADO";
+		}
+		return "PROTESTADO";
 	}
 
 }
