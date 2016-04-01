@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.ArquivoCnp;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.RemessaCnp;
 import br.com.ieptbto.cra.entidade.TituloCnp;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -126,6 +127,7 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<TituloCnp> consultarProtestos(String documentoDevedor) {
 		Criteria criteria = getCriteria(TituloCnp.class);
 		criteria.add(Restrictions.ilike("numeroDocumentoDevedor", documentoDevedor, MatchMode.EXACT));
@@ -134,11 +136,17 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public TituloCnp consultarCancelamento(String documentoDevedor, String numeroProtocoloCartorio) {
 		Criteria criteria = getCriteria(TituloCnp.class);
 		criteria.add(Restrictions.ilike("numeroDocumentoDevedor", documentoDevedor, MatchMode.EXACT));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numeroProtocoloCartorio, MatchMode.EXACT));
 		criteria.add(Restrictions.eq("tipoInformacao", "C"));
 		return TituloCnp.class.cast(criteria.uniqueResult());
+	}
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public Municipio carregarMunicipioCartorio(Municipio municipio) {
+		return buscarPorPK(municipio, Municipio.class);
 	}
 }

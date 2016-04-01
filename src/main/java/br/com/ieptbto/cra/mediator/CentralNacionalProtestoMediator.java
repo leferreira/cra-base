@@ -15,6 +15,7 @@ import br.com.ieptbto.cra.dao.CentralNancionalProtestoDAO;
 import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.ArquivoCnp;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.RemessaCnp;
 import br.com.ieptbto.cra.entidade.TituloCnp;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -95,5 +96,23 @@ public class CentralNacionalProtestoMediator {
 			}
 		}
 		return municipiosComProtesto;
+	}
+
+	public List<Instituicao> consultarProtestosWs(String documentoDevedor) {
+		List<Instituicao> cartorios = new ArrayList<Instituicao>();
+		List<TituloCnp> titulosProtestados = centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
+
+		for (TituloCnp titulo : titulosProtestados) {
+			TituloCnp tituloCancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
+
+			if (tituloCancelamento == null) {
+				if (!cartorios.contains(titulo.getRemessa().getArquivo().getInstituicaoEnvio())) {
+					Municipio municipio = centralNancionalProtestoDAO.carregarMunicipioCartorio(titulo.getRemessa().getArquivo().getInstituicaoEnvio().getMunicipio());
+					titulo.getRemessa().getArquivo().getInstituicaoEnvio().setMunicipio(municipio);
+					cartorios.add(titulo.getRemessa().getArquivo().getInstituicaoEnvio());
+				}
+			}
+		}
+		return cartorios;
 	}
 }
