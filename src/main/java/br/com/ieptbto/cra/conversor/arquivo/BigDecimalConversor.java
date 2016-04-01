@@ -43,15 +43,13 @@ public class BigDecimalConversor extends AbstractConversor<BigDecimal> {
 	 */
 	public String getValorConvertidoParaString(BigDecimal objeto) {
 		int tamanho = TAMANHO_PADRAO_CAMPO_VALOR;
-		if (getAnotacaoAtributo() != null) {
-			if (getCampoArquivo() != null) {
-				tamanho = getAnotacaoAtributo().tamanho();
-			}
-			if (objeto != null) {
-				BigDecimal retorno = objeto.multiply(VALOR_CEM);
-				String numero = retorno.toPlainString().replace(".00", StringUtils.EMPTY);
-				return StringUtils.leftPad(numero, tamanho, VALOR_ZERO);
-			}
+		if (getCampoArquivo() != null) {
+			tamanho = getAnotacaoAtributo().tamanho();
+		}
+		if (objeto != null) {
+			BigDecimal retorno = objeto.multiply(VALOR_CEM);
+			String numero = retorno.toPlainString().replace(".00", StringUtils.EMPTY);
+			return StringUtils.leftPad(numero, tamanho, VALOR_ZERO);
 		}
 		return StringUtils.repeat(VALOR_ZERO, tamanho);
 	}

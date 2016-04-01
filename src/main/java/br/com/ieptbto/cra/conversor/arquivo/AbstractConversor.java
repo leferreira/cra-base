@@ -111,6 +111,9 @@ public abstract class AbstractConversor<T> {
 	 * @return
 	 */
 	public IAtributoArquivo getAnotacaoAtributo() {
+		if (campoArquivo == null) {
+			System.out.println("oi");
+		}
 		return campoArquivo.getAnotacaoAtributo();
 	}
 

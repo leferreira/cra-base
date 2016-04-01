@@ -1,5 +1,6 @@
 package br.com.ieptbto.cra.mediator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -15,6 +16,7 @@ import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.ArquivoCnp;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.RemessaCnp;
+import br.com.ieptbto.cra.entidade.TituloCnp;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoCnpVO;
 
@@ -80,6 +82,18 @@ public class CentralNacionalProtestoMediator {
 	}
 
 	public List<String> consultarProtestos(String documentoDevedor) {
-		return centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
+		List<String> municipiosComProtesto = new ArrayList<String>();
+		List<TituloCnp> titulosProtestados = centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
+
+		for (TituloCnp titulo : titulosProtestados) {
+			TituloCnp tituloCancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
+
+			if (tituloCancelamento == null) {
+				if (!municipiosComProtesto.contains(titulo.getCidadeCredor().toUpperCase())) {
+					municipiosComProtesto.add(titulo.getCidadeCredor().toUpperCase());
+				}
+			}
+		}
+		return municipiosComProtesto;
 	}
 }

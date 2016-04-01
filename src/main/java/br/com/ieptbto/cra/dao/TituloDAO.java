@@ -39,7 +39,8 @@ import br.com.ieptbto.cra.util.DataUtil;
 @Repository
 public class TituloDAO extends AbstractBaseDAO {
 
-	public List<TituloRemessa> buscarListaTitulos(TituloRemessa titulo, Municipio pracaProtesto, Usuario user) {
+	public List<TituloRemessa> buscarListaTitulos(LocalDate dataInicio, LocalDate dataFim, TituloRemessa titulo, Municipio pracaProtesto,
+			Usuario user) {
 		Instituicao instituicaoUsuario = user.getInstituicao();
 
 		Criteria criteria = getCriteria(TituloRemessa.class);
@@ -72,11 +73,9 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (titulo.getNumeroIdentificacaoDevedor() != null && titulo.getNumeroIdentificacaoDevedor() != StringUtils.EMPTY)
 			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor(), MatchMode.ANYWHERE));
 
-		if (titulo.getDataCadastro() != null)
-			criteria.add(Restrictions.between("dataCadastro", titulo.getDataCadastro(), titulo.getDataCadastro()));
-
-		if (titulo.getDataOcorrencia() != null)
-			criteria.add(Restrictions.between("dataOcorrencia", titulo.getDataOcorrencia(), titulo.getDataEmissaoTitulo()));
+		if (dataInicio != null) {
+			criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
+		}
 
 		if (titulo.getNossoNumero() != null && titulo.getNossoNumero() != StringUtils.EMPTY)
 			criteria.add(Restrictions.ilike("nossoNumero", titulo.getNossoNumero(), MatchMode.ANYWHERE));

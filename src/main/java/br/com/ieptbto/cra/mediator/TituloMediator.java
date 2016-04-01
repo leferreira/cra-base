@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.mediator;
 
 import java.util.List;
 
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,36 +23,37 @@ import br.com.ieptbto.cra.entidade.Usuario;
 @Service
 public class TituloMediator {
 
-    @Autowired
-    private TituloDAO tituloDAO;
+	@Autowired
+	private TituloDAO tituloDAO;
 
-    public TituloRemessa carregarTituloRemessaPorId(TituloRemessa titulo) {
-	return tituloDAO.buscarPorPK(titulo, TituloRemessa.class);
-    }
+	public TituloRemessa carregarTituloRemessaPorId(TituloRemessa titulo) {
+		return tituloDAO.buscarPorPK(titulo, TituloRemessa.class);
+	}
 
-    public Confirmacao carregarTituloConfirmacaoPorId(Confirmacao confirmacao) {
-	return tituloDAO.buscarPorPK(confirmacao, Confirmacao.class);
-    }
+	public Confirmacao carregarTituloConfirmacaoPorId(Confirmacao confirmacao) {
+		return tituloDAO.buscarPorPK(confirmacao, Confirmacao.class);
+	}
 
-    public Retorno carregarTituloRetornoPorId(Retorno retorno) {
-	return tituloDAO.buscarPorPK(retorno, Retorno.class);
-    }
+	public Retorno carregarTituloRetornoPorId(Retorno retorno) {
+		return tituloDAO.buscarPorPK(retorno, Retorno.class);
+	}
 
-    public List<TituloRemessa> buscarListaTitulos(TituloRemessa titulo, Municipio pracaProtesto, Usuario user) {
-	return tituloDAO.buscarListaTitulos(titulo, pracaProtesto, user);
-    }
+	public List<TituloRemessa> buscarListaTitulos(LocalDate dataInicio, LocalDate dataFim, TituloRemessa titulo, Municipio pracaProtesto,
+			Usuario user) {
+		return tituloDAO.buscarListaTitulos(dataInicio, dataFim, titulo, pracaProtesto, user);
+	}
 
-    @SuppressWarnings("rawtypes")
-    public List<Titulo> carregarTitulosGenerico(Arquivo arquivo) {
-	return tituloDAO.carregarTitulosGenerico(arquivo);
-    }
+	@SuppressWarnings("rawtypes")
+	public List<Titulo> carregarTitulosGenerico(Arquivo arquivo) {
+		return tituloDAO.carregarTitulosGenerico(arquivo);
+	}
 
-    @SuppressWarnings("rawtypes")
-    public List<Titulo> carregarTitulosGenerico(Remessa remessa) {
-	return tituloDAO.carregarTitulosGenerico(remessa);
-    }
+	@SuppressWarnings("rawtypes")
+	public List<Titulo> carregarTitulosGenerico(Remessa remessa) {
+		return tituloDAO.carregarTitulosGenerico(remessa);
+	}
 
-    public TituloRemessa buscarTituloPorChave(TituloRemessa titulo) {
-	return tituloDAO.buscarTituloPorChave(titulo);
-    }
+	public TituloRemessa buscarTituloPorChave(TituloRemessa titulo) {
+		return tituloDAO.buscarTituloPorChave(titulo);
+	}
 }

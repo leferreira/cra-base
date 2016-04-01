@@ -22,259 +22,259 @@ import br.com.ieptbto.cra.enumeration.TipoRegistro;
 @MappedSuperclass
 public abstract class Titulo<T> extends AbstractEntidade<T> {
 
-    private TipoRegistro identificacaoRegistro;
-    private String codigoPortador;
-    private String numeroTitulo;
-    private String nossoNumero;
-    private String agenciaCodigoCedente;
-    private BigDecimal saldoTitulo;
+	private TipoRegistro identificacaoRegistro;
+	private String codigoPortador;
+	private String numeroTitulo;
+	private String nossoNumero;
+	private String agenciaCodigoCedente;
+	private BigDecimal saldoTitulo;
 
-    private String ufDevedor;
-    private Integer codigoCartorio;
-    private String numeroProtocoloCartorio;
-    private String tipoOcorrencia;
-    private LocalDate dataProtocolo;
-    private BigDecimal valorCustaCartorio;
-    private String declaracaoPortador;
-    private LocalDate dataOcorrencia;
-    private String codigoIrregularidade;
-    private String bairroDevedor;
-    private BigDecimal valorCustasCartorioDistribuidor;
-    private Integer registroDistribuicao;
-    private BigDecimal valorGravacaoEletronica;
-    private String complementoCodigoIrregularidade;
-    private BigDecimal valorDemaisDespesas;
-    private String numeroSequencialArquivo;
-    private Remessa remessa;
+	private String ufDevedor;
+	private Integer codigoCartorio;
+	private String numeroProtocoloCartorio;
+	private String tipoOcorrencia;
+	private LocalDate dataProtocolo;
+	private BigDecimal valorCustaCartorio;
+	private String declaracaoPortador;
+	private LocalDate dataOcorrencia;
+	private String codigoIrregularidade;
+	private String bairroDevedor;
+	private BigDecimal valorCustasCartorioDistribuidor;
+	private Integer registroDistribuicao;
+	private BigDecimal valorGravacaoEletronica;
+	private String complementoCodigoIrregularidade;
+	private BigDecimal valorDemaisDespesas;
+	private String numeroSequencialArquivo;
+	private Remessa remessa;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "REMESSA_ID")
-    public Remessa getRemessa() {
-	return remessa;
-    }
-
-    @Column(name = "IDENTIFICACAO_REGISTRO_ID")
-    public TipoRegistro getIdentificacaoRegistro() {
-	return identificacaoRegistro;
-    }
-
-    @Column(name = "CODIGO_PORTADOR", length = 3, nullable = false)
-    public String getCodigoPortador() {
-	if (codigoPortador == null) {
-	    codigoPortador = StringUtils.EMPTY;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "REMESSA_ID")
+	public Remessa getRemessa() {
+		return remessa;
 	}
-	return codigoPortador.trim();
-    }
 
-    @Column(name = "NOSSO_NUMERO", nullable = false)
-    public String getNossoNumero() {
-	if (nossoNumero == null) {
-	    nossoNumero = StringUtils.EMPTY;
+	@Column(name = "IDENTIFICACAO_REGISTRO_ID")
+	public TipoRegistro getIdentificacaoRegistro() {
+		return identificacaoRegistro;
 	}
-	return nossoNumero.trim();
-    }
 
-    @Column(name = "NUMERO_TITULO", nullable = false)
-    public String getNumeroTitulo() {
-	if (numeroTitulo == null) {
-	    numeroTitulo = StringUtils.EMPTY;
+	@Column(name = "CODIGO_PORTADOR", length = 3, nullable = false)
+	public String getCodigoPortador() {
+		if (codigoPortador == null) {
+			codigoPortador = StringUtils.EMPTY;
+		}
+		return codigoPortador.trim();
 	}
-	return numeroTitulo.trim();
-    }
 
-    @Column(name = "AGENCIA_CODIGO_CEDENTE")
-    public String getAgenciaCodigoCedente() {
-	if (agenciaCodigoCedente == null) {
-	    agenciaCodigoCedente = StringUtils.EMPTY;
+	@Column(name = "NOSSO_NUMERO", nullable = false)
+	public String getNossoNumero() {
+		if (nossoNumero == null) {
+			nossoNumero = StringUtils.EMPTY;
+		}
+		return nossoNumero.trim();
 	}
-	return agenciaCodigoCedente.trim();
-    }
 
-    @Column(name = "VALOR_SALDO_TITULO")
-    public BigDecimal getSaldoTitulo() {
-	return saldoTitulo;
-    }
-
-    @Column(name = "UF_DEVEDOR")
-    public String getUfDevedor() {
-	return ufDevedor;
-    }
-
-    @Column(name = "CODIGO_CARTORIO")
-    public Integer getCodigoCartorio() {
-	return codigoCartorio;
-    }
-
-    @Column(name = "NUMERO_PROTOCOLO_CARTORIO")
-    public String getNumeroProtocoloCartorio() {
-	if (numeroProtocoloCartorio != null) {
-	    if (!numeroProtocoloCartorio.trim().equals("")) {
-		numeroProtocoloCartorio = String.valueOf(Integer.parseInt(numeroProtocoloCartorio.trim()));
-	    }
+	@Column(name = "NUMERO_TITULO", nullable = false)
+	public String getNumeroTitulo() {
+		if (numeroTitulo == null) {
+			numeroTitulo = StringUtils.EMPTY;
+		}
+		return numeroTitulo.trim();
 	}
-	return numeroProtocoloCartorio;
-    }
 
-    @Column(name = "TIPO_OCORRENCIA")
-    public String getTipoOcorrencia() {
-	return tipoOcorrencia;
-    }
+	@Column(name = "AGENCIA_CODIGO_CEDENTE")
+	public String getAgenciaCodigoCedente() {
+		if (agenciaCodigoCedente == null) {
+			agenciaCodigoCedente = StringUtils.EMPTY;
+		}
+		return agenciaCodigoCedente.trim();
+	}
 
-    @Column(name = "DATA_PROTOCOLO")
-    public LocalDate getDataProtocolo() {
-	return dataProtocolo;
-    }
+	@Column(name = "VALOR_SALDO_TITULO")
+	public BigDecimal getSaldoTitulo() {
+		return saldoTitulo;
+	}
 
-    @Column(name = "VALOR_CUSTA_CARTORIO")
-    public BigDecimal getValorCustaCartorio() {
-	return valorCustaCartorio;
-    }
+	@Column(name = "UF_DEVEDOR")
+	public String getUfDevedor() {
+		return ufDevedor;
+	}
 
-    @Column(name = "DECLARACAO_PORTADOR")
-    public String getDeclaracaoPortador() {
-	return declaracaoPortador;
-    }
+	@Column(name = "CODIGO_CARTORIO")
+	public Integer getCodigoCartorio() {
+		return codigoCartorio;
+	}
 
-    @Column(name = "DATA_OCORRENCIA")
-    public LocalDate getDataOcorrencia() {
-	return dataOcorrencia;
-    }
+	@Column(name = "NUMERO_PROTOCOLO_CARTORIO")
+	public String getNumeroProtocoloCartorio() {
+		if (numeroProtocoloCartorio != null) {
+			if (!numeroProtocoloCartorio.trim().equals("")) {
+				numeroProtocoloCartorio = String.valueOf(Integer.parseInt(numeroProtocoloCartorio.trim()));
+			}
+		}
+		return numeroProtocoloCartorio;
+	}
 
-    @Column(name = "CODIGO_IRREGULARIDADE")
-    public String getCodigoIrregularidade() {
-	return codigoIrregularidade;
-    }
+	@Column(name = "TIPO_OCORRENCIA")
+	public String getTipoOcorrencia() {
+		return tipoOcorrencia;
+	}
 
-    @Column(name = "BAIRRO_DEVEDOR")
-    public String getBairroDevedor() {
-	return bairroDevedor;
-    }
+	@Column(name = "DATA_PROTOCOLO")
+	public LocalDate getDataProtocolo() {
+		return dataProtocolo;
+	}
 
-    @Column(name = "VALOR_CUSTA_CARTORIO_DISTRIBUIDOR")
-    public BigDecimal getValorCustasCartorioDistribuidor() {
-	return valorCustasCartorioDistribuidor;
-    }
+	@Column(name = "VALOR_CUSTA_CARTORIO")
+	public BigDecimal getValorCustaCartorio() {
+		return valorCustaCartorio;
+	}
 
-    @Column(name = "REGISTRO_DISTRIBUICAO")
-    public Integer getRegistroDistribuicao() {
-	return registroDistribuicao;
-    }
+	@Column(name = "DECLARACAO_PORTADOR")
+	public String getDeclaracaoPortador() {
+		return declaracaoPortador;
+	}
 
-    @Column(name = "VALOR_GRAVACAO_ELETRONICA")
-    public BigDecimal getValorGravacaoEletronica() {
-	return valorGravacaoEletronica;
-    }
+	@Column(name = "DATA_OCORRENCIA")
+	public LocalDate getDataOcorrencia() {
+		return dataOcorrencia;
+	}
 
-    @Column(name = "VALOR_DEMAIS_DESPESAS")
-    public BigDecimal getValorDemaisDespesas() {
-	return valorDemaisDespesas;
-    }
+	@Column(name = "CODIGO_IRREGULARIDADE")
+	public String getCodigoIrregularidade() {
+		return codigoIrregularidade;
+	}
 
-    @Column(name = "COMPLEMENTO_CODIGO_IRREGULARIDADE")
-    public String getComplementoCodigoIrregularidade() {
-	return complementoCodigoIrregularidade;
-    }
+	@Column(name = "BAIRRO_DEVEDOR")
+	public String getBairroDevedor() {
+		return bairroDevedor;
+	}
 
-    @Column(name = "NUMERO_SEQUENCIAL_ARQUIVO")
-    public String getNumeroSequencialArquivo() {
-	return numeroSequencialArquivo;
-    }
+	@Column(name = "VALOR_CUSTA_CARTORIO_DISTRIBUIDOR")
+	public BigDecimal getValorCustasCartorioDistribuidor() {
+		return valorCustasCartorioDistribuidor;
+	}
 
-    public void setRemessa(Remessa remessa) {
-	this.remessa = remessa;
-    }
+	@Column(name = "REGISTRO_DISTRIBUICAO")
+	public Integer getRegistroDistribuicao() {
+		return registroDistribuicao;
+	}
 
-    public void setNossoNumero(String nossoNumero) {
-	this.nossoNumero = nossoNumero;
-    }
+	@Column(name = "VALOR_GRAVACAO_ELETRONICA")
+	public BigDecimal getValorGravacaoEletronica() {
+		return valorGravacaoEletronica;
+	}
 
-    public void setNumeroTitulo(String numeroTitulo) {
-	this.numeroTitulo = numeroTitulo;
-    }
+	@Column(name = "VALOR_DEMAIS_DESPESAS")
+	public BigDecimal getValorDemaisDespesas() {
+		return valorDemaisDespesas;
+	}
 
-    public void setValorDemaisDespesas(BigDecimal valorDemaisDespesas) {
-	this.valorDemaisDespesas = valorDemaisDespesas;
-    }
+	@Column(name = "COMPLEMENTO_CODIGO_IRREGULARIDADE")
+	public String getComplementoCodigoIrregularidade() {
+		return complementoCodigoIrregularidade;
+	}
 
-    public void setUfDevedor(String ufDevedor) {
-	this.ufDevedor = ufDevedor;
-    }
+	@Column(name = "NUMERO_SEQUENCIAL_ARQUIVO")
+	public String getNumeroSequencialArquivo() {
+		return numeroSequencialArquivo;
+	}
 
-    public void setCodigoCartorio(Integer codigoCartorio) {
-	this.codigoCartorio = codigoCartorio;
-    }
+	public void setRemessa(Remessa remessa) {
+		this.remessa = remessa;
+	}
 
-    public void setNumeroProtocoloCartorio(String numeroProtocoloCartorio) {
-	this.numeroProtocoloCartorio = numeroProtocoloCartorio;
-    }
+	public void setNossoNumero(String nossoNumero) {
+		this.nossoNumero = nossoNumero;
+	}
 
-    public void setTipoOcorrencia(String tipoOcorrencia) {
-	this.tipoOcorrencia = tipoOcorrencia;
-    }
+	public void setNumeroTitulo(String numeroTitulo) {
+		this.numeroTitulo = numeroTitulo;
+	}
 
-    public void setDataProtocolo(LocalDate dataProtocolo) {
-	this.dataProtocolo = dataProtocolo;
-    }
+	public void setValorDemaisDespesas(BigDecimal valorDemaisDespesas) {
+		this.valorDemaisDespesas = valorDemaisDespesas;
+	}
 
-    public void setValorCustaCartorio(BigDecimal valorCustaCartorio) {
-	this.valorCustaCartorio = valorCustaCartorio;
-    }
+	public void setUfDevedor(String ufDevedor) {
+		this.ufDevedor = ufDevedor;
+	}
 
-    public void setDeclaracaoPortador(String declaracaoPortador) {
-	this.declaracaoPortador = declaracaoPortador;
-    }
+	public void setCodigoCartorio(Integer codigoCartorio) {
+		this.codigoCartorio = codigoCartorio;
+	}
 
-    public void setDataOcorrencia(LocalDate dataOcorrencia) {
-	this.dataOcorrencia = dataOcorrencia;
-    }
+	public void setNumeroProtocoloCartorio(String numeroProtocoloCartorio) {
+		this.numeroProtocoloCartorio = numeroProtocoloCartorio;
+	}
 
-    public void setCodigoIrregularidade(String codigoIrregularidade) {
-	this.codigoIrregularidade = codigoIrregularidade;
-    }
+	public void setTipoOcorrencia(String tipoOcorrencia) {
+		this.tipoOcorrencia = tipoOcorrencia;
+	}
 
-    public void setBairroDevedor(String bairroDevedor) {
-	this.bairroDevedor = bairroDevedor;
-    }
+	public void setDataProtocolo(LocalDate dataProtocolo) {
+		this.dataProtocolo = dataProtocolo;
+	}
 
-    public void setValorCustasCartorioDistribuidor(BigDecimal valorCustasCartorioDistribuidor) {
-	this.valorCustasCartorioDistribuidor = valorCustasCartorioDistribuidor;
-    }
+	public void setValorCustaCartorio(BigDecimal valorCustaCartorio) {
+		this.valorCustaCartorio = valorCustaCartorio;
+	}
 
-    public void setRegistroDistribuicao(Integer registroDistribuicao) {
-	this.registroDistribuicao = registroDistribuicao;
-    }
+	public void setDeclaracaoPortador(String declaracaoPortador) {
+		this.declaracaoPortador = declaracaoPortador;
+	}
 
-    public void setValorGravacaoEletronica(BigDecimal valorGravacaoEletronica) {
-	this.valorGravacaoEletronica = valorGravacaoEletronica;
-    }
+	public void setDataOcorrencia(LocalDate dataOcorrencia) {
+		this.dataOcorrencia = dataOcorrencia;
+	}
 
-    public void setIdentificacaoRegistro(TipoRegistro identificacaoRegistro) {
-	this.identificacaoRegistro = identificacaoRegistro;
-    }
+	public void setCodigoIrregularidade(String codigoIrregularidade) {
+		this.codigoIrregularidade = codigoIrregularidade;
+	}
 
-    public void setCodigoPortador(String codigoPortador) {
-	this.codigoPortador = codigoPortador;
-    }
+	public void setBairroDevedor(String bairroDevedor) {
+		this.bairroDevedor = bairroDevedor;
+	}
 
-    public void setAgenciaCodigoCedente(String agenciaCodigoCedente) {
-	this.agenciaCodigoCedente = agenciaCodigoCedente;
-    }
+	public void setValorCustasCartorioDistribuidor(BigDecimal valorCustasCartorioDistribuidor) {
+		this.valorCustasCartorioDistribuidor = valorCustasCartorioDistribuidor;
+	}
 
-    public void setSaldoTitulo(BigDecimal saldoTitulo) {
-	this.saldoTitulo = saldoTitulo;
-    }
+	public void setRegistroDistribuicao(Integer registroDistribuicao) {
+		this.registroDistribuicao = registroDistribuicao;
+	}
 
-    public void setComplementoCodigoIrregularidade(String complementoCodigoIrregularidade) {
-	this.complementoCodigoIrregularidade = complementoCodigoIrregularidade;
-    }
+	public void setValorGravacaoEletronica(BigDecimal valorGravacaoEletronica) {
+		this.valorGravacaoEletronica = valorGravacaoEletronica;
+	}
 
-    public void setNumeroSequencialArquivo(String numeroSequencialArquivo) {
-	this.numeroSequencialArquivo = numeroSequencialArquivo;
-    }
+	public void setIdentificacaoRegistro(TipoRegistro identificacaoRegistro) {
+		this.identificacaoRegistro = identificacaoRegistro;
+	}
 
-    @Override
-    public int compareTo(T entidade) {
-	return 0;
-    };
+	public void setCodigoPortador(String codigoPortador) {
+		this.codigoPortador = codigoPortador;
+	}
+
+	public void setAgenciaCodigoCedente(String agenciaCodigoCedente) {
+		this.agenciaCodigoCedente = agenciaCodigoCedente;
+	}
+
+	public void setSaldoTitulo(BigDecimal saldoTitulo) {
+		this.saldoTitulo = saldoTitulo;
+	}
+
+	public void setComplementoCodigoIrregularidade(String complementoCodigoIrregularidade) {
+		this.complementoCodigoIrregularidade = complementoCodigoIrregularidade;
+	}
+
+	public void setNumeroSequencialArquivo(String numeroSequencialArquivo) {
+		this.numeroSequencialArquivo = numeroSequencialArquivo;
+	}
+
+	@Override
+	public int compareTo(T entidade) {
+		return 0;
+	};
 
 }
