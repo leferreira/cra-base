@@ -90,8 +90,9 @@ public class CentralNacionalProtestoMediator {
 			TituloCnp tituloCancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
 
 			if (tituloCancelamento == null) {
-				if (!municipiosComProtesto.contains(titulo.getCidadeCredor().toUpperCase())) {
-					municipiosComProtesto.add(titulo.getCidadeCredor().toUpperCase());
+				Municipio municipio = centralNancionalProtestoDAO.carregarMunicipioCartorio(titulo.getRemessa().getArquivo().getInstituicaoEnvio().getMunicipio());
+				if (!municipiosComProtesto.contains(municipio.getNomeMunicipio().toUpperCase())) {
+					municipiosComProtesto.add(municipio.getNomeMunicipio().toUpperCase());
 				}
 			}
 		}
