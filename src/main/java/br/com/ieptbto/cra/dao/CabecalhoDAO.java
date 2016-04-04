@@ -1,11 +1,12 @@
 package br.com.ieptbto.cra.dao;
 
 import org.hibernate.Criteria;
-import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
+import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 
 /**
  * 
@@ -37,12 +38,23 @@ public class CabecalhoDAO extends AbstractBaseDAO {
 		return false;
 	}
 
-	public Integer gerarSequencialConfirmacaoRetorno(CabecalhoRemessa cabecalhoRemessa) {
+	public CabecalhoRemessa buscarUltimoCabecalhoRetornoPorMunicipio(CabecalhoRemessa cabecalhoRemessa) {
 		Criteria criteria = getCriteria(CabecalhoRemessa.class);
 		criteria.add(Restrictions.eq("numeroCodigoPortador", cabecalhoRemessa.getNumeroCodigoPortador()));
-		criteria.add(Restrictions.eq("identificacaoTransacaoTipo", cabecalhoRemessa.getIdentificacaoTransacaoTipo()));
 		criteria.add(Restrictions.eq("codigoMunicipio", cabecalhoRemessa.getCodigoMunicipio()));
-		criteria.setProjection(Projections.max("numeroSequencialRemessa"));
-		return Integer.class.cast(criteria.uniqueResult());
+		criteria.add(Restrictions.eq("identificacaoTransacaoTipo", TipoArquivoEnum.RETORNO.getIdentificacaoTransacaoCabecalho()));
+		criteria.setMaxResults(1);
+		criteria.addOrder(Order.desc("id"));
+		return CabecalhoRemessa.class.cast(criteria.uniqueResult());
+	}
+
+	public CabecalhoRemessa buscarUltimoCabecalhoRemessa(CabecalhoRemessa cabecalhoRemessa) {
+		Criteria criteria = getCriteria(CabecalhoRemessa.class);
+		criteria.add(Restrictions.eq("numeroCodigoPortador", cabecalhoRemessa.getNumeroCodigoPortador()));
+		criteria.add(Restrictions.eq("codigoMunicipio", cabecalhoRemessa.getCodigoMunicipio()));
+		criteria.add(Restrictions.eq("identificacaoTransacaoTipo", TipoArquivoEnum.REMESSA.getIdentificacaoTransacaoCabecalho()));
+		criteria.setMaxResults(1);
+		criteria.addOrder(Order.desc("id"));
+		return CabecalhoRemessa.class.cast(criteria.uniqueResult());
 	}
 }

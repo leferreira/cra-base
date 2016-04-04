@@ -16,7 +16,7 @@ import br.com.ieptbto.cra.validacao.regra.RegraCabecalho;
  *
  */
 @Service
-public class RegraVerificarSequencialCabecalho extends RegraCabecalho {
+public class RegraVerificarAgenciaCentralizadora extends RegraCabecalho {
 
 	@Autowired
 	private CabecalhoMediator cabecalhoMediator;
@@ -37,16 +37,16 @@ public class RegraVerificarSequencialCabecalho extends RegraCabecalho {
 		} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)) {
 
 		} else if (TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
-			verificarSequencialRetorno();
+			verificarAgencia();
 		}
 	}
 
-	private void verificarSequencialRetorno() {
-		CabecalhoRemessa ultimoCabecalhoRetorno = cabecalhoMediator.buscarUltimoCabecalhoRetornoPorMunicipio(getCabecalhoRemessa());
+	private void verificarAgencia() {
+		CabecalhoRemessa ultimoCabecalhoRemessa = cabecalhoMediator.buscarUltimoCabecalhoRemessa(getCabecalhoRemessa());
 
-		if (ultimoCabecalhoRetorno != null) {
-			if (getCabecalhoRemessa().getNumeroSequencialRemessa() <= ultimoCabecalhoRetorno.getNumeroSequencialRemessa()) {
-				getCabecalhoRemessa().setNumeroSequencialRemessa(ultimoCabecalhoRetorno.getNumeroSequencialRemessa() + 1);
+		if (ultimoCabecalhoRemessa != null) {
+			if (getCabecalhoRemessa().getAgenciaCentralizadora() != ultimoCabecalhoRemessa.getAgenciaCentralizadora()) {
+				getCabecalhoRemessa().setAgenciaCentralizadora(ultimoCabecalhoRemessa.getAgenciaCentralizadora());
 			}
 		}
 	}

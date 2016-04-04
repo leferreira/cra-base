@@ -30,8 +30,12 @@ public class CabecalhoMediator {
 		}
 		return true;
 	}
-	
-	public Integer gerarSequencialConfirmacaoRetorno(CabecalhoRemessa cabecalhoRemessa) {
-		return cabecalhoDAO.gerarSequencialConfirmacaoRetorno(cabecalhoRemessa);
+
+	public CabecalhoRemessa buscarUltimoCabecalhoRetornoPorMunicipio(CabecalhoRemessa cabecalhoRemessa) {
+		return cabecalhoDAO.buscarUltimoCabecalhoRetornoPorMunicipio(cabecalhoRemessa);
+	}
+
+	public CabecalhoRemessa buscarUltimoCabecalhoRemessa(CabecalhoRemessa cabecalhoRemessa) {
+		return cabecalhoDAO.buscarUltimoCabecalhoRemessa(cabecalhoRemessa);
 	}
 }

@@ -16,6 +16,8 @@ public class ValidarCabecalhoRemessa {
 	private RegraVerificarCidadeAtiva regraVerificarCidadeAtiva;
 	@Autowired
 	private RegraVerificarSequencialCabecalho regraVerificarSequencialCabecalho;
+	@Autowired
+	private RegraVerificarAgenciaCentralizadora regraVerificarAgenciaCentralizadora;
 	private CabecalhoRemessa cabecalho;
 	private List<Exception> erros;
 
@@ -30,7 +32,7 @@ public class ValidarCabecalhoRemessa {
 		regraVerificarCidadeCodigoIBGE.executar(getCabecalho(), getErros());
 		regraVerificarCidadeAtiva.executar(getCabecalho(), getErros());
 		regraVerificarSequencialCabecalho.executar(getCabecalho(), getErros());
-
+		regraVerificarAgenciaCentralizadora.executar(getCabecalho(), getErros());
 	}
 
 	public CabecalhoRemessa getCabecalho() {
