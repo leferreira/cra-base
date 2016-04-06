@@ -42,9 +42,14 @@ public class BatimentoDAO extends AbstractBaseDAO {
 							|| batimento.getRemessa().getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
 						batimento.getRemessa().setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
 					}
+					batimento = save(batimento);
+
+					Remessa remessa = batimento.getRemessa();
+					remessa.setBatimento(batimento);
+					update(remessa);
 
 					batimentoDeposito.setDeposito(deposito);
-					batimentoDeposito.setBatimento(save(batimento));
+					batimentoDeposito.setBatimento(batimento);
 					save(batimentoDeposito);
 				}
 			}

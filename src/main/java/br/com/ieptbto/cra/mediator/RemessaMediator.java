@@ -322,8 +322,8 @@ public class RemessaMediator {
 		instituicao.setMunicipio(municipioDAO.buscarPorPK(instituicao.getMunicipio(), Municipio.class));
 
 		List<Remessa> remessas = /*
-									 * remessaDAO.confirmacoesPendentes(instituicao
-									 * );
+									 * remessaDAO.confirmacoesPendentes(
+									 * instituicao );
 									 */ new ArrayList<>();
 		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
 		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
