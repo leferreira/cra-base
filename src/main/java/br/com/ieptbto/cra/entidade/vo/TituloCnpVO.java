@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import br.com.ieptbto.cra.annotations.IAtributoArquivo;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
 
 /**
@@ -19,129 +20,171 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	private static final long serialVersionUID = 1L;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 1, posicao = 1, tamanho = 1, descricao = "", obrigatoriedade = true, tipo = Integer.class)
 	private String codigoRegistro;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 2, posicao = 2, tamanho = 1, descricao = "", obrigatoriedade = false)
 	private String tipoInformacao;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 3, posicao = 3, tamanho = 1, descricao = "", obrigatoriedade = false)
 	private String codigoOperacao;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 4, posicao = 4, tamanho = 2, descricao = "", obrigatoriedade = false)
 	private String codigoUnidadeFederativa;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 5, posicao = 6, tamanho = 7, descricao = "", obrigatoriedade = false)
 	private String codigoPracaEmbratel;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 6, posicao = 10, tamanho = 55, descricao = "", obrigatoriedade = false)
 	private String emBranco10;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 7, posicao = 65, tamanho = 45, descricao = "", obrigatoriedade = false)
 	private String nomeCredor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 8, posicao = 110, tamanho = 9, descricao = "", obrigatoriedade = false)
 	private String numeroDocumentoCredor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 9, posicao = 119, tamanho = 4, descricao = "", obrigatoriedade = false)
 	private String complementoDocumentoCredor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 10, posicao = 123, tamanho = 2, descricao = "", obrigatoriedade = false)
 	private String digitoControleDocumentoCredor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 11, posicao = 125, tamanho = 44, descricao = "", obrigatoriedade = false)
 	private String enderecoCredor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 12, posicao = 169, tamanho = 8, descricao = "", obrigatoriedade = false)
 	private String cepCredor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 13, posicao = 177, tamanho = 20, descricao = "", obrigatoriedade = false)
 	private String cidadeCredor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 14, posicao = 197, tamanho = 2, descricao = "", obrigatoriedade = false)
 	private String ufCredor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 15, posicao = 199, tamanho = 25, descricao = "", obrigatoriedade = false)
 	private String municipioEnderecoCredor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 16, posicao = 224, tamanho = 1, descricao = "", obrigatoriedade = false)
 	private String tipoPessoaCredor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 17, posicao = 225, tamanho = 1, descricao = "", obrigatoriedade = false)
 	private String tipoDocumentoCredor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 18, posicao = 226, tamanho = 1, descricao = "", obrigatoriedade = false)
 	private String emBranco226;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 19, posicao = 247, tamanho = 14, descricao = "", obrigatoriedade = false)
 	private String valorProtesto;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 20, posicao = 261, tamanho = 8, descricao = "", obrigatoriedade = false)
 	private String dataProtesto;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 21, posicao = 269, tamanho = 1, descricao = "", obrigatoriedade = false)
 	private String tipoPessoaDevedor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 22, posicao = 270, tamanho = 1, descricao = "", obrigatoriedade = false)
 	private String tipoDocumentoDevedor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 23, posicao = 271, tamanho = 2, descricao = "", obrigatoriedade = false)
 	private String numeroCoResponsavel;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 24, posicao = 273, tamanho = 25, descricao = "", obrigatoriedade = false)
 	private String emBranco273;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 25, posicao = 298, tamanho = 45, descricao = "", obrigatoriedade = false)
 	private String nomeDevedor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 26, posicao = 343, tamanho = 3, descricao = "", obrigatoriedade = false)
 	private String emBranco343;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 27, posicao = 346, tamanho = 9, descricao = "", obrigatoriedade = false)
 	private String numeroDocumentoDevedor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 28, posicao = 355, tamanho = 4, descricao = "", obrigatoriedade = false)
 	private String complementoDocumentoDevedor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 29, posicao = 359, tamanho = 2, descricao = "", obrigatoriedade = false)
 	private String digitoControleDocumentoDevedor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 30, posicao = 361, tamanho = 10, descricao = "", obrigatoriedade = false)
 	private String emBranco361;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 31, posicao = 371, tamanho = 45, descricao = "", obrigatoriedade = false)
 	private String enderecoDevedor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 32, posicao = 416, tamanho = 8, descricao = "", obrigatoriedade = false)
 	private String cepDevedor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 33, posicao = 424, tamanho = 20, descricao = "", obrigatoriedade = false)
 	private String cidadeDevedor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 34, posicao = 444, tamanho = 2, descricao = "", obrigatoriedade = false)
 	private String ufDevedor;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 35, posicao = 446, tamanho = 2, descricao = "", obrigatoriedade = false)
 	private String numeroCartorio;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 36, posicao = 448, tamanho = 10, descricao = "", obrigatoriedade = false)
 	private String numeroProtocoloCartorio;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 37, posicao = 458, tamanho = 20, descricao = "", obrigatoriedade = false)
 	private String emBranco458;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 38, posicao = 478, tamanho = 8, descricao = "", obrigatoriedade = false)
 	private String dataCancelamentoProtesto;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 39, posicao = 486, tamanho = 1, descricao = "", obrigatoriedade = false)
 	private String especieProtesto;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 40, posicao = 487, tamanho = 47, descricao = "", obrigatoriedade = false)
 	private String emBranco487;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 41, posicao = 534, tamanho = 60, descricao = "", obrigatoriedade = false)
 	private String codigoErro3Posicoes;
 
 	@XmlAttribute(required = true)
+	@IAtributoArquivo(ordem = 42, posicao = 594, tamanho = 7, descricao = "", obrigatoriedade = false)
 	private String sequenciaRegistro;
 
 	public String getCodigoRegistro() {

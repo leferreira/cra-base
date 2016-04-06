@@ -31,15 +31,15 @@ public class BatimentoDAO extends AbstractBaseDAO {
 
 	public Deposito salvarDeposito(Deposito deposito) {
 		Transaction transaction = getBeginTransation();
-		
+
 		try {
 			deposito = save(deposito);
 			if (deposito.getBatimentosDeposito() != null) {
-				for (BatimentoDeposito batimentoDeposito : deposito.getBatimentosDeposito()){
+				for (BatimentoDeposito batimentoDeposito : deposito.getBatimentosDeposito()) {
 					Batimento batimento = batimentoDeposito.getBatimento();
 					batimento.getRemessa().setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);
-					if (batimento.getRemessa().getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA) ||  
-							batimento.getRemessa().getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO) ) {
+					if (batimento.getRemessa().getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)
+							|| batimento.getRemessa().getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
 						batimento.getRemessa().setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
 					}
 
@@ -54,17 +54,17 @@ public class BatimentoDAO extends AbstractBaseDAO {
 			logger.error(ex.getMessage());
 			throw new InfraException(ex.getMessage());
 		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex);
 			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
 			throw new InfraException("Não foi possível inserir os depósitos na base de dados.");
 		}
 		return deposito;
 	}
-	
-	public Deposito atualizarDeposito(Deposito deposito){
+
+	public Deposito atualizarDeposito(Deposito deposito) {
 		Transaction transaction = getSession().beginTransaction();
-		
-		try{
+
+		try {
 			merge(deposito);
 			transaction.commit();
 
@@ -79,10 +79,10 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		}
 		return deposito;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public Remessa buscarRetornoCorrespondenteAoDeposito(Deposito deposito) {
-		StringBuffer  sql = new StringBuffer();
+		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT ret.remessa_id, sum(ret.valor_saldo_titulo) ");
 		sql.append("FROM tb_titulo AS tit ");
 		sql.append("INNER JOIN tb_retorno AS ret ON tit.id_titulo=ret.titulo_id ");
@@ -93,13 +93,13 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		sql.append("	WHERE rem.situacao_batimento_retorno = 'NAO_CONFIRMADO' AND tipo.id_tipo_arquivo = 3) ");
 		sql.append("GROUP BY ret.remessa_id ");
 		sql.append("HAVING SUM(ret.valor_saldo_titulo)=" + deposito.getValorCredito().toString());
-		
+
 		Query query = getSession().createSQLQuery(sql.toString());
 		List result = query.list();
 		if (result.size() > 1) {
 			return null;
 		}
-		
+
 		Iterator iterator = result.iterator();
 		while (iterator.hasNext()) {
 			Object[] posicao = (Object[]) iterator.next();
@@ -118,7 +118,7 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("situacaoDeposito", SituacaoDeposito.NAO_IDENTIFICADO));
 		return criteria.list();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<Batimento> buscarBatimentosDoDeposito(Deposito deposito) {
 		Criteria criteria = getCriteria(Batimento.class);
@@ -153,18 +153,18 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		if (!deposito.getTipoDeposito().equals(TipoDeposito.NAO_INFORMADO)) {
 			criteria.add(Restrictions.eq("tipoDeposito", deposito.getTipoDeposito()));
 		}
-		
+
 		criteria.addOrder(Order.asc("data"));
 		return criteria.list();
 	}
 
 	public void atualizarInformacoesDeposito(Deposito deposito) {
 		Transaction transaction = getBeginTransation();
-		
+
 		try {
 			update(deposito);
 			transaction.commit();
-			
+
 		} catch (InfraException ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage());

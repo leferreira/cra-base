@@ -69,6 +69,18 @@ public class CabecalhoCnpVO extends AbstractArquivoVO {
 	@XmlAttribute(required = true)
 	private String periodicidadeEnvio;
 
+	@XmlAttribute(required = true)
+	private String endereco;
+
+	@XmlAttribute(required = true)
+	private String emBranco262;
+
+	@XmlAttribute(required = true)
+	private String codigoErro3Posicoes;
+
+	@XmlAttribute(required = true)
+	private String sequenciaRegistro;
+
 	public String getCodigoRegistro() {
 		return codigoRegistro;
 	}
@@ -208,5 +220,37 @@ public class CabecalhoCnpVO extends AbstractArquivoVO {
 	@Override
 	public String getIdentificacaoRegistro() {
 		return TipoRegistro.CABECALHO.getConstante();
+	}
+
+	public String getEndereco() {
+		return endereco;
+	}
+
+	public String getEmBranco262() {
+		return emBranco262;
+	}
+
+	public String getCodigoErro3Posicoes() {
+		return codigoErro3Posicoes;
+	}
+
+	public String getSequenciaRegistro() {
+		return sequenciaRegistro;
+	}
+
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
+	}
+
+	public void setEmBranco262(String emBranco262) {
+		this.emBranco262 = emBranco262;
+	}
+
+	public void setCodigoErro3Posicoes(String codigoErro3Posicoes) {
+		this.codigoErro3Posicoes = codigoErro3Posicoes;
+	}
+
+	public void setSequenciaRegistro(String sequenciaRegistro) {
+		this.sequenciaRegistro = sequenciaRegistro;
 	}
 }

@@ -34,6 +34,7 @@ import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.TipoBatimento;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.error.CodigoErro;
@@ -97,14 +98,11 @@ public class ArquivoDAO extends AbstractBaseDAO {
 									save(anexo);
 								}
 							}
-							if (tituloSalvo == null) {
-								titulo.setSaldoTitulo(BigDecimal.ZERO);
-								remessa.getTitulos().remove(titulo);
-							}
 							valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
 						}
 						if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-							if (retornoContemTituloPago.equals(false)) {
+							if (retornoContemTituloPago.equals(false)
+									|| remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
 								remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
 								update(remessa);
 							}

@@ -39,6 +39,10 @@ public class CabecalhoCnp extends AbstractEntidade<CabecalhoCnp> {
 	private String numeroVersaoSoftware;
 	private String codigoEDI;
 	private String periodicidadeEnvio;
+	private String endereco;
+	private String emBranco262;
+	private String codigoErro3Posicoes;
+	private String sequenciaRegistro;
 
 	@Override
 	@Id
@@ -121,6 +125,42 @@ public class CabecalhoCnp extends AbstractEntidade<CabecalhoCnp> {
 	@Column(name = "PERIODICIDADE_ENVIO")
 	public String getPeriodicidadeEnvio() {
 		return periodicidadeEnvio;
+	}
+
+	@Column(name = "ENDERECO", length = 40)
+	public String getEndereco() {
+		return endereco;
+	}
+
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
+	}
+
+	@Column(name = "EM_BRANCO_262", length = 272)
+	public String getEmBranco262() {
+		return emBranco262;
+	}
+
+	public void setEmBranco262(String emBranco262) {
+		this.emBranco262 = emBranco262;
+	}
+
+	@Column(name = "CODIGO_ERRO_3_POSICOES", length = 60)
+	public String getCodigoErro3Posicoes() {
+		return codigoErro3Posicoes;
+	}
+
+	public void setCodigoErro3Posicoes(String codigoErro3Posicoes) {
+		this.codigoErro3Posicoes = codigoErro3Posicoes;
+	}
+
+	@Column(name = "SEQUENCIAL_REGISTRO", length = 7)
+	public String getSequenciaRegistro() {
+		return sequenciaRegistro;
+	}
+
+	public void setSequenciaRegistro(String sequenciaRegistro) {
+		this.sequenciaRegistro = sequenciaRegistro;
 	}
 
 	public void setId(int id) {

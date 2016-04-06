@@ -35,171 +35,157 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 @Service
 public class BatimentoMediator {
 
-    protected static final Logger logger = Logger.getLogger(BatimentoMediator.class);
-    public static final String CONSTANTE_TIPO_DEPOSITO_CARTORIO = "CARTORIO";
+	protected static final Logger logger = Logger.getLogger(BatimentoMediator.class);
+	public static final String CONSTANTE_TIPO_DEPOSITO_CARTORIO = "CARTORIO";
 
-    @Autowired
-    private BatimentoDAO batimentoDAO;
-    @Autowired
-    private RetornoDAO retornoDAO;
-    @Autowired
-    private RetornoMediator retornoMediator;
-    private Usuario usuario;
-    private FileUpload fileUpload;
+	@Autowired
+	private BatimentoDAO batimentoDAO;
+	@Autowired
+	private RetornoDAO retornoDAO;
+	@Autowired
+	private RetornoMediator retornoMediator;
+	private Usuario usuario;
+	private FileUpload fileUpload;
 
-    public void processarExtrato(Usuario user, FileUpload fileUpload) {
-	this.usuario = user;
-	this.fileUpload = fileUpload;
+	public void processarExtrato(Usuario user, FileUpload fileUpload) {
+		this.usuario = user;
+		this.fileUpload = fileUpload;
 
-	logger.info("Iniciando processamento de arquivo de extrato!");
-	converterDepositosExtrato();
-    }
+		logger.info("Iniciando processamento de arquivo de extrato!");
+		converterDepositosExtrato();
+	}
 
-    private void converterDepositosExtrato() {
-	List<Deposito> depositos = new ArrayList<Deposito>();
-	Boolean arquivoRetornoGeradoHoje = retornoMediator.verificarArquivoRetornoGeradoCra();
-	int numeroLinha = 1;
+	private void converterDepositosExtrato() {
+		List<Deposito> depositos = new ArrayList<Deposito>();
+		Boolean arquivoRetornoGeradoHoje = retornoMediator.verificarArquivoRetornoGeradoCra();
+		int numeroLinha = 1;
 
-	try {
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(getFileUpload().getInputStream()));
-	    String linha = reader.readLine();
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(getFileUpload().getInputStream()));
+			String linha = reader.readLine();
 
-	    /**
-	     * Iniciar a leitura após a linha do saldo. (linha nº 7)
-	     */
-	    while ((linha = reader.readLine()) != null) {
+			while ((linha = reader.readLine()) != null) {
+				if (numeroLinha == 7 || numeroLinha > 7) {
+					if (StringUtils.isNotBlank(linha.trim())) {
+						String dados[] = linha.split(Pattern.quote(";"));
 
-		if (numeroLinha == 7 || numeroLinha > 7) {
-		    if (StringUtils.isNotBlank(linha.trim())) {
-			String dados[] = linha.split(Pattern.quote(";"));
+						if (validarLinhaCSV(dados)) {
+							Deposito deposito = new Deposito();
+							deposito.setSituacaoDeposito(SituacaoDeposito.NAO_IDENTIFICADO);
+							deposito.setDataImportacao(new LocalDate());
+							deposito.setUsuario(getUsuario());
+							deposito.setTipoDeposito(verificaTipoDeposito(dados));
+							deposito.setData(DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA, dados[0]));
+							deposito.setLancamento(RemoverAcentosUtil.removeAcentos(dados[1]));
+							deposito.setNumeroDocumento(dados[2]);
+							deposito.setValorCredito(new BigDecimal(dados[3].replace(".", "").replace(",", ".")));
 
-			if (validarLinhaCSV(dados)) {
-			    Deposito deposito = new Deposito();
-			    deposito.setSituacaoDeposito(SituacaoDeposito.NAO_IDENTIFICADO);
-			    deposito.setDataImportacao(new LocalDate());
-			    deposito.setUsuario(getUsuario());
-			    deposito.setTipoDeposito(verificaTipoDeposito(dados));
+							Remessa retorno = batimentoDAO.buscarRetornoCorrespondenteAoDeposito(deposito);
+							if (retorno != null) {
+								Batimento batimento = new Batimento();
+								batimento.setData(retornoMediator.aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
 
-			    deposito.setData(DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA, dados[0]));
-			    deposito.setLancamento(RemoverAcentosUtil.removeAcentos(dados[1]));
-			    deposito.setNumeroDocumento(dados[2]);
-			    deposito.setValorCredito(new BigDecimal(dados[3].replace(".", "").replace(",", ".")));
+								BatimentoDeposito batimentoDeposito = new BatimentoDeposito();
+								batimentoDeposito.setBatimento(batimento);
+								batimentoDeposito.setDeposito(deposito);
 
-			    Remessa retorno = batimentoDAO.buscarRetornoCorrespondenteAoDeposito(deposito);
-			    if (retorno != null) {
-				Batimento batimento = new Batimento();
-				batimento.setData(retornoMediator.aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
+								List<BatimentoDeposito> depositosBatimento = new ArrayList<BatimentoDeposito>();
+								depositosBatimento.add(batimentoDeposito);
 
-				BatimentoDeposito batimentoDeposito = new BatimentoDeposito();
-				batimentoDeposito.setBatimento(batimento);
-				batimentoDeposito.setDeposito(deposito);
-
-				List<BatimentoDeposito> depositosBatimento = new ArrayList<BatimentoDeposito>();
-				depositosBatimento.add(batimentoDeposito);
-
-				deposito.setBatimentosDeposito(depositosBatimento);
-				deposito.setSituacaoDeposito(SituacaoDeposito.IDENTIFICADO);
-
-				batimento.setRemessa(retornoDAO.confirmarBatimento(retorno));
-
-			    }
-			    depositos.add(deposito);
+								deposito.setBatimentosDeposito(depositosBatimento);
+								deposito.setSituacaoDeposito(SituacaoDeposito.IDENTIFICADO);
+								batimento.setRemessa(retornoDAO.confirmarBatimento(retorno));
+							}
+							depositos.add(deposito);
+						}
+					}
+				}
+				numeroLinha++;
 			}
-		    }
+			reader.close();
+			for (Deposito deposito : depositos) {
+				batimentoDAO.salvarDeposito(deposito);
+			}
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+			throw new InfraException("Não foi possível abrir o arquivo enviado.");
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e.getCause());
+			throw new InfraException("Não foi possível converter os dados da linha [ Nº " + numeroLinha
+					+ " ]. Verifique as informações do depósito!");
 		}
-		numeroLinha++;
-	    }
-	    reader.close();
-
-	    for (Deposito deposito : depositos) {
-		salvarDeposito(deposito);
-	    }
-	} catch (IOException e) {
-	    logger.error(e.getMessage());
-	    throw new InfraException("Não foi possível abrir o arquivo enviado.");
-	} catch (Exception e) {
-	    logger.error(e.getMessage(), e.getCause());
-	    throw new InfraException("Não foi possível converter os dados da linha [ Nº " + numeroLinha
-		    + " ]. Verifique as informações do depósito!");
 	}
-    }
 
-    private TipoDeposito verificaTipoDeposito(String dados[]) {
-
-	if (dados[2] != null) {
-	    String numeroDocumento = RemoverAcentosUtil.removeAcentos(dados[2]);
-	    if (numeroDocumento.toUpperCase().trim().equals(CONSTANTE_TIPO_DEPOSITO_CARTORIO))
-		return TipoDeposito.DEPOSITO_CARTORIO_PARA_BANCO;
+	private TipoDeposito verificaTipoDeposito(String dados[]) {
+		if (dados[2] != null) {
+			String numeroDocumento = RemoverAcentosUtil.removeAcentos(dados[2]);
+			if (numeroDocumento.toUpperCase().trim().equals(CONSTANTE_TIPO_DEPOSITO_CARTORIO))
+				return TipoDeposito.DEPOSITO_CARTORIO_PARA_BANCO;
+		}
+		return TipoDeposito.NAO_INFORMADO;
 	}
-	return TipoDeposito.NAO_INFORMADO;
-    }
 
-    private Deposito salvarDeposito(Deposito deposito) {
-	return batimentoDAO.salvarDeposito(deposito);
-    }
-
-    private boolean validarLinhaCSV(String[] dados) {
-	if (verificarLinhaTotalOuVazia(dados)) {
-	    return false;
-	}
-	if (verificarLancamentoDeDebitoEmConta(dados)) {
-	    return false;
-	}
-	if (verificarResgateMercadoAberto(dados)) {
-	    return false;
-	}
-	return true;
-    }
-
-    private boolean verificarLinhaTotalOuVazia(String[] dados) {
-	String campoData = dados[0];
-	if (campoData != null) {
-	    if (StringUtils.isBlank(campoData.trim()) || campoData.trim().toUpperCase().contains("TOTAL")
-		    || campoData.trim().toUpperCase().contains("DATA")) {
+	private boolean validarLinhaCSV(String[] dados) {
+		if (verificarLinhaTotalOuVazia(dados)) {
+			return false;
+		}
+		if (verificarLancamentoDeDebitoEmConta(dados)) {
+			return false;
+		}
+		if (verificarResgateMercadoAberto(dados)) {
+			return false;
+		}
 		return true;
-	    }
 	}
-	return false;
-    }
 
-    private boolean verificarResgateMercadoAberto(String[] dados) {
-	String campolancamento = dados[1];
-	if (campolancamento != null) {
-	    if (campolancamento.trim().equals("SALDO ANTERIOR")
-		    || campolancamento.trim().equals("RESGATE MERCADO ABERTO")) {
-		return true;
-	    }
+	private boolean verificarLinhaTotalOuVazia(String[] dados) {
+		String campoData = dados[0];
+		if (campoData != null) {
+			if (StringUtils.isBlank(campoData.trim()) || campoData.trim().toUpperCase().contains("TOTAL")
+					|| campoData.trim().toUpperCase().contains("DATA")) {
+				return true;
+			}
+		}
+		return false;
 	}
-	return false;
-    }
 
-    private boolean verificarLancamentoDeDebitoEmConta(String[] dados) {
-	String campoDebito = dados[4];
-	if (campoDebito != null) {
-	    if (!StringUtils.isBlank(campoDebito.trim()) || !campoDebito.trim().equals(StringUtils.EMPTY)) {
-		return true;
-	    }
+	private boolean verificarResgateMercadoAberto(String[] dados) {
+		String campolancamento = dados[1];
+		if (campolancamento != null) {
+			if (campolancamento.trim().equals("SALDO ANTERIOR") || campolancamento.trim().equals("RESGATE MERCADO ABERTO")) {
+				return true;
+			}
+		}
+		return false;
 	}
-	return false;
-    }
 
-    public Usuario getUsuario() {
-	return usuario;
-    }
+	private boolean verificarLancamentoDeDebitoEmConta(String[] dados) {
+		String campoDebito = dados[4];
+		if (campoDebito != null) {
+			if (!StringUtils.isBlank(campoDebito.trim()) || !campoDebito.trim().equals(StringUtils.EMPTY)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    public FileUpload getFileUpload() {
-	return fileUpload;
-    }
+	public Usuario getUsuario() {
+		return usuario;
+	}
 
-    public List<Deposito> buscarDepositosExtrato() {
-	return batimentoDAO.buscarDepositosExtrato();
-    }
+	public FileUpload getFileUpload() {
+		return fileUpload;
+	}
 
-    public List<Deposito> consultarDepositos(Deposito deposito, LocalDate dataInicio, LocalDate dataFim) {
-	return batimentoDAO.consultarDepositos(deposito, dataInicio, dataFim);
-    }
+	public List<Deposito> buscarDepositosExtrato() {
+		return batimentoDAO.buscarDepositosExtrato();
+	}
 
-    public void atualizarInformacoesDeposito(Deposito deposito) {
-	batimentoDAO.atualizarInformacoesDeposito(deposito);
-    }
+	public List<Deposito> consultarDepositos(Deposito deposito, LocalDate dataInicio, LocalDate dataFim) {
+		return batimentoDAO.consultarDepositos(deposito, dataInicio, dataFim);
+	}
+
+	public void atualizarInformacoesDeposito(Deposito deposito) {
+		batimentoDAO.atualizarInformacoesDeposito(deposito);
+	}
 }
