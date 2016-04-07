@@ -75,23 +75,24 @@ public class RemessaMediator {
 	protected static final Logger logger = Logger.getLogger(RemessaMediator.class);
 
 	@Autowired
-	private RemessaDAO remessaDAO;
+	RemessaDAO remessaDAO;
 	@Autowired
-	private ArquivoDAO arquivoDAO;
+	ArquivoDAO arquivoDAO;
 	@Autowired
-	private TituloDAO tituloDAO;
+	TituloDAO tituloDAO;
 	@Autowired
-	private DesistenciaDAO desistenciaDAO;
+	DesistenciaDAO desistenciaDAO;
 	@Autowired
-	private CancelamentoDAO cancelamentoDAO;
+	CancelamentoDAO cancelamentoDAO;
 	@Autowired
-	private MunicipioDAO municipioDAO;
+	MunicipioDAO municipioDAO;
 	@Autowired
-	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
+	AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
 	@Autowired
-	private ConversorRemessaArquivo conversorRemessaArquivo;
+	ConversorRemessaArquivo conversorRemessaArquivo;
 	@Autowired
-	private ProcessadorArquivo processadorArquivo;
+	ProcessadorArquivo processadorArquivo;
+
 	private List<Exception> erros;
 
 	@Transactional
@@ -321,10 +322,7 @@ public class RemessaMediator {
 	public Arquivo arquivosPendentes(Instituicao instituicao) {
 		instituicao.setMunicipio(municipioDAO.buscarPorPK(instituicao.getMunicipio(), Municipio.class));
 
-		List<Remessa> remessas = /*
-									 * remessaDAO.confirmacoesPendentes(
-									 * instituicao );
-									 */ new ArrayList<>();
+		List<Remessa> remessas = remessaDAO.confirmacoesPendentes(instituicao);
 		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
 		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
 		List<AutorizacaoCancelamento> autorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);

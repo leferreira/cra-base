@@ -156,7 +156,6 @@ public class TituloDAO extends AbstractBaseDAO {
 		}
 		if (titulo.getPedidosDesistencia() != null) {
 			for (PedidoDesistencia pedido : titulo.getPedidosDesistencia()) {
-
 				LocalDate dataOcorrenciaRetorno = tituloRetorno.getDataOcorrencia();
 				LocalDate dataMovimentoDesistencia = pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
 				if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
@@ -169,22 +168,12 @@ public class TituloDAO extends AbstractBaseDAO {
 			}
 		}
 		if (tituloRetorno.getTipoOcorrencia() != null) {
-			if (tituloRetorno.getNumeroProtocoloCartorio() != null) {
-				if (!StringUtils.isBlank(tituloRetorno.getNumeroProtocoloCartorio().trim())) {
-					Integer numeroProtocolo = Integer.valueOf(tituloRetorno.getNumeroProtocoloCartorio().trim());
-					tituloRetorno.setNumeroProtocoloCartorio(numeroProtocolo.toString());
-					if (numeroProtocolo.equals(0)) {
-						if (!tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-							throw new InfraException("O título com o Nosso Número " + tituloRetorno.getNossoNumero()
-									+ ", está com o número de protocolo vazio e está sem o código de ocorrência!");
-						}
-						if (tituloRetorno.getCodigoIrregularidade() != null) {
-							if (StringUtils.isBlank(tituloRetorno.getCodigoIrregularidade().trim())
-									|| tituloRetorno.getCodigoIrregularidade().equals("00")) {
-								throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero()
-										+ "] foi devolvido e não contém o código de irregularidade!");
-							}
-						}
+			if (!tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+				if (tituloRetorno.getCodigoIrregularidade() != null) {
+					if (StringUtils.isBlank(tituloRetorno.getCodigoIrregularidade().trim())
+							|| tituloRetorno.getCodigoIrregularidade().equals("00")) {
+						throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero()
+								+ "] foi devolvido e não contém o código de irregularidade!");
 					}
 				}
 			}

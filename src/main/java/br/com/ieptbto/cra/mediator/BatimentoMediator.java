@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.BatimentoDAO;
-import br.com.ieptbto.cra.dao.RetornoDAO;
 import br.com.ieptbto.cra.entidade.Batimento;
 import br.com.ieptbto.cra.entidade.BatimentoDeposito;
 import br.com.ieptbto.cra.entidade.Deposito;
@@ -39,11 +38,10 @@ public class BatimentoMediator {
 	public static final String CONSTANTE_TIPO_DEPOSITO_CARTORIO = "CARTORIO";
 
 	@Autowired
-	private BatimentoDAO batimentoDAO;
+	BatimentoDAO batimentoDAO;
 	@Autowired
-	private RetornoDAO retornoDAO;
-	@Autowired
-	private RetornoMediator retornoMediator;
+	RetornoMediator retornoMediator;
+
 	private Usuario usuario;
 	private FileUpload fileUpload;
 
@@ -84,6 +82,7 @@ public class BatimentoMediator {
 							if (retorno != null) {
 								Batimento batimento = new Batimento();
 								batimento.setData(retornoMediator.aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
+								batimento.setRemessa(retorno);
 
 								BatimentoDeposito batimentoDeposito = new BatimentoDeposito();
 								batimentoDeposito.setBatimento(batimento);
@@ -91,10 +90,8 @@ public class BatimentoMediator {
 
 								List<BatimentoDeposito> depositosBatimento = new ArrayList<BatimentoDeposito>();
 								depositosBatimento.add(batimentoDeposito);
-
 								deposito.setBatimentosDeposito(depositosBatimento);
 								deposito.setSituacaoDeposito(SituacaoDeposito.IDENTIFICADO);
-								batimento.setRemessa(retornoDAO.confirmarBatimento(retorno));
 							}
 							depositos.add(deposito);
 						}

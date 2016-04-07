@@ -211,26 +211,6 @@ public class RetornoDAO extends AbstractBaseDAO {
 		return batimento;
 	}
 
-	public Remessa confirmarBatimento(Remessa retorno) {
-		Transaction transaction = getBeginTransation();
-
-		try {
-			retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);
-			if (retorno.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)
-					|| retorno.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
-				retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
-			}
-			retorno = update(retorno);
-
-			transaction.commit();
-		} catch (Exception ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível confirmar estas remessas.");
-		}
-		return retorno;
-	}
-
 	public void removerBatimento(Remessa retorno, Batimento batimento) {
 
 		try {

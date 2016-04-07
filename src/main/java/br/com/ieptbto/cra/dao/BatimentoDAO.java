@@ -37,16 +37,18 @@ public class BatimentoDAO extends AbstractBaseDAO {
 			if (deposito.getBatimentosDeposito() != null) {
 				for (BatimentoDeposito batimentoDeposito : deposito.getBatimentosDeposito()) {
 					Batimento batimento = batimentoDeposito.getBatimento();
-					batimento.getRemessa().setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);
-					if (batimento.getRemessa().getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)
-							|| batimento.getRemessa().getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
-						batimento.getRemessa().setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
-					}
+					Remessa retorno = batimento.getRemessa();
+
+					batimento.setRemessa(retorno);
 					batimento = save(batimento);
 
-					Remessa remessa = batimento.getRemessa();
-					remessa.setBatimento(batimento);
-					update(remessa);
+					retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);
+					if (retorno.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)
+							|| retorno.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
+						retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
+					}
+					retorno.setBatimento(batimento);
+					update(retorno);
 
 					batimentoDeposito.setDeposito(deposito);
 					batimentoDeposito.setBatimento(batimento);
