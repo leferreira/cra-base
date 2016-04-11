@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.validacao;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,8 +46,13 @@ public class RegraVerificarAgenciaCentralizadora extends RegraCabecalho {
 		CabecalhoRemessa ultimoCabecalhoRemessa = cabecalhoMediator.buscarUltimoCabecalhoRemessa(getCabecalhoRemessa());
 
 		if (ultimoCabecalhoRemessa != null) {
-			if (getCabecalhoRemessa().getAgenciaCentralizadora() != ultimoCabecalhoRemessa.getAgenciaCentralizadora()) {
-				getCabecalhoRemessa().setAgenciaCentralizadora(ultimoCabecalhoRemessa.getAgenciaCentralizadora());
+			if (ultimoCabecalhoRemessa.getAgenciaCentralizadora() != null) {
+				if (StringUtils.isNotBlank(ultimoCabecalhoRemessa.getAgenciaCentralizadora().trim())
+						|| StringUtils.isNotEmpty(ultimoCabecalhoRemessa.getAgenciaCentralizadora().trim())) {
+					if (getCabecalhoRemessa().getAgenciaCentralizadora() != ultimoCabecalhoRemessa.getAgenciaCentralizadora()) {
+						getCabecalhoRemessa().setAgenciaCentralizadora(ultimoCabecalhoRemessa.getAgenciaCentralizadora());
+					}
+				}
 			}
 		}
 	}

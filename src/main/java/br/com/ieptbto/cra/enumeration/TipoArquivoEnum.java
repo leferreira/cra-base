@@ -12,7 +12,7 @@ public enum TipoArquivoEnum implements CraEnum {
 												CONFIRMACAO("C", "CRT", "Confirmação"),
 												RETORNO("R", "RTP", "Retorno"),
 												CANCELAMENTO_DE_PROTESTO("CP", "", "Cancelamento"),
-												DEVOLUCAO_DE_PROTESTO("DP", "", "Devolução"),
+												DEVOLUCAO_DE_PROTESTO("DP", "", "Desistência"),
 												AUTORIZACAO_DE_CANCELAMENTO("AC", "", "Autorização");
 
 	public String constante;

@@ -39,8 +39,20 @@ import br.com.ieptbto.cra.util.DataUtil;
 @Repository
 public class TituloDAO extends AbstractBaseDAO {
 
-	public List<TituloRemessa> buscarListaTitulos(LocalDate dataInicio, LocalDate dataFim, TituloRemessa titulo, Municipio pracaProtesto,
-			Usuario user) {
+	public Confirmacao buscarConfirmacao(TituloRemessa titulo) {
+		Criteria criteria = getCriteria(Confirmacao.class);
+		criteria.add(Restrictions.eq("titulo", titulo));
+		return Confirmacao.class.cast(criteria.uniqueResult());
+	}
+
+	public Retorno buscarRetorno(TituloRemessa titulo) {
+		Criteria criteria = getCriteria(Retorno.class);
+		criteria.add(Restrictions.eq("titulo", titulo));
+		return Retorno.class.cast(criteria.uniqueResult());
+	}
+
+	public List<TituloRemessa> buscarListaTitulos(LocalDate dataInicio, LocalDate dataFim, TituloRemessa titulo,
+			Municipio pracaProtesto, Usuario user) {
 		Instituicao instituicaoUsuario = user.getInstituicao();
 
 		Criteria criteria = getCriteria(TituloRemessa.class);
@@ -70,7 +82,8 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (titulo.getNomeDevedor() != null && titulo.getNomeDevedor() != StringUtils.EMPTY)
 			criteria.add(Restrictions.ilike("nomeDevedor", titulo.getNomeDevedor(), MatchMode.ANYWHERE));
 
-		if (titulo.getNumeroIdentificacaoDevedor() != null && titulo.getNumeroIdentificacaoDevedor() != StringUtils.EMPTY)
+		if (titulo.getNumeroIdentificacaoDevedor() != null
+				&& titulo.getNumeroIdentificacaoDevedor() != StringUtils.EMPTY)
 			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor(), MatchMode.ANYWHERE));
 
 		if (dataInicio != null) {
@@ -152,23 +165,26 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		if (titulo == null) {
 			throw new InfraException("O título com o Nosso Número " + tituloRetorno.getNossoNumero() + " e Protocolo "
-					+ tituloRetorno.getNumeroProtocoloCartorio() + ", não foi localizado na CRA. Verifique se já enviou a CONFIRMAÇÃO !");
+					+ tituloRetorno.getNumeroProtocoloCartorio()
+					+ ", não foi localizado na CRA. Verifique se já enviou a CONFIRMAÇÃO !");
 		}
 		if (titulo.getPedidosDesistencia() != null) {
 			for (PedidoDesistencia pedido : titulo.getPedidosDesistencia()) {
 				LocalDate dataOcorrenciaRetorno = tituloRetorno.getDataOcorrencia();
 				LocalDate dataMovimentoDesistencia = pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
 				if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
-					if (dataOcorrenciaRetorno.isAfter(dataMovimentoDesistencia) || dataOcorrenciaRetorno.equals(dataMovimentoDesistencia)) {
-						throw new InfraException("PROTESTO INDEVIDO! O título com o protocolo " + tituloRetorno.getNumeroProtocoloCartorio()
-								+ ", protestado em " + DataUtil.localDateToString(tituloRetorno.getDataOcorrencia())
+					if (dataOcorrenciaRetorno.isAfter(dataMovimentoDesistencia)
+							|| dataOcorrenciaRetorno.equals(dataMovimentoDesistencia)) {
+						throw new InfraException("PROTESTO INDEVIDO! O título com o protocolo "
+								+ tituloRetorno.getNumeroProtocoloCartorio() + ", protestado em "
+								+ DataUtil.localDateToString(tituloRetorno.getDataOcorrencia())
 								+ ", já contém um pedido de desistência. Faça o CANCELAMENTO!");
 					}
 				}
 			}
 		}
 		if (tituloRetorno.getTipoOcorrencia() != null) {
-			if (!tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+			if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
 				if (tituloRetorno.getCodigoIrregularidade() != null) {
 					if (StringUtils.isBlank(tituloRetorno.getCodigoIrregularidade().trim())
 							|| tituloRetorno.getCodigoIrregularidade().equals("00")) {
@@ -211,8 +227,9 @@ public class TituloDAO extends AbstractBaseDAO {
 				return titulo;
 			} else {
 				logger.error(new InfraException("Titulo nº" + titulo.getNumeroTitulo() + " já tem retorno!"));
-				throw new InfraException("O título com o \b Nosso Número " + tituloRetorno.getNossoNumero() + "\b e Protocolo "
-						+ tituloRetorno.getNumeroProtocoloCartorio() + ", já foi enviado em outro arquivo de retorno!");
+				throw new InfraException("O título com o \b Nosso Número " + tituloRetorno.getNossoNumero()
+						+ "\b e Protocolo " + tituloRetorno.getNumeroProtocoloCartorio()
+						+ ", já foi enviado em outro arquivo de retorno!");
 			}
 		}
 		return null;
@@ -243,7 +260,8 @@ public class TituloDAO extends AbstractBaseDAO {
 						if (tituloConfirmacao.getCodigoIrregularidade() != null) {
 							if (StringUtils.isBlank(tituloConfirmacao.getCodigoIrregularidade().trim())
 									|| tituloConfirmacao.getCodigoIrregularidade().equals("00")) {
-								throw new InfraException("O título com o Nosso número " + tituloConfirmacao.getNossoNumero()
+								throw new InfraException("O título com o Nosso número "
+										+ tituloConfirmacao.getNossoNumero()
 										+ " foi devolvido e não contém o código da irregularidade!");
 							}
 						}
@@ -267,7 +285,8 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex.getCause());
-			new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero() + "] não existe em nossa base de dados.");
+			new InfraException("O título [Nosso número =" + tituloConfirmacao.getNossoNumero()
+					+ "] não existe em nossa base de dados.");
 		}
 		return titulo;
 	}
@@ -304,7 +323,8 @@ public class TituloDAO extends AbstractBaseDAO {
 		} catch (Exception ex) {
 			if (PSQLException.class.isInstance(ex)) {
 				logger.error(ex.getMessage(), ex.getCause());
-				new InfraException("O Título número: " + tituloRemessa.getNumeroTitulo() + " já existe na base de dados.");
+				new InfraException("O Título número: " + tituloRemessa.getNumeroTitulo()
+						+ " já existe na base de dados.");
 				return null;
 			} else {
 				transaction.rollback();

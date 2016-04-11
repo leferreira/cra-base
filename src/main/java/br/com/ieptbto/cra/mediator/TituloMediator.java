@@ -26,20 +26,28 @@ public class TituloMediator {
 	@Autowired
 	private TituloDAO tituloDAO;
 
-	public TituloRemessa carregarTituloRemessaPorId(TituloRemessa titulo) {
+	public TituloRemessa carregarTituloRemessa(TituloRemessa titulo) {
 		return tituloDAO.buscarPorPK(titulo, TituloRemessa.class);
 	}
 
-	public Confirmacao carregarTituloConfirmacaoPorId(Confirmacao confirmacao) {
+	public Confirmacao buscarConfirmacao(TituloRemessa titulo) {
+		return tituloDAO.buscarConfirmacao(titulo);
+	}
+
+	public Confirmacao carregarTituloConfirmacao(Confirmacao confirmacao) {
 		return tituloDAO.buscarPorPK(confirmacao, Confirmacao.class);
 	}
 
-	public Retorno carregarTituloRetornoPorId(Retorno retorno) {
+	public Retorno buscarRetorno(TituloRemessa titulo) {
+		return tituloDAO.buscarRetorno(titulo);
+	}
+
+	public Retorno carregarTituloRetorno(Retorno retorno) {
 		return tituloDAO.buscarPorPK(retorno, Retorno.class);
 	}
 
-	public List<TituloRemessa> buscarListaTitulos(LocalDate dataInicio, LocalDate dataFim, TituloRemessa titulo, Municipio pracaProtesto,
-			Usuario user) {
+	public List<TituloRemessa> buscarListaTitulos(LocalDate dataInicio, LocalDate dataFim, TituloRemessa titulo,
+			Municipio pracaProtesto, Usuario user) {
 		return tituloDAO.buscarListaTitulos(dataInicio, dataFim, titulo, pracaProtesto, user);
 	}
 

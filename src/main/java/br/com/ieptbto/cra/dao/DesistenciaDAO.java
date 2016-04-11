@@ -38,23 +38,32 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("titulo", tituloRemessa));
 		return criteria.list();
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
-	        ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<PedidoDesistencia> buscarPedidosDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto) {
+		Criteria criteria = getCriteria(PedidoDesistencia.class);
+		criteria.createAlias("titulo", "titulo");
+		criteria.add(Restrictions.eq("desistenciaProtesto", desistenciaProtesto));
+		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador,
+			Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo,
+			Usuario usuario) {
 		Criteria criteria = getCriteria(DesistenciaProtesto.class);
 		criteria.createAlias("remessaDesistenciaProtesto", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
 
 		if (StringUtils.isNotBlank(arquivo.getNomeArquivo())) {
 			criteria.add(Restrictions.ilike("arquivo.nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
-		} 
-		
+		}
+
 		if (tiposArquivo != null && !tiposArquivo.isEmpty()) {
 			criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
 			criteria.add(filtrarRemessaPorTipoArquivo(tiposArquivo));
 		}
-		
+
 		if (dataInicio != null && dataFim != null) {
 			criteria.add((Restrictions.between("arquivo.dataEnvio", dataInicio, dataFim)));
 		}
@@ -63,7 +72,7 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 			criteria.createAlias("remessa.cabecalho", "cabecalhoArquivo");
 			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", portador.getCodigoCompensacao()));
 		}
-		
+
 		if (municipio != null) {
 			criteria.createAlias("cabecalhoCartorio", "cabecalho");
 			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", municipio.getCodigoIBGE()));
@@ -78,7 +87,7 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 		}
 		return criteria.list();
 	}
-	
+
 	private Disjunction filtrarRemessaPorTipoArquivo(ArrayList<TipoArquivoEnum> tiposArquivo) {
 		Disjunction disjunction = Restrictions.disjunction();
 		for (TipoArquivoEnum tipo : tiposArquivo) {
@@ -86,12 +95,12 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 		}
 		return disjunction;
 	}
-	
+
 	@SuppressWarnings({ "unchecked" })
 	public List<DesistenciaProtesto> buscarRemessaDesistenciaProtestoPendenteDownload(Instituicao instituicao) {
 		Criteria criteria = getCriteria(DesistenciaProtesto.class);
 		criteria.createAlias("cabecalhoCartorio", "cabecalho");
-		
+
 		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
 			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", instituicao.getMunicipio().getCodigoIBGE()));
 		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
@@ -103,7 +112,8 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public DesistenciaProtesto alterarSituacaoDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto, boolean download) {
+	public DesistenciaProtesto alterarSituacaoDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto,
+			boolean download) {
 		Transaction transaction = getSession().beginTransaction();
 
 		try {
@@ -135,8 +145,8 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 
 	@Transactional
 	public void alterarSituacaoDesistenciaProtesto(Instituicao cartorio, String nomeArquivo) {
-		StringBuffer  sql = new StringBuffer();
-		
+		StringBuffer sql = new StringBuffer();
+
 		cartorio.setMunicipio(buscarPorPK(cartorio.getMunicipio(), Municipio.class));
 		try {
 			sql.append("UPDATE tb_desistencia_protesto AS dp ");
@@ -144,9 +154,9 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 			sql.append("FROM tb_remessa_desistencia_protesto AS rem, tb_cabecalho AS cab, tb_arquivo AS arq ");
 			sql.append("WHERE dp.remessa_desistencia_protesto_id=rem.id_remessa_desistencia_protesto ");
 			sql.append("AND rem.arquivo_id=arq.id_arquivo ");
-			sql.append("AND arq.nome_arquivo LIKE '"+ nomeArquivo +"' ");
-			sql.append("AND cab.codigo_municipio='"+ cartorio.getMunicipio().getCodigoIBGE() +"'");
-			
+			sql.append("AND arq.nome_arquivo LIKE '" + nomeArquivo + "' ");
+			sql.append("AND cab.codigo_municipio='" + cartorio.getMunicipio().getCodigoIBGE() + "'");
+
 			Query query = getSession().createSQLQuery(sql.toString());
 			query.executeUpdate();
 		} catch (Exception ex) {

@@ -11,6 +11,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -36,9 +37,17 @@ import br.com.ieptbto.cra.util.DataUtil;
 public class CancelamentoDAO extends AbstractBaseDAO {
 
 	@Autowired
-	private TituloDAO tituloDAO;
+	TituloDAO tituloDAO;
 	@Autowired
-	private InstituicaoDAO instituicaoDAO;
+	InstituicaoDAO instituicaoDAO;
+
+	@SuppressWarnings("unchecked")
+	public List<PedidoCancelamento> buscarPedidosCancelamentoProtesto(CancelamentoProtesto cancelamentoProtesto) {
+		Criteria criteria = getCriteria(PedidoCancelamento.class);
+		criteria.createAlias("titulo", "titulo", JoinType.LEFT_OUTER_JOIN);
+		criteria.add(Restrictions.eq("cancelamentoProtesto", cancelamentoProtesto));
+		return criteria.list();
+	}
 
 	public CancelamentoProtesto buscarRemessaCancelamentoProtesto(CancelamentoProtesto entidade) {
 		return super.buscarPorPK(entidade);
@@ -74,19 +83,22 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 								totalRegistroCancelamentoProtesto++;
 							} else {
 								pedidosCancelamentoComErros.add(pedido);
-								erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número "
-								        + pedido.getNumeroTitulo() + ", do protocolo " + pedido.getNumeroProtocolo() + " do dia "
-								        + DataUtil.localDateToString(pedido.getDataProtocolagem())
-								        + ", já foi enviado anteriormente em outro arquivo de cancelamento!"));
+								erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro()
+										+ ": o título de número " + pedido.getNumeroTitulo() + ", do protocolo "
+										+ pedido.getNumeroProtocolo() + " do dia "
+										+ DataUtil.localDateToString(pedido.getDataProtocolagem())
+										+ ", já foi enviado anteriormente em outro arquivo de cancelamento!"));
 							}
 						} else if (pedido.getDataProtocolagem().isAfter(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))
-						        || pedido.getDataProtocolagem().equals(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))) {
+								|| pedido.getDataProtocolagem().equals(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))) {
 							pedidosCancelamentoComErros.add(pedido);
-							erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número "
-							        + pedido.getNumeroTitulo() + ",com o protocolo " + pedido.getNumeroProtocolo() + " do dia "
-							        + DataUtil.localDateToString(pedido.getDataProtocolagem()) + ", não foi localizado para a comarca [ "
-							        + pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()
-							        + " ]. Verifique os dados do título!"));
+							erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro()
+									+ ": o título de número " + pedido.getNumeroTitulo() + ",com o protocolo "
+									+ pedido.getNumeroProtocolo() + " do dia "
+									+ DataUtil.localDateToString(pedido.getDataProtocolagem())
+									+ ", não foi localizado para a comarca [ "
+									+ pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()
+									+ " ]. Verifique os dados do título!"));
 						} else {
 							pedidos.add(pedido);
 							valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
@@ -126,8 +138,8 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 				}
 				transaction.commit();
 			}
-			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
-			        + " foi inserido na base ");
+			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário "
+					+ arquivo.getUsuarioEnvio().getLogin() + " foi inserido na base ");
 
 		} catch (CancelamentoException ex) {
 			transaction.rollback();
@@ -146,8 +158,9 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio,
-	        LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador,
+			Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo,
+			Usuario usuario) {
 		Criteria criteria = getCriteria(CancelamentoProtesto.class);
 		criteria.createAlias("remessaCancelamentoProtesto", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
@@ -210,9 +223,10 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public CancelamentoProtesto alterarSituacaoCancelamentoProtesto(CancelamentoProtesto cancelamentoProtesto, boolean download) {
+	public CancelamentoProtesto alterarSituacaoCancelamentoProtesto(CancelamentoProtesto cancelamentoProtesto,
+			boolean download) {
 		Transaction transaction = getBeginTransation();
- 
+
 		try {
 			cancelamentoProtesto.setDownload(download);
 			update(cancelamentoProtesto);
@@ -222,14 +236,14 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 			logger.error(ex.getMessage(), ex);
 			throw new InfraException("Não foi possível atualizar o status da DP.");
 		}
-		return cancelamentoProtesto; 
+		return cancelamentoProtesto;
 
 	}
-	
+
 	@Transactional
 	public void alterarSituacaoCancelamentoProtesto(Instituicao cartorio, String nomeArquivo) {
-		StringBuffer  sql = new StringBuffer();
-		
+		StringBuffer sql = new StringBuffer();
+
 		cartorio.setMunicipio(buscarPorPK(cartorio.getMunicipio(), Municipio.class));
 		try {
 			sql.append("UPDATE tb_cancelamento AS cp ");
@@ -237,9 +251,9 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 			sql.append("FROM tb_remessa_cancelamento_protesto AS rem, tb_cabecalho AS cab, tb_arquivo AS arq ");
 			sql.append("WHERE cp.remessa_cancelamento_protesto_id=rem.id_remessa_cancelamento_protesto ");
 			sql.append("AND rem.arquivo_id=arq.id_arquivo ");
-			sql.append("AND arq.nome_arquivo LIKE '"+ nomeArquivo +"' ");
-			sql.append("AND cab.codigo_municipio='"+ cartorio.getMunicipio().getCodigoIBGE() +"'");
-			
+			sql.append("AND arq.nome_arquivo LIKE '" + nomeArquivo + "' ");
+			sql.append("AND cab.codigo_municipio='" + cartorio.getMunicipio().getCodigoIBGE() + "'");
+
 			Query query = getSession().createSQLQuery(sql.toString());
 			query.executeUpdate();
 		} catch (Exception ex) {

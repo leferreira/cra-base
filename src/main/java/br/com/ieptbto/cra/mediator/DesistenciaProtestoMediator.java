@@ -38,6 +38,7 @@ import br.com.ieptbto.cra.entidade.CabecalhoCartorio;
 import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
@@ -71,327 +72,346 @@ import br.com.ieptbto.cra.util.DataUtil;
 @Service
 public class DesistenciaProtestoMediator {
 
-    protected static final Logger logger = Logger.getLogger(DesistenciaProtestoMediator.class);
-    @Autowired
-    private ConversorDesistenciaProtesto conversorArquivoDesistenciaProtesto;
-    @Autowired
-    private ArquivoDAO arquivoDAO;
-    @Autowired
-    private InstituicaoDAO instituicaoDAO;
-    @Autowired
-    private TipoArquivoDAO tipoArquivoDAO;
-    @Autowired
-    private DesistenciaDAO desistenciaDAO;
-    @Autowired
-    private CancelamentoDAO cancelamentoDAO;
-    @Autowired
-    private AutorizacaoCancelamentoDAO autorizacaoDAO;
-    @Autowired
-    private ProcessadorArquivo processadorArquivo;
+	protected static final Logger logger = Logger.getLogger(DesistenciaProtestoMediator.class);
 
-    private int sequenciaRegistro = 2;
-    private int quantidadeDesistencias = 0;
-    private int quantidadeRegistrosTipo2 = 0;
-    private BigDecimal somatorioValor;
+	@Autowired
+	ConversorDesistenciaProtesto conversorArquivoDesistenciaProtesto;
+	@Autowired
+	ArquivoDAO arquivoDAO;
+	@Autowired
+	InstituicaoDAO instituicaoDAO;
+	@Autowired
+	TipoArquivoDAO tipoArquivoDAO;
+	@Autowired
+	DesistenciaDAO desistenciaDAO;
+	@Autowired
+	CancelamentoDAO cancelamentoDAO;
+	@Autowired
+	AutorizacaoCancelamentoDAO autorizacaoDAO;
+	@Autowired
+	ProcessadorArquivo processadorArquivo;
 
-    @Transactional
-    public RemessaDesistenciaProtesto carregarRemessaDesistenciaPorId(RemessaDesistenciaProtesto remessaDesistenciaProtesto) {
-	return desistenciaDAO.buscarPorPK(remessaDesistenciaProtesto, RemessaDesistenciaProtesto.class);
-    }
+	private int sequenciaRegistro = 2;
+	private int quantidadeDesistencias = 0;
+	private int quantidadeRegistrosTipo2 = 0;
+	private BigDecimal somatorioValor;
 
-    @Transactional
-    public RemessaCancelamentoProtesto carregarRemessaCancelamentoPorId(RemessaCancelamentoProtesto remessaCancelamentoProtesto) {
-	return desistenciaDAO.buscarPorPK(remessaCancelamentoProtesto, RemessaCancelamentoProtesto.class);
-    }
-
-    @Transactional
-    public RemessaAutorizacaoCancelamento carregarRemessaAutorizacaoPorId(RemessaAutorizacaoCancelamento remessaAutorizacao) {
-	return desistenciaDAO.buscarPorPK(remessaAutorizacao, RemessaAutorizacaoCancelamento.class);
-    }
-
-    public List<PedidoDesistencia> buscarPedidosDesistenciaProtestoPorTitulo(TituloRemessa tituloRemessa) {
-	return desistenciaDAO.buscarPedidosDesistenciaProtestoPorTitulo(tituloRemessa);
-    }
-
-    public File baixarDesistenciaTXT(Usuario usuario, DesistenciaProtesto desistenciaProtesto) {
-	if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-	    desistenciaDAO.alterarSituacaoDesistenciaProtesto(desistenciaProtesto, true);
-	}
-	desistenciaProtesto = desistenciaDAO.buscarDesistenciaProtesto(desistenciaProtesto);
-
-	BigDecimal valorTotal = BigDecimal.ZERO;
-	int totalRegistro = 0;
-	for (PedidoDesistencia pedido : desistenciaProtesto.getDesistencias()) {
-	    valorTotal = valorTotal.add(pedido.getValorTitulo());
-	    totalRegistro++;
+	@Transactional
+	public RemessaDesistenciaProtesto carregarRemessaDesistenciaPorId(
+			RemessaDesistenciaProtesto remessaDesistenciaProtesto) {
+		return desistenciaDAO.buscarPorPK(remessaDesistenciaProtesto, RemessaDesistenciaProtesto.class);
 	}
 
-	RemessaDesistenciaProtesto remessa = new RemessaDesistenciaProtesto();
-	remessa.setCabecalho(desistenciaProtesto.getRemessaDesistenciaProtesto().getCabecalho());
-	remessa.getCabecalho().setQuantidadeDesistencia(1);
-	remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
-	remessa.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
-	remessa.getDesistenciaProtesto().add(desistenciaProtesto);
-	remessa.setRodape(desistenciaProtesto.getRemessaDesistenciaProtesto().getRodape());
-	remessa.getRodape().setQuantidadeDesistencia(1);
-	remessa.getRodape().setSomatorioValorTitulo(valorTotal);
-	remessa.setArquivo(desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo());
-	return processadorArquivo.processarRemessaDesistenciaProtestoTXT(remessa, usuario);
-    }
-
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public Arquivo processarDesistencia(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados, List<Exception> erros, Usuario usuario) {
-	Arquivo arquivo = new Arquivo();
-
-	if (layoutPadraoXML.equals(LayoutPadraoXML.CRA_NACIONAL)) {
-	    arquivo = conversorArquivoDesistenciaProtesto.converter(converterStringParaVO(dados), erros);
-	} else if (layoutPadraoXML.equals(LayoutPadraoXML.SERPRO)) {
-	    DesistenciaSerproVO desistenciaCancelamentoSerpro = converterStringParaDesistenciaCancelamentoSerproVO(dados);
-	    RemessaDesistenciaProtesto remessaDesistencia = converterDesistenciaCancelamentoSerpro(arquivo, usuario.getInstituicao(), desistenciaCancelamentoSerpro, erros);
-	    arquivo.setRemessaDesistenciaProtesto(remessaDesistencia);
+	@Transactional
+	public RemessaCancelamentoProtesto carregarRemessaCancelamentoPorId(
+			RemessaCancelamentoProtesto remessaCancelamentoProtesto) {
+		return desistenciaDAO.buscarPorPK(remessaCancelamentoProtesto, RemessaCancelamentoProtesto.class);
 	}
-	arquivo.setNomeArquivo(nomeArquivo);
-	arquivo.setUsuarioEnvio(usuario);
-	arquivo.setInstituicaoEnvio(usuario.getInstituicao());
-	arquivo.setInstituicaoRecebe(getCra());
-	arquivo.setDataEnvio(new LocalDate());
-	arquivo.setDataRecebimento(new LocalDate().toDate());
-	arquivo.setHoraEnvio(new LocalTime());
-	arquivo.setTipoArquivo(getTipoArquivoDesistenciaProtesto());
-	arquivo.setStatusArquivo(getStatusArquivo());
-	return arquivoDAO.salvar(arquivo, usuario, erros);
-    }
 
-    private StatusArquivo getStatusArquivo() {
-	StatusArquivo status = new StatusArquivo();
-	status.setData(new LocalDateTime());
-	status.setSituacaoArquivo(SituacaoArquivo.ENVIADO);
-	return status;
-    }
+	@Transactional
+	public RemessaAutorizacaoCancelamento carregarRemessaAutorizacaoPorId(
+			RemessaAutorizacaoCancelamento remessaAutorizacao) {
+		return desistenciaDAO.buscarPorPK(remessaAutorizacao, RemessaAutorizacaoCancelamento.class);
+	}
 
-    private TipoArquivo getTipoArquivoDesistenciaProtesto() {
-	return tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO);
-    }
+	public List<PedidoDesistencia> buscarPedidosDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto) {
+		return desistenciaDAO.buscarPedidosDesistenciaProtesto(desistenciaProtesto);
+	}
 
-    private Instituicao getCra() {
-	return instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString());
-    }
+	public List<PedidoDesistencia> buscarPedidosDesistenciaProtestoPorTitulo(TituloRemessa tituloRemessa) {
+		return desistenciaDAO.buscarPedidosDesistenciaProtestoPorTitulo(tituloRemessa);
+	}
 
-    private ArquivoDesistenciaProtestoVO converterStringParaVO(String dados) {
-	JAXBContext context;
-	ArquivoDesistenciaProtestoVO desistenciaVO = null;
+	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador,
+			Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo,
+			Usuario usuario) {
+		return desistenciaDAO.buscarDesistenciaProtesto(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
+	}
 
-	try {
-	    context = JAXBContext.newInstance(ArquivoDesistenciaProtestoVO.class);
-	    Unmarshaller unmarshaller = context.createUnmarshaller();
-	    String xmlRecebido = "";
-
-	    Scanner scanner = new Scanner(new ByteArrayInputStream(new String(dados).getBytes()));
-	    while (scanner.hasNext()) {
-		xmlRecebido = xmlRecebido + scanner.nextLine().replaceAll("& ", "&amp;");
-		if (xmlRecebido.contains("<?xml version=")) {
-		    xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", "");
+	public File baixarDesistenciaTXT(Usuario usuario, DesistenciaProtesto desistenciaProtesto) {
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			desistenciaDAO.alterarSituacaoDesistenciaProtesto(desistenciaProtesto, true);
 		}
-	    }
-	    scanner.close();
+		desistenciaProtesto = desistenciaDAO.buscarDesistenciaProtesto(desistenciaProtesto);
 
-	    InputStream xml = new ByteArrayInputStream(xmlRecebido.getBytes());
-	    desistenciaVO = (ArquivoDesistenciaProtestoVO) unmarshaller.unmarshal(new InputSource(xml));
-
-	} catch (JAXBException e) {
-	    logger.error(e.getMessage(), e.getCause());
-	    new InfraException(e.getMessage(), e.getCause());
-	}
-	return desistenciaVO;
-    }
-
-    private DesistenciaSerproVO converterStringParaDesistenciaCancelamentoSerproVO(String dados) {
-	JAXBContext context;
-	DesistenciaSerproVO desistenciaVO = null;
-
-	try {
-	    context = JAXBContext.newInstance(DesistenciaSerproVO.class);
-	    Unmarshaller unmarshaller = context.createUnmarshaller();
-	    String xmlRecebido = "";
-
-	    Scanner scanner = new Scanner(new ByteArrayInputStream(new String(dados).getBytes()));
-	    while (scanner.hasNext()) {
-		xmlRecebido = xmlRecebido + scanner.nextLine().replaceAll("& ", "&amp;");
-		if (xmlRecebido.contains("<?xml version=")) {
-		    xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", "");
-		    xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"no\"?>", "");
+		BigDecimal valorTotal = BigDecimal.ZERO;
+		int totalRegistro = 0;
+		for (PedidoDesistencia pedido : desistenciaProtesto.getDesistencias()) {
+			valorTotal = valorTotal.add(pedido.getValorTitulo());
+			totalRegistro++;
 		}
-	    }
-	    scanner.close();
 
-	    InputStream xml = new ByteArrayInputStream(xmlRecebido.getBytes());
-	    desistenciaVO = (DesistenciaSerproVO) unmarshaller.unmarshal(new InputSource(xml));
-
-	} catch (JAXBException e) {
-	    logger.error(e.getMessage(), e.getCause());
-	    new InfraException(e.getMessage(), e.getCause());
+		RemessaDesistenciaProtesto remessa = new RemessaDesistenciaProtesto();
+		remessa.setCabecalho(desistenciaProtesto.getRemessaDesistenciaProtesto().getCabecalho());
+		remessa.getCabecalho().setQuantidadeDesistencia(1);
+		remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
+		remessa.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
+		remessa.getDesistenciaProtesto().add(desistenciaProtesto);
+		remessa.setRodape(desistenciaProtesto.getRemessaDesistenciaProtesto().getRodape());
+		remessa.getRodape().setQuantidadeDesistencia(1);
+		remessa.getRodape().setSomatorioValorTitulo(valorTotal);
+		remessa.setArquivo(desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo());
+		return processadorArquivo.processarRemessaDesistenciaProtestoTXT(remessa, usuario);
 	}
-	return desistenciaVO;
-    }
 
-    private RemessaDesistenciaProtesto converterDesistenciaCancelamentoSerpro(Arquivo arquivo, Instituicao instituicao, DesistenciaSerproVO desistenciaCancelamentoSerpro, List<Exception> erros) {
-	RemessaDesistenciaProtesto remessaDesistencia = new RemessaDesistenciaProtesto();
-	remessaDesistencia.setArquivo(arquivo);
-	remessaDesistencia.setDesistenciaProtesto(getDesistenciasCancelamentosProtesto(remessaDesistencia, desistenciaCancelamentoSerpro));
-	remessaDesistencia.setCabecalho(getCabecalhoArquivoDesistenciaCancelamento(instituicao));
-	remessaDesistencia.setRodape(getRodapeArquivoDesistenciaCancelamento(instituicao));
-	return remessaDesistencia;
-    }
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public Arquivo processarDesistencia(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados,
+			List<Exception> erros, Usuario usuario) {
+		Arquivo arquivo = new Arquivo();
 
-    private List<DesistenciaProtesto> getDesistenciasCancelamentosProtesto(RemessaDesistenciaProtesto remessaDesistencia, DesistenciaSerproVO desistenciaCancelamentoSerpro) {
-	List<DesistenciaProtesto> desistencias = new ArrayList<DesistenciaProtesto>();
-
-	for (ComarcaDesistenciaCancelamentoSerproVO comarca : desistenciaCancelamentoSerpro.getComarcaDesistenciaCancelamento()) {
-	    DesistenciaProtesto desistenciaProtesto = new DesistenciaProtesto();
-	    desistenciaProtesto.setRemessaDesistenciaProtesto(remessaDesistencia);
-
-	    CabecalhoCartorio cabecalhoCartorio = new CabecalhoCartorio();
-	    RodapeCartorio rodapeCartorio = new RodapeCartorio();
-	    List<PedidoDesistencia> pedidosDesistencia = new ArrayList<PedidoDesistencia>();
-	    for (CartorioDesistenciaCancelamentoSerproVO cartorio : comarca.getCartorioDesistenciaCancelamento()) {
-		cabecalhoCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.HEADER_CARTORIO);
-		cabecalhoCartorio.setCodigoCartorio(cartorio.getCodigoCartorio());
-		cabecalhoCartorio.setQuantidadeDesistencia(cartorio.getTituloDesistenciaCancelamento().size());
-		cabecalhoCartorio.setCodigoMunicipio(comarca.getCodigoMunicipio());
-		cabecalhoCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(2), 5, "0"));
-
-		for (TituloDesistenciaCancelamentoSerproVO titulo : cartorio.getTituloDesistenciaCancelamento()) {
-		    PedidoDesistencia registro = new PedidoDesistencia();
-		    registro.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA);
-		    registro.setNumeroProtocolo(titulo.getNumeroProtocoloCartorio());
-		    registro.setDataProtocolagem(DataUtil.stringToLocalDate("ddMMyyyy", titulo.getDataProtocolo()));
-		    registro.setNumeroTitulo(titulo.getNumeroTitulo());
-		    registro.setNomePrimeiroDevedor(titulo.getNomeDevedor());
-		    registro.setValorTitulo(new BigDecimal(titulo.getValorTitulo()));
-		    registro.setSolicitacaoCancelamentoSustacao("S");
-		    registro.setSequenciaRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
-
-		    this.sequenciaRegistro = getSequenciaRegistro() + 1;
-		    this.somatorioValor = getSomatorioValor().add(registro.getValorTitulo());
-		    pedidosDesistencia.add(registro);
+		if (layoutPadraoXML.equals(LayoutPadraoXML.CRA_NACIONAL)) {
+			arquivo = conversorArquivoDesistenciaProtesto.converter(converterStringParaVO(dados), erros);
+		} else if (layoutPadraoXML.equals(LayoutPadraoXML.SERPRO)) {
+			DesistenciaSerproVO desistenciaCancelamentoSerpro = converterStringParaDesistenciaCancelamentoSerproVO(dados);
+			RemessaDesistenciaProtesto remessaDesistencia = converterDesistenciaCancelamentoSerpro(arquivo, usuario.getInstituicao(), desistenciaCancelamentoSerpro, erros);
+			arquivo.setRemessaDesistenciaProtesto(remessaDesistencia);
 		}
-		this.quantidadeDesistencias = getQuantidadeDesistencias()
-			+ cartorio.getTituloDesistenciaCancelamento().size();
-		this.quantidadeRegistrosTipo2 = getQuantidadeRegistrosTipo2()
-			+ cartorio.getTituloDesistenciaCancelamento().size();
-
-		rodapeCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.TRAILLER_CARTORIO);
-		rodapeCartorio.setCodigoCartorio(cartorio.getCodigoCartorio());
-		rodapeCartorio.setSomaTotalCancelamentoDesistencia(cartorio.getTituloDesistenciaCancelamento().size()
-			* 2);
-		rodapeCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
-
-		desistenciaProtesto.setCabecalhoCartorio(cabecalhoCartorio);
-		desistenciaProtesto.setDesistencias(pedidosDesistencia);
-		desistenciaProtesto.setRodapeCartorio(rodapeCartorio);
-	    }
-	    desistencias.add(desistenciaProtesto);
+		arquivo.setNomeArquivo(nomeArquivo);
+		arquivo.setUsuarioEnvio(usuario);
+		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
+		arquivo.setInstituicaoRecebe(getCra());
+		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setDataRecebimento(new LocalDate().toDate());
+		arquivo.setHoraEnvio(new LocalTime());
+		arquivo.setTipoArquivo(getTipoArquivoDesistenciaProtesto());
+		arquivo.setStatusArquivo(getStatusArquivo());
+		return arquivoDAO.salvar(arquivo, usuario, erros);
 	}
-	return desistencias;
-    }
 
-    private RodapeArquivo getRodapeArquivoDesistenciaCancelamento(Instituicao instituicao) {
-	RodapeArquivo rodapeArquivo = new RodapeArquivo();
-	rodapeArquivo.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.TRAILLER_APRESENTANTE);
-	rodapeArquivo.setCodigoApresentante(instituicao.getCodigoCompensacao());
-	rodapeArquivo.setNomeApresentante(instituicao.getRazaoSocial());
-	rodapeArquivo.setDataMovimento(new LocalDate());
-	rodapeArquivo.setQuantidadeDesistencia(getQuantidadeDesistencias() + getQuantidadeRegistrosTipo2());
-	rodapeArquivo.setSomatorioValorTitulo(somatorioValor);
-	return rodapeArquivo;
-    }
-
-    private CabecalhoArquivo getCabecalhoArquivoDesistenciaCancelamento(Instituicao instituicaoDesistenciaCancelamento) {
-	CabecalhoArquivo cabecalhoArquivo = new CabecalhoArquivo();
-	cabecalhoArquivo.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.HEADER_APRESENTANTE);
-	cabecalhoArquivo.setCodigoApresentante(instituicaoDesistenciaCancelamento.getCodigoCompensacao());
-	cabecalhoArquivo.setNomeApresentante(instituicaoDesistenciaCancelamento.getRazaoSocial());
-	cabecalhoArquivo.setDataMovimento(new LocalDate());
-	cabecalhoArquivo.setQuantidadeDesistencia(getQuantidadeDesistencias());
-	cabecalhoArquivo.setQuantidadeRegistro(getQuantidadeRegistrosTipo2());
-	cabecalhoArquivo.setSequencialRegistro("00001");
-	return cabecalhoArquivo;
-    }
-
-    public int getQuantidadeDesistencias() {
-	return quantidadeDesistencias;
-    }
-
-    public int getQuantidadeRegistrosTipo2() {
-	return quantidadeRegistrosTipo2;
-    }
-
-    public BigDecimal getSomatorioValor() {
-	if (somatorioValor == null) {
-	    somatorioValor = BigDecimal.ZERO;
+	private StatusArquivo getStatusArquivo() {
+		StatusArquivo status = new StatusArquivo();
+		status.setData(new LocalDateTime());
+		status.setSituacaoArquivo(SituacaoArquivo.ENVIADO);
+		return status;
 	}
-	return somatorioValor;
-    }
 
-    public int getSequenciaRegistro() {
-	return sequenciaRegistro;
-    }
-
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public Arquivo verificarDesistenciaJaEnviadaAnteriormente(String nomeArquivo, Instituicao instituicao) {
-	return arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(instituicao, nomeArquivo);
-    }
-
-    /**
-     * @param cartorio
-     * @param nomeArquivo
-     * @return
-     */
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public RemessaDesistenciaProtestoVO buscarDesistenciaCancelamentoCartorio(Instituicao cartorio, String nomeArquivo) {
-
-	if (nomeArquivo.contains(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.getConstante())) {
-	    desistenciaDAO.alterarSituacaoDesistenciaProtesto(cartorio, nomeArquivo);
-	    DesistenciaProtesto desistencia = desistenciaDAO.buscarDesistenciaProtesto(cartorio, nomeArquivo);
-	    if (desistencia == null) {
-		return null;
-	    }
-	    RemessaDesistenciaProtesto remessaDesistencia = new RemessaDesistenciaProtesto();
-	    remessaDesistencia.setCabecalho(desistencia.getRemessaDesistenciaProtesto().getCabecalho());
-	    remessaDesistencia.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
-	    remessaDesistencia.getDesistenciaProtesto().add(desistencia);
-	    remessaDesistencia.setRodape(desistencia.getRemessaDesistenciaProtesto().getRodape());
-	    remessaDesistencia.setArquivo(desistencia.getRemessaDesistenciaProtesto().getArquivo());
-	    return new ConversorDesistenciaProtesto().converter(remessaDesistencia);
-
-	} else if (nomeArquivo.contains(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.getConstante())) {
-	    cancelamentoDAO.alterarSituacaoCancelamentoProtesto(cartorio, nomeArquivo);
-	    CancelamentoProtesto cancelamento = cancelamentoDAO.buscarCancelamentoProtesto(cartorio, nomeArquivo);
-	    if (cancelamento == null) {
-		return null;
-	    }
-	    RemessaCancelamentoProtesto remessa = new RemessaCancelamentoProtesto();
-	    remessa.setCabecalho(cancelamento.getRemessaCancelamentoProtesto().getCabecalho());
-	    remessa.setCancelamentoProtesto(new ArrayList<CancelamentoProtesto>());
-	    remessa.getCancelamentoProtesto().add(cancelamento);
-	    remessa.setRodape(cancelamento.getRemessaCancelamentoProtesto().getRodape());
-	    remessa.setArquivo(cancelamento.getRemessaCancelamentoProtesto().getArquivo());
-	    return new ConversorCancelamentoProtesto().converter(remessa);
-
-	} else if (nomeArquivo.contains(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.getConstante())) {
-	    autorizacaoDAO.alterarSituacaoAutorizacaoCancelamento(cartorio, nomeArquivo);
-	    AutorizacaoCancelamento autorizacaoCancelamento = autorizacaoDAO.buscarAutorizacaoCancelamentoProtesto(cartorio, nomeArquivo);
-	    if (autorizacaoCancelamento == null) {
-		return null;
-	    }
-	    RemessaAutorizacaoCancelamento remessa = new RemessaAutorizacaoCancelamento();
-	    remessa.setCabecalho(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getCabecalho());
-	    remessa.setAutorizacaoCancelamento(new ArrayList<AutorizacaoCancelamento>());
-	    remessa.getAutorizacaoCancelamento().add(autorizacaoCancelamento);
-	    remessa.setRodape(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getRodape());
-	    remessa.setArquivo(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo());
-	    return new ConversorCancelamentoProtesto().converter(remessa);
+	private TipoArquivo getTipoArquivoDesistenciaProtesto() {
+		return tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO);
 	}
-	return null;
-    }
+
+	private Instituicao getCra() {
+		return instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString());
+	}
+
+	private ArquivoDesistenciaProtestoVO converterStringParaVO(String dados) {
+		JAXBContext context;
+		ArquivoDesistenciaProtestoVO desistenciaVO = null;
+
+		try {
+			context = JAXBContext.newInstance(ArquivoDesistenciaProtestoVO.class);
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			String xmlRecebido = "";
+
+			Scanner scanner = new Scanner(new ByteArrayInputStream(new String(dados).getBytes()));
+			while (scanner.hasNext()) {
+				xmlRecebido = xmlRecebido + scanner.nextLine().replaceAll("& ", "&amp;");
+				if (xmlRecebido.contains("<?xml version=")) {
+					xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", "");
+				}
+			}
+			scanner.close();
+
+			InputStream xml = new ByteArrayInputStream(xmlRecebido.getBytes());
+			desistenciaVO = (ArquivoDesistenciaProtestoVO) unmarshaller.unmarshal(new InputSource(xml));
+
+		} catch (JAXBException e) {
+			logger.error(e.getMessage(), e.getCause());
+			new InfraException(e.getMessage(), e.getCause());
+		}
+		return desistenciaVO;
+	}
+
+	private DesistenciaSerproVO converterStringParaDesistenciaCancelamentoSerproVO(String dados) {
+		JAXBContext context;
+		DesistenciaSerproVO desistenciaVO = null;
+
+		try {
+			context = JAXBContext.newInstance(DesistenciaSerproVO.class);
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			String xmlRecebido = "";
+
+			Scanner scanner = new Scanner(new ByteArrayInputStream(new String(dados).getBytes()));
+			while (scanner.hasNext()) {
+				xmlRecebido = xmlRecebido + scanner.nextLine().replaceAll("& ", "&amp;");
+				if (xmlRecebido.contains("<?xml version=")) {
+					xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", "");
+					xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"no\"?>", "");
+				}
+			}
+			scanner.close();
+
+			InputStream xml = new ByteArrayInputStream(xmlRecebido.getBytes());
+			desistenciaVO = (DesistenciaSerproVO) unmarshaller.unmarshal(new InputSource(xml));
+
+		} catch (JAXBException e) {
+			logger.error(e.getMessage(), e.getCause());
+			new InfraException(e.getMessage(), e.getCause());
+		}
+		return desistenciaVO;
+	}
+
+	private RemessaDesistenciaProtesto converterDesistenciaCancelamentoSerpro(Arquivo arquivo, Instituicao instituicao,
+			DesistenciaSerproVO desistenciaCancelamentoSerpro, List<Exception> erros) {
+		RemessaDesistenciaProtesto remessaDesistencia = new RemessaDesistenciaProtesto();
+		remessaDesistencia.setArquivo(arquivo);
+		remessaDesistencia.setDesistenciaProtesto(getDesistenciasCancelamentosProtesto(remessaDesistencia, desistenciaCancelamentoSerpro));
+		remessaDesistencia.setCabecalho(getCabecalhoArquivoDesistenciaCancelamento(instituicao));
+		remessaDesistencia.setRodape(getRodapeArquivoDesistenciaCancelamento(instituicao));
+		return remessaDesistencia;
+	}
+
+	private List<DesistenciaProtesto> getDesistenciasCancelamentosProtesto(
+			RemessaDesistenciaProtesto remessaDesistencia, DesistenciaSerproVO desistenciaCancelamentoSerpro) {
+		List<DesistenciaProtesto> desistencias = new ArrayList<DesistenciaProtesto>();
+
+		for (ComarcaDesistenciaCancelamentoSerproVO comarca : desistenciaCancelamentoSerpro.getComarcaDesistenciaCancelamento()) {
+			DesistenciaProtesto desistenciaProtesto = new DesistenciaProtesto();
+			desistenciaProtesto.setRemessaDesistenciaProtesto(remessaDesistencia);
+
+			CabecalhoCartorio cabecalhoCartorio = new CabecalhoCartorio();
+			RodapeCartorio rodapeCartorio = new RodapeCartorio();
+			List<PedidoDesistencia> pedidosDesistencia = new ArrayList<PedidoDesistencia>();
+			for (CartorioDesistenciaCancelamentoSerproVO cartorio : comarca.getCartorioDesistenciaCancelamento()) {
+				cabecalhoCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.HEADER_CARTORIO);
+				cabecalhoCartorio.setCodigoCartorio(cartorio.getCodigoCartorio());
+				cabecalhoCartorio.setQuantidadeDesistencia(cartorio.getTituloDesistenciaCancelamento().size());
+				cabecalhoCartorio.setCodigoMunicipio(comarca.getCodigoMunicipio());
+				cabecalhoCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(2), 5, "0"));
+
+				for (TituloDesistenciaCancelamentoSerproVO titulo : cartorio.getTituloDesistenciaCancelamento()) {
+					PedidoDesistencia registro = new PedidoDesistencia();
+					registro.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA);
+					registro.setNumeroProtocolo(titulo.getNumeroProtocoloCartorio());
+					registro.setDataProtocolagem(DataUtil.stringToLocalDate("ddMMyyyy", titulo.getDataProtocolo()));
+					registro.setNumeroTitulo(titulo.getNumeroTitulo());
+					registro.setNomePrimeiroDevedor(titulo.getNomeDevedor());
+					registro.setValorTitulo(new BigDecimal(titulo.getValorTitulo()));
+					registro.setSolicitacaoCancelamentoSustacao("S");
+					registro.setSequenciaRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
+
+					this.sequenciaRegistro = getSequenciaRegistro() + 1;
+					this.somatorioValor = getSomatorioValor().add(registro.getValorTitulo());
+					pedidosDesistencia.add(registro);
+				}
+				this.quantidadeDesistencias = getQuantidadeDesistencias()
+						+ cartorio.getTituloDesistenciaCancelamento().size();
+				this.quantidadeRegistrosTipo2 = getQuantidadeRegistrosTipo2()
+						+ cartorio.getTituloDesistenciaCancelamento().size();
+
+				rodapeCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.TRAILLER_CARTORIO);
+				rodapeCartorio.setCodigoCartorio(cartorio.getCodigoCartorio());
+				rodapeCartorio.setSomaTotalCancelamentoDesistencia(cartorio.getTituloDesistenciaCancelamento().size()
+						* 2);
+				rodapeCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
+
+				desistenciaProtesto.setCabecalhoCartorio(cabecalhoCartorio);
+				desistenciaProtesto.setDesistencias(pedidosDesistencia);
+				desistenciaProtesto.setRodapeCartorio(rodapeCartorio);
+			}
+			desistencias.add(desistenciaProtesto);
+		}
+		return desistencias;
+	}
+
+	private RodapeArquivo getRodapeArquivoDesistenciaCancelamento(Instituicao instituicao) {
+		RodapeArquivo rodapeArquivo = new RodapeArquivo();
+		rodapeArquivo.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.TRAILLER_APRESENTANTE);
+		rodapeArquivo.setCodigoApresentante(instituicao.getCodigoCompensacao());
+		rodapeArquivo.setNomeApresentante(instituicao.getRazaoSocial());
+		rodapeArquivo.setDataMovimento(new LocalDate());
+		rodapeArquivo.setQuantidadeDesistencia(getQuantidadeDesistencias() + getQuantidadeRegistrosTipo2());
+		rodapeArquivo.setSomatorioValorTitulo(somatorioValor);
+		return rodapeArquivo;
+	}
+
+	private CabecalhoArquivo getCabecalhoArquivoDesistenciaCancelamento(
+			Instituicao instituicaoDesistenciaCancelamento) {
+		CabecalhoArquivo cabecalhoArquivo = new CabecalhoArquivo();
+		cabecalhoArquivo.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.HEADER_APRESENTANTE);
+		cabecalhoArquivo.setCodigoApresentante(instituicaoDesistenciaCancelamento.getCodigoCompensacao());
+		cabecalhoArquivo.setNomeApresentante(instituicaoDesistenciaCancelamento.getRazaoSocial());
+		cabecalhoArquivo.setDataMovimento(new LocalDate());
+		cabecalhoArquivo.setQuantidadeDesistencia(getQuantidadeDesistencias());
+		cabecalhoArquivo.setQuantidadeRegistro(getQuantidadeRegistrosTipo2());
+		cabecalhoArquivo.setSequencialRegistro("00001");
+		return cabecalhoArquivo;
+	}
+
+	public int getQuantidadeDesistencias() {
+		return quantidadeDesistencias;
+	}
+
+	public int getQuantidadeRegistrosTipo2() {
+		return quantidadeRegistrosTipo2;
+	}
+
+	public BigDecimal getSomatorioValor() {
+		if (somatorioValor == null) {
+			somatorioValor = BigDecimal.ZERO;
+		}
+		return somatorioValor;
+	}
+
+	public int getSequenciaRegistro() {
+		return sequenciaRegistro;
+	}
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public Arquivo verificarDesistenciaJaEnviadaAnteriormente(String nomeArquivo, Instituicao instituicao) {
+		return arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(instituicao, nomeArquivo);
+	}
+
+	/**
+	 * @param cartorio
+	 * @param nomeArquivo
+	 * @return
+	 */
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public RemessaDesistenciaProtestoVO buscarDesistenciaCancelamentoCartorio(Instituicao cartorio,
+			String nomeArquivo) {
+
+		if (nomeArquivo.contains(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.getConstante())) {
+			desistenciaDAO.alterarSituacaoDesistenciaProtesto(cartorio, nomeArquivo);
+			DesistenciaProtesto desistencia = desistenciaDAO.buscarDesistenciaProtesto(cartorio, nomeArquivo);
+			if (desistencia == null) {
+				return null;
+			}
+			RemessaDesistenciaProtesto remessaDesistencia = new RemessaDesistenciaProtesto();
+			remessaDesistencia.setCabecalho(desistencia.getRemessaDesistenciaProtesto().getCabecalho());
+			remessaDesistencia.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
+			remessaDesistencia.getDesistenciaProtesto().add(desistencia);
+			remessaDesistencia.setRodape(desistencia.getRemessaDesistenciaProtesto().getRodape());
+			remessaDesistencia.setArquivo(desistencia.getRemessaDesistenciaProtesto().getArquivo());
+			return new ConversorDesistenciaProtesto().converter(remessaDesistencia);
+
+		} else if (nomeArquivo.contains(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.getConstante())) {
+			cancelamentoDAO.alterarSituacaoCancelamentoProtesto(cartorio, nomeArquivo);
+			CancelamentoProtesto cancelamento = cancelamentoDAO.buscarCancelamentoProtesto(cartorio, nomeArquivo);
+			if (cancelamento == null) {
+				return null;
+			}
+			RemessaCancelamentoProtesto remessa = new RemessaCancelamentoProtesto();
+			remessa.setCabecalho(cancelamento.getRemessaCancelamentoProtesto().getCabecalho());
+			remessa.setCancelamentoProtesto(new ArrayList<CancelamentoProtesto>());
+			remessa.getCancelamentoProtesto().add(cancelamento);
+			remessa.setRodape(cancelamento.getRemessaCancelamentoProtesto().getRodape());
+			remessa.setArquivo(cancelamento.getRemessaCancelamentoProtesto().getArquivo());
+			return new ConversorCancelamentoProtesto().converter(remessa);
+
+		} else if (nomeArquivo.contains(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.getConstante())) {
+			autorizacaoDAO.alterarSituacaoAutorizacaoCancelamento(cartorio, nomeArquivo);
+			AutorizacaoCancelamento autorizacaoCancelamento = autorizacaoDAO.buscarAutorizacaoCancelamentoProtesto(cartorio, nomeArquivo);
+			if (autorizacaoCancelamento == null) {
+				return null;
+			}
+			RemessaAutorizacaoCancelamento remessa = new RemessaAutorizacaoCancelamento();
+			remessa.setCabecalho(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getCabecalho());
+			remessa.setAutorizacaoCancelamento(new ArrayList<AutorizacaoCancelamento>());
+			remessa.getAutorizacaoCancelamento().add(autorizacaoCancelamento);
+			remessa.setRodape(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getRodape());
+			remessa.setArquivo(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo());
+			return new ConversorCancelamentoProtesto().converter(remessa);
+		}
+		return null;
+	}
 }
