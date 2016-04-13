@@ -26,6 +26,7 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.BancoAgenciaCentralizadoraCodigoCartorio;
+import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -124,12 +125,6 @@ public class TituloDAO extends AbstractBaseDAO {
 		return tituloRemessa;
 	}
 
-	public List<Titulo> carregarTitulosGenerico(Remessa remessa) {
-		Criteria criteriaTitulo = getCriteria(Titulo.class);
-		criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-		return criteriaTitulo.list();
-	}
-
 	public List<Titulo> carregarTitulosGenerico(Arquivo arquivo) {
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.add(Restrictions.eq("arquivo", arquivo));
@@ -142,6 +137,12 @@ public class TituloDAO extends AbstractBaseDAO {
 			titulos.addAll(criteriaTitulo.list());
 		}
 		return titulos;
+	}
+
+	public List<Titulo> carregarTitulosGenerico(Remessa remessa) {
+		Criteria criteriaTitulo = getCriteria(Titulo.class);
+		criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+		return criteriaTitulo.list();
 	}
 
 	public TituloRemessa salvar(Titulo titulo, Transaction transaction) {
@@ -398,5 +399,20 @@ public class TituloDAO extends AbstractBaseDAO {
 			return null;
 		}
 		return confirmacao.getTitulo();
+	}
+
+	public List<TituloRemessa> carregarTitulos(Remessa remessa) {
+		Criteria criteria = getCriteria(TituloRemessa.class);
+
+		if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
+			criteria.add(Restrictions.eq("remessa", remessa));
+		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
+			criteria.createAlias("confirmacao", "confirmacao");
+			criteria.add(Restrictions.eq("confirmacao.remessa", remessa));
+		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+			criteria.createAlias("retorno", "retorno");
+			criteria.add(Restrictions.eq("retorno.remessa", remessa));
+		}
+		return criteria.list();
 	}
 }

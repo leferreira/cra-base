@@ -24,7 +24,7 @@ import br.com.ieptbto.cra.entidade.Usuario;
 public class TituloMediator {
 
 	@Autowired
-	private TituloDAO tituloDAO;
+	TituloDAO tituloDAO;
 
 	public TituloRemessa carregarTituloRemessa(TituloRemessa titulo) {
 		return tituloDAO.buscarPorPK(titulo, TituloRemessa.class);
@@ -46,6 +46,10 @@ public class TituloMediator {
 		return tituloDAO.buscarPorPK(retorno, Retorno.class);
 	}
 
+	public List<TituloRemessa> carregarTitulos(Remessa remessa) {
+		return tituloDAO.carregarTitulos(remessa);
+	}
+
 	public List<TituloRemessa> buscarListaTitulos(LocalDate dataInicio, LocalDate dataFim, TituloRemessa titulo,
 			Municipio pracaProtesto, Usuario user) {
 		return tituloDAO.buscarListaTitulos(dataInicio, dataFim, titulo, pracaProtesto, user);
@@ -54,11 +58,6 @@ public class TituloMediator {
 	@SuppressWarnings("rawtypes")
 	public List<Titulo> carregarTitulosGenerico(Arquivo arquivo) {
 		return tituloDAO.carregarTitulosGenerico(arquivo);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public List<Titulo> carregarTitulosGenerico(Remessa remessa) {
-		return tituloDAO.carregarTitulosGenerico(remessa);
 	}
 
 	public TituloRemessa buscarTituloPorChave(TituloRemessa titulo) {
