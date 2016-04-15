@@ -10,6 +10,7 @@ import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 import org.joda.time.LocalDate;
@@ -22,6 +23,7 @@ import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoCancelamento;
+import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -83,21 +85,17 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 								totalRegistroCancelamentoProtesto++;
 							} else {
 								pedidosCancelamentoComErros.add(pedido);
-								erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro()
-										+ ": o título de número " + pedido.getNumeroTitulo() + ", do protocolo "
-										+ pedido.getNumeroProtocolo() + " do dia "
-										+ DataUtil.localDateToString(pedido.getDataProtocolagem())
-										+ ", já foi enviado anteriormente em outro arquivo de cancelamento!"));
+								erros.add(new InfraException(
+										"Linha " + pedido.getSequenciaRegistro() + ": o título de número " + pedido.getNumeroTitulo() + ", do protocolo "
+												+ pedido.getNumeroProtocolo() + " do dia " + DataUtil.localDateToString(pedido.getDataProtocolagem())
+												+ ", já foi enviado anteriormente em outro arquivo de cancelamento!"));
 							}
 						} else if (pedido.getDataProtocolagem().isAfter(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))
 								|| pedido.getDataProtocolagem().equals(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))) {
 							pedidosCancelamentoComErros.add(pedido);
-							erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro()
-									+ ": o título de número " + pedido.getNumeroTitulo() + ",com o protocolo "
-									+ pedido.getNumeroProtocolo() + " do dia "
-									+ DataUtil.localDateToString(pedido.getDataProtocolagem())
-									+ ", não foi localizado para a comarca [ "
-									+ pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()
+							erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número " + pedido.getNumeroTitulo()
+									+ ",com o protocolo " + pedido.getNumeroProtocolo() + " do dia " + DataUtil.localDateToString(pedido.getDataProtocolagem())
+									+ ", não foi localizado para a comarca [ " + pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()
 									+ " ]. Verifique os dados do título!"));
 						} else {
 							pedidos.add(pedido);
@@ -134,12 +132,12 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 					}
 				}
 				if (!erros.isEmpty()) {
-					throw new CancelamentoException("Não foi possível enviar o arquivo de cancelamento! Por favor, corriga os erros no arquivo abaixo...", erros, pedidosCancelamentoComErros);
+					throw new CancelamentoException("Não foi possível enviar o arquivo de cancelamento! Por favor, corriga os erros no arquivo abaixo...",
+							erros, pedidosCancelamentoComErros);
 				}
 				transaction.commit();
 			}
-			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário "
-					+ arquivo.getUsuarioEnvio().getLogin() + " foi inserido na base ");
+			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin() + " foi inserido na base ");
 
 		} catch (CancelamentoException ex) {
 			transaction.rollback();
@@ -158,9 +156,8 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador,
-			Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo,
-			Usuario usuario) {
+	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
+			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(CancelamentoProtesto.class);
 		criteria.createAlias("remessaCancelamentoProtesto", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
@@ -223,8 +220,7 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public CancelamentoProtesto alterarSituacaoCancelamentoProtesto(CancelamentoProtesto cancelamentoProtesto,
-			boolean download) {
+	public CancelamentoProtesto alterarSituacaoCancelamentoProtesto(CancelamentoProtesto cancelamentoProtesto, boolean download) {
 		Transaction transaction = getBeginTransation();
 
 		try {
@@ -270,5 +266,42 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("cabecalhoCartorio.codigoMunicipio", cartorio.getMunicipio().getCodigoIBGE()));
 		criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
 		return CancelamentoProtesto.class.cast(criteria.uniqueResult());
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<TituloRemessa> buscarTitulosParaSolicitarCancelamento(TituloRemessa tituloRemessa, Instituicao bancoConvenio, Municipio municipio,
+			Usuario user) {
+		Criteria criteria = getCriteria(TituloRemessa.class);
+
+		criteria.createAlias("remessa", "remessa");
+		if (!user.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", user.getInstituicao()),
+					Restrictions.eq("remessa.instituicaoDestino", user.getInstituicao())));
+		}
+
+		if (bancoConvenio != null) {
+			criteria.add(Restrictions.eq("codigoPortador", bancoConvenio.getCodigoCompensacao()));
+		}
+
+		if (tituloRemessa.getNumeroProtocoloCartorio() != null && tituloRemessa.getNumeroProtocoloCartorio() != StringUtils.EMPTY) {
+			criteria.createAlias("confirmacao", "confirmacao");
+			criteria.add(Restrictions.eq("confirmacao.numeroProtocoloCartorio", tituloRemessa.getNumeroProtocoloCartorio()));
+		}
+
+		if (tituloRemessa.getNumeroTitulo() != null && tituloRemessa.getNumeroTitulo() != StringUtils.EMPTY)
+			criteria.add(Restrictions.ilike("numeroTitulo", tituloRemessa.getNumeroTitulo(), MatchMode.EXACT));
+
+		if (tituloRemessa.getNomeDevedor() != null && tituloRemessa.getNomeDevedor() != StringUtils.EMPTY)
+			criteria.add(Restrictions.ilike("nomeDevedor", tituloRemessa.getNomeDevedor(), MatchMode.ANYWHERE));
+
+		if (tituloRemessa.getNumeroIdentificacaoDevedor() != null && tituloRemessa.getNumeroIdentificacaoDevedor() != StringUtils.EMPTY)
+			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", tituloRemessa.getNumeroIdentificacaoDevedor(), MatchMode.ANYWHERE));
+
+		if (municipio != null) {
+			criteria.createAlias("remessa.cabecalho", "cabecalho");
+			criteria.add(Restrictions.ilike("cabecalho.codigoMunicipio", municipio.getCodigoIBGE()));
+		}
+		criteria.addOrder(Order.asc("nomeDevedor"));
+		return criteria.list();
 	}
 }

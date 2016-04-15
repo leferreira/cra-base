@@ -41,6 +41,7 @@ import br.com.ieptbto.cra.entidade.RodapeArquivo;
 import br.com.ieptbto.cra.entidade.RodapeCartorio;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
+import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.CancelamentoSerproVO;
@@ -88,9 +89,8 @@ public class CancelamentoProtestoMediator {
 		return cancelamentoDAO.buscarPedidosCancelamentoProtesto(cancelamentoProtesto);
 	}
 
-	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador,
-			Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo,
-			Usuario usuario) {
+	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
+			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		return cancelamentoDAO.buscarCancelamentoProtesto(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
@@ -122,8 +122,7 @@ public class CancelamentoProtestoMediator {
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Arquivo processarCancelamento(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados,
-			List<Exception> erros, Usuario usuario) {
+	public Arquivo processarCancelamento(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados, List<Exception> erros, Usuario usuario) {
 		Arquivo arquivo = new Arquivo();
 		arquivo.setNomeArquivo(nomeArquivo);
 		arquivo.setUsuarioEnvio(usuario);
@@ -137,7 +136,8 @@ public class CancelamentoProtestoMediator {
 		arquivo.setStatusArquivo(getStatusArquivo());
 
 		if (layoutPadraoXML.equals(LayoutPadraoXML.SERPRO)) {
-			RemessaCancelamentoProtesto remessaCancelamento = converterCancelamentoSerpro(arquivo, usuario.getInstituicao(), converterStringParaCancelamentoSerproVO(dados), erros);
+			RemessaCancelamentoProtesto remessaCancelamento =
+					converterCancelamentoSerpro(arquivo, usuario.getInstituicao(), converterStringParaCancelamentoSerproVO(dados), erros);
 			arquivo.setRemessaCancelamentoProtesto(remessaCancelamento);
 
 			return cancelamentoDAO.salvarCancelamentoSerpro(arquivo, usuario, erros);
@@ -219,8 +219,8 @@ public class CancelamentoProtestoMediator {
 		return cancelamentoVO;
 	}
 
-	private RemessaCancelamentoProtesto converterCancelamentoSerpro(Arquivo arquivo, Instituicao instituicao,
-			CancelamentoSerproVO cancelamentoSerpro, List<Exception> erros) {
+	private RemessaCancelamentoProtesto converterCancelamentoSerpro(Arquivo arquivo, Instituicao instituicao, CancelamentoSerproVO cancelamentoSerpro,
+			List<Exception> erros) {
 		RemessaCancelamentoProtesto remessaCancelamento = new RemessaCancelamentoProtesto();
 		remessaCancelamento.setArquivo(arquivo);
 		remessaCancelamento.setCancelamentoProtesto(getCancelamentosProtesto(remessaCancelamento, cancelamentoSerpro));
@@ -229,8 +229,7 @@ public class CancelamentoProtestoMediator {
 		return remessaCancelamento;
 	}
 
-	private List<CancelamentoProtesto> getCancelamentosProtesto(RemessaCancelamentoProtesto remessaCancelamento,
-			CancelamentoSerproVO cancelamentoSerpro) {
+	private List<CancelamentoProtesto> getCancelamentosProtesto(RemessaCancelamentoProtesto remessaCancelamento, CancelamentoSerproVO cancelamentoSerpro) {
 		List<CancelamentoProtesto> cancelamentos = new ArrayList<CancelamentoProtesto>();
 
 		for (ComarcaDesistenciaCancelamentoSerproVO comarca : cancelamentoSerpro.getComarcaDesistenciaCancelamento()) {
@@ -262,15 +261,12 @@ public class CancelamentoProtestoMediator {
 					this.somatorioValor = getSomatorioValor().add(registro.getValorTitulo());
 					pedidosCancelamento.add(registro);
 				}
-				this.quantidadeDesistencias = getQuantidadeDesistencias()
-						+ cartorio.getTituloDesistenciaCancelamento().size();
-				this.quantidadeRegistrosTipo2 = getQuantidadeRegistrosTipo2()
-						+ cartorio.getTituloDesistenciaCancelamento().size();
+				this.quantidadeDesistencias = getQuantidadeDesistencias() + cartorio.getTituloDesistenciaCancelamento().size();
+				this.quantidadeRegistrosTipo2 = getQuantidadeRegistrosTipo2() + cartorio.getTituloDesistenciaCancelamento().size();
 
 				rodapeCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.TRAILLER_CARTORIO);
 				rodapeCartorio.setCodigoCartorio(cartorio.getCodigoCartorio());
-				rodapeCartorio.setSomaTotalCancelamentoDesistencia(cartorio.getTituloDesistenciaCancelamento().size()
-						* 2);
+				rodapeCartorio.setSomaTotalCancelamentoDesistencia(cartorio.getTituloDesistenciaCancelamento().size() * 2);
 				rodapeCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
 
 				cancelamentoProtesto.setCabecalhoCartorio(cabecalhoCartorio);
@@ -322,5 +318,10 @@ public class CancelamentoProtestoMediator {
 
 	public int getSequenciaRegistro() {
 		return sequenciaRegistro;
+	}
+
+	public List<TituloRemessa> buscarTitulosParaSolicitarCancelamento(TituloRemessa tituloRemessa, Instituicao bancoConvenio, Municipio municipio,
+			Usuario usuario) {
+		return cancelamentoDAO.buscarTitulosParaSolicitarCancelamento(tituloRemessa, bancoConvenio, municipio, usuario);
 	}
 }

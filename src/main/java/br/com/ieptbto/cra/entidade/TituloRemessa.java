@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,6 +30,7 @@ import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.conversor.arquivo.TituloConversor;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
+import br.com.ieptbto.cra.enumeration.StatusSolicitacaoCancelamento;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
@@ -86,6 +89,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	private String complementoRegistro;
 	private String situacaoTitulo;
 	private Date dataCadastro;
+	private StatusSolicitacaoCancelamento statusSolicitacaoCancelamento;
 	private FieldHandler handler;
 
 	@Override
@@ -132,7 +136,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public PedidoAutorizacaoCancelamento getPedidoAutorizacaoCancelamento() {
 		if (this.handler != null) {
-			return (PedidoAutorizacaoCancelamento) this.handler.readObject(this, "pedidoAutorizacaoCancelamento", pedidoAutorizacaoCancelamento);
+			return (PedidoAutorizacaoCancelamento) this.handler.readObject(this, "pedidoAutorizacaoCancelamento",
+					pedidoAutorizacaoCancelamento);
 		}
 		return pedidoAutorizacaoCancelamento;
 	}
@@ -292,6 +297,15 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		return complementoRegistro;
 	}
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "STATUS_SOLICITACAO_CANCELAMENTO", length = 50)
+	public StatusSolicitacaoCancelamento getStatusSolicitacaoCancelamento() {
+		if (statusSolicitacaoCancelamento == null) {
+			statusSolicitacaoCancelamento = StatusSolicitacaoCancelamento.NAO_SOLICITADO;
+		}
+		return statusSolicitacaoCancelamento;
+	}
+
 	@Column(name = "DATA_CADASTRO")
 	@Type(type = "date")
 	public Date getDataCadastro() {
@@ -320,16 +334,22 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 
 	public void setPedidoCancelamento(PedidoCancelamento pedidoCancelamento) {
 		if (this.handler != null) {
-			this.pedidoCancelamento = (PedidoCancelamento) this.handler.writeObject(this, "pedidoCancelamento", this.pedidoCancelamento, pedidoCancelamento);
+			this.pedidoCancelamento =
+					(PedidoCancelamento) this.handler.writeObject(this, "pedidoCancelamento", this.pedidoCancelamento, pedidoCancelamento);
 		}
 		this.pedidoCancelamento = pedidoCancelamento;
 	}
 
 	public void setPedidoAutorizacaoCancelamento(PedidoAutorizacaoCancelamento pedidoAutorizacaoCancelamento) {
 		if (this.handler != null) {
-			this.pedidoAutorizacaoCancelamento = (PedidoAutorizacaoCancelamento) this.handler.writeObject(this, "pedidoAutorizacaoCancelamento", this.pedidoAutorizacaoCancelamento, pedidoAutorizacaoCancelamento);
+			this.pedidoAutorizacaoCancelamento = (PedidoAutorizacaoCancelamento) this.handler.writeObject(this,
+					"pedidoAutorizacaoCancelamento", this.pedidoAutorizacaoCancelamento, pedidoAutorizacaoCancelamento);
 		}
 		this.pedidoAutorizacaoCancelamento = pedidoAutorizacaoCancelamento;
+	}
+
+	public void setStatusSolicitacaoCancelamento(StatusSolicitacaoCancelamento statusSolicitacaoCancelamento) {
+		this.statusSolicitacaoCancelamento = statusSolicitacaoCancelamento;
 	}
 
 	public void setNomeCedenteFavorecido(String nomeCedenteFavorecido) {
@@ -520,10 +540,11 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setDocumentoSacador(tituloFiliado.getFiliado().getCnpjCpf());
 		this.setEnderecoSacadorVendedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getEndereco()));
 		this.setCepSacadorVendedor(tituloFiliado.getFiliado().getCep());
-		this.setCidadeSacadorVendedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
+		this.setCidadeSacadorVendedor(
+				RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
 		this.setUfSacadorVendedor(tituloFiliado.getFiliado().getUf());
-		this.setNossoNumero(gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao()
-				+ tituloFiliado.getId()));
+		this.setNossoNumero(
+				gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId()));
 		this.setEspecieTitulo(tituloFiliado.getEspecieTitulo().getConstante());
 		this.setNumeroTitulo(tituloFiliado.getNumeroTitulo());
 		this.setDataEmissaoTitulo(new LocalDate(tituloFiliado.getDataEmissao()));
@@ -556,7 +577,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setDocumentoSacador(avalista.getTituloFiliado().getFiliado().getCnpjCpf());
 		this.setEnderecoSacadorVendedor(RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getEndereco()));
 		this.setCepSacadorVendedor(avalista.getTituloFiliado().getFiliado().getCep());
-		this.setCidadeSacadorVendedor(RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
+		this.setCidadeSacadorVendedor(
+				RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
 		this.setUfSacadorVendedor(avalista.getTituloFiliado().getFiliado().getUf());
 		this.setNossoNumero(gerarNossoNumero(avalista.getTituloFiliado().getFiliado().getInstituicaoConvenio().getCodigoCompensacao()
 				+ avalista.getTituloFiliado().getId()));
@@ -567,7 +589,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setTipoMoeda("001");
 		this.setValorTitulo(avalista.getTituloFiliado().getValorTitulo());
 		this.setSaldoTitulo(avalista.getTituloFiliado().getValorSaldoTitulo());
-		this.setPracaProtesto(RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getPracaProtesto().getNomeMunicipio().toUpperCase()));
+		this.setPracaProtesto(
+				RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getPracaProtesto().getNomeMunicipio().toUpperCase()));
 		this.setTipoEndoso("M");
 		this.setInformacaoSobreAceite("N");
 		this.setNumeroControleDevedor(numeroControleDevedor);

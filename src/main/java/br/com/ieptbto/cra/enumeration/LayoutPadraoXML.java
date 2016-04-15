@@ -6,13 +6,14 @@ package br.com.ieptbto.cra.enumeration;
  */
 public enum LayoutPadraoXML {
 
-	CRA_NACIONAL("CRA-Nacional"),
-	SERPRO("Serpro");
-	
+								CRA_NACIONAL("CRA-Nacional"),
+								SERPRO("Serpro"),
+								LAYOUT_PERSONALIZADO_CONVENIOS("Personalizado (Convênios)");
+
 	private String label;
-	
+
 	private LayoutPadraoXML(String label) {
-		this.label=label;
+		this.label = label;
 	}
 
 	public String getLabel() {

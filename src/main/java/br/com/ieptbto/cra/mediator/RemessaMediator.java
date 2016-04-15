@@ -223,8 +223,8 @@ public class RemessaMediator {
 		for (Remessa remessa : arquivo.getRemessas()) {
 			ComarcaDetalhamentoSerpro comarcaDetalhamento = new ComarcaDetalhamentoSerpro();
 			comarcaDetalhamento.setCodigoMunicipio(remessa.getCabecalho().getCodigoMunicipio());
-			comarcaDetalhamento.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate())
-					+ DataUtil.localTimeToStringMMmm(new LocalTime()));
+			comarcaDetalhamento
+					.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
 			comarcaDetalhamento.setRegistro(StringUtils.EMPTY);
 
 			CodigoErro codigoErroSerpro = getCodigoErroSucessoSerpro(arquivo.getNomeArquivo());
@@ -294,15 +294,13 @@ public class RemessaMediator {
 
 	public File baixarRemessaTXT(Usuario usuario, Remessa remessa) {
 		TipoInstituicaoCRA tipoInstituicaoUsuario = usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao();
-		if (!tipoInstituicaoUsuario.equals(TipoInstituicaoCRA.CRA)
-				&& !remessa.getStatusRemessa().equals(StatusRemessa.ENVIADO)) {
+		if (!tipoInstituicaoUsuario.equals(TipoInstituicaoCRA.CRA) && !remessa.getStatusRemessa().equals(StatusRemessa.ENVIADO)) {
 			remessa = remessaDAO.buscarPorPK(remessa, Remessa.class);
 			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
 			remessaDAO.alterarSituacaoRemessa(remessa);
 		}
 		if (tipoInstituicaoUsuario.equals(TipoInstituicaoCRA.CARTORIO) && remessa.getDevolvidoPelaCRA().equals(true)) {
-			throw new InfraException("O arquivo " + remessa.getArquivo().getNomeArquivo()
-					+ " já foi devolvido pela CRA !");
+			throw new InfraException("O arquivo " + remessa.getArquivo().getNomeArquivo() + " já foi devolvido pela CRA !");
 		}
 
 		TipoArquivoEnum tipoArquivo = remessa.getArquivo().getTipoArquivo().getTipoArquivo();
@@ -324,10 +322,13 @@ public class RemessaMediator {
 	public Arquivo arquivosPendentes(Instituicao instituicao) {
 		instituicao.setMunicipio(municipioDAO.buscarPorPK(instituicao.getMunicipio(), Municipio.class));
 
-		List<Remessa> remessas = remessaDAO.confirmacoesPendentes(instituicao);
+		// List<Remessa> remessas =
+		// remessaDAO.confirmacoesPendentes(instituicao);
+		List<Remessa> remessas = new ArrayList<>();
 		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
 		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
-		List<AutorizacaoCancelamento> autorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
+		List<AutorizacaoCancelamento> autorizacaoCancelamento =
+				autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
 
 		Arquivo arquivo = new Arquivo();
 		arquivo.setRemessas(remessas);
@@ -380,10 +381,8 @@ public class RemessaMediator {
 
 	@SuppressWarnings("resource")
 	public File processarArquivosAnexos(Usuario user, Remessa remessa) {
-		String pathDiretorioIdInstituicao = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO
-				+ remessa.getInstituicaoOrigem().getId();
-		String pathDiretorioIdArquivo = pathDiretorioIdInstituicao + ConfiguracaoBase.BARRA
-				+ remessa.getArquivo().getId();
+		String pathDiretorioIdInstituicao = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId();
+		String pathDiretorioIdArquivo = pathDiretorioIdInstituicao + ConfiguracaoBase.BARRA + remessa.getArquivo().getId();
 		String pathDiretorioIdRemessa = pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + remessa.getId();
 
 		File diretorioBaseArquivo = new File(ConfiguracaoBase.DIRETORIO_BASE);
@@ -414,10 +413,10 @@ public class RemessaMediator {
 			if (diretorioRemessa.exists()) {
 				if (!Arrays.asList(diretorioRemessa.listFiles()).isEmpty()) {
 
-					String nomeArquivoZip = remessa.getArquivo().getNomeArquivo().replace(".", "_") + "_"
-							+ remessa.getCabecalho().getCodigoMunicipio();
-					FileOutputStream fileOutputStream = new FileOutputStream(pathDiretorioIdArquivo
-							+ ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+					String nomeArquivoZip =
+							remessa.getArquivo().getNomeArquivo().replace(".", "_") + "_" + remessa.getCabecalho().getCodigoMunicipio();
+					FileOutputStream fileOutputStream = new FileOutputStream(
+							pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 					ZipOutputStream zipOut = new ZipOutputStream(fileOutputStream);
 
 					for (File arq : diretorioRemessa.listFiles()) {
@@ -431,8 +430,8 @@ public class RemessaMediator {
 					}
 					zipOut.close();
 
-					return new File(pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip
-							+ ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+					return new File(
+							pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 				}
 			}
 		} catch (IOException e) {
@@ -454,10 +453,11 @@ public class RemessaMediator {
 						String nomeArquivoZip = tituloRemessa.getNomeDevedor() + "_"
 								+ tituloRemessa.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
 
-						decoderString.decode(tituloRemessa.getAnexo().getDocumentoAnexo(), ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO
-								+ remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA
-								+ remessa.getArquivo().getId() + ConfiguracaoBase.BARRA + remessa.getId()
-								+ ConfiguracaoBase.BARRA, nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+						decoderString.decode(tituloRemessa.getAnexo().getDocumentoAnexo(),
+								ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId()
+										+ ConfiguracaoBase.BARRA + remessa.getArquivo().getId() + ConfiguracaoBase.BARRA + remessa.getId()
+										+ ConfiguracaoBase.BARRA,
+								nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 					}
 				}
 			}

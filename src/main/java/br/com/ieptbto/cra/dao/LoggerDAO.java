@@ -22,35 +22,35 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class LoggerDAO extends AbstractBaseDAO {
 
-    public LogCra salvar(LogCra logCra) {
-	Transaction transaction = getBeginTransation();
-	LogCra novaLog = null;
+	public LogCra salvar(LogCra logCra) {
+		Transaction transaction = getBeginTransation();
+		LogCra novaLog = null;
 
-	try {
-	    novaLog = save(logCra);
+		try {
+			novaLog = save(logCra);
 
-	    transaction.commit();
-	    logger.info(logCra.toString());
-	} catch (Exception ex) {
-	    transaction.rollback();
-	    logger.info(ex.getMessage(), ex.getCause());
-	    throw new InfraException("Não foi possível registrar o log da ação!");
+			transaction.commit();
+			logger.info(logCra.toString());
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.info(ex.getMessage(), ex.getCause());
+			throw new InfraException("Não foi possível registrar o log da ação!");
+		}
+		return novaLog;
 	}
-	return novaLog;
-    }
 
-    @SuppressWarnings("unchecked")
-    public List<LogCra> buscarAcoes(LocalDate dataInicio, LocalDate dataFim, Instituicao instituicao, TipoLog tipoLog) {
-	Criteria criteria = getCriteria(LogCra.class);
-	criteria.add(Restrictions.between("data", dataInicio, dataFim));
+	@SuppressWarnings("unchecked")
+	public List<LogCra> buscarAcoes(LocalDate dataInicio, LocalDate dataFim, Instituicao instituicao, TipoLog tipoLog) {
+		Criteria criteria = getCriteria(LogCra.class);
+		criteria.add(Restrictions.between("data", dataInicio, dataFim));
 
-	if (instituicao != null) {
-	    criteria.add(Restrictions.ilike("instituicao", instituicao.getNomeFantasia(), MatchMode.ANYWHERE));
+		if (instituicao != null) {
+			criteria.add(Restrictions.ilike("instituicao", instituicao.getNomeFantasia(), MatchMode.ANYWHERE));
+		}
+		if (tipoLog != null) {
+			criteria.add(Restrictions.eq("tipoLog", tipoLog));
+		}
+		criteria.addOrder(Order.desc("id"));
+		return criteria.list();
 	}
-	if (tipoLog != null) {
-	    criteria.add(Restrictions.eq("tipoLog", tipoLog));
-	}
-	criteria.addOrder(Order.desc("id"));
-	return criteria.list();
-    }
 }
