@@ -324,4 +324,8 @@ public class CancelamentoProtestoMediator {
 			Usuario usuario) {
 		return cancelamentoDAO.buscarTitulosParaSolicitarCancelamento(tituloRemessa, bancoConvenio, municipio, usuario);
 	}
+
+	public TituloRemessa salvarSolicitacaoCancelamento(TituloRemessa titulo) {
+		return cancelamentoDAO.salvarSolicitacaoCancelamento(titulo);
+	}
 }

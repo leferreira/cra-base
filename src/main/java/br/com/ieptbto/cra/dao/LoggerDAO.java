@@ -34,7 +34,7 @@ public class LoggerDAO extends AbstractBaseDAO {
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.info(ex.getMessage(), ex.getCause());
-			throw new InfraException("Não foi possível registrar o log da ação!");
+			new InfraException("Não foi possível registrar o log da ação!");
 		}
 		return novaLog;
 	}

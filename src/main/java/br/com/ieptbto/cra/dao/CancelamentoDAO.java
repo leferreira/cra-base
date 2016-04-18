@@ -233,7 +233,6 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 			throw new InfraException("Não foi possível atualizar o status da DP.");
 		}
 		return cancelamentoProtesto;
-
 	}
 
 	@Transactional
@@ -303,5 +302,19 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 		}
 		criteria.addOrder(Order.asc("nomeDevedor"));
 		return criteria.list();
+	}
+
+	public TituloRemessa salvarSolicitacaoCancelamento(TituloRemessa titulo) {
+		Transaction transaction = getBeginTransation();
+
+		try {
+			update(titulo);
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível enviar a solicitação de cancelamento! Entre em contato com o IEPTB-TO!.");
+		}
+		return titulo;
 	}
 }

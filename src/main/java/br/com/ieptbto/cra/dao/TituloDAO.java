@@ -52,8 +52,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		return Retorno.class.cast(criteria.uniqueResult());
 	}
 
-	public List<TituloRemessa> buscarListaTitulos(LocalDate dataInicio, LocalDate dataFim, TituloRemessa titulo, Municipio pracaProtesto,
-			Usuario user) {
+	public List<TituloRemessa> buscarListaTitulos(LocalDate dataInicio, LocalDate dataFim, TituloRemessa titulo, Municipio pracaProtesto, Usuario user) {
 		Instituicao instituicaoUsuario = user.getInstituicao();
 
 		Criteria criteria = getCriteria(TituloRemessa.class);
@@ -171,8 +170,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (titulo.getPedidosDesistencia() != null) {
 			for (PedidoDesistencia pedido : titulo.getPedidosDesistencia()) {
 				LocalDate dataOcorrenciaRetorno = tituloRetorno.getDataOcorrencia();
-				LocalDate dataMovimentoDesistencia =
-						pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
+				LocalDate dataMovimentoDesistencia = pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
 				if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
 					if (dataOcorrenciaRetorno.isAfter(dataMovimentoDesistencia) || dataOcorrenciaRetorno.equals(dataMovimentoDesistencia)) {
 						throw new InfraException("PROTESTO INDEVIDO! O título com o protocolo " + tituloRetorno.getNumeroProtocoloCartorio()
@@ -185,10 +183,9 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (tituloRetorno.getTipoOcorrencia() != null) {
 			if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
 				if (tituloRetorno.getCodigoIrregularidade() != null) {
-					if (StringUtils.isBlank(tituloRetorno.getCodigoIrregularidade().trim())
-							|| tituloRetorno.getCodigoIrregularidade().equals("00")) {
-						throw new InfraException("O título [Nosso número =" + tituloRetorno.getNossoNumero()
-								+ "] foi devolvido e não contém o código de irregularidade!");
+					if (StringUtils.isBlank(tituloRetorno.getCodigoIrregularidade().trim()) || tituloRetorno.getCodigoIrregularidade().equals("00")) {
+						throw new InfraException(
+								"O título [Nosso número =" + tituloRetorno.getNossoNumero() + "] foi devolvido e não contém o código de irregularidade!");
 					}
 				}
 			}
@@ -238,22 +235,21 @@ public class TituloDAO extends AbstractBaseDAO {
 		TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao);
 
 		if (titulo == null) {
-			throw new InfraException("O título Nosso número =" + tituloConfirmacao.getNossoNumero()
-					+ " não foi localizado na CRA. Verifique os dados do arquivo!.");
+			throw new InfraException(
+					"O título Nosso número =" + tituloConfirmacao.getNossoNumero() + " não foi localizado na CRA. Verifique os dados do arquivo!.");
 		}
 		if (tituloConfirmacao.getTipoOcorrencia() != null) {
 			if (tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())
 					&& tituloConfirmacao.getCodigoIrregularidade().equals("00")) {
-				throw new InfraException("O título com o Nosso número " + tituloConfirmacao.getNossoNumero()
-						+ " foi devolvido e não contém código irregularidade!");
+				throw new InfraException(
+						"O título com o Nosso número " + tituloConfirmacao.getNossoNumero() + " foi devolvido e não contém código irregularidade!");
 			}
 			if (tituloConfirmacao.getNumeroProtocoloCartorio() != null) {
 				if (!StringUtils.isBlank(tituloConfirmacao.getNumeroProtocoloCartorio().trim())) {
 					Integer numeroProtocolo = Integer.valueOf(tituloConfirmacao.getNumeroProtocoloCartorio().trim());
 					tituloConfirmacao.setNumeroProtocoloCartorio(numeroProtocolo.toString());
 					if (numeroProtocolo.equals(0)) {
-						if (!tituloConfirmacao.getTipoOcorrencia()
-								.equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+						if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
 							throw new InfraException("O título com o Nosso número " + tituloConfirmacao.getNossoNumero()
 									+ " está com o número de protocolo vazio ou zerado e não está com a ocorrência de devolvido!");
 						}
@@ -370,8 +366,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.createAlias("titulo", "titulo");
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(
-				Restrictions.eq("cabecalho.codigoMunicipio", pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
+		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
 		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
@@ -389,8 +384,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.createAlias("titulo", "titulo");
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio",
-				pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio()));
+		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio()));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
 		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());

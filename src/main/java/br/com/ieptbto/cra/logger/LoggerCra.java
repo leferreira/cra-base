@@ -18,65 +18,65 @@ import br.com.ieptbto.cra.mediator.LoggerMediator;
 @Service
 public class LoggerCra {
 
-    @Autowired
-    LoggerMediator loggerMediator;
+	@Autowired
+	LoggerMediator loggerMediator;
 
-    public LogCra alert(Usuario user, TipoAcaoLog acao, String descricao) {
-	LogCra logCra = new LogCra();
-	logCra.setAcao(acao);
-	logCra.setDescricao(descricao);
-	logCra.setTipoLog(TipoLog.ALERTA);
-	logCra.setData(new LocalDate());
-	logCra.setHora(new LocalTime());
-	logCra.setUsuario(user.getNome());
-	logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
-	return loggerMediator.salvar(logCra);
-    }
+	public LogCra alert(Usuario user, TipoAcaoLog acao, String descricao) {
+		LogCra logCra = new LogCra();
+		logCra.setAcao(acao);
+		logCra.setDescricao(descricao);
+		logCra.setTipoLog(TipoLog.ALERTA);
+		logCra.setData(new LocalDate());
+		logCra.setHora(new LocalTime());
+		logCra.setUsuario(user.getNome());
+		logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
+		return loggerMediator.salvar(logCra);
+	}
 
-    public LogCra error(TipoAcaoLog acao, String descricao) {
-	LogCra logCra = new LogCra();
-	logCra.setAcao(acao);
-	logCra.setDescricao(descricao);
-	logCra.setTipoLog(TipoLog.OCORRENCIA_ERRO);
-	logCra.setData(new LocalDate());
-	logCra.setHora(new LocalTime());
-	return loggerMediator.salvar(logCra);
-    }
+	public LogCra error(TipoAcaoLog acao, String descricao) {
+		LogCra logCra = new LogCra();
+		logCra.setAcao(acao);
+		logCra.setDescricao(descricao);
+		logCra.setTipoLog(TipoLog.OCORRENCIA_ERRO);
+		logCra.setData(new LocalDate());
+		logCra.setHora(new LocalTime());
+		return loggerMediator.salvar(logCra);
+	}
 
-    public LogCra error(Usuario user, TipoAcaoLog acao, String descricao) {
-	LogCra logCra = new LogCra();
-	logCra.setAcao(acao);
-	logCra.setDescricao(descricao);
-	logCra.setTipoLog(TipoLog.OCORRENCIA_ERRO);
-	logCra.setData(new LocalDate());
-	logCra.setHora(new LocalTime());
-	logCra.setUsuario(user.getNome());
-	logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
-	return loggerMediator.salvar(logCra);
-    }
+	public LogCra error(Usuario user, TipoAcaoLog acao, String descricao) {
+		LogCra logCra = new LogCra();
+		logCra.setAcao(acao);
+		logCra.setDescricao(descricao);
+		logCra.setTipoLog(TipoLog.OCORRENCIA_ERRO);
+		logCra.setData(new LocalDate());
+		logCra.setHora(new LocalTime());
+		logCra.setUsuario(user.getNome());
+		logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
+		return loggerMediator.salvar(logCra);
+	}
 
-    public LogCra error(Usuario user, TipoAcaoLog acao, String descricao, Exception ex) {
-	LogCra logCra = new LogCra();
-	logCra.setAcao(acao);
-	logCra.setDescricao(descricao);
-	logCra.setTipoLog(TipoLog.OCORRENCIA_ERRO);
-	logCra.setExcecao(ex);
-	logCra.setData(new LocalDate());
-	logCra.setHora(new LocalTime());
-	logCra.setUsuario(user.getNome());
-	logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
-	return loggerMediator.salvar(logCra);
-    }
+	public LogCra error(Usuario user, TipoAcaoLog acao, String descricao, Exception ex) {
+		LogCra logCra = new LogCra();
+		logCra.setAcao(acao);
+		logCra.setDescricao(descricao);
+		logCra.setTipoLog(TipoLog.OCORRENCIA_ERRO);
+		logCra.setExcecao(ex);
+		logCra.setData(new LocalDate());
+		logCra.setHora(new LocalTime());
+		logCra.setUsuario(user.getNome());
+		logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
+		return loggerMediator.salvar(logCra);
+	}
 
-    public LogCra sucess(Usuario user, TipoAcaoLog acao, String descricao) {
-	LogCra logCra = new LogCra();
-	logCra.setAcao(acao);
-	logCra.setDescricao(descricao);
-	logCra.setTipoLog(TipoLog.SUCESSO);
-	logCra.setData(new LocalDate());
-	logCra.setHora(new LocalTime());
-	logCra.setUsuario(user.getNome());
-	logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
-	return loggerMediator.salvar(logCra);
-    }
+	public LogCra sucess(Usuario user, TipoAcaoLog acao, String descricao) {
+		LogCra logCra = new LogCra();
+		logCra.setAcao(acao);
+		logCra.setDescricao(descricao);
+		logCra.setTipoLog(TipoLog.SUCESSO);
+		logCra.setData(new LocalDate());
+		logCra.setHora(new LocalTime());
+		logCra.setUsuario(user.getNome());
+		logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
+		return loggerMediator.salvar(logCra);
+	}
 }

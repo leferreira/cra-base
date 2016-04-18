@@ -51,7 +51,7 @@ public class LogCra extends AbstractEntidade<LogCra> {
 		return acao;
 	}
 
-	@Column(name = "DESCRICAO", nullable = false, length = 255)
+	@Column(name = "DESCRICAO", nullable = false, columnDefinition = "text")
 	public String getDescricao() {
 		return descricao;
 	}

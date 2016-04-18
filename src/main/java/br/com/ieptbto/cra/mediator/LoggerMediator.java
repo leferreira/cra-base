@@ -20,15 +20,15 @@ import br.com.ieptbto.cra.enumeration.TipoLog;
 @Service
 public class LoggerMediator {
 
-    @Autowired
-    LoggerDAO loggerDAO;
+	@Autowired
+	LoggerDAO loggerDAO;
 
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public LogCra salvar(LogCra log) {
-	return loggerDAO.salvar(log);
-    }
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public LogCra salvar(LogCra log) {
+		return loggerDAO.salvar(log);
+	}
 
-    public List<LogCra> buscarAcoes(LocalDate dataInicio, LocalDate dataFim, Instituicao instituicao, TipoLog tipoLog) {
-	return loggerDAO.buscarAcoes(dataInicio, dataFim, instituicao, tipoLog);
-    }
+	public List<LogCra> buscarAcoes(LocalDate dataInicio, LocalDate dataFim, Instituicao instituicao, TipoLog tipoLog) {
+		return loggerDAO.buscarAcoes(dataInicio, dataFim, instituicao, tipoLog);
+	}
 }
