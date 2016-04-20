@@ -140,7 +140,7 @@ public class CancelamentoProtestoMediator {
 					converterCancelamentoSerpro(arquivo, usuario.getInstituicao(), converterStringParaCancelamentoSerproVO(dados), erros);
 			arquivo.setRemessaCancelamentoProtesto(remessaCancelamento);
 
-			return cancelamentoDAO.salvarCancelamentoSerpro(arquivo, usuario, erros);
+			return cancelamentoDAO.salvarCancelamento(arquivo, usuario, erros);
 		}
 		arquivo = conversorArquivoDesistenciaProtesto.converter(converterStringParaVO(dados), erros);
 		return arquivoDAO.salvar(arquivo, usuario, erros);
@@ -327,5 +327,9 @@ public class CancelamentoProtestoMediator {
 
 	public TituloRemessa salvarSolicitacaoCancelamento(TituloRemessa titulo) {
 		return cancelamentoDAO.salvarSolicitacaoCancelamento(titulo);
+	}
+
+	public List<TituloRemessa> buscarCancelamentosSolicitados() {
+		return cancelamentoDAO.buscarCancelamentosSolicitados();
 	}
 }

@@ -4,7 +4,7 @@ package br.com.ieptbto.cra.exception;
  * @author Thasso Aráujo
  *
  */
-public class DesistenciaException extends RuntimeException {
+public class DesistenciaCancelamentoException extends RuntimeException {
 
 	/** **/
 	private static final long serialVersionUID = 1L;
@@ -16,7 +16,7 @@ public class DesistenciaException extends RuntimeException {
 	 * @param municipio
 	 * @param codigoErro
 	 */
-	public DesistenciaException(String message, String municipio, String codigoErro) {
+	public DesistenciaCancelamentoException(String message, String municipio, String codigoErro) {
 		super(message);
 		this.municipio=municipio;
 		this.codigoErro=codigoErro;

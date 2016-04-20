@@ -140,7 +140,7 @@ public class AutorizacaoCancelamentoMediator {
 			RemessaAutorizacaoCancelamento remessaAC = converterAutorizacaoCancelamentoSerpro(arquivo, usuario.getInstituicao(), converterStringParaAutorizacaoCancelamentoSerproVO(dados), erros);
 			arquivo.setRemessaAutorizacao(remessaAC);
 
-			return autorizacaoCancelamentoDAO.salvarAutorizacaoCancelamentoSerpro(arquivo, usuario, erros);
+			return autorizacaoCancelamentoDAO.salvarAutorizacao(arquivo, usuario, erros);
 		}
 		arquivo = conversorArquivoDesistenciaProtesto.converter(converterStringParaVO(dados), erros);
 		return arquivoDAO.salvar(arquivo, usuario, erros);

@@ -12,6 +12,7 @@ import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.postgresql.util.PSQLException;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
@@ -329,6 +330,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		}
 	}
 
+	@Transactional(readOnly = false)
 	public Retorno buscarTituloProtestado(String numeroProtocolo, String codigoIBGE) {
 		Integer numProtocolo = Integer.parseInt(numeroProtocolo);
 		Criteria criteria = getCriteria(Retorno.class);

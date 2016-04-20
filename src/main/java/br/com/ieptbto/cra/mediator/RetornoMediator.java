@@ -57,19 +57,20 @@ public class RetornoMediator {
 	protected static final Logger logger = Logger.getLogger(ConfirmacaoMediator.class);
 
 	@Autowired
-	private InstituicaoDAO instituicaoDAO;
+	InstituicaoDAO instituicaoDAO;
 	@Autowired
-	private TipoArquivoDAO tipoArquivoDAO;
+	TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
-	private RetornoDAO retornoDAO;
+	RetornoDAO retornoDAO;
 	@Autowired
-	private BatimentoDAO batimentoDAO;
+	BatimentoDAO batimentoDAO;
 	@Autowired
-	private TipoArquivoMediator tipoArquivoMediator;
+	TipoArquivoMediator tipoArquivoMediator;
 	@Autowired
-	private FabricaDeArquivoXML fabricaDeArquivosXML;
+	FabricaDeArquivoXML fabricaDeArquivosXML;
 	@Autowired
-	private ArquivoDAO arquivoDAO;
+	ArquivoDAO arquivoDAO;
+
 	private Instituicao cra;
 	private TipoArquivo tipoArquivo;
 	private Arquivo arquivo;
@@ -207,9 +208,7 @@ public class RetornoMediator {
 	}
 
 	private String gerarNomeArquivoRetorno(Remessa retorno) {
-
-		return TipoArquivoEnum.RETORNO.getConstante() + retorno.getCabecalho().getNumeroCodigoPortador() + gerarDataArquivo()
-				+ NUMERO_SEQUENCIAL_RETORNO;
+		return TipoArquivoEnum.RETORNO.getConstante() + retorno.getCabecalho().getNumeroCodigoPortador() + gerarDataArquivo() + NUMERO_SEQUENCIAL_RETORNO;
 	}
 
 	private String gerarDataArquivo() {
@@ -300,8 +299,8 @@ public class RetornoMediator {
 				Mensagem mensagem = new Mensagem();
 				mensagem.setCodigo(exception.getErro().getCodigo());
 				mensagem.setMunicipio(exception.getCodigoIbge());
-				mensagem.setDescricao("Município: " + exception.getCodigoIbge() + " - " + exception.getMunicipio() + " - "
-						+ exception.getErro().getDescricao());
+				mensagem.setDescricao(
+						"Município: " + exception.getCodigoIbge() + " - " + exception.getMunicipio() + " - " + exception.getErro().getDescricao());
 				mensagens.add(mensagem);
 			}
 		}
@@ -311,12 +310,11 @@ public class RetornoMediator {
 	private String formatarMensagemRetorno(Remessa remessa) {
 		if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
 			return "Município: " + remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString() + " - "
-					+ remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - "
-					+ remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.";
+					+ remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - " + remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.";
 		} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
 				|| TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-			return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
-					+ remessa.getCabecalho().getQtdTitulosRemessa() + " títulos receberam confirmação.";
+			return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - " + remessa.getCabecalho().getQtdTitulosRemessa()
+					+ " títulos receberam confirmação.";
 		}
 		return StringUtils.EMPTY;
 

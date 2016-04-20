@@ -16,6 +16,7 @@ import org.hibernate.sql.JoinType;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
@@ -25,9 +26,11 @@ import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoCancelamento;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.StatusSolicitacaoCancelamento;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.exception.CancelamentoException;
+import br.com.ieptbto.cra.error.CodigoErro;
+import br.com.ieptbto.cra.exception.DesistenciaCancelamentoException;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DataUtil;
 
@@ -55,7 +58,8 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 		return super.buscarPorPK(entidade);
 	}
 
-	public Arquivo salvarCancelamentoSerpro(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public Arquivo salvarCancelamento(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		Arquivo arquivoSalvo = new Arquivo();
 		Transaction transaction = getSession().beginTransaction();
 
@@ -65,56 +69,56 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 
 			arquivoSalvo = save(arquivo);
 			if (arquivo.getRemessaCancelamentoProtesto() != null) {
-				List<PedidoCancelamento> pedidosCancelamentoComErros = new ArrayList<PedidoCancelamento>();
+				List<PedidoCancelamento> pedidosCancelamentoErros = new ArrayList<PedidoCancelamento>();
 				List<CancelamentoProtesto> cancelamentosProtesto = new ArrayList<CancelamentoProtesto>();
-				BigDecimal valorTotalDesistenciaProtesto = BigDecimal.ZERO;
-				int totalCancelamentoProtesto = 0;
-				int totalRegistroCancelamentoProtesto = 0;
-
+				BigDecimal valorTotalCancelamentoProtesto = BigDecimal.ZERO;
+				int totalCancelamentoProtestoArquivo = 0;
 				for (CancelamentoProtesto cancelamento : arquivo.getRemessaCancelamentoProtesto().getCancelamentoProtesto()) {
-					List<PedidoCancelamento> pedidos = new ArrayList<PedidoCancelamento>();
+					List<PedidoCancelamento> pedidosProcessados = new ArrayList<PedidoCancelamento>();
+					int quantidadeCancelamentoCartorio = 0;
 					cancelamento.setRemessaCancelamentoProtesto(arquivo.getRemessaCancelamentoProtesto());
 					cancelamento.setDownload(false);
+
 					for (PedidoCancelamento pedido : cancelamento.getCancelamentos()) {
 						pedido.setCancelamentoProtesto(cancelamento);
 						pedido.setTitulo(tituloDAO.buscarTituloCancelamentoProtesto(pedido));
+
 						if (pedido.getTitulo() != null) {
-							if (pedido.getTitulo().getPedidoCancelamento() == null) {
-								pedidos.add(pedido);
-								valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
-								totalRegistroCancelamentoProtesto++;
-							} else {
-								pedidosCancelamentoComErros.add(pedido);
-								erros.add(new InfraException(
-										"Linha " + pedido.getSequenciaRegistro() + ": o título de número " + pedido.getNumeroTitulo() + ", do protocolo "
-												+ pedido.getNumeroProtocolo() + " do dia " + DataUtil.localDateToString(pedido.getDataProtocolagem())
-												+ ", já foi enviado anteriormente em outro arquivo de cancelamento!"));
-							}
+							pedidosProcessados.add(pedido);
+							quantidadeCancelamentoCartorio = quantidadeCancelamentoCartorio + 1;
+							valorTotalCancelamentoProtesto = valorTotalCancelamentoProtesto.add(pedido.getValorTitulo());
+							totalCancelamentoProtestoArquivo = totalCancelamentoProtestoArquivo + 1;
 						} else if (pedido.getDataProtocolagem().isAfter(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))
 								|| pedido.getDataProtocolagem().equals(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))) {
-							pedidosCancelamentoComErros.add(pedido);
-							erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro() + ": o título de número " + pedido.getNumeroTitulo()
-									+ ",com o protocolo " + pedido.getNumeroProtocolo() + " do dia " + DataUtil.localDateToString(pedido.getDataProtocolagem())
-									+ ", não foi localizado para a comarca [ " + pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()
-									+ " ]. Verifique os dados do título!"));
+							pedidosCancelamentoErros.add(pedido);
 						} else {
-							pedidos.add(pedido);
-							valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
-							totalRegistroCancelamentoProtesto++;
+							pedidosProcessados.add(pedido);
+							quantidadeCancelamentoCartorio = quantidadeCancelamentoCartorio + 1;
+							valorTotalCancelamentoProtesto = valorTotalCancelamentoProtesto.add(pedido.getValorTitulo());
+							totalCancelamentoProtestoArquivo = totalCancelamentoProtestoArquivo + 1;
 						}
 					}
-					if (!pedidos.isEmpty()) {
-						cancelamento.getCabecalhoCartorio().setQuantidadeDesistencia(pedidos.size());
-						cancelamento.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(pedidos.size());
-						cancelamento.setCancelamentos(pedidos);
+
+					if (pedidosCancelamentoErros.isEmpty()) {
+						cancelamento.getCabecalhoCartorio().setQuantidadeDesistencia(quantidadeCancelamentoCartorio);
+						cancelamento.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(quantidadeCancelamentoCartorio * 2);
+						cancelamento.setCancelamentos(pedidosProcessados);
 						cancelamentosProtesto.add(cancelamento);
-						totalCancelamentoProtesto++;
+					} else {
+						StringBuffer descricao = new StringBuffer();
+						String municipio = StringUtils.EMPTY;
+						for (PedidoCancelamento pedidoCancelamento : pedidosCancelamentoErros) {
+							descricao.append("Protocolo Inválido (" + pedidoCancelamento.getNumeroProtocolo() + ").");
+							municipio = pedidoCancelamento.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio();
+						}
+						erros.add(new DesistenciaCancelamentoException(descricao.toString(), municipio, CodigoErro.CRA_PROTOCOLO_INVALIDO.getCodigo()));
+						pedidosCancelamentoErros.clear();
 					}
 				}
-				arquivo.getRemessaCancelamentoProtesto().getCabecalho().setQuantidadeDesistencia(totalCancelamentoProtesto);
-				arquivo.getRemessaCancelamentoProtesto().getCabecalho().setQuantidadeRegistro(totalRegistroCancelamentoProtesto);
-				arquivo.getRemessaCancelamentoProtesto().getRodape().setQuantidadeDesistencia(totalCancelamentoProtesto);
-				arquivo.getRemessaCancelamentoProtesto().getRodape().setSomatorioValorTitulo(valorTotalDesistenciaProtesto);
+				arquivo.getRemessaCancelamentoProtesto().getCabecalho().setQuantidadeDesistencia(totalCancelamentoProtestoArquivo);
+				arquivo.getRemessaCancelamentoProtesto().getCabecalho().setQuantidadeRegistro(totalCancelamentoProtestoArquivo);
+				arquivo.getRemessaCancelamentoProtesto().getRodape().setQuantidadeDesistencia(totalCancelamentoProtestoArquivo);
+				arquivo.getRemessaCancelamentoProtesto().getRodape().setSomatorioValorTitulo(valorTotalCancelamentoProtesto);
 				arquivo.getRemessaCancelamentoProtesto().setCancelamentoProtesto(cancelamentosProtesto);
 				arquivo.getRemessaCancelamentoProtesto().setCabecalho(save(arquivo.getRemessaCancelamentoProtesto().getCabecalho()));
 				arquivo.getRemessaCancelamentoProtesto().setRodape(save(arquivo.getRemessaCancelamentoProtesto().getRodape()));
@@ -122,7 +126,7 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 
 				for (CancelamentoProtesto cancelamentoProtestos : cancelamentosProtesto) {
 					cancelamentoProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(cancelamentoProtestos.getCancelamentos().size());
-					cancelamentoProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(totalCancelamentoProtesto);
+					cancelamentoProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(totalCancelamentoProtestoArquivo);
 					cancelamentoProtestos.setCabecalhoCartorio(save(cancelamentoProtestos.getCabecalhoCartorio()));
 					cancelamentoProtestos.setRodapeCartorio(save(cancelamentoProtestos.getRodapeCartorio()));
 					cancelamentoProtestos.setRemessaCancelamentoProtesto(arquivo.getRemessaCancelamentoProtesto());
@@ -131,18 +135,10 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 						save(pedido);
 					}
 				}
-				if (!erros.isEmpty()) {
-					throw new CancelamentoException("Não foi possível enviar o arquivo de cancelamento! Por favor, corriga os erros no arquivo abaixo...",
-							erros, pedidosCancelamentoComErros);
-				}
 				transaction.commit();
 			}
 			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin() + " foi inserido na base ");
 
-		} catch (CancelamentoException ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage());
-			throw new CancelamentoException(ex.getMessage(), ex.getErros(), ex.getPedidosCancelamento());
 		} catch (InfraException ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage());
@@ -313,8 +309,35 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível enviar a solicitação de cancelamento! Entre em contato com o IEPTB-TO!.");
+			throw new InfraException("Não foi possível enviar a solicitação de cancelamento!");
 		}
 		return titulo;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<TituloRemessa> buscarCancelamentosSolicitados() {
+		Criteria criteria = getCriteria(TituloRemessa.class);
+		Disjunction disjuntion = Restrictions.disjunction();
+		disjuntion.add(Restrictions.eq("statusSolicitacaoCancelamento", StatusSolicitacaoCancelamento.SOLICITACAO_AUTORIZACAO_CANCELAMENTO));
+		disjuntion.add(Restrictions.eq("statusSolicitacaoCancelamento", StatusSolicitacaoCancelamento.SOLICITACAO_CANCELAMENTO_PROTESTO));
+		criteria.add(disjuntion);
+		return criteria.list();
+	}
+
+	public void marcarCancelamentoEnviado(List<TituloRemessa> titulosCancelamento) {
+		Transaction transaction = getBeginTransation();
+		try {
+			getSession().flush();
+			getSession().clear();
+			for (TituloRemessa titulo : titulosCancelamento) {
+				titulo.setStatusSolicitacaoCancelamento(StatusSolicitacaoCancelamento.SOLICITACAO_ENVIADA);
+				update(titulo);
+			}
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi salvar os cancelamentos como enviados mas os arquivos foram gerados !");
+		}
 	}
 }

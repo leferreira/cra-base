@@ -23,31 +23,31 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Service
 public class ArquivoDeParaMediator {
 
-    @Autowired
-    ArquivoDeParaDAO deParaDAO;
+	@Autowired
+	ArquivoDeParaDAO deParaDAO;
 
-    public void processarArquivo(FileUpload uploadedFile) {
+	public void processarArquivo(FileUpload uploadedFile) {
 
-	if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.CAF.getModelo())) {
-	    deParaDAO.salvarArquivoCAF(new ArquivoCAF().processar(uploadedFile));
-	} else if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.BANCO_DO_BRASIL.getModelo())) {
-	    deParaDAO.salvarArquivoBancoDoBrasil(new ArquivoBancoDoBrasil().processar(uploadedFile));
-	} else if (uploadedFile.getClientFileName().toUpperCase().contains(PadraoArquivoDePara.BRADESCO.getModelo())) {
-	    deParaDAO.salvarArquivoBradesco(new ArquivoBradesco().processar(uploadedFile));
-	} else {
-	    new InfraException("Não foi possível definir o modelo do arquivo de/para ! Entre em contato com a CRA !");
+		if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.CAF.getModelo())) {
+			deParaDAO.salvarArquivoCAF(new ArquivoCAF().processar(uploadedFile));
+		} else if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.BANCO_DO_BRASIL.getModelo())) {
+			deParaDAO.salvarArquivoBancoDoBrasil(new ArquivoBancoDoBrasil().processar(uploadedFile));
+		} else if (uploadedFile.getClientFileName().toUpperCase().contains(PadraoArquivoDePara.BRADESCO.getModelo())) {
+			deParaDAO.salvarArquivoBradesco(new ArquivoBradesco().processar(uploadedFile));
+		} else {
+			new InfraException("Não foi possível definir o modelo do arquivo de/para ! Entre em contato com a CRA !");
+		}
 	}
-    }
 
-    public AgenciaBancoDoBrasil buscarAgenciaArquivoBancoDoBrasil() {
-	return deParaDAO.buscarAgenciaArquivoBancoDoBrasil();
-    }
+	public AgenciaBancoDoBrasil buscarAgenciaArquivoBancoDoBrasil(String numeroContrato) {
+		return deParaDAO.buscarAgenciaArquivoBancoDoBrasil(numeroContrato);
+	}
 
-    public AgenciaBradesco buscarAgenciaArquivoDeParaBradesco(TituloRemessa tituloRemessa) {
-	return deParaDAO.buscarAgenciaArquivoDeParaBradesco(tituloRemessa);
-    }
+	public AgenciaBradesco buscarAgenciaArquivoDeParaBradesco(TituloRemessa tituloRemessa) {
+		return deParaDAO.buscarAgenciaArquivoDeParaBradesco(tituloRemessa);
+	}
 
-    public AgenciaCAF buscarAgenciaArquivoCAF(String agencia, BancoTipoRegraBasicaInstrumento bancoTipo) {
-	return deParaDAO.buscarAgenciaArquivoCAF(agencia, bancoTipo);
-    }
+	public AgenciaCAF buscarAgenciaArquivoCAF(String agencia, BancoTipoRegraBasicaInstrumento bancoTipo) {
+		return deParaDAO.buscarAgenciaArquivoCAF(agencia, bancoTipo);
+	}
 }

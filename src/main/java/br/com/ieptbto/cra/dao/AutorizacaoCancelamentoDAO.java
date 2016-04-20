@@ -25,7 +25,8 @@ import br.com.ieptbto.cra.entidade.PedidoAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.exception.AutorizacaoCancelamentoException;
+import br.com.ieptbto.cra.error.CodigoErro;
+import br.com.ieptbto.cra.exception.DesistenciaCancelamentoException;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DataUtil;
 
@@ -41,7 +42,7 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 	@Autowired
 	private InstituicaoDAO instituicaoDAO;
 
-	public Arquivo salvarAutorizacaoCancelamentoSerpro(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+	public Arquivo salvarAutorizacao(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		Arquivo arquivoSalvo = new Arquivo();
 		Transaction transaction = getSession().beginTransaction();
 
@@ -51,60 +52,57 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 
 			arquivoSalvo = save(arquivo);
 			if (arquivo.getRemessaAutorizacao() != null) {
-				List<PedidoAutorizacaoCancelamento> pedidosACComErros = new ArrayList<PedidoAutorizacaoCancelamento>();
+				List<PedidoAutorizacaoCancelamento> pedidosAutorizacaoErros = new ArrayList<PedidoAutorizacaoCancelamento>();
 				List<AutorizacaoCancelamento> autorizacoesCancelamentos = new ArrayList<AutorizacaoCancelamento>();
-				BigDecimal valorTotalDesistenciaProtesto = BigDecimal.ZERO;
-				int totalCancelamentoProtesto = 0;
-				int totalRegistroCancelamentoProtesto = 0;
+				BigDecimal valorTotalAutorizacao = BigDecimal.ZERO;
+				int totalAutorizacaoArquivo = 0;
 
 				for (AutorizacaoCancelamento ac : arquivo.getRemessaAutorizacao().getAutorizacaoCancelamento()) {
-					List<PedidoAutorizacaoCancelamento> pedidosAC = new ArrayList<PedidoAutorizacaoCancelamento>();
+					List<PedidoAutorizacaoCancelamento> pedidosAutorizacao = new ArrayList<PedidoAutorizacaoCancelamento>();
+					int quantidadeAutorizacaoCartorio = 0;
 					ac.setRemessaAutorizacaoCancelamento(arquivo.getRemessaAutorizacao());
 					ac.setDownload(false);
+
 					for (PedidoAutorizacaoCancelamento pedido : ac.getAutorizacoesCancelamentos()) {
 						pedido.setAutorizacaoCancelamento(ac);
 						pedido.setTitulo(tituloDAO.buscarTituloAutorizacaoCancelamento(pedido));
+
 						if (pedido.getTitulo() != null) {
-							if (pedido.getTitulo().getPedidoAutorizacaoCancelamento() == null) {
-								pedidosAC.add(pedido);
-								valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
-								totalRegistroCancelamentoProtesto++;
-							} else {
-								pedidosACComErros.add(pedido);
-								erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro()
-										+ ": o título de número " + pedido.getNumeroTitulo() + ", do protocolo "
-										+ pedido.getNumeroProtocolo() + " do dia "
-										+ DataUtil.localDateToString(pedido.getDataProtocolagem())
-										+ ", já foi enviado anteriormente em outro arquivo de autorização cancelamento!"));
-							}
+							pedidosAutorizacao.add(pedido);
+							quantidadeAutorizacaoCartorio = quantidadeAutorizacaoCartorio + 1;
+							valorTotalAutorizacao = valorTotalAutorizacao.add(pedido.getValorTitulo());
+							totalAutorizacaoArquivo = totalAutorizacaoArquivo + 1;
 						} else if (pedido.getDataProtocolagem().isAfter(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))
 								|| pedido.getDataProtocolagem().equals(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))) {
-							pedidosACComErros.add(pedido);
-							erros.add(new InfraException("Linha " + pedido.getSequenciaRegistro()
-									+ ": o título de número " + pedido.getNumeroTitulo() + ",com o protocolo "
-									+ pedido.getNumeroProtocolo() + " do dia "
-									+ DataUtil.localDateToString(pedido.getDataProtocolagem())
-									+ ", não foi localizado para a comarca [ "
-									+ pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio()
-									+ " ]. Verifique os dados do título!"));
+							pedidosAutorizacaoErros.add(pedido);
 						} else {
-							pedidosAC.add(pedido);
-							valorTotalDesistenciaProtesto = valorTotalDesistenciaProtesto.add(pedido.getValorTitulo());
-							totalRegistroCancelamentoProtesto++;
+							pedidosAutorizacao.add(pedido);
+							quantidadeAutorizacaoCartorio = quantidadeAutorizacaoCartorio + 1;
+							valorTotalAutorizacao = valorTotalAutorizacao.add(pedido.getValorTitulo());
+							totalAutorizacaoArquivo = totalAutorizacaoArquivo + 1;
 						}
 					}
-					if (!pedidosAC.isEmpty()) {
-						ac.getCabecalhoCartorio().setQuantidadeDesistencia(pedidosAC.size());
-						ac.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(pedidosAC.size());
-						ac.setAutorizacoesCancelamentos(pedidosAC);
+
+					if (pedidosAutorizacaoErros.isEmpty()) {
+						ac.getCabecalhoCartorio().setQuantidadeDesistencia(quantidadeAutorizacaoCartorio);
+						ac.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(quantidadeAutorizacaoCartorio * 2);
+						ac.setAutorizacoesCancelamentos(pedidosAutorizacao);
 						autorizacoesCancelamentos.add(ac);
-						totalCancelamentoProtesto++;
+					} else {
+						StringBuffer descricao = new StringBuffer();
+						String municipio = StringUtils.EMPTY;
+						for (PedidoAutorizacaoCancelamento pedidoAutorizacao : pedidosAutorizacaoErros) {
+							descricao.append("Protocolo Inválido (" + pedidoAutorizacao.getNumeroProtocolo() + ").");
+							municipio = pedidoAutorizacao.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio();
+						}
+						erros.add(new DesistenciaCancelamentoException(descricao.toString(), municipio, CodigoErro.CRA_PROTOCOLO_INVALIDO.getCodigo()));
+						pedidosAutorizacaoErros.clear();
 					}
 				}
-				arquivo.getRemessaAutorizacao().getCabecalho().setQuantidadeDesistencia(totalCancelamentoProtesto);
-				arquivo.getRemessaAutorizacao().getCabecalho().setQuantidadeRegistro(totalRegistroCancelamentoProtesto);
-				arquivo.getRemessaAutorizacao().getRodape().setQuantidadeDesistencia(totalCancelamentoProtesto);
-				arquivo.getRemessaAutorizacao().getRodape().setSomatorioValorTitulo(valorTotalDesistenciaProtesto);
+				arquivo.getRemessaAutorizacao().getCabecalho().setQuantidadeDesistencia(totalAutorizacaoArquivo);
+				arquivo.getRemessaAutorizacao().getCabecalho().setQuantidadeRegistro(totalAutorizacaoArquivo);
+				arquivo.getRemessaAutorizacao().getRodape().setQuantidadeDesistencia(totalAutorizacaoArquivo);
+				arquivo.getRemessaAutorizacao().getRodape().setSomatorioValorTitulo(valorTotalAutorizacao);
 				arquivo.getRemessaAutorizacao().setAutorizacaoCancelamento(autorizacoesCancelamentos);
 				arquivo.getRemessaAutorizacao().setCabecalho(save(arquivo.getRemessaAutorizacao().getCabecalho()));
 				arquivo.getRemessaAutorizacao().setRodape(save(arquivo.getRemessaAutorizacao().getRodape()));
@@ -112,7 +110,7 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 
 				for (AutorizacaoCancelamento ac : autorizacoesCancelamentos) {
 					ac.getCabecalhoCartorio().setQuantidadeDesistencia(ac.getAutorizacoesCancelamentos().size());
-					ac.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(totalCancelamentoProtesto);
+					ac.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(totalAutorizacaoArquivo);
 					ac.setCabecalhoCartorio(save(ac.getCabecalhoCartorio()));
 					ac.setRodapeCartorio(save(ac.getRodapeCartorio()));
 					ac.setRemessaAutorizacaoCancelamento(ac.getRemessaAutorizacaoCancelamento());
@@ -121,18 +119,10 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 						save(pedido);
 					}
 				}
-				if (!erros.isEmpty()) {
-					throw new AutorizacaoCancelamentoException("Não foi possível enviar o arquivo de autorização de cancelamento! Por favor, corriga os erros no arquivo abaixo...", erros, pedidosACComErros);
-				}
 				transaction.commit();
 			}
-			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário "
-					+ arquivo.getUsuarioEnvio().getLogin() + " foi inserido na base ");
+			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin() + " foi inserido na base ");
 
-		} catch (AutorizacaoCancelamentoException ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage());
-			throw new AutorizacaoCancelamentoException(ex.getMessage(), ex.getErros(), ex.getPedidosAutorizacaoCancelamento());
 		} catch (InfraException ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage());
@@ -146,9 +136,8 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador,
-			Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo,
-			Usuario usuario) {
+	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
+			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(AutorizacaoCancelamento.class);
 		criteria.createAlias("remessaAutorizacaoCancelamento", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
@@ -210,8 +199,7 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public AutorizacaoCancelamento alterarSituacaoAutorizacaoCancelamento(
-			AutorizacaoCancelamento autorizacaoCancelamento, boolean download) {
+	public AutorizacaoCancelamento alterarSituacaoAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento, boolean download) {
 		Transaction transaction = getBeginTransation();
 
 		try {
@@ -264,8 +252,7 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<PedidoAutorizacaoCancelamento> buscarPedidosAutorizacaoCancelamento(
-			AutorizacaoCancelamento autorizacaoCancelamento) {
+	public List<PedidoAutorizacaoCancelamento> buscarPedidosAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento) {
 		Criteria criteria = getCriteria(PedidoAutorizacaoCancelamento.class);
 		criteria.createAlias("titulo", "titulo", JoinType.LEFT_OUTER_JOIN);
 		criteria.add(Restrictions.eq("autorizacaoCancelamento", autorizacaoCancelamento));

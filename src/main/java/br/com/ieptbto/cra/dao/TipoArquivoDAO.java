@@ -5,11 +5,14 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 
@@ -73,5 +76,15 @@ public class TipoArquivoDAO extends AbstractBaseDAO {
 		tipoArquivo.setTipoArquivo(TipoArquivoEnum.getTipoArquivoEnum(tipo));
 
 		salvar(tipoArquivo);
+	}
+
+	public Long buscarSequencialProximoArquivo(Instituicao instituicaoEnvio, TipoArquivoEnum tipoArquivo) {
+		Criteria criteria = getCriteria(Arquivo.class);
+		criteria.createAlias("tipoArquivo", "tipoArquivo");
+		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipoArquivo));
+		criteria.add(Restrictions.eq("instituicaoEnvio", instituicaoEnvio));
+		criteria.add(Restrictions.eq("dataEnvio", new LocalDate()));
+		criteria.setProjection(Projections.count("id"));
+		return Long.class.cast(criteria.uniqueResult());
 	}
 }

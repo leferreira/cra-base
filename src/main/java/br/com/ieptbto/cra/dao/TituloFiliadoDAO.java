@@ -167,7 +167,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("filiado", filiado));
 
 		if (tituloFiliado.getNumeroTitulo() != null)
-			criteria.add(Restrictions.ilike("numeroTitulo", tituloFiliado.getNumeroTitulo(), MatchMode.EXACT));
+			criteria.add(Restrictions.ilike("numeroTitulo", tituloFiliado.getNumeroTitulo(), MatchMode.ANYWHERE));
 
 		if (tituloFiliado.getNomeDevedor() != null)
 			criteria.add(Restrictions.ilike("nomeDevedor", tituloFiliado.getNomeDevedor(), MatchMode.ANYWHERE));
@@ -176,7 +176,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.ilike("documentoDevedor", tituloFiliado.getDocumentoDevedor(), MatchMode.ANYWHERE));
 
 		if (dataInicio != null && dataFim != null)
-			criteria.add(Restrictions.between("dataEnvioCRA", dataInicio, dataFim));
+			criteria.add(Restrictions.between("dataEnvioCRA", new java.sql.Date(dataInicio.toDate().getTime()), new java.sql.Date(dataFim.toDate().getTime())));
 
 		if (pracaProtesto != null)
 			criteria.add(Restrictions.ilike("pracaProtesto", pracaProtesto));
@@ -198,7 +198,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("filiado.instituicaoConvenio", instituicao));
 
 		if (tituloFiliado.getNumeroTitulo() != null)
-			criteria.add(Restrictions.ilike("numeroTitulo", tituloFiliado.getNumeroTitulo(), MatchMode.EXACT));
+			criteria.add(Restrictions.ilike("numeroTitulo", tituloFiliado.getNumeroTitulo(), MatchMode.ANYWHERE));
 
 		if (tituloFiliado.getNomeDevedor() != null)
 			criteria.add(Restrictions.ilike("nomeDevedor", tituloFiliado.getNomeDevedor(), MatchMode.ANYWHERE));
@@ -210,7 +210,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("filiado", filiado));
 
 		if (dataInicio != null && dataFim != null)
-			criteria.add(Restrictions.between("dataEnvioCRA", dataInicio, dataFim));
+			criteria.add(Restrictions.between("dataEnvioCRA", new java.sql.Date(dataInicio.toDate().getTime()), new java.sql.Date(dataFim.toDate().getTime())));
 
 		if (pracaProtesto != null)
 			criteria.add(Restrictions.eq("pracaProtesto", pracaProtesto));
