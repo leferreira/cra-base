@@ -8,6 +8,8 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
 import br.com.ieptbto.cra.entidade.AgenciaBradesco;
@@ -60,6 +62,7 @@ public class ArquivoDeParaDAO extends AbstractBaseDAO {
 		}
 	}
 
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void salvarArquivoBancoDoBrasil(List<AgenciaBancoDoBrasil> listaAgencias) {
 		Transaction transaction = getBeginTransation();
 
