@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.conversor.arquivo.filiado.ConversorArquivoFiliado;
 import br.com.ieptbto.cra.dao.ArquivoDAO;
-import br.com.ieptbto.cra.dao.LayoutFiliadoDao;
+import br.com.ieptbto.cra.dao.LayoutFiliadoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
@@ -40,7 +40,7 @@ public class ArquivoFiliadoMediator {
 	@Autowired
 	ArquivoDAO arquivoDAO;
 	@Autowired
-	LayoutFiliadoDao layoutFiliadoDao;
+	LayoutFiliadoDAO layoutFiliadoDao;
 
 	protected static final Logger logger = Logger.getLogger(ArquivoFiliadoMediator.class);
 

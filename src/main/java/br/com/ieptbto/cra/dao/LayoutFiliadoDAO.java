@@ -20,7 +20,7 @@ import br.com.ieptbto.cra.exception.InfraException;
  *
  */
 @Repository
-public class LayoutFiliadoDao extends AbstractBaseDAO {
+public class LayoutFiliadoDAO extends AbstractBaseDAO {
 
 	public void salvar(List<LayoutFiliado> listaCampos) {
 		Transaction transaction = getBeginTransation();

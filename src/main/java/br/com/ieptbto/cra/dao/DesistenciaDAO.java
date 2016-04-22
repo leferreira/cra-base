@@ -48,9 +48,8 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador,
-			Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo,
-			Usuario usuario) {
+	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
+			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(DesistenciaProtesto.class);
 		criteria.createAlias("remessaDesistenciaProtesto", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
@@ -112,8 +111,7 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public DesistenciaProtesto alterarSituacaoDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto,
-			boolean download) {
+	public DesistenciaProtesto alterarSituacaoDesistenciaProtesto(DesistenciaProtesto desistenciaProtesto, boolean download) {
 		Transaction transaction = getSession().beginTransaction();
 
 		try {
@@ -136,6 +134,7 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 	public DesistenciaProtesto buscarDesistenciaProtesto(Instituicao cartorio, String nomeArquivo) {
 		Criteria criteria = getCriteria(DesistenciaProtesto.class);
 		criteria.createAlias("remessaDesistenciaProtesto", "remessaDesistenciaProtesto");
+		criteria.createAlias("desistencias", "desistencias");
 		criteria.createAlias("remessaDesistenciaProtesto.arquivo", "arquivo");
 		criteria.createAlias("cabecalhoCartorio", "cabecalhoCartorio");
 		criteria.add(Restrictions.eq("cabecalhoCartorio.codigoMunicipio", cartorio.getMunicipio().getCodigoIBGE()));
@@ -147,7 +146,6 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 	public void alterarSituacaoDesistenciaProtesto(Instituicao cartorio, String nomeArquivo) {
 		StringBuffer sql = new StringBuffer();
 
-		cartorio.setMunicipio(buscarPorPK(cartorio.getMunicipio(), Municipio.class));
 		try {
 			sql.append("UPDATE tb_desistencia_protesto AS dp ");
 			sql.append("SET download_realizado=true ");

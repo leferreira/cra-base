@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -20,6 +21,7 @@ import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
+import br.com.ieptbto.cra.error.CodigoErro;
 
 /**
  * 
@@ -153,7 +155,7 @@ public class PedidoAutorizacaoCancelamento extends AbstractEntidade<PedidoAutori
 	}
 
 	@OneToOne
-	@JoinColumn(name = "TITULO_ID", nullable=true ,columnDefinition="integer")
+	@JoinColumn(name = "TITULO_ID", nullable = true, columnDefinition = "integer")
 	public TituloRemessa getTitulo() {
 		return titulo;
 	}
@@ -216,6 +218,17 @@ public class PedidoAutorizacaoCancelamento extends AbstractEntidade<PedidoAutori
 
 	public void setSequenciaRegistro(String sequenciaRegistro) {
 		this.sequenciaRegistro = sequenciaRegistro;
+	}
+
+	private CodigoErro codigoErroProcessamento;
+
+	@Transient
+	public CodigoErro getCodigoErroProcessamento() {
+		return codigoErroProcessamento;
+	}
+
+	public void setCodigoErroProcessamento(CodigoErro codigoErroProcessamento) {
+		this.codigoErroProcessamento = codigoErroProcessamento;
 	}
 
 	@Override

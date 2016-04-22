@@ -330,7 +330,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		}
 	}
 
-	@Transactional(readOnly = false)
+	@Transactional
 	public Retorno buscarTituloProtestado(String numeroProtocolo, String codigoIBGE) {
 		Integer numProtocolo = Integer.parseInt(numeroProtocolo);
 		Criteria criteria = getCriteria(Retorno.class);

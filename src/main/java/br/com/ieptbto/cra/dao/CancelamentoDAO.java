@@ -84,14 +84,17 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 						pedido.setTitulo(tituloDAO.buscarTituloCancelamentoProtesto(pedido));
 
 						if (pedido.getTitulo() != null) {
+							pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO);
 							pedidosProcessados.add(pedido);
 							quantidadeCancelamentoCartorio = quantidadeCancelamentoCartorio + 1;
 							valorTotalCancelamentoProtesto = valorTotalCancelamentoProtesto.add(pedido.getValorTitulo());
 							totalCancelamentoProtestoArquivo = totalCancelamentoProtestoArquivo + 1;
 						} else if (pedido.getDataProtocolagem().isAfter(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))
 								|| pedido.getDataProtocolagem().equals(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))) {
+							pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO);
 							pedidosCancelamentoErros.add(pedido);
 						} else {
+							pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO);
 							pedidosProcessados.add(pedido);
 							quantidadeCancelamentoCartorio = quantidadeCancelamentoCartorio + 1;
 							valorTotalCancelamentoProtesto = valorTotalCancelamentoProtesto.add(pedido.getValorTitulo());
@@ -235,9 +238,8 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 	public void alterarSituacaoCancelamentoProtesto(Instituicao cartorio, String nomeArquivo) {
 		StringBuffer sql = new StringBuffer();
 
-		cartorio.setMunicipio(buscarPorPK(cartorio.getMunicipio(), Municipio.class));
 		try {
-			sql.append("UPDATE tb_cancelamento AS cp ");
+			sql.append("UPDATE tb_cancelamento_protesto AS cp ");
 			sql.append("SET download_realizado=true ");
 			sql.append("FROM tb_remessa_cancelamento_protesto AS rem, tb_cabecalho AS cab, tb_arquivo AS arq ");
 			sql.append("WHERE cp.remessa_cancelamento_protesto_id=rem.id_remessa_cancelamento_protesto ");
@@ -249,7 +251,7 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 			query.executeUpdate();
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível alterar a desistência para recebido.");
+			throw new InfraException("Não foi possível alterar o cancelamento para recebido.");
 		}
 	}
 
