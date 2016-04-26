@@ -50,6 +50,7 @@ import br.com.ieptbto.cra.entidade.vo.ComarcaDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.TituloDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
+import br.com.ieptbto.cra.enumeration.TipoAcaoLog;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
@@ -63,7 +64,7 @@ import br.com.ieptbto.cra.util.DataUtil;
  *
  */
 @Service
-public class CancelamentoProtestoMediator {
+public class CancelamentoProtestoMediator extends BaseMediator {
 
 	protected static final Logger logger = Logger.getLogger(CancelamentoProtestoMediator.class);
 
@@ -95,30 +96,42 @@ public class CancelamentoProtestoMediator {
 	}
 
 	public File baixarCancelamentoTXT(Usuario usuario, CancelamentoProtesto cancelamentoProtesto) {
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			cancelamentoDAO.alterarSituacaoCancelamentoProtesto(cancelamentoProtesto, true);
+		File file = null;
+
+		try {
+			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
+					&& cancelamentoProtesto.getDownload() == false) {
+				cancelamentoDAO.alterarSituacaoCancelamentoProtesto(cancelamentoProtesto, true);
+			}
+			cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoProtesto(cancelamentoProtesto);
+
+			BigDecimal valorTotal = BigDecimal.ZERO;
+			int totalRegistro = 0;
+			for (PedidoCancelamento pedido : cancelamentoProtesto.getCancelamentos()) {
+				valorTotal = valorTotal.add(pedido.getValorTitulo());
+				totalRegistro++;
+			}
+
+			RemessaCancelamentoProtesto remessa = new RemessaCancelamentoProtesto();
+			remessa.setCabecalho(cancelamentoProtesto.getRemessaCancelamentoProtesto().getCabecalho());
+			remessa.getCabecalho().setQuantidadeDesistencia(1);
+			remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
+			remessa.setCancelamentoProtesto(new ArrayList<CancelamentoProtesto>());
+			remessa.getCancelamentoProtesto().add(cancelamentoProtesto);
+			remessa.setRodape(cancelamentoProtesto.getRemessaCancelamentoProtesto().getRodape());
+			remessa.getRodape().setQuantidadeDesistencia(1);
+			remessa.getRodape().setSomatorioValorTitulo(valorTotal);
+			remessa.setArquivo(cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo());
+			file = processadorArquivo.processarRemessaCancelamentoProtestoTXT(remessa, usuario);
+			loggerCra.sucess(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO,
+					"Arquivo " + cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo().getNomeArquivo() + ", recebido com sucesso por "
+							+ usuario.getNome() + ".");
+		} catch (Exception ex) {
+			logger.info(ex.getMessage(), ex);
+			loggerCra.error(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO, "Erro Download Manual: " + ex.getMessage(), ex);
+			throw new InfraException("Não foi possível fazer o download do arquivo de Cancelamento de Protesto! Entre em contato com a CRA !");
 		}
-
-		cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoProtesto(cancelamentoProtesto);
-
-		BigDecimal valorTotal = BigDecimal.ZERO;
-		int totalRegistro = 0;
-		for (PedidoCancelamento pedido : cancelamentoProtesto.getCancelamentos()) {
-			valorTotal = valorTotal.add(pedido.getValorTitulo());
-			totalRegistro++;
-		}
-
-		RemessaCancelamentoProtesto remessa = new RemessaCancelamentoProtesto();
-		remessa.setCabecalho(cancelamentoProtesto.getRemessaCancelamentoProtesto().getCabecalho());
-		remessa.getCabecalho().setQuantidadeDesistencia(1);
-		remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
-		remessa.setCancelamentoProtesto(new ArrayList<CancelamentoProtesto>());
-		remessa.getCancelamentoProtesto().add(cancelamentoProtesto);
-		remessa.setRodape(cancelamentoProtesto.getRemessaCancelamentoProtesto().getRodape());
-		remessa.getRodape().setQuantidadeDesistencia(1);
-		remessa.getRodape().setSomatorioValorTitulo(valorTotal);
-		remessa.setArquivo(cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo());
-		return processadorArquivo.processarRemessaCancelamentoProtestoTXT(remessa, usuario);
+		return file;
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)

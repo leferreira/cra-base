@@ -57,6 +57,7 @@ import br.com.ieptbto.cra.entidade.vo.RemessaDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.TituloDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
+import br.com.ieptbto.cra.enumeration.TipoAcaoLog;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
@@ -70,7 +71,7 @@ import br.com.ieptbto.cra.util.DataUtil;
  *
  */
 @Service
-public class DesistenciaProtestoMediator {
+public class DesistenciaProtestoMediator extends BaseMediator {
 
 	protected static final Logger logger = Logger.getLogger(DesistenciaProtestoMediator.class);
 
@@ -125,29 +126,42 @@ public class DesistenciaProtestoMediator {
 	}
 
 	public File baixarDesistenciaTXT(Usuario usuario, DesistenciaProtesto desistenciaProtesto) {
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			desistenciaDAO.alterarSituacaoDesistenciaProtesto(desistenciaProtesto, true);
-		}
-		desistenciaProtesto = desistenciaDAO.buscarDesistenciaProtesto(desistenciaProtesto);
+		File file = null;
 
-		BigDecimal valorTotal = BigDecimal.ZERO;
-		int totalRegistro = 0;
-		for (PedidoDesistencia pedido : desistenciaProtesto.getDesistencias()) {
-			valorTotal = valorTotal.add(pedido.getValorTitulo());
-			totalRegistro++;
-		}
+		try {
+			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
+					&& desistenciaProtesto.getDownload() == false) {
+				desistenciaDAO.alterarSituacaoDesistenciaProtesto(desistenciaProtesto, true);
+			}
+			desistenciaProtesto = desistenciaDAO.buscarDesistenciaProtesto(desistenciaProtesto);
 
-		RemessaDesistenciaProtesto remessa = new RemessaDesistenciaProtesto();
-		remessa.setCabecalho(desistenciaProtesto.getRemessaDesistenciaProtesto().getCabecalho());
-		remessa.getCabecalho().setQuantidadeDesistencia(1);
-		remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
-		remessa.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
-		remessa.getDesistenciaProtesto().add(desistenciaProtesto);
-		remessa.setRodape(desistenciaProtesto.getRemessaDesistenciaProtesto().getRodape());
-		remessa.getRodape().setQuantidadeDesistencia(1);
-		remessa.getRodape().setSomatorioValorTitulo(valorTotal);
-		remessa.setArquivo(desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo());
-		return processadorArquivo.processarRemessaDesistenciaProtestoTXT(remessa, usuario);
+			BigDecimal valorTotal = BigDecimal.ZERO;
+			int totalRegistro = 0;
+			for (PedidoDesistencia pedido : desistenciaProtesto.getDesistencias()) {
+				valorTotal = valorTotal.add(pedido.getValorTitulo());
+				totalRegistro++;
+			}
+
+			RemessaDesistenciaProtesto remessa = new RemessaDesistenciaProtesto();
+			remessa.setCabecalho(desistenciaProtesto.getRemessaDesistenciaProtesto().getCabecalho());
+			remessa.getCabecalho().setQuantidadeDesistencia(1);
+			remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
+			remessa.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
+			remessa.getDesistenciaProtesto().add(desistenciaProtesto);
+			remessa.setRodape(desistenciaProtesto.getRemessaDesistenciaProtesto().getRodape());
+			remessa.getRodape().setQuantidadeDesistencia(1);
+			remessa.getRodape().setSomatorioValorTitulo(valorTotal);
+			remessa.setArquivo(desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo());
+			file = processadorArquivo.processarRemessaDesistenciaProtestoTXT(remessa, usuario);
+			loggerCra.sucess(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO,
+					"Arquivo " + desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo() + ", recebido com sucesso por "
+							+ usuario.getNome() + ".");
+		} catch (Exception ex) {
+			logger.info(ex.getMessage(), ex);
+			loggerCra.error(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO, "Erro Download Manual: " + ex.getMessage(), ex);
+			throw new InfraException("Não foi possível fazer o download do arquivo de Desistência de Protesto! Entre em contato com a CRA !");
+		}
+		return file;
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)

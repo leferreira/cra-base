@@ -90,8 +90,6 @@
 			<scope>test</scope>
 		</dependency>
 
-
-
 		<!-- slf4j-log4j -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -222,7 +220,12 @@
 			<scope>provided</scope>
 		</dependency>
 		
-		
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.14</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

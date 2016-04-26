@@ -24,195 +24,195 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class InstituicaoDAO extends AbstractBaseDAO {
 
-    @Autowired
-    private TipoInstituicaoDAO tipoInstituicaoDAO;
-    @Autowired
-    private MunicipioDAO municipioDAO;
+	@Autowired
+	private TipoInstituicaoDAO tipoInstituicaoDAO;
+	@Autowired
+	private MunicipioDAO municipioDAO;
 
-    public Instituicao salvar(Instituicao instituicao) {
-	Instituicao nova = new Instituicao();
-	Transaction transaction = getBeginTransation();
-	try {
-	    nova = save(instituicao);
-	    transaction.commit();
-	    logger.info(instituicao.getTipoInstituicao().getTipoInstituicao() + " foi salvo na base de dados. ");
-	} catch (Exception ex) {
-	    transaction.rollback();
-	    logger.error(ex.getMessage(), ex);
-	    throw new InfraException("Não foi possível inserir esses dados na base.");
+	public Instituicao salvar(Instituicao instituicao) {
+		Instituicao nova = new Instituicao();
+		Transaction transaction = getBeginTransation();
+		try {
+			nova = save(instituicao);
+			transaction.commit();
+			logger.info(instituicao.getTipoInstituicao().getTipoInstituicao() + " foi salvo na base de dados. ");
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível inserir esses dados na base.");
+		}
+		return nova;
 	}
-	return nova;
-    }
 
-    public Instituicao alterar(Instituicao instituicao) {
-	Session session = getSession();
-	session.clear();
-	session.flush();
-	Transaction transaction = session.beginTransaction();
-	try {
-	    update(instituicao);
-	    transaction.commit();
-	    logger.info(instituicao.getTipoInstituicao().getTipoInstituicao() + " foi alterado na base de dados. ");
-	} catch (Exception ex) {
-	    transaction.rollback();
-	    logger.error(ex.getMessage(), ex);
-	    throw new InfraException("Não foi possível alterar esses dados na base.");
+	public Instituicao alterar(Instituicao instituicao) {
+		Session session = getSession();
+		session.clear();
+		session.flush();
+		Transaction transaction = session.beginTransaction();
+		try {
+			update(instituicao);
+			transaction.commit();
+			logger.info(instituicao.getTipoInstituicao().getTipoInstituicao() + " foi alterado na base de dados. ");
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível alterar esses dados na base.");
+		}
+		return instituicao;
 	}
-	return instituicao;
-    }
 
-    public Instituicao buscarCartorioPorMunicipio(String nomeMunicipio) {
-	Criteria criteria = getCriteria(Instituicao.class);
-	criteria.createAlias("tipoInstituicao", "tipoInstituicao");
-	criteria.createAlias("municipio", "municipio");
-	criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
+	public Instituicao buscarCartorioPorMunicipio(String nomeMunicipio) {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.createAlias("municipio", "municipio");
+		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 
-	Criterion restrict1 = Restrictions.ilike("municipio.nomeMunicipio", nomeMunicipio, MatchMode.EXACT);
-	Criterion restrict2 = Restrictions.ilike("municipio.nomeMunicipioSemAcento", nomeMunicipio, MatchMode.EXACT);
+		Criterion restrict1 = Restrictions.ilike("municipio.nomeMunicipio", nomeMunicipio, MatchMode.EXACT);
+		Criterion restrict2 = Restrictions.ilike("municipio.nomeMunicipioSemAcento", nomeMunicipio, MatchMode.EXACT);
 
-	criteria.add(Restrictions.or(restrict1, restrict2));
+		criteria.add(Restrictions.or(restrict1, restrict2));
 
-	if (criteria.uniqueResult() != null) {
-	    return Instituicao.class.cast(criteria.uniqueResult());
+		if (criteria.uniqueResult() != null) {
+			return Instituicao.class.cast(criteria.uniqueResult());
+
+		}
+		return null;
 
 	}
-	return null;
 
-    }
-
-    public boolean isInstituicaoAtiva(Instituicao instituicao) {
-	if (instituicao.isSituacao()) {
-	    return true;
-	} else {
-	    return false;
+	public boolean isInstituicaoAtiva(Instituicao instituicao) {
+		if (instituicao.isSituacao()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
-    }
 
-    public void inserirInstituicaoInicial(String nomeMunicipio) {
-	Municipio municipio = municipioDAO.buscarMunicipioPorNome(nomeMunicipio);
-	inserirInstituicaoInicial(municipio);
-    }
-
-    public void inserirInstituicaoInicial(Municipio municipio) {
-	Transaction transaction = getBeginTransation();
-	try {
-	    Instituicao instituicao = new Instituicao();
-	    instituicao.setNomeFantasia("CRA");
-	    instituicao.setSituacao(true);
-	    instituicao.setCnpj("123");
-	    instituicao.setMunicipio(municipio);
-	    instituicao.setRazaoSocial("CRA");
-	    instituicao.setTipoInstituicao(tipoInstituicaoDAO.buscarTipoInstituicao(TipoInstituicaoCRA.CRA));
-	    save(instituicao);
-
-	    transaction.commit();
-	} catch (Exception ex) {
-	    transaction.rollback();
-	    System.out.println(ex.getMessage());
+	public void inserirInstituicaoInicial(String nomeMunicipio) {
+		Municipio municipio = municipioDAO.buscarMunicipioPorNome(nomeMunicipio);
+		inserirInstituicaoInicial(municipio);
 	}
-    }
 
-    public Instituicao buscarInstituicao(String nome) {
-	Criteria criteria = getCriteria(Instituicao.class);
-	criteria.add(Restrictions.eq("nomeFantasia", nome));
-	return Instituicao.class.cast(criteria.uniqueResult());
-    }
+	public void inserirInstituicaoInicial(Municipio municipio) {
+		Transaction transaction = getBeginTransation();
+		try {
+			Instituicao instituicao = new Instituicao();
+			instituicao.setNomeFantasia("CRA");
+			instituicao.setSituacao(true);
+			instituicao.setCnpj("123");
+			instituicao.setMunicipio(municipio);
+			instituicao.setRazaoSocial("CRA");
+			instituicao.setTipoInstituicao(tipoInstituicaoDAO.buscarTipoInstituicao(TipoInstituicaoCRA.CRA));
+			save(instituicao);
 
-    @SuppressWarnings("unchecked")
-    public List<Instituicao> buscarListaInstituicao() {
-	Criteria criteria = getCriteria(Instituicao.class);
-	criteria.createAlias("tipoInstituicao", "tipoInstituicao");
-	criteria.createAlias("municipio", "municipio");
-	criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
-	criteria.addOrder(Order.asc("nomeFantasia"));
-	return criteria.list();
-    }
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			System.out.println(ex.getMessage());
+		}
+	}
 
-    @SuppressWarnings("unchecked")
-    public List<Instituicao> buscarListaInstituicaoAtivas() {
-	Criteria criteria = getCriteria(Instituicao.class);
-	criteria.createAlias("tipoInstituicao", "tipoInstituicao");
-	criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
-	criteria.add(Restrictions.eq("situacao", true));
-	criteria.addOrder(Order.asc("nomeFantasia"));
-	return criteria.list();
-    }
+	public Instituicao buscarInstituicao(String nome) {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.add(Restrictions.eq("nomeFantasia", nome));
+		return Instituicao.class.cast(criteria.uniqueResult());
+	}
 
-    @SuppressWarnings("unchecked")
-    public List<Instituicao> listarTodas() {
-	Criteria criteria = getCriteria(Instituicao.class);
-	criteria.addOrder(Order.asc("nomeFantasia"));
-	return criteria.list();
-    }
+	@SuppressWarnings("unchecked")
+	public List<Instituicao> buscarListaInstituicao() {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.createAlias("municipio", "municipio");
+		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
+		criteria.addOrder(Order.asc("nomeFantasia"));
+		return criteria.list();
+	}
 
-    /**
-     * Buscar todos os cartórios, ativos ou não e menos as instituicões
-     * 
-     * @return List<Instituicao>
-     */
-    @SuppressWarnings({ "unchecked" })
-    public List<Instituicao> getCartorios() {
-	Criteria criteria = getCriteria(Instituicao.class);
-	criteria.createAlias("tipoInstituicao", "tipoInstituicao");
-	criteria.createAlias("municipio", "municipio");
-	criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
-	criteria.addOrder(Order.asc("municipio.nomeMunicipio"));
-	return criteria.list();
-    }
+	@SuppressWarnings("unchecked")
+	public List<Instituicao> buscarListaInstituicaoAtivas() {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
+		criteria.add(Restrictions.eq("situacao", true));
+		criteria.addOrder(Order.asc("nomeFantasia"));
+		return criteria.list();
+	}
 
-    /**
-     * Buscar todos instituicões financieiras, ativos ou não
-     * 
-     * @return List<Instituicao>
-     */
-    @SuppressWarnings("unchecked")
-    public List<Instituicao> getInstituicoesFinanceiras() {
-	Criteria criteria = getCriteria(Instituicao.class);
-	criteria.addOrder(Order.asc("nomeFantasia"));
-	criteria.createAlias("tipoInstituicao", "tipoInstituicao");
-	criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA));
-	criteria.addOrder(Order.asc("nomeFantasia"));
-	return criteria.list();
-    }
+	@SuppressWarnings("unchecked")
+	public List<Instituicao> listarTodas() {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.addOrder(Order.asc("nomeFantasia"));
+		return criteria.list();
+	}
 
-    public Instituicao buscarInstituicaoInicial(String nomeFantasia) {
-	Criteria criteria = getCriteria(Instituicao.class);
-	criteria.add(Restrictions.eq("nomeFantasia", nomeFantasia));
-	return Instituicao.class.cast(criteria.uniqueResult());
-    }
+	/**
+	 * Buscar todos os cartórios, ativos ou não e menos as instituicões
+	 * 
+	 * @return List<Instituicao>
+	 */
+	@SuppressWarnings({ "unchecked" })
+	public List<Instituicao> getCartorios() {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.createAlias("municipio", "municipio");
+		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
+		criteria.addOrder(Order.asc("municipio.nomeMunicipio"));
+		return criteria.list();
+	}
 
-    public Instituicao getCartorioPeloCodigoMunicipio(String codigoMunicipio) {
-	Criteria criteria = getCriteria(Instituicao.class);
-	criteria.createAlias("municipio", "municipio");
-	criteria.createAlias("tipoInstituicao", "tipoInstituicao");
-	criteria.add(Restrictions.eq("municipio.codigoIBGE", codigoMunicipio));
-	criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
-	return Instituicao.class.cast(criteria.uniqueResult());
-    }
+	/**
+	 * Buscar todos instituicões financieiras, ativos ou não
+	 * 
+	 * @return List<Instituicao>
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Instituicao> getInstituicoesFinanceiras() {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.addOrder(Order.asc("nomeFantasia"));
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA));
+		criteria.addOrder(Order.asc("nomeFantasia"));
+		return criteria.list();
+	}
 
-    public Instituicao getInstituicaoPorCodigo(String codigoCompensacao) {
-	Criteria criteria = getCriteria(Instituicao.class);
-	criteria.add(Restrictions.eq("codigoCompensacao", codigoCompensacao));
+	public Instituicao buscarInstituicaoInicial(String nomeFantasia) {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.add(Restrictions.eq("nomeFantasia", nomeFantasia));
+		return Instituicao.class.cast(criteria.uniqueResult());
+	}
 
-	return Instituicao.class.cast(criteria.uniqueResult());
-    }
+	public Instituicao getCartorioPeloCodigoMunicipio(String codigoMunicipio) {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.createAlias("municipio", "municipio");
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.add(Restrictions.eq("municipio.codigoIBGE", codigoMunicipio));
+		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
+		return Instituicao.class.cast(criteria.uniqueResult());
+	}
 
-    @SuppressWarnings("unchecked")
-    public List<Instituicao> getConvenios() {
-	Criteria criteria = getCriteria(Instituicao.class);
-	criteria.createAlias("tipoInstituicao", "tipoInstituicao");
-	criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CONVENIO));
-	criteria.addOrder(Order.asc("nomeFantasia"));
-	return criteria.list();
-    }
+	public Instituicao getInstituicaoPorCodigo(String codigoCompensacao) {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.add(Restrictions.eq("codigoCompensacao", codigoCompensacao));
 
-    @SuppressWarnings("unchecked")
-    public List<Instituicao> getInstituicoesFinanceirasEConvenios() {
-	Criteria criteria = getCriteria(Instituicao.class);
-	criteria.createAlias("tipoInstituicao", "tipoInstituicao");
-	criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
-	criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CRA));
-	criteria.addOrder(Order.asc("nomeFantasia"));
-	return criteria.list();
-    }
+		return Instituicao.class.cast(criteria.uniqueResult());
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Instituicao> getConvenios() {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CONVENIO));
+		criteria.addOrder(Order.asc("nomeFantasia"));
+		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Instituicao> getInstituicoesFinanceirasEConvenios() {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
+		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CRA));
+		criteria.addOrder(Order.asc("nomeFantasia"));
+		return criteria.list();
+	}
 }

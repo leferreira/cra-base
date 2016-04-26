@@ -306,8 +306,8 @@ public class TituloDAO extends AbstractBaseDAO {
 	}
 
 	private TituloRemessa salvarTituloRemessa(TituloRemessa tituloRemessa, Transaction transaction) {
-		try {
 
+		try {
 			tituloRemessa.setDataCadastro(tituloRemessa.getRemessa().getCabecalho().getDataMovimento().toDate());
 			TituloRemessa tituloSalvo = save(tituloRemessa);
 

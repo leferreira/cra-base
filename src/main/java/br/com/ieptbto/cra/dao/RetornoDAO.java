@@ -60,7 +60,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 
 	@SuppressWarnings("unchecked")
 	public List<Remessa> buscarRetornosAguardandoLiberacao(Instituicao instiuicao, LocalDate dataBatimento, boolean dataComoDataLimite) {
-		if (dataBatimento == null || instiuicao == null) {
+		if (dataBatimento == null) {
 			return new ArrayList<Remessa>();
 		}
 
@@ -75,7 +75,10 @@ public class RetornoDAO extends AbstractBaseDAO {
 		} else {
 			criteria.add(Restrictions.eq("batimento.data", dataBatimento));
 		}
-		criteria.add(Restrictions.eq("instituicaoDestino", instiuicao));
+
+		if (instiuicao != null) {
+			criteria.add(Restrictions.eq("instituicaoDestino", instiuicao));
+		}
 		return criteria.list();
 	}
 
