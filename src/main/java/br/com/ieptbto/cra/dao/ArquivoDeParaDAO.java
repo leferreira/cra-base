@@ -67,13 +67,10 @@ public class ArquivoDeParaDAO extends AbstractBaseDAO {
 		Transaction transaction = getBeginTransation();
 
 		try {
-
 			for (AgenciaBancoDoBrasil agencia : listaAgencias) {
 				save(agencia);
 			}
 			transaction.commit();
-
-			logger.info("O arquivo banco do brasil enviado foi inserido na base ");
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
@@ -90,7 +87,8 @@ public class ArquivoDeParaDAO extends AbstractBaseDAO {
 	public AgenciaBradesco buscarAgenciaArquivoDeParaBradesco(TituloRemessa tituloRemessa) {
 		Criteria criteria = getCriteria(AgenciaBradesco.class);
 		criteria.add(Restrictions.like("cnpj", tituloRemessa.getDocumentoSacador(), MatchMode.EXACT));
-		criteria.add(Restrictions.like("codigoAgenciaCedente", tituloRemessa.getAgenciaCodigoCedente(), MatchMode.EXACT));
+		criteria.add(
+				Restrictions.like("codigoAgenciaCedente", tituloRemessa.getAgenciaCodigoCedente(), MatchMode.EXACT));
 		criteria.setMaxResults(1);
 		return AgenciaBradesco.class.cast(criteria.uniqueResult());
 	}

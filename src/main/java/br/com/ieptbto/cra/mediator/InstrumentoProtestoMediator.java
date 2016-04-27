@@ -100,7 +100,6 @@ public class InstrumentoProtestoMediator {
 
 	private void gerarEtiqueta(InstrumentoProtesto instrumento) {
 		RegraAgenciaDestino regraAgencia = regraAgenciaDestino.regraAgenciaDestino(instrumento.getTituloRetorno().getTitulo());
-
 		instrumento.getTituloRetorno().setRemessa(instrumentoDao.buscarPorPK(instrumento.getTituloRetorno().getRemessa(), Remessa.class));
 
 		EtiquetaSLIP novaEtiqueta = new EtiquetaSLIP();

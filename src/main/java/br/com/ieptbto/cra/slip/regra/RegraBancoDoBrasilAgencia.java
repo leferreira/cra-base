@@ -10,6 +10,7 @@ public class RegraBancoDoBrasilAgencia extends RegraAgenciaBanco {
 
 	@Override
 	public String aplicarRegraEspecifica(TituloRemessa titulo) {
-		return titulo.getAgenciaCodigoCedente().substring(2, 10);
+		String registroTransacao = "1001" + titulo.getAgenciaCodigoCedente();
+		return registroTransacao.substring(5, 14);
 	}
 }

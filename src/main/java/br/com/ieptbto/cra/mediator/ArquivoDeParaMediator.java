@@ -4,7 +4,6 @@ import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.arquivoDePara.ArquivoBancoDoBrasil;
 import br.com.ieptbto.cra.arquivoDePara.ArquivoBradesco;
 import br.com.ieptbto.cra.arquivoDePara.ArquivoCAF;
 import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
@@ -15,6 +14,7 @@ import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.BancoTipoRegraBasicaInstrumento;
 import br.com.ieptbto.cra.enumeration.PadraoArquivoDePara;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.processador.ProcessadorArquivoDeParaBB;
 
 /**
  * @author Thasso Araújo
@@ -25,13 +25,15 @@ public class ArquivoDeParaMediator {
 
 	@Autowired
 	ArquivoDeParaDAO deParaDAO;
+	@Autowired
+	ProcessadorArquivoDeParaBB processadorArquivoDeParaBB;
 
 	public void processarArquivo(FileUpload uploadedFile) {
 
 		if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.CAF.getModelo())) {
 			deParaDAO.salvarArquivoCAF(new ArquivoCAF().processar(uploadedFile));
 		} else if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.BANCO_DO_BRASIL.getModelo())) {
-			deParaDAO.salvarArquivoBancoDoBrasil(new ArquivoBancoDoBrasil().processar(uploadedFile));
+			processadorArquivoDeParaBB.iniciarProcessamento(uploadedFile);
 		} else if (uploadedFile.getClientFileName().toUpperCase().contains(PadraoArquivoDePara.BRADESCO.getModelo())) {
 			deParaDAO.salvarArquivoBradesco(new ArquivoBradesco().processar(uploadedFile));
 		} else {

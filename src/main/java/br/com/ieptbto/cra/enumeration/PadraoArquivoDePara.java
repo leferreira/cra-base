@@ -8,9 +8,9 @@ import br.com.ieptbto.cra.exception.InfraException;
  */
 public enum PadraoArquivoDePara {
 
-	CAF("CAF", "txt"), //
-	BRADESCO("BRADESCO", "xls"), //
-	BANCO_DO_BRASIL("CBR", "txt");
+									CAF("CAF", "txt"), //
+									BRADESCO("BRADESCO", "xls"), //
+									BANCO_DO_BRASIL("CBR", "txt");
 
 	private String modelo;
 	private String extensao;
@@ -19,7 +19,7 @@ public enum PadraoArquivoDePara {
 		this.modelo = modelo;
 		this.extensao = extensao;
 	}
-	
+
 	public static PadraoArquivoDePara get(String modelo) {
 		PadraoArquivoDePara[] values = PadraoArquivoDePara.values();
 		for (PadraoArquivoDePara padrao : values) {

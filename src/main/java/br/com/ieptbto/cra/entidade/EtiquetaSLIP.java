@@ -235,7 +235,7 @@ public class EtiquetaSLIP extends AbstractEntidade<EtiquetaSLIP> {
 	}
 
 	public void parseToTitulo(Retorno retorno) {
-		this.setBanco(retorno.getRemessa().getCabecalho().getNomePortador().toUpperCase());
+		this.setBanco(retorno.getRemessa().getInstituicaoDestino().getRazaoSocial().toUpperCase());
 
 		this.setAgenciaCodigoCedente(retorno.getTitulo().getAgenciaCodigoCedente());
 		this.setDataProtocolo(retorno.getDataProtocolo().toDate());

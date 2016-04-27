@@ -1,7 +1,6 @@
 package br.com.ieptbto.cra.processador;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -9,7 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
 import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
@@ -19,6 +20,7 @@ import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
  * @author leandro
  *
  */
+@Service
 public class ProcessadorArquivoDeParaBB {
 
 	protected static final Logger logger = Logger.getLogger(ProcessadorArquivoDeParaBB.class);
@@ -28,18 +30,14 @@ public class ProcessadorArquivoDeParaBB {
 	@Autowired
 	ArquivoDeParaDAO deParaDAO;
 
-	public ProcessadorArquivoDeParaBB() {
-		iniciarProcessamento();
-	}
-
-	private void iniciarProcessamento() {
+	public void iniciarProcessamento(FileUpload file) {
+		this.listaAgencias = new ArrayList<>();
 		try {
-			uploadedFile = new FileReader("/usr/share/tomcat/docs/arquivoBB.txt");
+			uploadedFile = new FileReader(file.writeToTempFile());
 			processarDados(uploadedFile);
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	private void processarDados(FileReader arquivo) {
@@ -52,8 +50,8 @@ public class ProcessadorArquivoDeParaBB {
 			while ((linha = reader.readLine()) != null) {
 				cont++;
 				AgenciaBancoDoBrasil agenciaBancoDoBrasil = new AgenciaBancoDoBrasil();
-				agenciaBancoDoBrasil.setNumeroContrato(linha.substring(1, 9));
-				agenciaBancoDoBrasil.setAgenciaDestino(linha.substring(10, 13));
+				agenciaBancoDoBrasil.setNumeroContrato(linha.substring(0, 9));
+				agenciaBancoDoBrasil.setAgenciaDestino(linha.substring(9, 13));
 
 				listaAgencias.add(agenciaBancoDoBrasil);
 
@@ -81,5 +79,10 @@ public class ProcessadorArquivoDeParaBB {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static void main(String[] args) {
+		System.out.println("0188341211494000000177".substring(0, 9));
+		System.out.println("0188341211494000000177".substring(9, 13));
 	}
 }

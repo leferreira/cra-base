@@ -28,8 +28,8 @@ public class ArquivoBancoDoBrasil extends AbstractDePara {
 
 			while ((linha = reader.readLine()) != null) {
 				AgenciaBancoDoBrasil agenciaBancoDoBrasil = new AgenciaBancoDoBrasil();
-				agenciaBancoDoBrasil.setNumeroContrato(linha.substring(1, 9));
-				agenciaBancoDoBrasil.setAgenciaDestino(linha.substring(10, 13));
+				agenciaBancoDoBrasil.setNumeroContrato(linha.substring(0, 8));
+				agenciaBancoDoBrasil.setAgenciaDestino(linha.substring(9, 12));
 
 				listaAgencias.add(agenciaBancoDoBrasil);
 			}
