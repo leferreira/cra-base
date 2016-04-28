@@ -85,13 +85,16 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 	private int quantidadeRegistrosTipo2 = 0;
 	private BigDecimal somatorioValor;
 
-	public List<PedidoAutorizacaoCancelamento> buscarPedidosAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento) {
+	public List<PedidoAutorizacaoCancelamento> buscarPedidosAutorizacaoCancelamento(
+			AutorizacaoCancelamento autorizacaoCancelamento) {
 		return autorizacaoCancelamentoDAO.buscarPedidosAutorizacaoCancelamento(autorizacaoCancelamento);
 	}
 
-	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
-			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
-		return autorizacaoCancelamentoDAO.buscarAutorizacaoCancelamento(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
+	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador,
+			Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo,
+			Usuario usuario) {
+		return autorizacaoCancelamentoDAO.buscarAutorizacaoCancelamento(arquivo, portador, municipio, dataInicio,
+				dataFim, tiposArquivo, usuario);
 	}
 
 	public File baixarAutorizacaoTXT(Usuario usuario, AutorizacaoCancelamento autorizacaoCancelamento) {
@@ -102,7 +105,8 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 					&& autorizacaoCancelamento.getDownload() == false) {
 				autorizacaoCancelamentoDAO.alterarSituacaoAutorizacaoCancelamento(autorizacaoCancelamento, true);
 			}
-			autorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamento(autorizacaoCancelamento);
+			autorizacaoCancelamento =
+					autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamento(autorizacaoCancelamento);
 
 			BigDecimal valorTotal = BigDecimal.ZERO;
 			int totalRegistro = 0;
@@ -122,19 +126,28 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 			remessa.getRodape().setSomatorioValorTitulo(valorTotal);
 			remessa.setArquivo(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo());
 			file = processadorArquivo.processarRemessaAutorizacaoCancelamentoTXT(remessa, usuario);
-			loggerCra.sucess(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO,
-					"Arquivo " + autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo().getNomeArquivo() + ", recebido com sucesso por "
-							+ usuario.getNome() + ".");
+
+			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+				loggerCra
+						.sucess(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO,
+								"Arquivo "
+										+ autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo()
+												.getNomeArquivo()
+										+ ", recebido com sucesso por " + usuario.getNome() + ".");
+			}
 		} catch (Exception ex) {
 			logger.info(ex.getMessage(), ex);
-			loggerCra.error(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO, "Erro Download Manual: " + ex.getMessage(), ex);
-			throw new InfraException("Não foi possível fazer o download do arquivo de Autorização de Cancelamento! Entre em contato com a CRA !");
+			loggerCra.error(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO,
+					"Erro Download Manual: " + ex.getMessage(), ex);
+			throw new InfraException(
+					"Não foi possível fazer o download do arquivo de Autorização de Cancelamento! Entre em contato com a CRA !");
 		}
 		return file;
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Arquivo processarAutorizacaoCancelamento(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados, List<Exception> erros, Usuario usuario) {
+	public Arquivo processarAutorizacaoCancelamento(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados,
+			List<Exception> erros, Usuario usuario) {
 		Arquivo arquivo = new Arquivo();
 		arquivo.setNomeArquivo(nomeArquivo);
 		arquivo.setUsuarioEnvio(usuario);
@@ -148,8 +161,8 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 		arquivo.setStatusArquivo(getStatusArquivo());
 
 		if (layoutPadraoXML.equals(LayoutPadraoXML.SERPRO)) {
-			RemessaAutorizacaoCancelamento remessaAC =
-					converterAutorizacaoCancelamentoSerpro(arquivo, usuario.getInstituicao(), converterStringParaAutorizacaoCancelamentoSerproVO(dados), erros);
+			RemessaAutorizacaoCancelamento remessaAC = converterAutorizacaoCancelamentoSerpro(arquivo,
+					usuario.getInstituicao(), converterStringParaAutorizacaoCancelamentoSerproVO(dados), erros);
 			arquivo.setRemessaAutorizacao(remessaAC);
 
 			return autorizacaoCancelamentoDAO.salvarAutorizacao(arquivo, usuario, erros);
@@ -187,7 +200,8 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 				xmlRecebido = xmlRecebido + scanner.nextLine().replaceAll("& ", "&amp;");
 				if (xmlRecebido.contains("<?xml version=")) {
 					xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", "");
-					xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"no\"?>", "");
+					xmlRecebido = xmlRecebido
+							.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"no\"?>", "");
 				}
 			}
 			scanner.close();
@@ -216,7 +230,8 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 				xmlRecebido = xmlRecebido + scanner.nextLine().replaceAll("& ", "&amp;");
 				if (xmlRecebido.contains("<?xml version=")) {
 					xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", "");
-					xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"no\"?>", "");
+					xmlRecebido = xmlRecebido
+							.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"no\"?>", "");
 				}
 			}
 			scanner.close();
@@ -231,8 +246,8 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 		return acVO;
 	}
 
-	private RemessaAutorizacaoCancelamento converterAutorizacaoCancelamentoSerpro(Arquivo arquivo, Instituicao instituicao,
-			AutorizacaoCancelamentoSerproVO cancelamentoSerpro, List<Exception> erros) {
+	private RemessaAutorizacaoCancelamento converterAutorizacaoCancelamentoSerpro(Arquivo arquivo,
+			Instituicao instituicao, AutorizacaoCancelamentoSerproVO cancelamentoSerpro, List<Exception> erros) {
 		RemessaAutorizacaoCancelamento remessaAC = new RemessaAutorizacaoCancelamento();
 		remessaAC.setArquivo(arquivo);
 		remessaAC.setAutorizacaoCancelamento(getAutorizacaoCancelamento(remessaAC, cancelamentoSerpro));
@@ -268,19 +283,24 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 					registro.setNomePrimeiroDevedor(titulo.getNomeDevedor());
 					registro.setValorTitulo(new BigDecimal(titulo.getValorTitulo()));
 					registro.setSolicitacaoCancelamentoSustacao("S");
-					registro.setSequenciaRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
+					registro.setSequenciaRegistro(
+							StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
 
 					this.sequenciaRegistro = getSequenciaRegistro() + 1;
 					this.somatorioValor = getSomatorioValor().add(registro.getValorTitulo());
 					pedidosAC.add(registro);
 				}
-				this.quantidadeDesistencias = getQuantidadeDesistencias() + cartorio.getTituloDesistenciaCancelamento().size();
-				this.quantidadeRegistrosTipo2 = getQuantidadeRegistrosTipo2() + cartorio.getTituloDesistenciaCancelamento().size();
+				this.quantidadeDesistencias =
+						getQuantidadeDesistencias() + cartorio.getTituloDesistenciaCancelamento().size();
+				this.quantidadeRegistrosTipo2 =
+						getQuantidadeRegistrosTipo2() + cartorio.getTituloDesistenciaCancelamento().size();
 
 				rodapeCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.TRAILLER_CARTORIO);
 				rodapeCartorio.setCodigoCartorio(cartorio.getCodigoCartorio());
-				rodapeCartorio.setSomaTotalCancelamentoDesistencia(cartorio.getTituloDesistenciaCancelamento().size() * 2);
-				rodapeCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
+				rodapeCartorio
+						.setSomaTotalCancelamentoDesistencia(cartorio.getTituloDesistenciaCancelamento().size() * 2);
+				rodapeCartorio
+						.setSequencialRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
 
 				autorizacaoCancelamento.setCabecalhoCartorio(cabecalhoCartorio);
 				autorizacaoCancelamento.setAutorizacoesCancelamentos(pedidosAC);

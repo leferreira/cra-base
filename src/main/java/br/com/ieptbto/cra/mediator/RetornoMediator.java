@@ -90,6 +90,10 @@ public class RetornoMediator {
 		return retornoDAO.buscarRetornosAguardandoLiberacao(instiuicao, dataBatimento, dataComoDataLimite);
 	}
 
+	public List<Remessa> buscarRetornosParaPagamentoInstituicao(LocalDate dataBatimento) {
+		return retornoDAO.buscarRetornosParaPagamentoInstituicao(dataBatimento);
+	}
+
 	public List<Remessa> buscarRetornosConfirmados() {
 		return retornoDAO.buscarRetornosConfirmados();
 	}
@@ -159,7 +163,8 @@ public class RetornoMediator {
 			Deposito deposito = depositosBatimento.getDeposito();
 			List<Batimento> batimentosDoDeposito = batimentoDAO.buscarBatimentosDoDeposito(deposito);
 			if (batimentosDoDeposito.size() > 1) {
-				throw new InfraException("O arquivo de retorno possui um depósito vínculado a mais de um batimento! Não é possível removê-lo...");
+				throw new InfraException(
+						"O arquivo de retorno possui um depósito vínculado a mais de um batimento! Não é possível removê-lo...");
 			} else if (!batimentosDoDeposito.isEmpty()) {
 				deposito.setSituacaoDeposito(SituacaoDeposito.NAO_IDENTIFICADO);
 				batimentoDAO.atualizarDeposito(deposito);
@@ -208,7 +213,8 @@ public class RetornoMediator {
 	}
 
 	private String gerarNomeArquivoRetorno(Remessa retorno) {
-		return TipoArquivoEnum.RETORNO.getConstante() + retorno.getCabecalho().getNumeroCodigoPortador() + gerarDataArquivo() + NUMERO_SEQUENCIAL_RETORNO;
+		return TipoArquivoEnum.RETORNO.getConstante() + retorno.getCabecalho().getNumeroCodigoPortador() + gerarDataArquivo()
+				+ NUMERO_SEQUENCIAL_RETORNO;
 	}
 
 	private String gerarDataArquivo() {
@@ -299,8 +305,8 @@ public class RetornoMediator {
 				Mensagem mensagem = new Mensagem();
 				mensagem.setCodigo(exception.getErro().getCodigo());
 				mensagem.setMunicipio(exception.getCodigoIbge());
-				mensagem.setDescricao(
-						"Município: " + exception.getCodigoIbge() + " - " + exception.getMunicipio() + " - " + exception.getErro().getDescricao());
+				mensagem.setDescricao("Município: " + exception.getCodigoIbge() + " - " + exception.getMunicipio() + " - "
+						+ exception.getErro().getDescricao());
 				mensagens.add(mensagem);
 			}
 		}
@@ -310,11 +316,12 @@ public class RetornoMediator {
 	private String formatarMensagemRetorno(Remessa remessa) {
 		if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
 			return "Município: " + remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString() + " - "
-					+ remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - " + remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.";
+					+ remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - "
+					+ remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.";
 		} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
 				|| TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-			return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - " + remessa.getCabecalho().getQtdTitulosRemessa()
-					+ " títulos receberam confirmação.";
+			return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
+					+ remessa.getCabecalho().getQtdTitulosRemessa() + " títulos receberam confirmação.";
 		}
 		return StringUtils.EMPTY;
 

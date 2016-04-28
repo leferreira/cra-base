@@ -10,7 +10,6 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.sql.JoinType;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +39,10 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class RetornoDAO extends AbstractBaseDAO {
 
+	public static final String CONSTANTE_TIPO_DEPOSITO_CARTORIO = "CARTORIO";
+
 	@Autowired
-	private RemessaDAO remessaDAO;
+	RemessaDAO remessaDAO;
 
 	public Retorno carregarTituloRetornoPorId(Retorno retorno) {
 		Criteria criteria = getCriteria(Retorno.class);
@@ -66,19 +67,36 @@ public class RetornoDAO extends AbstractBaseDAO {
 
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "arquivo");
-		criteria.createAlias("batimento", "batimento", JoinType.LEFT_OUTER_JOIN);
+		criteria.createAlias("batimento", "batimento");
 		criteria.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO));
+		criteria.add(Restrictions.eq("instituicaoDestino", instiuicao));
 		criteria.add(Restrictions.eq("situacao", false));
-
 		if (dataComoDataLimite == true) {
 			criteria.add(Restrictions.le("batimento.data", dataBatimento));
 		} else {
 			criteria.add(Restrictions.eq("batimento.data", dataBatimento));
 		}
+		return criteria.list();
+	}
 
-		if (instiuicao != null) {
-			criteria.add(Restrictions.eq("instituicaoDestino", instiuicao));
-		}
+	@SuppressWarnings("unchecked")
+	public List<Remessa> buscarRetornosParaPagamentoInstituicao(LocalDate dataBatimento) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "arquivo");
+		criteria.createAlias("batimento", "batimento");
+		criteria.createAlias("instituicaoDestino", "instituicaoDestino");
+		criteria.createAlias("batimento.depositosBatimento", "depositosBatimento");
+		criteria.createAlias("depositosBatimento.deposito", "deposito");
+
+		criteria.add(Restrictions.eq("instituicaoDestino.tipoBatimento", TipoBatimento.BATIMENTO_REALIZADO_PELA_INSTITUICAO));
+		criteria.add(Restrictions.ne("deposito.numeroDocumento", CONSTANTE_TIPO_DEPOSITO_CARTORIO));
+
+		Disjunction disjunction = Restrictions.disjunction();
+		disjunction.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.CONFIRMADO));
+		disjunction.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO));
+		criteria.add(disjunction);
+
+		criteria.add(Restrictions.eq("batimento.data", dataBatimento));
 		return criteria.list();
 	}
 
