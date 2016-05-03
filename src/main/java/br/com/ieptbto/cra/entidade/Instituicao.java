@@ -367,4 +367,9 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	public void setTipoBatimento(TipoBatimento tipoBatimento) {
 		this.tipoBatimento = tipoBatimento;
 	}
+
+	@Override
+	public String toString() {
+		return this.nomeFantasia;
+	}
 }

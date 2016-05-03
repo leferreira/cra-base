@@ -27,6 +27,7 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.BancoAgenciaCentralizadoraCodigoCartorio;
+import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
@@ -172,15 +173,10 @@ public class TituloDAO extends AbstractBaseDAO {
 		}
 		if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.RETIRADO.getConstante())) {
 			if (titulo.getPedidosDesistencia() != null) {
-				if (titulo.getPedidosDesistencia().isEmpty()) {
-					throw new InfraException("Título com o nosso número " + tituloRetorno.getNossoNumero() + " e o protocolo "
-							+ tituloRetorno.getNumeroProtocoloCartorio()
-							+ " está com a ocorrência de Retirado, e não contém pedido de desistência. Verifique a situação do título...");
+				if (!titulo.getPedidosDesistencia().isEmpty()) {
+					tituloRetorno.setTipoOcorrencia(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_COM_CUSTAS.getConstante());
+					tituloRetorno.setCodigoIrregularidade(CodigoIrregularidade.IRREGULARIDADE_22.getCodigoIrregularidade());
 				}
-			} else {
-				throw new InfraException("Título com o nosso número " + tituloRetorno.getNossoNumero() + " e o protocolo "
-						+ tituloRetorno.getNumeroProtocoloCartorio()
-						+ " foi retirado, e não contém pedido de desistência. Verifique a situação do título...");
 			}
 		}
 		if (titulo.getPedidosDesistencia() != null) {
