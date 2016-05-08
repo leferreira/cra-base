@@ -41,13 +41,14 @@ import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 public class ArquivoMediator {
 
 	@Autowired
-	private ArquivoDAO arquivoDAO;
+	ArquivoDAO arquivoDAO;
 	@Autowired
-	private TipoArquivoDAO tipoArquivoDAO;
+	TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
-	private InstituicaoDAO instituicaoDAO;
+	InstituicaoDAO instituicaoDAO;
 	@Autowired
-	private ProcessadorArquivo processadorArquivo;
+	ProcessadorArquivo processadorArquivo;
+
 	private List<Exception> erros;
 	private Arquivo arquivo;
 
@@ -93,7 +94,7 @@ public class ArquivoMediator {
 			return identificarMunicipioEnvioPeloCabecalho(uploadedFile);
 		}
 		if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo) || TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)
-		        || TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
+				|| TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
 			return instituicaoDAO.getInstituicaoPorCodigo(nomeArquivo.substring(2, 5));
 		} else {
 			throw new InfraException("Não é possível identificar o nome do arquivo ou não segue os padrões FEBRABAN.");
@@ -169,7 +170,7 @@ public class ArquivoMediator {
 	public File baixarArquivoTXT(Instituicao instituicao, Arquivo arquivo) {
 		List<Remessa> remessas = null;
 		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
-		        && !arquivo.getStatusArquivo().getSituacaoArquivo().equals(SituacaoArquivo.ENVIADO)) {
+				&& !arquivo.getStatusArquivo().getSituacaoArquivo().equals(SituacaoArquivo.ENVIADO)) {
 			StatusArquivo status = new StatusArquivo();
 			status.setData(new LocalDateTime());
 			status.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
@@ -188,7 +189,7 @@ public class ArquivoMediator {
 	}
 
 	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos,
-	        Municipio pracaProtesto, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
+			Municipio pracaProtesto, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		return arquivoDAO.buscarArquivosAvancado(arquivo, usuario, tipoArquivos, pracaProtesto, dataInicio, dataFim, situacoes);
 	}
 

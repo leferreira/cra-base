@@ -8,20 +8,20 @@ public enum TipoAcaoLog {
 
 							ACESSO_CRA("Ação padrão CRA."),
 							VERIFICACAO_CREDENCIAIS_ACESSO_SUCESSO("Verificação de Credenciais de Acesso"),
-							ENVIO_ARQUIVO_REMESSA("Envio de Arquivo de Remessa"),
-							DOWNLOAD_ARQUIVO_REMESSA("Donwload Arquivo de Remessa"),
-							ENVIO_ARQUIVO_CONFIRMACAO("Envio Arquivo Confirmação"),
-							DOWNLOAD_ARQUIVO_CONFIRMACAO("Download Arquivo Confirmação"),
-							ENVIO_ARQUIVO_RETORNO("Envio Arquivo de Retorno"),
-							DOWNLOAD_ARQUIVO_RETORNO("Download Arquivo de Retorno"),
-							DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO("Download Arquivo Desistência de Protesto"),
-							DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO("Download Arquivo Cancelamento de Protesto"),
-							DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO("Downlado Arquivo Autorização de Cancelamento"),
-							ENVIO_ARQUIVO_DESISTENCIA_PROTESTO("Envio Arquivo Desistência de Protesto"),
-							ENVIO_ARQUIVO_CANCELAMENTO_PROTESTO("Envio Arquivo Cancelamento de Protesto"),
-							ENVIO_ARQUIVO_AUTORIZACAO_CANCELAMENTO("Envio Arquivo Autorização de Cancelamento"),
-							ENVIO_ARQUIVO_CENTRAL_NACIONAL_PROTESTO("Envio Arquivo da Central Nacional Protesto"),
-							DOWNLOAD_ARQUIVO_CENTRAL_NACIONAL_PROTESTO("Download Arquivo da Central Nacional Protesto");
+							ENVIO_ARQUIVO_REMESSA("Envio de Remessa"),
+							DOWNLOAD_ARQUIVO_REMESSA("Donwload de Remessa"),
+							ENVIO_ARQUIVO_CONFIRMACAO("Envio de Confirmação"),
+							DOWNLOAD_ARQUIVO_CONFIRMACAO("Download de Confirmação"),
+							ENVIO_ARQUIVO_RETORNO("Envio de Retorno"),
+							DOWNLOAD_ARQUIVO_RETORNO("Download de Retorno"),
+							DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO("Download de Desistência"),
+							DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO("Download de Cancelamento"),
+							DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO("Downlado de Autorização"),
+							ENVIO_ARQUIVO_DESISTENCIA_PROTESTO("Envio de Desistência"),
+							ENVIO_ARQUIVO_CANCELAMENTO_PROTESTO("Envio de Cancelamento"),
+							ENVIO_ARQUIVO_AUTORIZACAO_CANCELAMENTO("Envio de Autorização"),
+							ENVIO_ARQUIVO_CENTRAL_NACIONAL_PROTESTO("Envio da CNP"),
+							DOWNLOAD_ARQUIVO_CENTRAL_NACIONAL_PROTESTO("Download CNP");
 
 	private String label;
 

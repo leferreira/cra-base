@@ -173,8 +173,8 @@ public class TituloDAO extends AbstractBaseDAO {
 		}
 		if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.RETIRADO.getConstante())) {
 			if (titulo.getPedidosDesistencia() != null) {
-				if (!titulo.getPedidosDesistencia().isEmpty()) {
-					tituloRetorno.setTipoOcorrencia(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_COM_CUSTAS.getConstante());
+				if (titulo.getPedidosDesistencia().isEmpty()) {
+					tituloRetorno.setTipoOcorrencia(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante());
 					tituloRetorno.setCodigoIrregularidade(CodigoIrregularidade.IRREGULARIDADE_22.getCodigoIrregularidade());
 				}
 			}
@@ -278,6 +278,11 @@ public class TituloDAO extends AbstractBaseDAO {
 						}
 					}
 				}
+			}
+			if (tituloConfirmacao.getTipoOcorrencia().isEmpty() && tituloConfirmacao.getNumeroProtocoloCartorio().isEmpty()
+					&& tituloConfirmacao.getCodigoIrregularidade().isEmpty()) {
+				throw new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
+						+ " está com o protocolo, tipo ocorrência e código irregularidade em branco! Favor verifique os dados do arquivo...");
 			}
 
 			if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
