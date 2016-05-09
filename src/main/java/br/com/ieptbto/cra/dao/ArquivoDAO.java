@@ -67,7 +67,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
 			arquivoSalvo = save(arquivo);
 
-			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo) || TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
+			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo) || TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)
+					|| TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
 				if (arquivo.getRemessas() != null) {
 					for (Remessa remessa : arquivo.getRemessas()) {
 						remessa.setArquivo(arquivoSalvo);
@@ -100,8 +101,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 							valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
 						}
 						if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-							if (retornoContemTituloPago.equals(false)
-									|| remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
+							if (retornoContemTituloPago.equals(false) || remessa.getInstituicaoDestino().getTipoBatimento()
+									.equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
 								remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
 								update(remessa);
 							}
@@ -138,7 +139,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 						}
 						if (pedidosDesistenciaComErro.isEmpty()) {
 							desistenciaProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(quantidadeDesistenciasCartorio);
-							desistenciaProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(quantidadeDesistenciasCartorio * 2);
+							desistenciaProtestos.getRodapeCartorio()
+									.setSomaTotalCancelamentoDesistencia(quantidadeDesistenciasCartorio * 2);
 							desistenciaProtestos.setDesistencias(pedidosProcessados);
 							desistenciasProtesto.add(desistenciaProtestos);
 						} else {
@@ -148,7 +150,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 								descricao.append("Protocolo Inválido (" + pedidoDesistencia.getNumeroProtocolo() + ").");
 								municipio = pedidoDesistencia.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio();
 							}
-							erros.add(new DesistenciaCancelamentoException(descricao.toString(), municipio, CodigoErro.CRA_PROTOCOLO_INVALIDO.getCodigo()));
+							erros.add(new DesistenciaCancelamentoException(descricao.toString(), municipio,
+									CodigoErro.CRA_PROTOCOLO_INVALIDO.getCodigo()));
 							pedidosDesistenciaComErro.clear();
 						}
 					}
@@ -177,7 +180,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			} else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
 				new InfraException("Não foi possivel enviar a Autorização de Cancelamento! Entre em contato com a CRA!");
 			}
-			logger.info("O arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin() + " salvo com sucesso.");
+			logger.info("O arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
+					+ " salvo com sucesso.");
 
 		} catch (InfraException ex) {
 			transaction.rollback();
@@ -344,15 +348,15 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return arquivo;
 	}
 
-	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos, Municipio municipio,
-			LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
+	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos,
+			Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.createAlias("instituicaoEnvio", "instituicaoEnvio");
 		criteria.createAlias("tipoArquivo", "tipoArquivo");
 		criteria.createAlias("instituicaoEnvio.tipoInstituicao", "tipoInstituicao");
 		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
-		criteria.add(
-				Restrictions.or(Restrictions.eq("instituicaoEnvio", usuario.getInstituicao()), Restrictions.eq("instituicaoRecebe", usuario.getInstituicao())));
+		criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", usuario.getInstituicao()),
+				Restrictions.eq("instituicaoRecebe", usuario.getInstituicao())));
 
 		if (arquivo.getInstituicaoEnvio() != null) {
 			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", arquivo.getInstituicaoEnvio()),
@@ -396,7 +400,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));
 		criteria.add(Restrictions.eq("nomeArquivo", nomeArquivo));
-
+		criteria.setMaxResults(1);
 		return Arquivo.class.cast(criteria.uniqueResult());
 	}
 }
