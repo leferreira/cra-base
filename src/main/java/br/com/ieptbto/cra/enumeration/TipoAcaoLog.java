@@ -16,7 +16,7 @@ public enum TipoAcaoLog {
 							DOWNLOAD_ARQUIVO_RETORNO("Download de Retorno"),
 							DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO("Download de Desistência"),
 							DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO("Download de Cancelamento"),
-							DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO("Downlado de Autorização"),
+							DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO("Download de Autorização"),
 							ENVIO_ARQUIVO_DESISTENCIA_PROTESTO("Envio de Desistência"),
 							ENVIO_ARQUIVO_CANCELAMENTO_PROTESTO("Envio de Cancelamento"),
 							ENVIO_ARQUIVO_AUTORIZACAO_CANCELAMENTO("Envio de Autorização"),

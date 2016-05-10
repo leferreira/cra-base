@@ -380,7 +380,6 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public RemessaDesistenciaProtestoVO buscarDesistenciaCancelamentoCartorio(Instituicao cartorio, String nomeArquivo) {
 		RemessaDesistenciaProtestoVO desistenciaCancelamentoVO = null;
-		cartorio.setMunicipio(desistenciaDAO.buscarPorPK(cartorio.getMunicipio(), Municipio.class));
 
 		if (nomeArquivo.contains(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.getConstante())) {
 			DesistenciaProtesto desistencia = desistenciaDAO.buscarDesistenciaProtesto(cartorio, nomeArquivo);
@@ -393,9 +392,7 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 			remessaDesistencia.getDesistenciaProtesto().add(desistencia);
 			remessaDesistencia.setRodape(desistencia.getRemessaDesistenciaProtesto().getRodape());
 			remessaDesistencia.setArquivo(desistencia.getRemessaDesistenciaProtesto().getArquivo());
-
-			desistenciaCancelamentoVO = new ConversorDesistenciaProtesto().converter(remessaDesistencia);
-			desistenciaDAO.alterarSituacaoDesistenciaProtesto(cartorio, nomeArquivo);
+			return new ConversorDesistenciaProtesto().converter(remessaDesistencia);
 
 		} else if (nomeArquivo.contains(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.getConstante())) {
 			CancelamentoProtesto cancelamento = cancelamentoDAO.buscarCancelamentoProtesto(cartorio, nomeArquivo);
@@ -408,9 +405,7 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 			remessa.getCancelamentoProtesto().add(cancelamento);
 			remessa.setRodape(cancelamento.getRemessaCancelamentoProtesto().getRodape());
 			remessa.setArquivo(cancelamento.getRemessaCancelamentoProtesto().getArquivo());
-
-			desistenciaCancelamentoVO = new ConversorCancelamentoProtesto().converter(remessa);
-			cancelamentoDAO.alterarSituacaoCancelamentoProtesto(cartorio, nomeArquivo);
+			return new ConversorCancelamentoProtesto().converter(remessa);
 
 		} else if (nomeArquivo.contains(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.getConstante())) {
 			AutorizacaoCancelamento autorizacaoCancelamento = autorizacaoDAO.buscarAutorizacaoCancelamentoProtesto(cartorio, nomeArquivo);
@@ -423,10 +418,25 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 			remessa.getAutorizacaoCancelamento().add(autorizacaoCancelamento);
 			remessa.setRodape(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getRodape());
 			remessa.setArquivo(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo());
+			return new ConversorCancelamentoProtesto().converter(remessa);
 
-			desistenciaCancelamentoVO = new ConversorCancelamentoProtesto().converter(remessa);
-			autorizacaoDAO.alterarSituacaoAutorizacaoCancelamento(cartorio, nomeArquivo);
 		}
 		return desistenciaCancelamentoVO;
+	}
+
+	/**
+	 * @param cartorio
+	 * @param nomeArquivo
+	 */
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public void confirmarRecebimentoDesistenciaCancelamento(Instituicao instituicao, String nomeArquivo) {
+		instituicao.setMunicipio(desistenciaDAO.buscarPorPK(instituicao.getMunicipio(), Municipio.class));
+		if (nomeArquivo.contains(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.getConstante())) {
+			desistenciaDAO.alterarSituacaoDesistenciaProtesto(instituicao, nomeArquivo);
+		} else if (nomeArquivo.contains(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.getConstante())) {
+			cancelamentoDAO.alterarSituacaoCancelamentoProtesto(instituicao, nomeArquivo);
+		} else if (nomeArquivo.contains(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.getConstante())) {
+			autorizacaoDAO.alterarSituacaoAutorizacaoCancelamento(instituicao, nomeArquivo);
+		}
 	}
 }

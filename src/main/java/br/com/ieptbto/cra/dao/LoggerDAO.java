@@ -46,7 +46,7 @@ public class LoggerDAO extends AbstractBaseDAO {
 		if (instituicao != null) {
 			criteria.add(Restrictions.ilike("instituicao", instituicao.getNomeFantasia(), MatchMode.ANYWHERE));
 		}
-		criteria.addOrder(Order.desc("id"));
+		criteria.addOrder(Order.desc("id")).addOrder(Order.desc("data"));
 		return criteria.list();
 	}
 }
