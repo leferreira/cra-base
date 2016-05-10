@@ -138,7 +138,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public PedidoAutorizacaoCancelamento getPedidoAutorizacaoCancelamento() {
 		if (this.handler != null) {
-			return (PedidoAutorizacaoCancelamento) this.handler.readObject(this, "pedidoAutorizacaoCancelamento", pedidoAutorizacaoCancelamento);
+			return (PedidoAutorizacaoCancelamento) this.handler.readObject(this, "pedidoAutorizacaoCancelamento",
+					pedidoAutorizacaoCancelamento);
 		}
 		return pedidoAutorizacaoCancelamento;
 	}
@@ -341,15 +342,16 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 
 	public void setPedidoCancelamento(PedidoCancelamento pedidoCancelamento) {
 		if (this.handler != null) {
-			this.pedidoCancelamento = (PedidoCancelamento) this.handler.writeObject(this, "pedidoCancelamento", this.pedidoCancelamento, pedidoCancelamento);
+			this.pedidoCancelamento =
+					(PedidoCancelamento) this.handler.writeObject(this, "pedidoCancelamento", this.pedidoCancelamento, pedidoCancelamento);
 		}
 		this.pedidoCancelamento = pedidoCancelamento;
 	}
 
 	public void setPedidoAutorizacaoCancelamento(PedidoAutorizacaoCancelamento pedidoAutorizacaoCancelamento) {
 		if (this.handler != null) {
-			this.pedidoAutorizacaoCancelamento = (PedidoAutorizacaoCancelamento) this.handler.writeObject(this, "pedidoAutorizacaoCancelamento",
-					this.pedidoAutorizacaoCancelamento, pedidoAutorizacaoCancelamento);
+			this.pedidoAutorizacaoCancelamento = (PedidoAutorizacaoCancelamento) this.handler.writeObject(this,
+					"pedidoAutorizacaoCancelamento", this.pedidoAutorizacaoCancelamento, pedidoAutorizacaoCancelamento);
 		}
 		this.pedidoAutorizacaoCancelamento = pedidoAutorizacaoCancelamento;
 	}
@@ -550,9 +552,11 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setDocumentoSacador(tituloFiliado.getFiliado().getCnpjCpf());
 		this.setEnderecoSacadorVendedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getEndereco()));
 		this.setCepSacadorVendedor(tituloFiliado.getFiliado().getCep());
-		this.setCidadeSacadorVendedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
+		this.setCidadeSacadorVendedor(
+				RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
 		this.setUfSacadorVendedor(tituloFiliado.getFiliado().getUf());
-		this.setNossoNumero(gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId()));
+		this.setNossoNumero(
+				gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId()));
 		this.setEspecieTitulo(tituloFiliado.getEspecieTitulo().getConstante());
 		this.setNumeroTitulo(tituloFiliado.getNumeroTitulo());
 		this.setDataEmissaoTitulo(new LocalDate(tituloFiliado.getDataEmissao()));
@@ -568,7 +572,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setDocumentoDevedor(tituloFiliado.getDocumentoDevedor());
 		this.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getEnderecoDevedor()));
 		this.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(tituloFiliado.getCpfCnpj()));
-		this.setNumeroIdentificacaoDevedor(tituloFiliado.getCpfCnpj());
+		this.setNumeroIdentificacaoDevedor(StringUtils.leftPad("0", 14, tituloFiliado.getCpfCnpj()));
 		this.setCepDevedor(tituloFiliado.getCepDevedor());
 		this.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getCidadeDevedor()));
 		this.setBairroDevedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getBairroDevedor()));
@@ -588,8 +592,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setCidadeSacadorVendedor(
 				RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
 		this.setUfSacadorVendedor(avalista.getTituloFiliado().getFiliado().getUf());
-		this.setNossoNumero(gerarNossoNumero(
-				avalista.getTituloFiliado().getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + avalista.getTituloFiliado().getId()));
+		this.setNossoNumero(gerarNossoNumero(avalista.getTituloFiliado().getFiliado().getInstituicaoConvenio().getCodigoCompensacao()
+				+ avalista.getTituloFiliado().getId()));
 		this.setEspecieTitulo(avalista.getTituloFiliado().getEspecieTitulo().getConstante());
 		this.setNumeroTitulo(avalista.getTituloFiliado().getNumeroTitulo());
 		this.setDataEmissaoTitulo(new LocalDate(avalista.getTituloFiliado().getDataEmissao()));
@@ -597,7 +601,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setTipoMoeda("001");
 		this.setValorTitulo(avalista.getTituloFiliado().getValorTitulo());
 		this.setSaldoTitulo(avalista.getTituloFiliado().getValorSaldoTitulo());
-		this.setPracaProtesto(RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getPracaProtesto().getNomeMunicipio().toUpperCase()));
+		this.setPracaProtesto(
+				RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getPracaProtesto().getNomeMunicipio().toUpperCase()));
 		this.setTipoEndoso("M");
 		this.setInformacaoSobreAceite("N");
 		this.setNumeroControleDevedor(numeroControleDevedor);

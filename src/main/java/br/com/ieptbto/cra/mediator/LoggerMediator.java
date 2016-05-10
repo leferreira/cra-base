@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.ieptbto.cra.dao.LoggerDAO;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.LogCra;
-import br.com.ieptbto.cra.enumeration.TipoLog;
 
 /**
  * @author Thasso Aráujo
@@ -28,7 +27,7 @@ public class LoggerMediator {
 		return loggerDAO.salvar(log);
 	}
 
-	public List<LogCra> buscarAcoes(LocalDate dataInicio, LocalDate dataFim, Instituicao instituicao, TipoLog tipoLog) {
-		return loggerDAO.buscarAcoes(dataInicio, dataFim, instituicao, tipoLog);
+	public List<LogCra> buscarAcoes(LocalDate dataInicio, LocalDate dataFim, Instituicao instituicao) {
+		return loggerDAO.buscarAcoes(dataInicio, dataFim, instituicao);
 	}
 }

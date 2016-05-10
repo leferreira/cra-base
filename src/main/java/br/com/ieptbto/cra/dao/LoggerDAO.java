@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.LogCra;
-import br.com.ieptbto.cra.enumeration.TipoLog;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -40,15 +39,12 @@ public class LoggerDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<LogCra> buscarAcoes(LocalDate dataInicio, LocalDate dataFim, Instituicao instituicao, TipoLog tipoLog) {
+	public List<LogCra> buscarAcoes(LocalDate dataInicio, LocalDate dataFim, Instituicao instituicao) {
 		Criteria criteria = getCriteria(LogCra.class);
 		criteria.add(Restrictions.between("data", dataInicio, dataFim));
 
 		if (instituicao != null) {
 			criteria.add(Restrictions.ilike("instituicao", instituicao.getNomeFantasia(), MatchMode.ANYWHERE));
-		}
-		if (tipoLog != null) {
-			criteria.add(Restrictions.eq("tipoLog", tipoLog));
 		}
 		criteria.addOrder(Order.desc("id"));
 		return criteria.list();

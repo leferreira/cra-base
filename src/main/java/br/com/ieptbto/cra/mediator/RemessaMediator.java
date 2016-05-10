@@ -50,6 +50,7 @@ import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
+import br.com.ieptbto.cra.enumeration.TipoAcaoLog;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -70,7 +71,7 @@ import br.com.ieptbto.cra.webservice.VO.MensagemXmlSerpro;
  *
  */
 @Service
-public class RemessaMediator {
+public class RemessaMediator extends BaseMediator {
 
 	protected static final Logger logger = Logger.getLogger(RemessaMediator.class);
 
@@ -298,6 +299,8 @@ public class RemessaMediator {
 			remessa = remessaDAO.buscarPorPK(remessa, Remessa.class);
 			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
 			remessaDAO.alterarSituacaoRemessa(remessa);
+			loggerCra.sucess(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_REMESSA, "Arquivo de Remessa " + remessa.getArquivo().getNomeArquivo()
+					+ " recebido com sucesso " + "por " + usuario.getInstituicao() + ", via aplicação.");
 		}
 		if (tipoInstituicaoUsuario.equals(TipoInstituicaoCRA.CARTORIO) && remessa.getDevolvidoPelaCRA().equals(true)) {
 			throw new InfraException("O arquivo " + remessa.getArquivo().getNomeArquivo() + " já foi devolvido pela CRA !");

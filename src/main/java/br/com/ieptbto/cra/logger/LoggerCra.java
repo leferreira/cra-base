@@ -5,6 +5,7 @@ import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.LogCra;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoAcaoLog;
@@ -77,6 +78,18 @@ public class LoggerCra {
 		logCra.setHora(new LocalTime());
 		logCra.setUsuario(user.getNome());
 		logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
+		return loggerMediator.salvar(logCra);
+	}
+
+	public LogCra sucess(Instituicao instituicao, Usuario user, TipoAcaoLog acao, String descricao) {
+		LogCra logCra = new LogCra();
+		logCra.setAcao(acao);
+		logCra.setDescricao(descricao);
+		logCra.setTipoLog(TipoLog.SUCESSO);
+		logCra.setData(new LocalDate());
+		logCra.setHora(new LocalTime());
+		logCra.setUsuario(user.getNome());
+		logCra.setInstituicao(instituicao.getNomeFantasia());
 		return loggerMediator.salvar(logCra);
 	}
 }

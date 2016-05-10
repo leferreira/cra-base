@@ -28,6 +28,7 @@ import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
+import br.com.ieptbto.cra.enumeration.TipoAcaoLog;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -38,7 +39,7 @@ import br.com.ieptbto.cra.processador.ProcessadorArquivo;
  *
  */
 @Service
-public class ArquivoMediator {
+public class ArquivoMediator extends BaseMediator {
 
 	@Autowired
 	ArquivoDAO arquivoDAO;
@@ -77,6 +78,8 @@ public class ArquivoMediator {
 
 		arquivo = processarArquivo(arquivo, uploadedFile);
 		setArquivo(arquivoDAO.salvar(arquivo, usuario, getErros()));
+		loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, getTipoAcaoEnvio(arquivo), "Arquivo " + arquivo.getNomeArquivo()
+				+ ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso via aplicação.");
 		return this;
 	}
 
@@ -124,6 +127,25 @@ public class ArquivoMediator {
 			throw new InfraException("Não foi possível identificar o cartório com o código do município [ " + codigoMunicipio + " ].");
 		}
 		return instituicao;
+	}
+
+	private TipoAcaoLog getTipoAcaoEnvio(Arquivo arquivo) {
+		TipoAcaoLog tipoAcao = null;
+		TipoArquivoEnum tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
+		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA)) {
+			tipoAcao = TipoAcaoLog.ENVIO_ARQUIVO_REMESSA;
+		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO)) {
+			tipoAcao = TipoAcaoLog.ENVIO_ARQUIVO_CONFIRMACAO;
+		} else if (tipoArquivo.equals(TipoArquivoEnum.RETORNO)) {
+			tipoAcao = TipoAcaoLog.ENVIO_ARQUIVO_RETORNO;
+		} else if (tipoArquivo.equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
+			tipoAcao = TipoAcaoLog.ENVIO_ARQUIVO_DESISTENCIA_PROTESTO;
+		} else if (tipoArquivo.equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)) {
+			tipoAcao = TipoAcaoLog.ENVIO_ARQUIVO_CANCELAMENTO_PROTESTO;
+		} else if (tipoArquivo.equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
+			tipoAcao = TipoAcaoLog.ENVIO_ARQUIVO_AUTORIZACAO_CANCELAMENTO;
+		}
+		return tipoAcao;
 	}
 
 	private StatusArquivo setStatusArquivo() {

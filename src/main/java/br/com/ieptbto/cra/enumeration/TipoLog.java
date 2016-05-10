@@ -6,23 +6,23 @@ package br.com.ieptbto.cra.enumeration;
  */
 public enum TipoLog {
 
-	SUCESSO("Sucesso","ocorrencia-sucesso"),
-	OCORRENCIA_ERRO("Ocorrência Erro","ocorrencia-erro"),
-	ALERTA("Alerta","ocorrencia-alerta");
+						SUCESSO("Sucesso", "ocorrencia-sucesso"),
+						OCORRENCIA_ERRO("Erro", "ocorrencia-erro"),
+						ALERTA("Alerta", "ocorrencia-alerta");
 
-    private String label;
-    private String idHtml;
+	private String label;
+	private String idHtml;
 
-    private TipoLog(String label, String idHtml) {
-	this.label = label;
-	this.idHtml = idHtml;
-    }
+	private TipoLog(String label, String idHtml) {
+		this.label = label;
+		this.idHtml = idHtml;
+	}
 
-    public String getIdHtml() {
-	return idHtml;
-    }
+	public String getIdHtml() {
+		return idHtml;
+	}
 
-    public String getLabel() {
-	return label;
-    }
+	public String getLabel() {
+		return label;
+	}
 }
