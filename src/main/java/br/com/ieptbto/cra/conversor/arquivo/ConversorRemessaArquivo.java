@@ -57,7 +57,6 @@ public class ConversorRemessaArquivo {
 			} else if (titulo instanceof Retorno) {
 				tituloVO = TituloVO.parseTitulo(Retorno.class.cast(titulo));
 			}
-
 			titulosVO.add(tituloVO);
 		}
 		return titulosVO;

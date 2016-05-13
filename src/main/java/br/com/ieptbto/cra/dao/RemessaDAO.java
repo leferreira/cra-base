@@ -40,244 +40,244 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class RemessaDAO extends AbstractBaseDAO {
 
-    @Autowired
-    private InstituicaoDAO instituicaoDAO;
+	@Autowired
+	private InstituicaoDAO instituicaoDAO;
 
-    public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim, Usuario usuarioCorrente, ArrayList<TipoArquivoEnum> tiposArquivo, ArrayList<StatusRemessa> situacoes) {
-	Criteria criteria = getCriteria(Remessa.class);
-	criteria.createAlias("arquivo", "a");
+	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
+			Usuario usuarioCorrente, ArrayList<TipoArquivoEnum> tiposArquivo, ArrayList<StatusRemessa> situacoes) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "a");
 
-	if (!usuarioCorrente.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-	    criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", usuarioCorrente.getInstituicao()), Restrictions.eq("instituicaoOrigem", usuarioCorrente.getInstituicao())));
+		if (!usuarioCorrente.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", usuarioCorrente.getInstituicao()),
+					Restrictions.eq("instituicaoOrigem", usuarioCorrente.getInstituicao())));
+		}
+
+		if (StringUtils.isNotBlank(arquivo.getNomeArquivo()))
+			criteria.add(Restrictions.ilike("a.nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
+
+		if (!tiposArquivo.isEmpty()) {
+			criteria.createAlias("a.tipoArquivo", "tipoArquivo");
+			criteria.add(filtrarRemessaPorTipoArquivo(tiposArquivo));
+		}
+
+		if (!situacoes.isEmpty()) {
+			criteria.add(filtrarSituacaoRemessa(situacoes));
+		}
+
+		if (arquivo.getInstituicaoEnvio() != null) {
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem", arquivo.getInstituicaoEnvio()),
+					Restrictions.eq("instituicaoDestino", arquivo.getInstituicaoEnvio())));
+		}
+
+		if (municipio != null) {
+			Instituicao cartorioProtesto = instituicaoDAO.buscarCartorioPorMunicipio(municipio.getNomeMunicipio());
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem", cartorioProtesto),
+					Restrictions.eq("instituicaoDestino", cartorioProtesto)));
+		}
+
+		if (dataInicio != null) {
+			criteria.add(Restrictions.between("a.dataEnvio", dataInicio, dataFim));
+		}
+
+		criteria.addOrder(Order.desc("a.dataEnvio"));
+		return criteria.list();
 	}
 
-	if (StringUtils.isNotBlank(arquivo.getNomeArquivo()))
-	    criteria.add(Restrictions.ilike("a.nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
-
-	if (!tiposArquivo.isEmpty()) {
-	    criteria.createAlias("a.tipoArquivo", "tipoArquivo");
-	    criteria.add(filtrarRemessaPorTipoArquivo(tiposArquivo));
+	private Disjunction filtrarRemessaPorTipoArquivo(ArrayList<TipoArquivoEnum> tiposArquivo) {
+		Disjunction disjunction = Restrictions.disjunction();
+		for (TipoArquivoEnum tipo : tiposArquivo) {
+			disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipo));
+		}
+		return disjunction;
 	}
 
-	if (!situacoes.isEmpty()) {
-	    criteria.add(filtrarSituacaoRemessa(situacoes));
+	private Disjunction filtrarSituacaoRemessa(ArrayList<StatusRemessa> situacoesRemessa) {
+		Disjunction disjunction = Restrictions.disjunction();
+		for (StatusRemessa status : situacoesRemessa) {
+			disjunction.add(Restrictions.eq("statusRemessa", status));
+		}
+		return disjunction;
 	}
 
-	if (arquivo.getInstituicaoEnvio() != null) {
-	    criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem", arquivo.getInstituicaoEnvio()), Restrictions.eq("instituicaoDestino", arquivo.getInstituicaoEnvio())));
+	public Remessa alterarSituacaoRemessa(Remessa remessa) {
+		Transaction transaction = getBeginTransation();
+
+		try {
+			update(remessa);
+
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível inserir esses dados na base.");
+		}
+		return remessa;
 	}
 
-	if (municipio != null) {
-	    Instituicao cartorioProtesto = instituicaoDAO.buscarCartorioPorMunicipio(municipio.getNomeMunicipio());
-	    criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem", cartorioProtesto), Restrictions.eq("instituicaoDestino", cartorioProtesto)));
+	public int getNumeroSequencialConvenio(Instituicao convenio, Instituicao instituicaoDestino) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.add(Restrictions.eq("instituicaoOrigem", convenio));
+		criteria.add(Restrictions.eq("instituicaoDestino", instituicaoDestino));
+		return criteria.list().size();
 	}
 
-	if (dataInicio != null) {
-	    criteria.add(Restrictions.between("a.dataEnvio", dataInicio, dataFim));
+	@SuppressWarnings("rawtypes")
+	public List<Remessa> confirmacoesPendentes(Instituicao instituicao) {
+		List<Remessa> remessas = new ArrayList<Remessa>();
+		String sql = "";
+
+		Hibernate.initialize(instituicao.getTipoInstituicao());
+		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			sql = "select rem.instituicao_destino_id, t.remessa_id " + "from TB_TITULO t "
+					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
+					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_origem_id=ins.id_instituicao "
+					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) " + "	from TB_TITULO tit "
+					+ "	LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
+					+ "	INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
+					+ "	where con.titulo_id IS NULL and tit.id_titulo > 37085) " + "AND rem.arquivo_id>18088 "
+					+ "GROUP BY rem.instituicao_destino_id,t.remessa_id " + "ORDER BY remessa_id ASC;";
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
+			sql = "SELECT ins.nome_fantasia,t.remessa_id from TB_TITULO t " + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
+					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_origem_id=ins.id_instituicao "
+					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) "
+					+ "from TB_TITULO tit LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
+					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
+					+ "where con.titulo_id IS NULL and tit.id_titulo > 37085 ) " + "AND rem.instituicao_destino_id=" + instituicao.getId()
+					+ " " + "AND rem.arquivo_id>18088 " + "GROUP BY ins.nome_fantasia, t.remessa_id " + "ORDER BY t.remessa_id ASC;";
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
+			sql = "select mun.nome_municipio,t.remessa_id " + "from TB_TITULO t "
+					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
+					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_destino_id=ins.id_instituicao "
+					+ "INNER JOIN tb_instituicao AS org ON rem.instituicao_origem_id=org.id_instituicao "
+					+ "INNER JOIN tb_municipio AS mun ON ins.municipio_id=mun.id_municipio "
+					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) " + "from TB_TITULO tit "
+					+ "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
+					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa " + "where con.titulo_id IS NULL "
+					+ "and tit.id_titulo > 37085) " + "AND org.tipo_instituicao_id<>4 " + "AND rem.instituicao_origem_id="
+					+ instituicao.getId() + " " + "OR rem.status_remessa LIKE 'AGUARDANDO' " + "AND org.tipo_instituicao_id<>4 "
+					+ "AND rem.instituicao_origem_id=" + instituicao.getId() + " " + "GROUP BY mun.nome_municipio,t.remessa_id "
+					+ "ORDER BY remessa_id ASC";
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
+			sql = "select mun.nome_municipio,t.remessa_id " + "from TB_TITULO t "
+					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
+					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_destino_id=ins.id_instituicao "
+					+ "INNER JOIN tb_instituicao AS org ON rem.instituicao_origem_id=org.id_instituicao "
+					+ "INNER JOIN tb_municipio AS mun ON ins.municipio_id=mun.id_municipio "
+					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) " + "from TB_TITULO tit "
+					+ "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
+					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa " + "where con.titulo_id IS NULL "
+					+ "and tit.id_titulo > 37085) " + "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
+					+ "OR rem.status_remessa LIKE 'AGUARDANDO' " + "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
+					+ "GROUP BY mun.nome_municipio,t.remessa_id " + "ORDER BY remessa_id ASC";
+		}
+
+		Query query = getSession().createSQLQuery(sql);
+		Iterator iterator = query.list().iterator();
+		while (iterator.hasNext()) {
+			Object[] posicao = (Object[]) iterator.next();
+			Integer id = Integer.class.cast(posicao[1]);
+			Criteria criteria = getCriteria(Remessa.class);
+			criteria.add(Restrictions.eq("id", id));
+			remessas.add(Remessa.class.cast(criteria.uniqueResult()));
+		}
+		return remessas;
 	}
 
-	criteria.addOrder(Order.desc("a.dataEnvio"));
-	return criteria.list();
-    }
-
-    private Disjunction filtrarRemessaPorTipoArquivo(ArrayList<TipoArquivoEnum> tiposArquivo) {
-	Disjunction disjunction = Restrictions.disjunction();
-	for (TipoArquivoEnum tipo : tiposArquivo) {
-	    disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipo));
-	}
-	return disjunction;
-    }
-
-    private Disjunction filtrarSituacaoRemessa(ArrayList<StatusRemessa> situacoesRemessa) {
-	Disjunction disjunction = Restrictions.disjunction();
-	for (StatusRemessa status : situacoesRemessa) {
-	    disjunction.add(Restrictions.eq("statusRemessa", status));
-	}
-	return disjunction;
-    }
-
-    public Remessa alterarSituacaoRemessa(Remessa remessa) {
-	Transaction transaction = getBeginTransation();
-
-	try {
-	    update(remessa);
-
-	    transaction.commit();
-	} catch (Exception ex) {
-	    transaction.rollback();
-	    logger.error(ex.getMessage(), ex);
-	    throw new InfraException("Não foi possível inserir esses dados na base.");
-	}
-	return remessa;
-    }
-
-    public int getNumeroSequencialConvenio(Instituicao convenio, Instituicao instituicaoDestino) {
-	Criteria criteria = getCriteria(Remessa.class);
-	criteria.add(Restrictions.eq("instituicaoOrigem", convenio));
-	criteria.add(Restrictions.eq("instituicaoDestino", instituicaoDestino));
-	return criteria.list().size();
-    }
-
-    @SuppressWarnings("rawtypes")
-    public List<Remessa> confirmacoesPendentes(Instituicao instituicao) {
-	List<Remessa> remessas = new ArrayList<Remessa>();
-	String sql = "";
-
-	Hibernate.initialize(instituicao.getTipoInstituicao());
-	if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-	    sql = "select rem.instituicao_destino_id, t.remessa_id " + "from TB_TITULO t "
-		    + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
-		    + "INNER JOIN tb_instituicao AS ins ON rem.instituicao_origem_id=ins.id_instituicao "
-		    + "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) " + "	from TB_TITULO tit "
-		    + "	LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
-		    + "	INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
-		    + "	where con.titulo_id IS NULL and tit.id_titulo > 37085) " + "AND rem.arquivo_id>18088 "
-		    + "GROUP BY rem.instituicao_destino_id,t.remessa_id " + "ORDER BY remessa_id ASC;";
-	} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
-	    sql = "SELECT ins.nome_fantasia,t.remessa_id from TB_TITULO t "
-		    + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
-		    + "INNER JOIN tb_instituicao AS ins ON rem.instituicao_origem_id=ins.id_instituicao "
-		    + "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) "
-		    + "from TB_TITULO tit LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
-		    + "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
-		    + "where con.titulo_id IS NULL and tit.id_titulo > 37085 ) " + "AND rem.instituicao_destino_id="
-		    + instituicao.getId() + " " + "AND rem.arquivo_id>18088 "
-		    + "GROUP BY ins.nome_fantasia, t.remessa_id " + "ORDER BY t.remessa_id ASC;";
-	} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
-	    sql = "select mun.nome_municipio,t.remessa_id " + "from TB_TITULO t "
-		    + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
-		    + "INNER JOIN tb_instituicao AS ins ON rem.instituicao_destino_id=ins.id_instituicao "
-		    + "INNER JOIN tb_instituicao AS org ON rem.instituicao_origem_id=org.id_instituicao "
-		    + "INNER JOIN tb_municipio AS mun ON ins.municipio_id=mun.id_municipio "
-		    + "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) " + "from TB_TITULO tit "
-		    + "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
-		    + "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa " + "where con.titulo_id IS NULL "
-		    + "and tit.id_titulo > 37085) " + "AND org.tipo_instituicao_id<>4 "
-		    + "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
-		    + "OR rem.status_remessa LIKE 'AGUARDANDO' " + "AND org.tipo_instituicao_id<>4 "
-		    + "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
-		    + "GROUP BY mun.nome_municipio,t.remessa_id " + "ORDER BY remessa_id ASC";
-	} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
-	    sql = "select mun.nome_municipio,t.remessa_id " + "from TB_TITULO t "
-		    + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
-		    + "INNER JOIN tb_instituicao AS ins ON rem.instituicao_destino_id=ins.id_instituicao "
-		    + "INNER JOIN tb_instituicao AS org ON rem.instituicao_origem_id=org.id_instituicao "
-		    + "INNER JOIN tb_municipio AS mun ON ins.municipio_id=mun.id_municipio "
-		    + "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) " + "from TB_TITULO tit "
-		    + "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
-		    + "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa " + "where con.titulo_id IS NULL "
-		    + "and tit.id_titulo > 37085) " + "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
-		    + "OR rem.status_remessa LIKE 'AGUARDANDO' " + "AND rem.instituicao_origem_id="
-		    + instituicao.getId() + " " + "GROUP BY mun.nome_municipio,t.remessa_id "
-		    + "ORDER BY remessa_id ASC";
+	public List<Anexo> verificarAnexosRemessa(Remessa remessa) {
+		Criteria criteria = getCriteria(Anexo.class);
+		criteria.createAlias("titulo", "titulo");
+		criteria.add(Restrictions.eq("titulo.remessa", remessa));
+		return criteria.list();
 	}
 
-	Query query = getSession().createSQLQuery(sql);
-	Iterator iterator = query.list().iterator();
-	while (iterator.hasNext()) {
-	    Object[] posicao = (Object[]) iterator.next();
-	    Integer id = Integer.class.cast(posicao[1]);
-	    Criteria criteria = getCriteria(Remessa.class);
-	    criteria.add(Restrictions.eq("id", id));
-	    remessas.add(Remessa.class.cast(criteria.uniqueResult()));
+	public Remessa baixarArquivoCartorioRemessa(Remessa remessa) {
+		Remessa remessaDownload = buscarPorPK(remessa);
+
+		Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
+		criteriaTitulo.add(Restrictions.eq("remessa", remessaDownload));
+		remessaDownload.setTitulos(criteriaTitulo.list());
+		return remessaDownload;
 	}
-	return remessas;
-    }
 
-    public List<Anexo> verificarAnexosRemessa(Remessa remessa) {
-	Criteria criteria = getCriteria(Anexo.class);
-	criteria.createAlias("titulo", "titulo");
-	criteria.add(Restrictions.eq("titulo.remessa", remessa));
-	return criteria.list();
-    }
+	public Remessa baixarArquivoCartorioConfirmacao(Remessa remessa) {
+		Remessa remessaDownload = buscarPorPK(remessa);
 
-    public Remessa baixarArquivoCartorioRemessa(Remessa remessa) {
-	Remessa remessaDownload = buscarPorPK(remessa);
-
-	Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
-	criteriaTitulo.add(Restrictions.eq("remessa", remessaDownload));
-	remessaDownload.setTitulos(criteriaTitulo.list());
-	return remessaDownload;
-    }
-
-    public Remessa baixarArquivoCartorioConfirmacao(Remessa remessa) {
-	Remessa remessaDownload = buscarPorPK(remessa);
-
-	Criteria criteriaTitulo = getCriteria(Confirmacao.class);
-	criteriaTitulo.add(Restrictions.eq("remessa", remessaDownload));
-	remessaDownload.setTitulos(criteriaTitulo.list());
-	return remessaDownload;
-    }
-
-    public Remessa baixarArquivoCartorioRetorno(Remessa remessa) {
-	Remessa remessaDownload = buscarPorPK(remessa);
-
-	Criteria criteriaTitulo = getCriteria(Retorno.class);
-	criteriaTitulo.add(Restrictions.eq("remessa", remessaDownload));
-	remessaDownload.setTitulos(criteriaTitulo.list());
-	return remessaDownload;
-    }
-
-    @SuppressWarnings("rawtypes")
-    public Remessa baixarArquivoCartorioRemessa(Instituicao instituicao, String nomeArquivo) {
-	Criteria criteria = getCriteria(Remessa.class);
-	criteria.createAlias("arquivo", "arquivo");
-	criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
-	criteria.add(Restrictions.eq("instituicaoDestino", instituicao));
-	Remessa remessa = Remessa.class.cast(criteria.uniqueResult());
-	if (remessa == null) {
-	    return null;
+		Criteria criteriaTitulo = getCriteria(Confirmacao.class);
+		criteriaTitulo.add(Restrictions.eq("remessa", remessaDownload));
+		remessaDownload.setTitulos(criteriaTitulo.list());
+		return remessaDownload;
 	}
-	remessa.setTitulos(new ArrayList<Titulo>());
 
-	Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
-	criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-	remessa.getTitulos().addAll(criteriaTitulo.list());
-	return remessa;
-    }
+	public Remessa baixarArquivoCartorioRetorno(Remessa remessa) {
+		Remessa remessaDownload = buscarPorPK(remessa);
 
-    @SuppressWarnings("rawtypes")
-    public Remessa baixarArquivoCartorioConfirmacao(Instituicao instituicao, String nomeArquivo) {
-	Criteria criteria = getCriteria(Remessa.class);
-	criteria.createAlias("arquivo", "arquivo");
-	criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
-	criteria.add(Restrictions.eq("instituicaoOrigem", instituicao));
-	Remessa remessa = Remessa.class.cast(criteria.uniqueResult());
-	if (remessa == null) {
-	    return null;
+		Criteria criteriaTitulo = getCriteria(Retorno.class);
+		criteriaTitulo.add(Restrictions.eq("remessa", remessaDownload));
+		remessaDownload.setTitulos(criteriaTitulo.list());
+		return remessaDownload;
 	}
-	remessa.setTitulos(new ArrayList<Titulo>());
 
-	Criteria criteriaTitulo = getCriteria(Confirmacao.class);
-	criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-	remessa.getTitulos().addAll(criteriaTitulo.list());
-	return null;
-    }
+	@SuppressWarnings("rawtypes")
+	public Remessa baixarArquivoCartorioRemessa(Instituicao instituicao, String nomeArquivo) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "arquivo");
+		criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
+		criteria.add(Restrictions.eq("instituicaoDestino", instituicao));
+		Remessa remessa = Remessa.class.cast(criteria.uniqueResult());
+		if (remessa == null) {
+			return null;
+		}
+		remessa.setTitulos(new ArrayList<Titulo>());
 
-    @SuppressWarnings("rawtypes")
-    public Remessa baixarArquivoCartorioRetorno(Instituicao instituicao, String nomeArquivo) {
-	Criteria criteria = getCriteria(Remessa.class);
-	criteria.createAlias("arquivo", "arquivo");
-	criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
-	criteria.add(Restrictions.eq("instituicaoOrigem", instituicao));
-	Remessa remessa = Remessa.class.cast(criteria.uniqueResult());
-	if (remessa == null) {
-	    return null;
+		Criteria criteriaTitulo = getCriteria(TituloRemessa.class);
+		criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+		remessa.getTitulos().addAll(criteriaTitulo.list());
+		return remessa;
 	}
-	remessa.setTitulos(new ArrayList<Titulo>());
 
-	Criteria criteriaTitulo = getCriteria(Retorno.class);
-	criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-	remessa.getTitulos().addAll(criteriaTitulo.list());
-	return remessa;
-    }
+	@SuppressWarnings("rawtypes")
+	public Remessa baixarArquivoCartorioConfirmacao(Instituicao instituicao, String nomeArquivo) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "arquivo");
+		criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
+		criteria.add(Restrictions.eq("instituicaoOrigem", instituicao));
+		Remessa remessa = Remessa.class.cast(criteria.uniqueResult());
+		if (remessa == null) {
+			return null;
+		}
+		remessa.setTitulos(new ArrayList<Titulo>());
 
-    public List<Remessa> buscarRemessasPorArquivo(Arquivo arquivo) {
-	arquivo = buscarPorPK(arquivo);
-	Criteria criteria = getCriteria(Remessa.class);
-	criteria.createAlias("arquivo", "arquivo");
-	criteria.add(Restrictions.eq("arquivo", arquivo));
+		Criteria criteriaTitulo = getCriteria(Confirmacao.class);
+		criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+		remessa.getTitulos().addAll(criteriaTitulo.list());
+		return null;
+	}
 
-	return criteria.list();
-    }
+	@SuppressWarnings("rawtypes")
+	public Remessa baixarArquivoCartorioRetorno(Instituicao instituicao, String nomeArquivo) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "arquivo");
+		criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
+		criteria.add(Restrictions.eq("instituicaoOrigem", instituicao));
+		Remessa remessa = Remessa.class.cast(criteria.uniqueResult());
+		if (remessa == null) {
+			return null;
+		}
+		remessa.setTitulos(new ArrayList<Titulo>());
+
+		Criteria criteriaTitulo = getCriteria(Retorno.class);
+		criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+		remessa.getTitulos().addAll(criteriaTitulo.list());
+		return remessa;
+	}
+
+	public List<Remessa> buscarRemessasPorArquivo(Arquivo arquivo) {
+		arquivo = buscarPorPK(arquivo);
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "arquivo");
+		criteria.add(Restrictions.eq("arquivo", arquivo));
+
+		return criteria.list();
+	}
 }

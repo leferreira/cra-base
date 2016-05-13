@@ -7,7 +7,7 @@ package br.com.ieptbto.cra.enumeration;
 public enum BancoAgenciaCentralizadoraCodigoCartorio {
 
 														BRADESCO("237", "102397", 1),
-														BANCO_DO_BRASIL("001", "", 1);
+														BANCO_DO_BRASIL("001", null, 1);
 
 	private String codigoPortador;
 	private String agenciaCentralizadora;
