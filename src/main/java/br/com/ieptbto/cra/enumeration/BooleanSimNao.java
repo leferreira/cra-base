@@ -1,13 +1,13 @@
 package br.com.ieptbto.cra.enumeration;
 
-public enum EnumerationSimNao {
+public enum BooleanSimNao {
 
 	SIM("Sim"),
 	NAO("Não");
 	
 	private String label;
 	
-	private EnumerationSimNao(String label) {
+	private BooleanSimNao(String label) {
 		this.label = label;
 	}
 	

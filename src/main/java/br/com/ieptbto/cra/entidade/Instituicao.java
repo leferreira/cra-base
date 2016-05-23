@@ -23,7 +23,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.enumeration.EnumerationSimNao;
+import br.com.ieptbto.cra.enumeration.BooleanSimNao;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.TipoBatimento;
 import br.com.ieptbto.cra.enumeration.TipoCampo51;
@@ -53,7 +53,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	private String numeroContaCorrente;
 	private String codigoCartorio;
 	private boolean situacao;
-	private EnumerationSimNao permitidoSetoresConvenio;
+	private BooleanSimNao permitidoSetoresConvenio;
 	private TipoInstituicao tipoInstituicao;
 	private List<Arquivo> arquivoEnviados;
 	private List<Usuario> listaUsuarios;
@@ -182,9 +182,9 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 
 	@Column(name = "PERMITIDO_SETORES_CONVENIO")
 	@Enumerated(EnumType.STRING)
-	public EnumerationSimNao getPermitidoSetoresConvenio() {
+	public BooleanSimNao getPermitidoSetoresConvenio() {
 		if (permitidoSetoresConvenio == null) {
-			permitidoSetoresConvenio = EnumerationSimNao.NAO;
+			permitidoSetoresConvenio = BooleanSimNao.NAO;
 		}
 		return permitidoSetoresConvenio;
 	}
@@ -218,7 +218,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		this.cnpj = cnpj;
 	}
 
-	public void setPermitidoSetoresConvenio(EnumerationSimNao permitidoSetoresConvenio) {
+	public void setPermitidoSetoresConvenio(BooleanSimNao permitidoSetoresConvenio) {
 		this.permitidoSetoresConvenio = permitidoSetoresConvenio;
 	}
 
