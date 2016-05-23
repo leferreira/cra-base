@@ -20,6 +20,7 @@ import br.com.ieptbto.cra.entidade.RemessaCnp;
 import br.com.ieptbto.cra.entidade.TituloCnp;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoCnpVO;
+import br.com.ieptbto.cra.validacao.FabricaValidacaoCNP;
 
 /**
  * @author Thasso Araújo
@@ -34,15 +35,27 @@ public class CentralNacionalProtestoMediator {
 	CentralNancionalProtestoDAO centralNancionalProtestoDAO;
 	@Autowired
 	TituloDAO tituloDAO;
+	@Autowired
+	FabricaValidacaoCNP fabricaValidacaoCNP;
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public ArquivoCnpVO gerarArquivoNacional() {
 		ArquivoCnp arquivoCnp = new ArquivoCnp();
-		arquivoCnp.setRemessaCnp(centralNancionalProtestoDAO.buscarRemessasCnpPendentes());
-		// centralNancionalProtestoDAO.salvarArquivoCnpNacional(arquivoCnp);
+		arquivoCnp.setRemessasCnp(centralNancionalProtestoDAO.buscarRemessasCnpPendentes());
+		centralNancionalProtestoDAO.salvarArquivoCnpNacional(arquivoCnp);
 
 		ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
-		arquivoCnpVO.setRemessasCnpVO(ConversorArquivoCnpVO.converterParaRemessaCnpNacionalVO(arquivoCnp.getRemessaCnp()));
+		arquivoCnpVO.setRemessasCnpVO(ConversorArquivoCnpVO.converterParaRemessaCnpNacionalVO(arquivoCnp.getRemessasCnp()));
+		return arquivoCnpVO;
+	}
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public ArquivoCnpVO buscarArquivoNacionalPorData(LocalDate dataLiberacao) {
+		ArquivoCnp arquivoCnp = new ArquivoCnp();
+		arquivoCnp.setRemessasCnp(centralNancionalProtestoDAO.buscarRemessasCnpPorData(dataLiberacao));
+
+		ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
+		arquivoCnpVO.setRemessasCnpVO(ConversorArquivoCnpVO.converterParaRemessaCnpVO(arquivoCnp.getRemessasCnp()));
 		return arquivoCnpVO;
 	}
 
@@ -51,8 +64,9 @@ public class CentralNacionalProtestoMediator {
 		ArquivoCnp arquivoCnp = new ArquivoCnp();
 		arquivoCnp.setDataEnvio(new LocalDate());
 		arquivoCnp.setInstituicaoEnvio(usuario.getInstituicao());
-		arquivoCnp.setRemessaCnp(ConversorArquivoCnpVO.converterParaRemessaCnp(arquivoCnpVO));
+		arquivoCnp.setRemessasCnp(ConversorArquivoCnpVO.converterParaRemessaCnp(arquivoCnpVO));
 
+		fabricaValidacaoCNP.validarArquivoCnpCartorio(arquivoCnp);
 		return centralNancionalProtestoDAO.salvarArquivoCartorioCentralNacionalProtesto(usuario, arquivoCnp);
 	}
 
@@ -72,25 +86,17 @@ public class CentralNacionalProtestoMediator {
 		return false;
 	}
 
-	public ArquivoCnpVO buscarArquivoNacionalPorData(LocalDate dataLiberacao) {
-		ArquivoCnp arquivoCnp = new ArquivoCnp();
-		arquivoCnp.setRemessaCnp(centralNancionalProtestoDAO.buscarRemessasCnpPorData(dataLiberacao));
-		centralNancionalProtestoDAO.salvarArquivoCnpNacional(arquivoCnp);
-
-		ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
-		arquivoCnpVO.setRemessasCnpVO(ConversorArquivoCnpVO.converterParaRemessaCnpVO(arquivoCnp.getRemessaCnp()));
-		return arquivoCnpVO;
-	}
-
 	public List<String> consultarProtestos(String documentoDevedor) {
 		List<String> municipiosComProtesto = new ArrayList<String>();
 		List<TituloCnp> titulosProtestados = centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
 
 		for (TituloCnp titulo : titulosProtestados) {
-			TituloCnp tituloCancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
+			TituloCnp tituloCancelamento =
+					centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
 
 			if (tituloCancelamento == null) {
-				Municipio municipio = centralNancionalProtestoDAO.carregarMunicipioCartorio(titulo.getRemessa().getArquivo().getInstituicaoEnvio().getMunicipio());
+				Municipio municipio = centralNancionalProtestoDAO
+						.carregarMunicipioCartorio(titulo.getRemessa().getArquivo().getInstituicaoEnvio().getMunicipio());
 				if (!municipiosComProtesto.contains(municipio.getNomeMunicipio().toUpperCase())) {
 					municipiosComProtesto.add(municipio.getNomeMunicipio().toUpperCase());
 				}
@@ -104,16 +110,22 @@ public class CentralNacionalProtestoMediator {
 		List<TituloCnp> titulosProtestados = centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
 
 		for (TituloCnp titulo : titulosProtestados) {
-			TituloCnp tituloCancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
+			TituloCnp tituloCancelamento =
+					centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
 
 			if (tituloCancelamento == null) {
 				if (!cartorios.contains(titulo.getRemessa().getArquivo().getInstituicaoEnvio())) {
-					Municipio municipio = centralNancionalProtestoDAO.carregarMunicipioCartorio(titulo.getRemessa().getArquivo().getInstituicaoEnvio().getMunicipio());
+					Municipio municipio = centralNancionalProtestoDAO
+							.carregarMunicipioCartorio(titulo.getRemessa().getArquivo().getInstituicaoEnvio().getMunicipio());
 					titulo.getRemessa().getArquivo().getInstituicaoEnvio().setMunicipio(municipio);
 					cartorios.add(titulo.getRemessa().getArquivo().getInstituicaoEnvio());
 				}
 			}
 		}
 		return cartorios;
+	}
+
+	public int buscarSequencialCabecalhoCnp(String codigoMunicipio) {
+		return centralNancionalProtestoDAO.buscarSequencialCabecalhoCnp(codigoMunicipio);
 	}
 }

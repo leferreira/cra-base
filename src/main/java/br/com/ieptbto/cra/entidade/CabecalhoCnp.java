@@ -27,6 +27,8 @@ public class CabecalhoCnp extends AbstractEntidade<CabecalhoCnp> {
 	private RemessaCnp remessa;
 	private String codigoRegistro;
 	private LocalDate dataMovimento;
+	private String emBranco2;
+	private String emBranco53;
 	private String numeroRemessaArquivo;
 	private int tipoDocumento;
 	private String numeroCnpjCpfResponsavelCartorio;
@@ -157,6 +159,24 @@ public class CabecalhoCnp extends AbstractEntidade<CabecalhoCnp> {
 	@Column(name = "SEQUENCIAL_REGISTRO", length = 7)
 	public String getSequenciaRegistro() {
 		return sequenciaRegistro;
+	}
+
+	@Column(name = "EM_BRANCO_2", length = 100)
+	public String getEmBranco2() {
+		return emBranco2;
+	}
+
+	@Column(name = "EM_BRANCO_53", length = 100)
+	public String getEmBranco53() {
+		return emBranco53;
+	}
+
+	public void setEmBranco2(String emBranco2) {
+		this.emBranco2 = emBranco2;
+	}
+
+	public void setEmBranco53(String emBranco53) {
+		this.emBranco53 = emBranco53;
 	}
 
 	public void setSequenciaRegistro(String sequenciaRegistro) {

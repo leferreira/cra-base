@@ -572,49 +572,12 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setDocumentoDevedor(tituloFiliado.getDocumentoDevedor());
 		this.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getEnderecoDevedor()));
 		this.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(tituloFiliado.getCpfCnpj()));
-		this.setNumeroIdentificacaoDevedor(StringUtils.leftPad("0", 14, tituloFiliado.getCpfCnpj()));
+		this.setNumeroIdentificacaoDevedor(StringUtils.leftPad(tituloFiliado.getCpfCnpj(), 14, "0"));
 		this.setCepDevedor(tituloFiliado.getCepDevedor());
 		this.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getCidadeDevedor()));
 		this.setBairroDevedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getBairroDevedor()));
 		this.setUfDevedor(tituloFiliado.getUfDevedor());
 		this.setComplementoRegistro(buscarAlineaCheque(tituloFiliado));
-	}
-
-	public void parseToAvalista(Avalista avalista, int numeroControleDevedor) {
-		this.setAgenciaCodigoCedente(avalista.getTituloFiliado().getFiliado().getCodigoFiliado());
-		this.setIdentificacaoRegistro(TipoRegistro.TITULO);
-		this.setCodigoPortador(avalista.getTituloFiliado().getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
-		this.setNomeCedenteFavorecido(RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getRazaoSocial()));
-		this.setNomeSacadorVendedor(RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getRazaoSocial()));
-		this.setDocumentoSacador(avalista.getTituloFiliado().getFiliado().getCnpjCpf());
-		this.setEnderecoSacadorVendedor(RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getEndereco()));
-		this.setCepSacadorVendedor(avalista.getTituloFiliado().getFiliado().getCep());
-		this.setCidadeSacadorVendedor(
-				RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
-		this.setUfSacadorVendedor(avalista.getTituloFiliado().getFiliado().getUf());
-		this.setNossoNumero(gerarNossoNumero(avalista.getTituloFiliado().getFiliado().getInstituicaoConvenio().getCodigoCompensacao()
-				+ avalista.getTituloFiliado().getId()));
-		this.setEspecieTitulo(avalista.getTituloFiliado().getEspecieTitulo().getConstante());
-		this.setNumeroTitulo(avalista.getTituloFiliado().getNumeroTitulo());
-		this.setDataEmissaoTitulo(new LocalDate(avalista.getTituloFiliado().getDataEmissao()));
-		this.setDataVencimentoTitulo(new LocalDate(avalista.getTituloFiliado().getDataVencimento()));
-		this.setTipoMoeda("001");
-		this.setValorTitulo(avalista.getTituloFiliado().getValorTitulo());
-		this.setSaldoTitulo(avalista.getTituloFiliado().getValorSaldoTitulo());
-		this.setPracaProtesto(
-				RemoverAcentosUtil.removeAcentos(avalista.getTituloFiliado().getPracaProtesto().getNomeMunicipio().toUpperCase()));
-		this.setTipoEndoso("M");
-		this.setInformacaoSobreAceite("N");
-		this.setNumeroControleDevedor(numeroControleDevedor);
-		this.setNomeDevedor(RemoverAcentosUtil.removeAcentos(avalista.getNome()));
-		this.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(avalista.getEndereco()));
-		this.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(avalista.getDocumento()));
-		this.setNumeroIdentificacaoDevedor(avalista.getDocumento());
-		this.setCepDevedor(avalista.getCep());
-		this.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(avalista.getCidade()));
-		this.setBairroDevedor(RemoverAcentosUtil.removeAcentos(avalista.getBairro()));
-		this.setUfDevedor(avalista.getUf());
-		this.setComplementoRegistro(buscarAlineaCheque(avalista.getTituloFiliado()));
 	}
 
 	private String gerarNossoNumero(String nossoNumero) {

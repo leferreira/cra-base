@@ -89,13 +89,13 @@ public class CabecalhoVO extends AbstractArquivoVO {
 	private String qtdOriginaisRemessa;
 
 	@XmlAttribute(name = "h13", required = true)
-	@IAtributoArquivo(ordem = 13, posicao = 84, tamanho = 6, posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO,
+	@IAtributoArquivo(ordem = 13, posicao = 84, tamanho = 6, formato = " ", posicaoCampoVazio = PosicaoCampoVazio.DIREITO,
 			descricao = "Identificar a agência centralizadora - Uso do banco.", obrigatoriedade = true)
 	private String agenciaCentralizadora;
 
 	@XmlAttribute(name = "h14", required = true)
-	@IAtributoArquivo(ordem = 14, posicao = 90, tamanho = 3, descricao = "Identificação da versão vigente do layout.",
-			obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 14, posicao = 90, tamanho = 3, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO,
+			descricao = "Identificação da versão vigente do layout.", obrigatoriedade = true)
 	private String versaoLayout;
 
 	@XmlAttribute(name = "h15", required = true)

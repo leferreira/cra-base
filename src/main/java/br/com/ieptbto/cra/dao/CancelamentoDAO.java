@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
@@ -114,7 +113,8 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 							descricao.append("Protocolo Inválido (" + pedidoCancelamento.getNumeroProtocolo() + ").");
 							municipio = pedidoCancelamento.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio();
 						}
-						erros.add(new DesistenciaCancelamentoException(descricao.toString(), municipio, CodigoErro.CRA_PROTOCOLO_INVALIDO.getCodigo()));
+						erros.add(new DesistenciaCancelamentoException(descricao.toString(), municipio,
+								CodigoErro.CRA_PROTOCOLO_INVALIDO.getCodigo()));
 						pedidosCancelamentoErros.clear();
 					}
 				}
@@ -140,7 +140,8 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 				}
 				transaction.commit();
 			}
-			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin() + " foi inserido na base ");
+			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
+					+ " foi inserido na base ");
 
 		} catch (InfraException ex) {
 			transaction.rollback();
@@ -155,8 +156,8 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
-			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio,
+			LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(CancelamentoProtesto.class);
 		criteria.createAlias("remessaCancelamentoProtesto", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
@@ -234,27 +235,6 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 		return cancelamentoProtesto;
 	}
 
-	@Transactional
-	public void alterarSituacaoCancelamentoProtesto(Instituicao cartorio, String nomeArquivo) {
-		StringBuffer sql = new StringBuffer();
-
-		try {
-			sql.append("UPDATE tb_cancelamento_protesto AS cp ");
-			sql.append("SET download_realizado=true ");
-			sql.append("FROM tb_remessa_cancelamento_protesto AS rem, tb_cabecalho AS cab, tb_arquivo AS arq ");
-			sql.append("WHERE cp.remessa_cancelamento_protesto_id=rem.id_remessa_cancelamento_protesto ");
-			sql.append("AND rem.arquivo_id=arq.id_arquivo ");
-			sql.append("AND arq.nome_arquivo LIKE '" + nomeArquivo + "' ");
-			sql.append("AND cab.codigo_municipio='" + cartorio.getMunicipio().getCodigoIBGE() + "'");
-
-			Query query = getSession().createSQLQuery(sql.toString());
-			query.executeUpdate();
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível alterar o cancelamento para recebido.");
-		}
-	}
-
 	public CancelamentoProtesto buscarCancelamentoProtesto(Instituicao cartorio, String nomeArquivo) {
 		Criteria criteria = getCriteria(CancelamentoProtesto.class);
 		criteria.createAlias("remessaCancelamentoProtesto", "remessaCancelamentoProtesto");
@@ -266,8 +246,8 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<TituloRemessa> buscarTitulosParaSolicitarCancelamento(TituloRemessa tituloRemessa, Instituicao bancoConvenio, Municipio municipio,
-			Usuario user) {
+	public List<TituloRemessa> buscarTitulosParaSolicitarCancelamento(TituloRemessa tituloRemessa, Instituicao bancoConvenio,
+			Municipio municipio, Usuario user) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 
 		criteria.createAlias("remessa", "remessa");
@@ -292,7 +272,8 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.ilike("nomeDevedor", tituloRemessa.getNomeDevedor(), MatchMode.ANYWHERE));
 
 		if (tituloRemessa.getNumeroIdentificacaoDevedor() != null && tituloRemessa.getNumeroIdentificacaoDevedor() != StringUtils.EMPTY)
-			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", tituloRemessa.getNumeroIdentificacaoDevedor(), MatchMode.ANYWHERE));
+			criteria.add(
+					Restrictions.ilike("numeroIdentificacaoDevedor", tituloRemessa.getNumeroIdentificacaoDevedor(), MatchMode.ANYWHERE));
 
 		if (municipio != null) {
 			criteria.createAlias("remessa.cabecalho", "cabecalho");
@@ -320,7 +301,8 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 	public List<TituloRemessa> buscarCancelamentosSolicitados() {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		Disjunction disjuntion = Restrictions.disjunction();
-		disjuntion.add(Restrictions.eq("statusSolicitacaoCancelamento", StatusSolicitacaoCancelamento.SOLICITACAO_AUTORIZACAO_CANCELAMENTO));
+		disjuntion
+				.add(Restrictions.eq("statusSolicitacaoCancelamento", StatusSolicitacaoCancelamento.SOLICITACAO_AUTORIZACAO_CANCELAMENTO));
 		disjuntion.add(Restrictions.eq("statusSolicitacaoCancelamento", StatusSolicitacaoCancelamento.SOLICITACAO_CANCELAMENTO_PROTESTO));
 		criteria.add(disjuntion);
 		return criteria.list();

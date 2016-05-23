@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.ArquivoCnp;
+import br.com.ieptbto.cra.entidade.CabecalhoCnp;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.RemessaCnp;
@@ -33,7 +35,7 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		try {
 			arquivoCnp = save(arquivoCnp);
 
-			for (RemessaCnp remessaCnp : arquivoCnp.getRemessaCnp()) {
+			for (RemessaCnp remessaCnp : arquivoCnp.getRemessasCnp()) {
 				remessaCnp.setArquivoLiberadoConsulta(false);
 				remessaCnp.setArquivo(arquivoCnp);
 				remessaCnp.setCabecalho(save(remessaCnp.getCabecalho()));
@@ -86,7 +88,7 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		Transaction transaction = getBeginTransation();
 
 		try {
-			for (RemessaCnp remessaCnp : arquivoCnp.getRemessaCnp()) {
+			for (RemessaCnp remessaCnp : arquivoCnp.getRemessasCnp()) {
 				remessaCnp.setDataLiberacaoConsulta(new LocalDate());
 				remessaCnp.setArquivoLiberadoConsulta(true);
 				update(remessaCnp);
@@ -148,5 +150,13 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Municipio carregarMunicipioCartorio(Municipio municipio) {
 		return buscarPorPK(municipio, Municipio.class);
+	}
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public int buscarSequencialCabecalhoCnp(String codigoMunicipio) {
+		Criteria criteria = getCriteria(CabecalhoCnp.class);
+		criteria.add(Restrictions.ilike("emBranco53", codigoMunicipio, MatchMode.EXACT));
+		criteria.setProjection(Projections.max("numeroRemessaArquivo"));
+		return Integer.valueOf(String.class.cast(criteria.uniqueResult()));
 	}
 }

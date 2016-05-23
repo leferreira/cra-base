@@ -148,7 +148,8 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> implements Fie
 			agenciaCentralizadora = StringUtils.EMPTY;
 		}
 
-		BancoAgenciaCentralizadoraCodigoCartorio agencia = BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(this.numeroCodigoPortador);
+		BancoAgenciaCentralizadoraCodigoCartorio agencia =
+				BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(this.numeroCodigoPortador);
 		if (agencia != null) {
 			if (agencia.getAgenciaCentralizadora() != null) {
 				agenciaCentralizadora = agencia.getAgenciaCentralizadora();

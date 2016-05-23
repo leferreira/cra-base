@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
@@ -15,7 +14,6 @@ import org.hibernate.sql.JoinType;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
@@ -98,7 +96,8 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 							descricao.append("Protocolo Inválido (" + pedidoAutorizacao.getNumeroProtocolo() + ").");
 							municipio = pedidoAutorizacao.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio();
 						}
-						erros.add(new DesistenciaCancelamentoException(descricao.toString(), municipio, CodigoErro.CRA_PROTOCOLO_INVALIDO.getCodigo()));
+						erros.add(new DesistenciaCancelamentoException(descricao.toString(), municipio,
+								CodigoErro.CRA_PROTOCOLO_INVALIDO.getCodigo()));
 						pedidosAutorizacaoErros.clear();
 					}
 				}
@@ -124,7 +123,8 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 				}
 				transaction.commit();
 			}
-			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin() + " foi inserido na base ");
+			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
+					+ " foi inserido na base ");
 
 		} catch (InfraException ex) {
 			transaction.rollback();
@@ -139,8 +139,8 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
-			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador, Municipio municipio,
+			LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(AutorizacaoCancelamento.class);
 		criteria.createAlias("remessaAutorizacaoCancelamento", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
@@ -202,7 +202,8 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public AutorizacaoCancelamento alterarSituacaoAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento, boolean download) {
+	public AutorizacaoCancelamento alterarSituacaoAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento,
+			boolean download) {
 		Transaction transaction = getBeginTransation();
 
 		try {
@@ -230,27 +231,6 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("cabecalhoCartorio.codigoMunicipio", cartorio.getMunicipio().getCodigoIBGE()));
 		criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
 		return AutorizacaoCancelamento.class.cast(criteria.uniqueResult());
-	}
-
-	@Transactional
-	public void alterarSituacaoAutorizacaoCancelamento(Instituicao cartorio, String nomeArquivo) {
-		StringBuffer sql = new StringBuffer();
-
-		try {
-			sql.append("UPDATE tb_autorizacao_cancelamento AS ac ");
-			sql.append("SET download_realizado=true ");
-			sql.append("FROM tb_remessa_autorizacao_cancelamento AS rem, tb_cabecalho AS cab, tb_arquivo AS arq ");
-			sql.append("WHERE ac.remessa_autorizacao_cancelamento_protesto_id=rem.id_remessa_autorizacao_cancelamento ");
-			sql.append("AND rem.arquivo_id=arq.id_arquivo ");
-			sql.append("AND arq.nome_arquivo LIKE '" + nomeArquivo + "' ");
-			sql.append("AND cab.codigo_municipio='" + cartorio.getMunicipio().getCodigoIBGE() + "'");
-
-			Query query = getSession().createSQLQuery(sql.toString());
-			query.executeUpdate();
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível alterar a Autorização de Cancelamento para recebido.");
-		}
 	}
 
 	@SuppressWarnings("unchecked")

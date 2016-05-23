@@ -359,7 +359,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.createAlias("cabecalho", "cabecalho");
 		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", codigoIBGE));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
-		criteria.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PROTESTADO.getConstante()));
+		criteria.add(Restrictions.like("tipoOcorrencia", TipoOcorrencia.PROTESTADO.getConstante(), MatchMode.EXACT));
 		criteria.setMaxResults(1);
 		return Retorno.class.cast(criteria.uniqueResult());
 	}

@@ -15,6 +15,7 @@ import br.com.ieptbto.cra.entidade.EnvelopeSLIP;
 import br.com.ieptbto.cra.entidade.EtiquetaSLIP;
 import br.com.ieptbto.cra.entidade.InstrumentoProtesto;
 import br.com.ieptbto.cra.entidade.Retorno;
+import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 
 /**
  * @author Thasso Araújo
@@ -119,6 +120,8 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 		criteria.createAlias("cabecalho", "cabecalho");
 		criteria.add(Restrictions.eq("numeroProtocoloCartorio", retorno.getNumeroProtocoloCartorio()));
 		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", retorno.getCabecalho().getCodigoMunicipio()));
+		criteria.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PROTESTADO.getConstante()));
+		criteria.setMaxResults(1);
 		return Retorno.class.cast(criteria.uniqueResult());
 	}
 

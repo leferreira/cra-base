@@ -3,8 +3,6 @@ package br.com.ieptbto.cra.conversor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.LocalDate;
-
 import br.com.ieptbto.cra.conversor.arquivo.CabecalhoCnpConversor;
 import br.com.ieptbto.cra.conversor.arquivo.DateConversor;
 import br.com.ieptbto.cra.conversor.arquivo.RodapeCnpConversor;
@@ -63,46 +61,44 @@ public class ConversorArquivoCnpVO {
 	}
 
 	public static List<RemessaCnpVO> converterParaRemessaCnpNacionalVO(List<RemessaCnp> remessasCnp) {
-		Integer sequencialRegistro = 2;
-		RemessaCnpVO remessaVO = new RemessaCnpVO();
+		List<RemessaCnpVO> remessasVO = new ArrayList<RemessaCnpVO>();
 
-		remessaVO.setCabecalhoCnpVO(getCabecalho());
-		remessaVO.setTitulosCnpVO(new ArrayList<TituloCnpVO>());
 		for (RemessaCnp remessa : remessasCnp) {
+			RemessaCnpVO remessaVO = new RemessaCnpVO();
+
+			remessaVO.setCabecalhoCnpVO(getCabecalho(remessa));
+			remessaVO.setTitulosCnpVO(new ArrayList<TituloCnpVO>());
 			for (TituloCnp titulo : remessa.getTitulos()) {
 				TituloCnpVO tituloCnpVO = new TituloCnpConversor().converter(titulo, TituloCnpVO.class);
-				tituloCnpVO.setSequenciaRegistro(Integer.toString(sequencialRegistro));
 				remessaVO.getTitulosCnpVO().add(tituloCnpVO);
-				sequencialRegistro = sequencialRegistro + 1;
 			}
+			remessaVO.setRodapeCnpVO(getRodape());
+			remessasVO.add(remessaVO);
 		}
-		remessaVO.setRodapeCnpVO(getRodape(sequencialRegistro));
-
-		List<RemessaCnpVO> remessasVO = new ArrayList<RemessaCnpVO>();
-		remessasVO.add(remessaVO);
 		return remessasVO;
 	}
 
-	private static CabecalhoCnpVO getCabecalho() {
+	private static CabecalhoCnpVO getCabecalho(RemessaCnp remessaCnp) {
 		CabecalhoCnpVO cabecalho = new CabecalhoCnpVO();
 		cabecalho.setCodigoRegistro(TipoRegistro.CABECALHO.getConstante());
 		cabecalho.setCodigoRegistro("0");
-		cabecalho.setDataMovimento(new DateConversor().getValorConvertidoParaString(new LocalDate()));
-		cabecalho.setNumeroRemessaArquivo("1");
+		cabecalho.setDataMovimento(new DateConversor().getValorConvertidoParaString(remessaCnp.getCabecalho().getDataMovimento()));
+		cabecalho.setNumeroRemessaArquivo(remessaCnp.getCabecalho().getNumeroRemessaArquivo());
 		cabecalho.setIdentificacaoDoArquivo("CENTRAL_NACIONAL_PROTESTO");
 		cabecalho.setCodigoRemessa("E");
 		cabecalho.setNumeroDDD("063");
+		cabecalho.setEmBranco2(remessaCnp.getCabecalho().getEmBranco2());
+		cabecalho.setEmBranco53(remessaCnp.getCabecalho().getEmBranco53());
 		cabecalho.setNumeroTelefoneInstituicaoInformante("32120900");
-		cabecalho.setNomeContatoInstituicaoInformante("IEPTB_TO");
+		cabecalho.setNomeContatoInstituicaoInformante(remessaCnp.getCabecalho().getNomeContatoInstituicaoInformante());
 		cabecalho.setSequenciaRegistro("1");
 		cabecalho.setPeriodicidadeEnvio("D");
 		return cabecalho;
 	}
 
-	private static RodapeCnpVO getRodape(Integer sequencial) {
+	private static RodapeCnpVO getRodape() {
 		RodapeCnpVO rodape = new RodapeCnpVO();
 		rodape.setCodigoRegistro(TipoRegistro.RODAPE.getConstante());
-		rodape.setSequenciaRegistro(Integer.toString(sequencial));
 		return rodape;
 	}
 }

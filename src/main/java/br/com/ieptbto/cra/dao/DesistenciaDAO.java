@@ -5,14 +5,12 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
@@ -48,8 +46,8 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
-			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio,
+			LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(DesistenciaProtesto.class);
 		criteria.createAlias("remessaDesistenciaProtesto", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
@@ -140,26 +138,5 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("cabecalhoCartorio.codigoMunicipio", cartorio.getMunicipio().getCodigoIBGE()));
 		criteria.add(Restrictions.eq("arquivo.nomeArquivo", nomeArquivo));
 		return DesistenciaProtesto.class.cast(criteria.uniqueResult());
-	}
-
-	@Transactional
-	public void alterarSituacaoDesistenciaProtesto(Instituicao cartorio, String nomeArquivo) {
-		StringBuffer sql = new StringBuffer();
-
-		try {
-			sql.append("UPDATE tb_desistencia_protesto AS dp ");
-			sql.append("SET download_realizado=true ");
-			sql.append("FROM tb_remessa_desistencia_protesto AS rem, tb_cabecalho AS cab, tb_arquivo AS arq ");
-			sql.append("WHERE dp.remessa_desistencia_protesto_id=rem.id_remessa_desistencia_protesto ");
-			sql.append("AND rem.arquivo_id=arq.id_arquivo ");
-			sql.append("AND arq.nome_arquivo LIKE '" + nomeArquivo + "' ");
-			sql.append("AND cab.codigo_municipio='" + cartorio.getMunicipio().getCodigoIBGE() + "'");
-
-			Query query = getSession().createSQLQuery(sql.toString());
-			query.executeUpdate();
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível alterar a desistência para recebido.");
-		}
 	}
 }

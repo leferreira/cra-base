@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +28,15 @@ import br.com.ieptbto.cra.slip.regra.RegraAgenciaDestino;
  *
  */
 @Service
-public class InstrumentoProtestoMediator {
-
-	private static final Logger logger = Logger.getLogger(InstrumentoProtestoMediator.class);
+public class InstrumentoProtestoMediator extends BaseMediator {
 
 	@Autowired
-	private TituloDAO tituloDao;
+	TituloDAO tituloDao;
 	@Autowired
-	private InstrumentoProtestoDAO instrumentoDao;
+	InstrumentoProtestoDAO instrumentoDao;
 	@Autowired
-	private RegraAgenciaDestino regraAgenciaDestino;
+	RegraAgenciaDestino regraAgenciaDestino;
+
 	private List<Retorno> titulosProtestados;
 	private List<EtiquetaSLIP> etiquetas;
 	private List<EnvelopeSLIP> envelopes;
@@ -53,13 +51,12 @@ public class InstrumentoProtestoMediator {
 	public void salvarInstrumentoProtesto(List<Retorno> titulosProtestados, Usuario usuario) {
 
 		for (Retorno retorno : titulosProtestados) {
-			Retorno tituloRetorno = instrumentoDao.carregarRetorno(retorno);
-			InstrumentoProtesto instrumentoBuscado = instrumentoDao.isTituloJaFoiGeradoInstrumento(tituloRetorno);
+			InstrumentoProtesto instrumentoBuscado = instrumentoDao.isTituloJaFoiGeradoInstrumento(retorno);
 			if (instrumentoBuscado == null) {
 				InstrumentoProtesto instrumento = new InstrumentoProtesto();
 				instrumento.setDataDeEntrada(new LocalDate());
 				instrumento.setHoraEntrada(new LocalTime());
-				instrumento.setTituloRetorno(tituloRetorno);
+				instrumento.setTituloRetorno(retorno);
 				instrumento.setGerado(false);
 				instrumento.setUsuario(usuario);
 
@@ -118,10 +115,12 @@ public class InstrumentoProtestoMediator {
 
 		logger.info("Gerando envelopes.");
 		for (EtiquetaSLIP etiqueta : getEtiquetas()) {
-			if (mapaEnvelopes.containsKey(Integer.parseInt(
-					new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino()).toString()))) {
-				EnvelopeSLIP envelope = mapaEnvelopes.get(Integer.parseInt(
-						new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino()).toString()));
+			if (mapaEnvelopes.containsKey(
+					Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(),
+							etiqueta.getAgenciaDestino()).toString()))) {
+				EnvelopeSLIP envelope = mapaEnvelopes
+						.get(Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(),
+								etiqueta.getAgenciaDestino()).toString()));
 				envelope.setQuantidadeInstrumentos(envelope.getQuantidadeInstrumentos() + 1);
 				envelope.getEtiquetas().add(etiqueta);
 			} else {
@@ -133,7 +132,8 @@ public class InstrumentoProtestoMediator {
 				envelope.setQuantidadeInstrumentos(1);
 
 				SimpleDateFormat dataPadraEnvelope = new SimpleDateFormat("ddMMyy");
-				String codeBar = envelope.getAgenciaDestino() + envelope.getUfAgenciaDestino() + dataPadraEnvelope.format(new Date()).toString();
+				String codeBar =
+						envelope.getAgenciaDestino() + envelope.getUfAgenciaDestino() + dataPadraEnvelope.format(new Date()).toString();
 				String codigoCRA = StringUtils.leftPad(instrumentoDao.quantidadeEnvelopes(), 6, "0") + codeBar;
 
 				envelope.setCodeBar(codeBar);
@@ -141,9 +141,9 @@ public class InstrumentoProtestoMediator {
 				envelope.setEtiquetas(new ArrayList<EtiquetaSLIP>());
 				envelope.getEtiquetas().add(etiqueta);
 
-				mapaEnvelopes.put(Integer.parseInt(
-						new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino()).toString()),
-						envelope);
+				mapaEnvelopes
+						.put(Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(),
+								etiqueta.getAgenciaDestino()).toString()), envelope);
 				getEnvelopes().add(envelope);
 			}
 		}

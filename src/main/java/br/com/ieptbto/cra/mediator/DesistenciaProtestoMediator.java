@@ -433,11 +433,14 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 	public void confirmarRecebimentoDesistenciaCancelamento(Instituicao instituicao, String nomeArquivo) {
 		instituicao.setMunicipio(desistenciaDAO.buscarPorPK(instituicao.getMunicipio(), Municipio.class));
 		if (nomeArquivo.contains(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.getConstante())) {
-			desistenciaDAO.alterarSituacaoDesistenciaProtesto(instituicao, nomeArquivo);
+			DesistenciaProtesto dp = desistenciaDAO.buscarDesistenciaProtesto(instituicao, nomeArquivo);
+			desistenciaDAO.alterarSituacaoDesistenciaProtesto(dp, true);
 		} else if (nomeArquivo.contains(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.getConstante())) {
-			cancelamentoDAO.alterarSituacaoCancelamentoProtesto(instituicao, nomeArquivo);
+			CancelamentoProtesto cp = cancelamentoDAO.buscarCancelamentoProtesto(instituicao, nomeArquivo);
+			cancelamentoDAO.alterarSituacaoCancelamentoProtesto(cp, true);
 		} else if (nomeArquivo.contains(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.getConstante())) {
-			autorizacaoDAO.alterarSituacaoAutorizacaoCancelamento(instituicao, nomeArquivo);
+			AutorizacaoCancelamento ac = autorizacaoDAO.buscarAutorizacaoCancelamentoProtesto(instituicao, nomeArquivo);
+			autorizacaoDAO.alterarSituacaoAutorizacaoCancelamento(ac, true);
 		}
 	}
 }

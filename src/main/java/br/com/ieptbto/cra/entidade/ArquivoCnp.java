@@ -32,7 +32,7 @@ public class ArquivoCnp extends AbstractEntidade<ArquivoCnp> {
 	private static final long serialVersionUID = 1L;
 
 	private int id;
-	private List<RemessaCnp> remessaCnp;
+	private List<RemessaCnp> remessasCnp;
 	private LocalDate dataEnvio;
 	private Instituicao instituicaoEnvio;
 
@@ -45,8 +45,8 @@ public class ArquivoCnp extends AbstractEntidade<ArquivoCnp> {
 	}
 
 	@OneToMany(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	public List<RemessaCnp> getRemessaCnp() {
-		return remessaCnp;
+	public List<RemessaCnp> getRemessasCnp() {
+		return remessasCnp;
 	}
 
 	@Column(name = "DATA_ENVIO")
@@ -64,8 +64,8 @@ public class ArquivoCnp extends AbstractEntidade<ArquivoCnp> {
 		this.id = id;
 	}
 
-	public void setRemessaCnp(List<RemessaCnp> remessaCnp) {
-		this.remessaCnp = remessaCnp;
+	public void setRemessasCnp(List<RemessaCnp> remessaCnp) {
+		this.remessasCnp = remessaCnp;
 	}
 
 	public void setDataEnvio(LocalDate dataEnvio) {
