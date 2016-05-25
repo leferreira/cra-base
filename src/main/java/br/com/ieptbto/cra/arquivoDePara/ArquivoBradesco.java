@@ -47,7 +47,6 @@ public class ArquivoBradesco extends AbstractDePara {
 			verificaDiretorioDePara();
 			copiarArquivoParaDiretorioDoUsuarioTemporario(getFile().getClientFileName());
 			return converterArquivoDeParaBradesco();
-
 		} else {
 			throw new InfraException("O arquivoFisico " + getFile().getClientFileName() + "enviado não pode ser processado.");
 		}
@@ -66,25 +65,25 @@ public class ArquivoBradesco extends AbstractDePara {
 			int pos = name.lastIndexOf('.');
 			String ext = name.substring(pos + 1);
 
-			Workbook plan = null;
+			Workbook planilha = null;
 
 			if (ext.equals("xlsx")) {
 				try {
-					plan = new XSSFWorkbook(fileIn);
+					planilha = new XSSFWorkbook(fileIn);
 					fileIn.close();
 				} catch (IOException ex) {
 					throw new RuntimeException(ex);
 				}
 			} else if (ext.equals("xls")) {
 				try {
-					plan = new HSSFWorkbook(fileIn);
+					planilha = new HSSFWorkbook(fileIn);
 					fileIn.close();
 				} catch (IOException ex) {
 					throw new RuntimeException(ex);
 				}
 			}
 			file.delete();
-			return processarPlanilha(plan);
+			return processarPlanilha(planilha);
 
 		} catch (FileNotFoundException ex) {
 			System.out.println("Arquivo não encontrado.");
@@ -118,8 +117,9 @@ public class ArquivoBradesco extends AbstractDePara {
 	private static String getValorCelula(Row row, int posicao) {
 		Cell cell = row.getCell(posicao);
 		String linha = "";
-		if (cell.getCellType() == 1)
+		if (cell.getCellType() == 1) {
 			linha = cell.getStringCellValue();
+		}
 		return linha;
 	}
 

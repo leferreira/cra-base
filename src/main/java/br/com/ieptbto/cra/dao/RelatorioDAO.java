@@ -2,8 +2,10 @@ package br.com.ieptbto.cra.dao;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
@@ -23,8 +25,7 @@ import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 @Repository
 public class RelatorioDAO extends AbstractBaseDAO {
 
-	public List<TituloRemessa> relatorioTitulosGeral(LocalDate dataInicio, LocalDate dataFim, Instituicao bancoConvenio,
-			Instituicao cartorio) {
+	public List<TituloRemessa> relatorioTitulosGeral(LocalDate dataInicio, LocalDate dataFim, Instituicao bancoConvenio, Instituicao cartorio) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("confirmacao", "confirmacao", JoinType.LEFT_OUTER_JOIN);
@@ -106,8 +107,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public List<TituloRemessa> relatorioTitulosRetorno(LocalDate dataInicio, LocalDate dataFim, Instituicao bancoConvenio,
-			Instituicao cartorio) {
+	public List<TituloRemessa> relatorioTitulosRetorno(LocalDate dataInicio, LocalDate dataFim, Instituicao bancoConvenio, Instituicao cartorio) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("confirmacao", "confirmacao");
@@ -133,8 +133,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public List<TituloRemessa> relatorioTitulosPagos(LocalDate dataInicio, LocalDate dataFim, Instituicao bancoConvenio,
-			Instituicao cartorio) {
+	public List<TituloRemessa> relatorioTitulosPagos(LocalDate dataInicio, LocalDate dataFim, Instituicao bancoConvenio, Instituicao cartorio) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("confirmacao", "confirmacao");
@@ -161,8 +160,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public List<TituloRemessa> relatorioTitulosProtestados(LocalDate dataInicio, LocalDate dataFim, Instituicao bancoConvenio,
-			Instituicao cartorio) {
+	public List<TituloRemessa> relatorioTitulosProtestados(LocalDate dataInicio, LocalDate dataFim, Instituicao bancoConvenio, Instituicao cartorio) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("confirmacao", "confirmacao");
@@ -245,6 +243,21 @@ public class RelatorioDAO extends AbstractBaseDAO {
 
 		}
 		return criteria.list();
+	}
+
+	public TituloRemessa relatorioTitulosPendentes(String nossoNumero, String numeroProtocoloCartorio) {
+		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.createAlias("remessa", "remessa");
+		criteria.createAlias("confirmacao", "confirmacao");
+		criteria.createAlias("retorno", "retorno", JoinType.LEFT_OUTER_JOIN);
+
+		if (numeroProtocoloCartorio != null && numeroProtocoloCartorio != StringUtils.EMPTY) {
+			criteria.add(Restrictions.eq("confirmacao.numeroProtocoloCartorio", numeroProtocoloCartorio));
+		}
+		if (nossoNumero != null && nossoNumero != StringUtils.EMPTY) {
+			criteria.add(Restrictions.ilike("nossoNumero", nossoNumero, MatchMode.ANYWHERE));
+		}
+		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
 
 }

@@ -31,8 +31,10 @@ public class TituloBean implements Serializable {
 	private String dataOcorrencia;
 	private String desistencia;
 	private String situacaoTitulo;
+	private TituloRemessa titulo;
 
 	public void parseToTituloRemessa(TituloRemessa tituloRemessa) {
+		this.titulo = tituloRemessa;
 		this.apresentante = tituloRemessa.getRemessa().getInstituicaoOrigem().getNomeFantasia().toUpperCase();
 		this.nossoNumero = tituloRemessa.getNossoNumero();
 		this.numeroTitulo = tituloRemessa.getNumeroTitulo();
@@ -177,5 +179,9 @@ public class TituloBean implements Serializable {
 
 	public void setDesistencia(String desistencia) {
 		this.desistencia = desistencia;
+	}
+
+	public TituloRemessa getTitulo() {
+		return titulo;
 	}
 }
