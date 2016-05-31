@@ -5,7 +5,7 @@ package br.com.ieptbto.cra.enumeration;
  * @author Lefer
  *
  */
-public interface CraEnum {
+public interface AbstractCraEnum {
 
 	/**
 	 * retorna a constante associada do enum

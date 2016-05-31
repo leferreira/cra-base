@@ -55,9 +55,9 @@ import br.com.ieptbto.cra.entidade.vo.ComarcaDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.DesistenciaSerproVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.TituloDesistenciaCancelamentoSerproVO;
+import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
-import br.com.ieptbto.cra.enumeration.TipoAcaoLog;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
@@ -120,8 +120,8 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 		return desistenciaDAO.buscarPedidosDesistenciaProtestoPorTitulo(tituloRemessa);
 	}
 
-	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio,
-			LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
+			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		return desistenciaDAO.buscarDesistenciaProtesto(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
@@ -155,22 +155,20 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 			file = processadorArquivo.processarRemessaDesistenciaProtestoTXT(remessa, usuario);
 
 			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-				loggerCra.sucess(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO,
-						"Arquivo " + desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo()
-								+ ", recebido com sucesso por " + usuario.getInstituicao().getNomeFantasia() + ".");
+				loggerCra.sucess(usuario, CraAcao.DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO,
+						"Arquivo " + desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo() + ", recebido com sucesso por "
+								+ usuario.getInstituicao().getNomeFantasia() + ".");
 			}
 		} catch (Exception ex) {
 			logger.info(ex.getMessage(), ex);
-			loggerCra.error(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO, "Erro Download Manual: " + ex.getMessage(), ex);
-			throw new InfraException(
-					"Não foi possível fazer o download do arquivo de Desistência de Protesto! Entre em contato com a CRA !");
+			loggerCra.error(usuario, CraAcao.DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO, "Erro Download Manual: " + ex.getMessage(), ex);
+			throw new InfraException("Não foi possível fazer o download do arquivo de Desistência de Protesto! Entre em contato com a CRA !");
 		}
 		return file;
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Arquivo processarDesistencia(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados, List<Exception> erros,
-			Usuario usuario) {
+	public Arquivo processarDesistencia(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados, List<Exception> erros, Usuario usuario) {
 		Arquivo arquivo = new Arquivo();
 
 		if (layoutPadraoXML.equals(LayoutPadraoXML.CRA_NACIONAL)) {

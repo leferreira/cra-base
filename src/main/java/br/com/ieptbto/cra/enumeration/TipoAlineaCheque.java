@@ -6,7 +6,7 @@ import br.com.ieptbto.cra.exception.InfraException;
  * @author Thasso Araújo
  *
  */
-public enum TipoAlineaCheque  implements CraEnum {
+public enum TipoAlineaCheque  implements AbstractCraEnum {
 
 	CHEQUE_SEM_FUNDOS_1("11","11 - Cheque sem fundos - 1ª apresentação."),                                                                                                                                                  
 	CHEQUE_SEM_FUNDOS_2("12","12 - Cheque sem fundos - 2ª apresentação."),

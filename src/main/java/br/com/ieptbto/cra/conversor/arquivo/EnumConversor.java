@@ -5,7 +5,7 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
 import br.com.ieptbto.cra.conversor.enumeration.ErroConversao;
-import br.com.ieptbto.cra.enumeration.CraEnum;
+import br.com.ieptbto.cra.enumeration.AbstractCraEnum;
 import br.com.ieptbto.cra.exception.ConvertException;
 
 /**
@@ -13,7 +13,7 @@ import br.com.ieptbto.cra.exception.ConvertException;
  * @author Lefer
  *
  */
-public class EnumConversor extends AbstractConversor<CraEnum> {
+public class EnumConversor extends AbstractConversor<AbstractCraEnum> {
 
 	private static final String VAZIO = " ";
 
@@ -21,7 +21,7 @@ public class EnumConversor extends AbstractConversor<CraEnum> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public CraEnum getValorConvertido(String valor) {
+	public AbstractCraEnum getValorConvertido(String valor) {
 		BeanWrapper propertyAccess = PropertyAccessorFactory.forBeanPropertyAccess(getArquivo());
 		Class<?> propertyType = propertyAccess.getPropertyType(getFieldName());
 
@@ -36,12 +36,12 @@ public class EnumConversor extends AbstractConversor<CraEnum> {
 	 * @return
 	 */
 	@Override
-	public CraEnum getValorConvertido(String valor, Class<?> propertyType) {
+	public AbstractCraEnum getValorConvertido(String valor, Class<?> propertyType) {
 		try {
-			if (CraEnum.class.isAssignableFrom(propertyType)) {
+			if (AbstractCraEnum.class.isAssignableFrom(propertyType)) {
 				Object[] enumConstants = propertyType.getEnumConstants();
 				for (Object object : enumConstants) {
-					CraEnum enumObject = (CraEnum) object;
+					AbstractCraEnum enumObject = (AbstractCraEnum) object;
 					if (enumObject.getConstante().equals(valor)) {
 						return enumObject;
 					}
@@ -58,7 +58,7 @@ public class EnumConversor extends AbstractConversor<CraEnum> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String getValorConvertidoParaString(CraEnum objeto) {
+	public String getValorConvertidoParaString(AbstractCraEnum objeto) {
 		int tamanho = getAnotacaoAtributo().tamanho();
 		if (objeto != null) {
 			String codigo = objeto.getConstante();
@@ -68,6 +68,6 @@ public class EnumConversor extends AbstractConversor<CraEnum> {
 	}
 
 	public String getValorConvertidoString(Object objeto) {
-		return getValorConvertidoParaString(CraEnum.class.cast(objeto));
+		return getValorConvertidoParaString(AbstractCraEnum.class.cast(objeto));
 	}
 }

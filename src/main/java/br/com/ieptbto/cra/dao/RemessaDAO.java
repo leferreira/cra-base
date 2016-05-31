@@ -43,8 +43,8 @@ public class RemessaDAO extends AbstractBaseDAO {
 	@Autowired
 	private InstituicaoDAO instituicaoDAO;
 
-	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
-			Usuario usuarioCorrente, ArrayList<TipoArquivoEnum> tiposArquivo, ArrayList<StatusRemessa> situacoes) {
+	public List<Remessa> buscarRemessaAvancado(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim, Usuario usuarioCorrente,
+			ArrayList<TipoArquivoEnum> tiposArquivo, ArrayList<StatusRemessa> situacoes) {
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "a");
 
@@ -52,34 +52,28 @@ public class RemessaDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", usuarioCorrente.getInstituicao()),
 					Restrictions.eq("instituicaoOrigem", usuarioCorrente.getInstituicao())));
 		}
-
-		if (StringUtils.isNotBlank(arquivo.getNomeArquivo()))
+		if (StringUtils.isNotBlank(arquivo.getNomeArquivo())) {
 			criteria.add(Restrictions.ilike("a.nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
-
+		}
 		if (!tiposArquivo.isEmpty()) {
 			criteria.createAlias("a.tipoArquivo", "tipoArquivo");
 			criteria.add(filtrarRemessaPorTipoArquivo(tiposArquivo));
 		}
-
 		if (!situacoes.isEmpty()) {
 			criteria.add(filtrarSituacaoRemessa(situacoes));
 		}
-
 		if (arquivo.getInstituicaoEnvio() != null) {
 			criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem", arquivo.getInstituicaoEnvio()),
 					Restrictions.eq("instituicaoDestino", arquivo.getInstituicaoEnvio())));
 		}
-
 		if (municipio != null) {
 			Instituicao cartorioProtesto = instituicaoDAO.buscarCartorioPorMunicipio(municipio.getNomeMunicipio());
-			criteria.add(Restrictions.or(Restrictions.eq("instituicaoOrigem", cartorioProtesto),
-					Restrictions.eq("instituicaoDestino", cartorioProtesto)));
+			criteria.add(
+					Restrictions.or(Restrictions.eq("instituicaoOrigem", cartorioProtesto), Restrictions.eq("instituicaoDestino", cartorioProtesto)));
 		}
-
 		if (dataInicio != null) {
 			criteria.add(Restrictions.between("a.dataEnvio", dataInicio, dataFim));
 		}
-
 		criteria.addOrder(Order.desc("a.dataEnvio"));
 		return criteria.list();
 	}
@@ -134,40 +128,35 @@ public class RemessaDAO extends AbstractBaseDAO {
 					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_origem_id=ins.id_instituicao "
 					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) " + "	from TB_TITULO tit "
 					+ "	LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
-					+ "	INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
-					+ "	where con.titulo_id IS NULL and tit.id_titulo > 37085) " + "AND rem.arquivo_id>18088 "
-					+ "GROUP BY rem.instituicao_destino_id,t.remessa_id " + "ORDER BY remessa_id ASC;";
+					+ "	INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa " + "	where con.titulo_id IS NULL and tit.id_titulo > 37085) "
+					+ "AND rem.arquivo_id>18088 " + "GROUP BY rem.instituicao_destino_id,t.remessa_id " + "ORDER BY remessa_id ASC;";
 		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
 			sql = "SELECT ins.nome_fantasia,t.remessa_id from TB_TITULO t " + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
 					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_origem_id=ins.id_instituicao "
 					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) "
 					+ "from TB_TITULO tit LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
-					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
-					+ "where con.titulo_id IS NULL and tit.id_titulo > 37085 ) " + "AND rem.instituicao_destino_id=" + instituicao.getId()
-					+ " " + "AND rem.arquivo_id>18088 " + "GROUP BY ins.nome_fantasia, t.remessa_id " + "ORDER BY t.remessa_id ASC;";
+					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa " + "where con.titulo_id IS NULL and tit.id_titulo > 37085 ) "
+					+ "AND rem.instituicao_destino_id=" + instituicao.getId() + " " + "AND rem.arquivo_id>18088 "
+					+ "GROUP BY ins.nome_fantasia, t.remessa_id " + "ORDER BY t.remessa_id ASC;";
 		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
-			sql = "select mun.nome_municipio,t.remessa_id " + "from TB_TITULO t "
-					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
+			sql = "select mun.nome_municipio,t.remessa_id " + "from TB_TITULO t " + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
 					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_destino_id=ins.id_instituicao "
 					+ "INNER JOIN tb_instituicao AS org ON rem.instituicao_origem_id=org.id_instituicao "
 					+ "INNER JOIN tb_municipio AS mun ON ins.municipio_id=mun.id_municipio "
 					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) " + "from TB_TITULO tit "
-					+ "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
-					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa " + "where con.titulo_id IS NULL "
-					+ "and tit.id_titulo > 37085) " + "AND org.tipo_instituicao_id<>4 " + "AND rem.instituicao_origem_id="
-					+ instituicao.getId() + " " + "OR rem.status_remessa LIKE 'AGUARDANDO' " + "AND org.tipo_instituicao_id<>4 "
-					+ "AND rem.instituicao_origem_id=" + instituicao.getId() + " " + "GROUP BY mun.nome_municipio,t.remessa_id "
-					+ "ORDER BY remessa_id ASC";
+					+ "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id " + "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
+					+ "where con.titulo_id IS NULL " + "and tit.id_titulo > 37085) " + "AND org.tipo_instituicao_id<>4 "
+					+ "AND rem.instituicao_origem_id=" + instituicao.getId() + " " + "OR rem.status_remessa LIKE 'AGUARDANDO' "
+					+ "AND org.tipo_instituicao_id<>4 " + "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
+					+ "GROUP BY mun.nome_municipio,t.remessa_id " + "ORDER BY remessa_id ASC";
 		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
-			sql = "select mun.nome_municipio,t.remessa_id " + "from TB_TITULO t "
-					+ "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
+			sql = "select mun.nome_municipio,t.remessa_id " + "from TB_TITULO t " + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
 					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_destino_id=ins.id_instituicao "
 					+ "INNER JOIN tb_instituicao AS org ON rem.instituicao_origem_id=org.id_instituicao "
 					+ "INNER JOIN tb_municipio AS mun ON ins.municipio_id=mun.id_municipio "
 					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) " + "from TB_TITULO tit "
-					+ "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
-					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa " + "where con.titulo_id IS NULL "
-					+ "and tit.id_titulo > 37085) " + "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
+					+ "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id " + "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
+					+ "where con.titulo_id IS NULL " + "and tit.id_titulo > 37085) " + "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
 					+ "OR rem.status_remessa LIKE 'AGUARDANDO' " + "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
 					+ "GROUP BY mun.nome_municipio,t.remessa_id " + "ORDER BY remessa_id ASC";
 		}

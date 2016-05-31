@@ -47,10 +47,10 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
-import br.com.ieptbto.cra.enumeration.TipoAcaoLog;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -208,8 +208,8 @@ public class RemessaMediator extends BaseMediator {
 			Mensagem mensagem = new Mensagem();
 			mensagem.setCodigo(exception.getErro().getCodigo());
 			mensagem.setMunicipio(exception.getCodigoIbge());
-			mensagem.setDescricao("Município: " + exception.getCodigoIbge() + " - " + exception.getMunicipio() + " - "
-					+ exception.getErro().getDescricao());
+			mensagem.setDescricao(
+					"Município: " + exception.getCodigoIbge() + " - " + exception.getMunicipio() + " - " + exception.getErro().getDescricao());
 			mensagens.add(mensagem);
 		}
 
@@ -224,8 +224,7 @@ public class RemessaMediator extends BaseMediator {
 		for (Remessa remessa : arquivo.getRemessas()) {
 			ComarcaDetalhamentoSerpro comarcaDetalhamento = new ComarcaDetalhamentoSerpro();
 			comarcaDetalhamento.setCodigoMunicipio(remessa.getCabecalho().getCodigoMunicipio());
-			comarcaDetalhamento
-					.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
+			comarcaDetalhamento.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
 			comarcaDetalhamento.setRegistro(StringUtils.EMPTY);
 
 			CodigoErro codigoErroSerpro = getCodigoErroSucessoSerpro(arquivo.getNomeArquivo());
@@ -245,8 +244,7 @@ public class RemessaMediator extends BaseMediator {
 		CodigoErro codigoErro = null;
 		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
 			codigoErro = CodigoErro.SERPRO_SUCESSO_REMESSA;
-		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)
-				|| TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
+		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo) || TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
 			codigoErro = CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO;
 		} else {
 			codigoErro = CodigoErro.CRA_SUCESSO;
@@ -267,12 +265,12 @@ public class RemessaMediator extends BaseMediator {
 	private String formatarMensagemRetorno(Remessa remessa) {
 		if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
 			return "Município: " + remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString() + " - "
-					+ remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - "
-					+ remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.";
+					+ remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - " + remessa.getCabecalho().getQtdTitulosRemessa()
+					+ " Títulos.";
 		} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
 				|| TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-			return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
-					+ remessa.getCabecalho().getQtdTitulosRemessa() + " títulos confirmados.";
+			return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - " + remessa.getCabecalho().getQtdTitulosRemessa()
+					+ " títulos confirmados.";
 		}
 		return StringUtils.EMPTY;
 
@@ -299,7 +297,7 @@ public class RemessaMediator extends BaseMediator {
 			remessa = remessaDAO.buscarPorPK(remessa, Remessa.class);
 			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
 			remessaDAO.alterarSituacaoRemessa(remessa);
-			loggerCra.sucess(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_REMESSA, "Arquivo de Remessa " + remessa.getArquivo().getNomeArquivo()
+			loggerCra.sucess(usuario, CraAcao.DOWNLOAD_ARQUIVO_REMESSA, "Arquivo de Remessa " + remessa.getArquivo().getNomeArquivo()
 					+ " recebido com sucesso " + "por " + usuario.getInstituicao() + ", via aplicação.");
 		}
 		if (tipoInstituicaoUsuario.equals(TipoInstituicaoCRA.CARTORIO) && remessa.getDevolvidoPelaCRA().equals(true)) {
@@ -433,8 +431,7 @@ public class RemessaMediator extends BaseMediator {
 					}
 					zipOut.close();
 
-					return new File(
-							pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+					return new File(pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 				}
 			}
 		} catch (IOException e) {
@@ -453,13 +450,12 @@ public class RemessaMediator extends BaseMediator {
 					TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
 					if (tituloRemessa.getAnexo() != null) {
 						DecoderString decoderString = new DecoderString();
-						String nomeArquivoZip = tituloRemessa.getNomeDevedor() + "_"
-								+ tituloRemessa.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
+						String nomeArquivoZip =
+								tituloRemessa.getNomeDevedor() + "_" + tituloRemessa.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
 
 						decoderString.decode(tituloRemessa.getAnexo().getDocumentoAnexo(),
-								ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId()
-										+ ConfiguracaoBase.BARRA + remessa.getArquivo().getId() + ConfiguracaoBase.BARRA + remessa.getId()
-										+ ConfiguracaoBase.BARRA,
+								ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA
+										+ remessa.getArquivo().getId() + ConfiguracaoBase.BARRA + remessa.getId() + ConfiguracaoBase.BARRA,
 								nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 					}
 				}

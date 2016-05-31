@@ -10,7 +10,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
-import br.com.ieptbto.cra.enumeration.CraEnum;
+import br.com.ieptbto.cra.enumeration.AbstractCraEnum;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -44,7 +44,7 @@ public class FabricaConversor {
 	 */
 	public static AbstractConversor<?> getConversor(Class<?> propertyType) {
 		Class<? extends AbstractConversor<?>> conversorClass = CONVERSORES.get(propertyType);
-		if (CraEnum.class.isAssignableFrom(propertyType)) {
+		if (AbstractCraEnum.class.isAssignableFrom(propertyType)) {
 			return new EnumConversor();
 		}
 		try {

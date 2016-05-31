@@ -27,8 +27,8 @@ import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
-import br.com.ieptbto.cra.enumeration.TipoAcaoLog;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -78,8 +78,8 @@ public class ArquivoMediator extends BaseMediator {
 
 		arquivo = processarArquivo(arquivo, uploadedFile);
 		setArquivo(arquivoDAO.salvar(arquivo, usuario, getErros()));
-		loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, getTipoAcaoEnvio(arquivo), "Arquivo " + arquivo.getNomeArquivo()
-				+ ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso via aplicação.");
+		loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, getTipoAcaoEnvio(arquivo), "Arquivo " + arquivo.getNomeArquivo() + ", enviado por "
+				+ arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso via aplicação.");
 		return this;
 	}
 
@@ -129,21 +129,21 @@ public class ArquivoMediator extends BaseMediator {
 		return instituicao;
 	}
 
-	private TipoAcaoLog getTipoAcaoEnvio(Arquivo arquivo) {
-		TipoAcaoLog tipoAcao = null;
+	private CraAcao getTipoAcaoEnvio(Arquivo arquivo) {
+		CraAcao tipoAcao = null;
 		TipoArquivoEnum tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
 		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA)) {
-			tipoAcao = TipoAcaoLog.ENVIO_ARQUIVO_REMESSA;
+			tipoAcao = CraAcao.ENVIO_ARQUIVO_REMESSA;
 		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO)) {
-			tipoAcao = TipoAcaoLog.ENVIO_ARQUIVO_CONFIRMACAO;
+			tipoAcao = CraAcao.ENVIO_ARQUIVO_CONFIRMACAO;
 		} else if (tipoArquivo.equals(TipoArquivoEnum.RETORNO)) {
-			tipoAcao = TipoAcaoLog.ENVIO_ARQUIVO_RETORNO;
+			tipoAcao = CraAcao.ENVIO_ARQUIVO_RETORNO;
 		} else if (tipoArquivo.equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
-			tipoAcao = TipoAcaoLog.ENVIO_ARQUIVO_DESISTENCIA_PROTESTO;
+			tipoAcao = CraAcao.ENVIO_ARQUIVO_DESISTENCIA_PROTESTO;
 		} else if (tipoArquivo.equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)) {
-			tipoAcao = TipoAcaoLog.ENVIO_ARQUIVO_CANCELAMENTO_PROTESTO;
+			tipoAcao = CraAcao.ENVIO_ARQUIVO_CANCELAMENTO_PROTESTO;
 		} else if (tipoArquivo.equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
-			tipoAcao = TipoAcaoLog.ENVIO_ARQUIVO_AUTORIZACAO_CANCELAMENTO;
+			tipoAcao = CraAcao.ENVIO_ARQUIVO_AUTORIZACAO_CANCELAMENTO;
 		}
 		return tipoAcao;
 	}
@@ -210,8 +210,8 @@ public class ArquivoMediator extends BaseMediator {
 		return processadorArquivo.processarArquivoTXT(arquivo, remessas);
 	}
 
-	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos,
-			Municipio pracaProtesto, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
+	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos, Municipio pracaProtesto,
+			LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		return arquivoDAO.buscarArquivosAvancado(arquivo, usuario, tipoArquivos, pracaProtesto, dataInicio, dataFim, situacoes);
 	}
 

@@ -18,6 +18,10 @@ public class MunicipioMediator {
 	@Autowired
 	InstituicaoDAO instituicaoDao;
 
+	public Municipio carregarMunicipio(Municipio municipio) {
+		return municipioDao.carregarMunicipio(municipio);
+	}
+
 	public Municipio adicionarMunicipio(Municipio municipio) {
 		return municipioDao.salvar(municipio);
 	}

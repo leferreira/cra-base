@@ -6,7 +6,7 @@ import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
 
 @Entity
-public enum TipoArquivoEnum implements CraEnum {
+public enum TipoArquivoEnum implements AbstractCraEnum {
 
 												REMESSA("B", "TPR", "Remessa"),
 												CONFIRMACAO("C", "CRT", "Confirmação"),

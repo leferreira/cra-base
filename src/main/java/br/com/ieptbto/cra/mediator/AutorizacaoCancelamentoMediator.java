@@ -47,9 +47,9 @@ import br.com.ieptbto.cra.entidade.vo.AutorizacaoCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.CartorioDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.ComarcaDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.TituloDesistenciaCancelamentoSerproVO;
+import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
-import br.com.ieptbto.cra.enumeration.TipoAcaoLog;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
@@ -91,8 +91,7 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 
 	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador, Municipio municipio,
 			LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
-		return autorizacaoCancelamentoDAO.buscarAutorizacaoCancelamento(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo,
-				usuario);
+		return autorizacaoCancelamentoDAO.buscarAutorizacaoCancelamento(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
 	public File baixarAutorizacaoTXT(Usuario usuario, AutorizacaoCancelamento autorizacaoCancelamento) {
@@ -125,22 +124,21 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 			file = processadorArquivo.processarRemessaAutorizacaoCancelamentoTXT(remessa, usuario);
 
 			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-				loggerCra.sucess(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO,
+				loggerCra.sucess(usuario, CraAcao.DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO,
 						"Arquivo " + autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo().getNomeArquivo()
 								+ ", recebido com sucesso por " + usuario.getInstituicao().getNomeFantasia() + ".");
 			}
 		} catch (Exception ex) {
 			logger.info(ex.getMessage(), ex);
-			loggerCra.error(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO, "Erro Download Manual: " + ex.getMessage(), ex);
-			throw new InfraException(
-					"Não foi possível fazer o download do arquivo de Autorização de Cancelamento! Entre em contato com a CRA !");
+			loggerCra.error(usuario, CraAcao.DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO, "Erro Download Manual: " + ex.getMessage(), ex);
+			throw new InfraException("Não foi possível fazer o download do arquivo de Autorização de Cancelamento! Entre em contato com a CRA !");
 		}
 		return file;
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Arquivo processarAutorizacaoCancelamento(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados,
-			List<Exception> erros, Usuario usuario) {
+	public Arquivo processarAutorizacaoCancelamento(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados, List<Exception> erros,
+			Usuario usuario) {
 		Arquivo arquivo = new Arquivo();
 		arquivo.setNomeArquivo(nomeArquivo);
 		arquivo.setUsuarioEnvio(usuario);

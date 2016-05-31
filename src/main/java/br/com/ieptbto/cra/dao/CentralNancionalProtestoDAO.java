@@ -159,4 +159,12 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		criteria.setProjection(Projections.max("numeroRemessaArquivo"));
 		return Integer.valueOf(String.class.cast(criteria.uniqueResult()));
 	}
+
+	@SuppressWarnings("unchecked")
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public List<Instituicao> consultarCartoriosCentralNacionalProtesto() {
+		Criteria criteria = getCriteria(ArquivoCnp.class);
+		criteria.setProjection(Projections.groupProperty("instituicaoEnvio"));
+		return criteria.list();
+	}
 }

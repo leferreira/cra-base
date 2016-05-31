@@ -10,6 +10,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -20,6 +21,11 @@ public class MunicipioDAO extends AbstractBaseDAO {
 
 	private static final int CARTORIO = 2;
 	private static final String SIGLA_TOCANTINS = "TO";
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public Municipio carregarMunicipio(Municipio municipio) {
+		return buscarPorPK(municipio, Municipio.class);
+	}
 
 	public Municipio salvar(Municipio municipio) {
 		Municipio novoMunicipio = new Municipio();

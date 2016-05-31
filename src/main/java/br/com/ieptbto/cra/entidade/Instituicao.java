@@ -23,7 +23,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.enumeration.BooleanSimNao;
+import br.com.ieptbto.cra.enumeration.EnumerationSimNao;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.TipoBatimento;
 import br.com.ieptbto.cra.enumeration.TipoCampo51;
@@ -38,11 +38,13 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	private int id;
 	private String nomeFantasia;
 	private String razaoSocial;
+	private String tabeliao;
 	private String cnpj;
 	private String codigoCompensacao;
 	private String email;
 	private String contato;
 	private BigDecimal valorConfirmacao;
+	private String bairro;
 	private String endereco;
 	private String telefone;
 	private String responsavel;
@@ -53,7 +55,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	private String numeroContaCorrente;
 	private String codigoCartorio;
 	private boolean situacao;
-	private BooleanSimNao permitidoSetoresConvenio;
+	private EnumerationSimNao permitidoSetoresConvenio;
 	private TipoInstituicao tipoInstituicao;
 	private List<Arquivo> arquivoEnviados;
 	private List<Usuario> listaUsuarios;
@@ -182,9 +184,9 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 
 	@Column(name = "PERMITIDO_SETORES_CONVENIO")
 	@Enumerated(EnumType.STRING)
-	public BooleanSimNao getPermitidoSetoresConvenio() {
+	public EnumerationSimNao getPermitidoSetoresConvenio() {
 		if (permitidoSetoresConvenio == null) {
-			permitidoSetoresConvenio = BooleanSimNao.NAO;
+			permitidoSetoresConvenio = EnumerationSimNao.NAO;
 		}
 		return permitidoSetoresConvenio;
 	}
@@ -218,7 +220,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		this.cnpj = cnpj;
 	}
 
-	public void setPermitidoSetoresConvenio(BooleanSimNao permitidoSetoresConvenio) {
+	public void setPermitidoSetoresConvenio(EnumerationSimNao permitidoSetoresConvenio) {
 		this.permitidoSetoresConvenio = permitidoSetoresConvenio;
 	}
 
@@ -371,5 +373,23 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	@Override
 	public String toString() {
 		return this.nomeFantasia;
+	}
+
+	@Column(name = "TABELIAO", length = 150)
+	public String getTabeliao() {
+		return tabeliao;
+	}
+
+	@Column(name = "BAIRRO", length = 150)
+	public String getBairro() {
+		return bairro;
+	}
+
+	public void setTabeliao(String tabeliao) {
+		this.tabeliao = tabeliao;
+	}
+
+	public void setBairro(String bairro) {
+		this.bairro = bairro;
 	}
 }

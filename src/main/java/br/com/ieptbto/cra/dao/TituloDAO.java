@@ -168,8 +168,7 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		if (titulo == null) {
 			throw new InfraException("Título com o nosso número " + tituloRetorno.getNossoNumero() + " e o protocolo "
-					+ tituloRetorno.getNumeroProtocoloCartorio()
-					+ ", não foi localizado na CRA. Verifique se a confirmação já foi enviada ...");
+					+ tituloRetorno.getNumeroProtocoloCartorio() + ", não foi localizado na CRA. Verifique se a confirmação já foi enviada ...");
 		}
 		if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.RETIRADO.getConstante())) {
 			if (titulo.getPedidosDesistencia() != null) {
@@ -186,8 +185,8 @@ public class TituloDAO extends AbstractBaseDAO {
 						pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
 				if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
 					if (dataOcorrenciaRetorno.isAfter(dataMovimentoDesistencia) || dataOcorrenciaRetorno.equals(dataMovimentoDesistencia)) {
-						throw new InfraException("PROTESTO INDEVIDO! Título com o nosso número " + tituloRetorno.getNossoNumero()
-								+ " e o protocolo " + tituloRetorno.getNumeroProtocoloCartorio() + ", protestado em "
+						throw new InfraException("PROTESTO INDEVIDO! Título com o nosso número " + tituloRetorno.getNossoNumero() + " e o protocolo "
+								+ tituloRetorno.getNumeroProtocoloCartorio() + ", protestado em "
 								+ DataUtil.localDateToString(tituloRetorno.getDataOcorrencia())
 								+ ", já contém um pedido de desistência. Favor faça o CANCELAMENTO!");
 					}
@@ -197,8 +196,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (tituloRetorno.getTipoOcorrencia() != null) {
 			if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
 				if (tituloRetorno.getCodigoIrregularidade() != null) {
-					if (StringUtils.isBlank(tituloRetorno.getCodigoIrregularidade().trim())
-							|| tituloRetorno.getCodigoIrregularidade().equals("00")) {
+					if (StringUtils.isBlank(tituloRetorno.getCodigoIrregularidade().trim()) || tituloRetorno.getCodigoIrregularidade().equals("00")) {
 						throw new InfraException("Título com o nosso número " + tituloRetorno.getNossoNumero()
 								+ " foi devolvido e não contém o código de irregularidade! Favor informe a irregularidade...");
 					}
@@ -264,8 +262,7 @@ public class TituloDAO extends AbstractBaseDAO {
 					Integer numeroProtocolo = Integer.valueOf(tituloConfirmacao.getNumeroProtocoloCartorio().trim());
 					tituloConfirmacao.setNumeroProtocoloCartorio(numeroProtocolo.toString());
 					if (numeroProtocolo.equals(0)) {
-						if (!tituloConfirmacao.getTipoOcorrencia()
-								.equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
+						if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
 							throw new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
 									+ " está com o número de protocolo vazio ou zerado e não está com a ocorrência de devolução! Verifique os dados do título...");
 						}
@@ -390,8 +387,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.createAlias("titulo", "titulo");
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(
-				Restrictions.eq("cabecalho.codigoMunicipio", pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
+		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
 		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
@@ -409,8 +405,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.createAlias("titulo", "titulo");
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio",
-				pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio()));
+		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio()));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
 		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());

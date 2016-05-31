@@ -7,7 +7,7 @@ import br.com.ieptbto.cra.exception.InfraException;
  * @author Lefer
  *
  */
-public enum LayoutArquivo implements CraEnum {
+public enum LayoutArquivo implements AbstractCraEnum {
 	TXT("0", "Arquivo TXT", ".txt"), XML("<", "Arquivo XML", ".xml"), CSV("", "Arquivo CSV", ".csv");
 
 	private String constante;

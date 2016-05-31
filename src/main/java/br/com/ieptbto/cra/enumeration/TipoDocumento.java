@@ -1,6 +1,6 @@
 package br.com.ieptbto.cra.enumeration;
 
-public enum TipoDocumento implements CraEnum {
+public enum TipoDocumento implements AbstractCraEnum {
 
 	CNPJ("001","CNPJ"),
 	CPF("002","CPF");

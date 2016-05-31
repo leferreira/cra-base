@@ -2,7 +2,7 @@ package br.com.ieptbto.cra.enumeration;
 
 import br.com.ieptbto.cra.exception.InfraException;
 
-public enum TipoEspecieTitulo implements CraEnum {
+public enum TipoEspecieTitulo implements AbstractCraEnum {
 
 	ATC("ATC","ATC - Acórdão do Tribunal de Contas da União"),
 	CBI("CBI","CBI - Cédula de Crédito Bancário por Indicação"),

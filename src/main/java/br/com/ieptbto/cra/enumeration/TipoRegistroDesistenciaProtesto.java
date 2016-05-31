@@ -7,7 +7,7 @@ import br.com.ieptbto.cra.exception.InfraException;
  * @author Lefer
  *
  */
-public enum TipoRegistroDesistenciaProtesto implements CraEnum {
+public enum TipoRegistroDesistenciaProtesto implements AbstractCraEnum {
 	HEADER_APRESENTANTE("0", "Header do Apresentante"), //
 	HEADER_CARTORIO("1", "Header do Cartório"), //
 	REGISTRO_PEDIDO_DESISTENCIA("2", "Registros dos Pedidos de Desistência de Protesto (Transação)"), //

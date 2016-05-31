@@ -6,7 +6,7 @@ package br.com.ieptbto.cra.enumeration;
  * @author Thasso Araújo
  *
  */
-public enum TipoOcorrencia implements CraEnum{
+public enum TipoOcorrencia implements AbstractCraEnum{
 	
 	EM_ABERTO("0", "EM ABERTO"),
 	PAGO("1", "PAGO"), 

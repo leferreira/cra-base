@@ -2,7 +2,7 @@ package br.com.ieptbto.cra.enumeration;
 
 import br.com.ieptbto.cra.exception.InfraException;
 
-public enum TipoInstituicaoCRA implements CraEnum {
+public enum TipoInstituicaoCRA implements AbstractCraEnum {
 
 	CRA("1", "Central de Remessa de Arquivos"), 
 	CARTORIO("2", "Cartório de Protesto"), 

@@ -91,12 +91,11 @@ public class CentralNacionalProtestoMediator {
 		List<TituloCnp> titulosProtestados = centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
 
 		for (TituloCnp titulo : titulosProtestados) {
-			TituloCnp tituloCancelamento =
-					centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
+			TituloCnp tituloCancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
 
 			if (tituloCancelamento == null) {
-				Municipio municipio = centralNancionalProtestoDAO
-						.carregarMunicipioCartorio(titulo.getRemessa().getArquivo().getInstituicaoEnvio().getMunicipio());
+				Municipio municipio =
+						centralNancionalProtestoDAO.carregarMunicipioCartorio(titulo.getRemessa().getArquivo().getInstituicaoEnvio().getMunicipio());
 				if (!municipiosComProtesto.contains(municipio.getNomeMunicipio().toUpperCase())) {
 					municipiosComProtesto.add(municipio.getNomeMunicipio().toUpperCase());
 				}
@@ -110,8 +109,7 @@ public class CentralNacionalProtestoMediator {
 		List<TituloCnp> titulosProtestados = centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
 
 		for (TituloCnp titulo : titulosProtestados) {
-			TituloCnp tituloCancelamento =
-					centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
+			TituloCnp tituloCancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
 
 			if (tituloCancelamento == null) {
 				if (!cartorios.contains(titulo.getRemessa().getArquivo().getInstituicaoEnvio())) {
@@ -127,5 +125,9 @@ public class CentralNacionalProtestoMediator {
 
 	public int buscarSequencialCabecalhoCnp(String codigoMunicipio) {
 		return centralNancionalProtestoDAO.buscarSequencialCabecalhoCnp(codigoMunicipio);
+	}
+
+	public List<Instituicao> consultarCartoriosCentralNacionalProtesto() {
+		return centralNancionalProtestoDAO.consultarCartoriosCentralNacionalProtesto();
 	}
 }

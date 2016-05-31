@@ -76,7 +76,7 @@ public class BatimentoMediator {
 							deposito.setData(DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA, dados[0]));
 							deposito.setLancamento(RemoverAcentosUtil.removeAcentos(dados[1]));
 							deposito.setNumeroDocumento(dados[2]);
-							deposito.setValorCredito(new BigDecimal(dados[3].replace(".", "").replace(",", ".")));
+							deposito.setValorCredito(new BigDecimal(dados[3].trim().replace(".", "").replace(",", ".")));
 
 							Remessa retorno = batimentoDAO.buscarRetornoCorrespondenteAoDeposito(deposito);
 							if (retorno != null) {

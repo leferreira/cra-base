@@ -2,7 +2,7 @@ package br.com.ieptbto.cra.enumeration;
 
 import br.com.ieptbto.cra.exception.InfraException;
 
-public enum TipoRegistro implements CraEnum {
+public enum TipoRegistro implements AbstractCraEnum {
 
 	TITULO("1", "Título"), CABECALHO("0", "Cabeçalho"), RODAPE("9", "Rodapé");
 

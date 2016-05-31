@@ -13,7 +13,7 @@ import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
-import br.com.ieptbto.cra.enumeration.TipoAcaoLog;
+import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoLog;
 
@@ -30,7 +30,7 @@ public class LogCra extends AbstractEntidade<LogCra> {
 	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
-	private TipoAcaoLog acao;
+	private CraAcao acao;
 	private String descricao;
 	private Exception excecao;
 	private TipoLog tipoLog;
@@ -48,7 +48,7 @@ public class LogCra extends AbstractEntidade<LogCra> {
 
 	@Column(name = "ACAO", nullable = false, length = 50)
 	@Enumerated(EnumType.STRING)
-	public TipoAcaoLog getAcao() {
+	public CraAcao getAcao() {
 		return acao;
 	}
 
@@ -95,7 +95,7 @@ public class LogCra extends AbstractEntidade<LogCra> {
 		this.id = id;
 	}
 
-	public void setAcao(TipoAcaoLog acao) {
+	public void setAcao(CraAcao acao) {
 		this.acao = acao;
 	}
 

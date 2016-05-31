@@ -7,7 +7,7 @@ import br.com.ieptbto.cra.exception.InfraException;
  * @author Lefer
  *
  */
-public enum CampoLayout implements CraEnum {
+public enum CampoLayout implements AbstractCraEnum {
 											IDENTIFICACAOREGISTRO("1", "identificacaoRegistro"),
 											CODIGOPORTADOR("2", "codigoPortador"), //
 											AGENCIACODIGOCEDENTE("3", "agenciaCodigoCedente"),

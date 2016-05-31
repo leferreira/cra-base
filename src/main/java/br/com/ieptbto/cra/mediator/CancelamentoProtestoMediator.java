@@ -48,9 +48,9 @@ import br.com.ieptbto.cra.entidade.vo.CancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.CartorioDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.ComarcaDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.TituloDesistenciaCancelamentoSerproVO;
+import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
-import br.com.ieptbto.cra.enumeration.TipoAcaoLog;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
@@ -90,8 +90,8 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 		return cancelamentoDAO.buscarPedidosCancelamentoProtesto(cancelamentoProtesto);
 	}
 
-	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio,
-			LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
+			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		return cancelamentoDAO.buscarCancelamentoProtesto(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
@@ -125,22 +125,20 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 			file = processadorArquivo.processarRemessaCancelamentoProtestoTXT(remessa, usuario);
 
 			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-				loggerCra.sucess(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO,
+				loggerCra.sucess(usuario, CraAcao.DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO,
 						"Arquivo " + cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo().getNomeArquivo()
 								+ ", recebido com sucesso por " + usuario.getInstituicao().getNomeFantasia() + ".");
 			}
 		} catch (Exception ex) {
 			logger.info(ex.getMessage(), ex);
-			loggerCra.error(usuario, TipoAcaoLog.DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO, "Erro Download Manual: " + ex.getMessage(), ex);
-			throw new InfraException(
-					"Não foi possível fazer o download do arquivo de Cancelamento de Protesto! Entre em contato com a CRA !");
+			loggerCra.error(usuario, CraAcao.DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO, "Erro Download Manual: " + ex.getMessage(), ex);
+			throw new InfraException("Não foi possível fazer o download do arquivo de Cancelamento de Protesto! Entre em contato com a CRA !");
 		}
 		return file;
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Arquivo processarCancelamento(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados, List<Exception> erros,
-			Usuario usuario) {
+	public Arquivo processarCancelamento(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados, List<Exception> erros, Usuario usuario) {
 		Arquivo arquivo = new Arquivo();
 		arquivo.setNomeArquivo(nomeArquivo);
 		arquivo.setUsuarioEnvio(usuario);
@@ -237,8 +235,8 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 		return cancelamentoVO;
 	}
 
-	private RemessaCancelamentoProtesto converterCancelamentoSerpro(Arquivo arquivo, Instituicao instituicao,
-			CancelamentoSerproVO cancelamentoSerpro, List<Exception> erros) {
+	private RemessaCancelamentoProtesto converterCancelamentoSerpro(Arquivo arquivo, Instituicao instituicao, CancelamentoSerproVO cancelamentoSerpro,
+			List<Exception> erros) {
 		RemessaCancelamentoProtesto remessaCancelamento = new RemessaCancelamentoProtesto();
 		remessaCancelamento.setArquivo(arquivo);
 		remessaCancelamento.setCancelamentoProtesto(getCancelamentosProtesto(remessaCancelamento, cancelamentoSerpro));
@@ -339,8 +337,8 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 		return sequenciaRegistro;
 	}
 
-	public List<TituloRemessa> buscarTitulosParaSolicitarCancelamento(TituloRemessa tituloRemessa, Instituicao bancoConvenio,
-			Municipio municipio, Usuario usuario) {
+	public List<TituloRemessa> buscarTitulosParaSolicitarCancelamento(TituloRemessa tituloRemessa, Instituicao bancoConvenio, Municipio municipio,
+			Usuario usuario) {
 		return cancelamentoDAO.buscarTitulosParaSolicitarCancelamento(tituloRemessa, bancoConvenio, municipio, usuario);
 	}
 

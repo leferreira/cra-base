@@ -4,7 +4,7 @@ package br.com.ieptbto.cra.enumeration;
  * @author Thasso Araújo
  *
  */
-public enum StatusRemessa implements CraEnum {
+public enum StatusRemessa implements AbstractCraEnum {
 
 	AGUARDANDO("A","Aguardando"), ENVIADO("E","Enviado"), RECEBIDO("R","Recebido");
 

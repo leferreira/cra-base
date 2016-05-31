@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.LogCra;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.TipoAcaoLog;
+import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.TipoLog;
 import br.com.ieptbto.cra.mediator.LoggerMediator;
 
@@ -22,7 +22,7 @@ public class LoggerCra {
 	@Autowired
 	LoggerMediator loggerMediator;
 
-	public LogCra alert(Usuario user, TipoAcaoLog acao, String descricao) {
+	public LogCra alert(Usuario user, CraAcao acao, String descricao) {
 		LogCra logCra = new LogCra();
 		logCra.setAcao(acao);
 		logCra.setDescricao(descricao);
@@ -34,7 +34,7 @@ public class LoggerCra {
 		return loggerMediator.salvar(logCra);
 	}
 
-	public LogCra error(TipoAcaoLog acao, String descricao) {
+	public LogCra error(CraAcao acao, String descricao) {
 		LogCra logCra = new LogCra();
 		logCra.setAcao(acao);
 		logCra.setDescricao(descricao);
@@ -44,7 +44,7 @@ public class LoggerCra {
 		return loggerMediator.salvar(logCra);
 	}
 
-	public LogCra error(Usuario user, TipoAcaoLog acao, String descricao) {
+	public LogCra error(Usuario user, CraAcao acao, String descricao) {
 		LogCra logCra = new LogCra();
 		logCra.setAcao(acao);
 		logCra.setDescricao(descricao);
@@ -56,7 +56,7 @@ public class LoggerCra {
 		return loggerMediator.salvar(logCra);
 	}
 
-	public LogCra error(Usuario user, TipoAcaoLog acao, String descricao, Exception ex) {
+	public LogCra error(Usuario user, CraAcao acao, String descricao, Exception ex) {
 		LogCra logCra = new LogCra();
 		logCra.setAcao(acao);
 		logCra.setDescricao(descricao);
@@ -69,7 +69,7 @@ public class LoggerCra {
 		return loggerMediator.salvar(logCra);
 	}
 
-	public LogCra sucess(Usuario user, TipoAcaoLog acao, String descricao) {
+	public LogCra sucess(Usuario user, CraAcao acao, String descricao) {
 		LogCra logCra = new LogCra();
 		logCra.setAcao(acao);
 		logCra.setDescricao(descricao);
@@ -81,7 +81,7 @@ public class LoggerCra {
 		return loggerMediator.salvar(logCra);
 	}
 
-	public LogCra sucess(Instituicao instituicao, Usuario user, TipoAcaoLog acao, String descricao) {
+	public LogCra sucess(Instituicao instituicao, Usuario user, CraAcao acao, String descricao) {
 		LogCra logCra = new LogCra();
 		logCra.setAcao(acao);
 		logCra.setDescricao(descricao);

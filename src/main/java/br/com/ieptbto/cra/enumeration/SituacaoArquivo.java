@@ -6,7 +6,7 @@ import br.com.ieptbto.cra.exception.InfraException;
  * @author Thasso Araújo
  *
  */
-public enum SituacaoArquivo implements CraEnum {
+public enum SituacaoArquivo implements AbstractCraEnum {
 	
 	AGUARDANDO("A","Aguardando"),ENVIADO("E","Enviado"),RECEBIDO("R","Recebido"); 
 	 
