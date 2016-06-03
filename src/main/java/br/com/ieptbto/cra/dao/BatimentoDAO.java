@@ -182,4 +182,12 @@ public class BatimentoDAO extends AbstractBaseDAO {
 			throw new InfraException("Não foi possível atualizar os depósitos na base de dados.");
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	public List<Deposito> buscarDepositosArquivoRetorno(Batimento batimento) {
+		Criteria criteria = getCriteria(Deposito.class);
+		criteria.createAlias("batimentosDeposito", "batimentosDeposito");
+		criteria.add(Restrictions.eq("batimentosDeposito.batimento", batimento));
+		return criteria.list();
+	}
 }

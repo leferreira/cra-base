@@ -108,8 +108,8 @@ public class BatimentoMediator {
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException("Não foi possível converter os dados da linha [ Nº " + numeroLinha
-					+ " ]. Verifique as informações do depósito!");
+			throw new InfraException(
+					"Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do depósito!");
 		}
 	}
 
@@ -184,5 +184,9 @@ public class BatimentoMediator {
 
 	public void atualizarInformacoesDeposito(Deposito deposito) {
 		batimentoDAO.atualizarInformacoesDeposito(deposito);
+	}
+
+	public List<Deposito> buscarDepositosArquivoRetorno(Batimento batimento) {
+		return batimentoDAO.buscarDepositosArquivoRetorno(batimento);
 	}
 }

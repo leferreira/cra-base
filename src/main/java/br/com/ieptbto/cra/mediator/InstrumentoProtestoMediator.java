@@ -115,12 +115,12 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 
 		logger.info("Gerando envelopes.");
 		for (EtiquetaSLIP etiqueta : getEtiquetas()) {
-			if (mapaEnvelopes.containsKey(
-					Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(),
-							etiqueta.getAgenciaDestino()).toString()))) {
-				EnvelopeSLIP envelope = mapaEnvelopes
-						.get(Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(),
-								etiqueta.getAgenciaDestino()).toString()));
+			if (mapaEnvelopes.containsKey(Integer.parseInt(
+					new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino())
+							.toString()))) {
+				EnvelopeSLIP envelope = mapaEnvelopes.get(Integer.parseInt(
+						new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino())
+								.toString()));
 				envelope.setQuantidadeInstrumentos(envelope.getQuantidadeInstrumentos() + 1);
 				envelope.getEtiquetas().add(etiqueta);
 			} else {
@@ -132,8 +132,7 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 				envelope.setQuantidadeInstrumentos(1);
 
 				SimpleDateFormat dataPadraEnvelope = new SimpleDateFormat("ddMMyy");
-				String codeBar =
-						envelope.getAgenciaDestino() + envelope.getUfAgenciaDestino() + dataPadraEnvelope.format(new Date()).toString();
+				String codeBar = envelope.getAgenciaDestino() + envelope.getUfAgenciaDestino() + dataPadraEnvelope.format(new Date()).toString();
 				String codigoCRA = StringUtils.leftPad(instrumentoDao.quantidadeEnvelopes(), 6, "0") + codeBar;
 
 				envelope.setCodeBar(codeBar);
@@ -141,9 +140,10 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 				envelope.setEtiquetas(new ArrayList<EtiquetaSLIP>());
 				envelope.getEtiquetas().add(etiqueta);
 
-				mapaEnvelopes
-						.put(Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(),
-								etiqueta.getAgenciaDestino()).toString()), envelope);
+				mapaEnvelopes.put(Integer.parseInt(
+						new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino())
+								.toString()),
+						envelope);
 				getEnvelopes().add(envelope);
 			}
 		}
