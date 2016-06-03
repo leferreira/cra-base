@@ -38,8 +38,7 @@ public class FabricaValidacaoCNP {
 		for (RemessaCnp remessaCnp : getArquivo().getRemessasCnp()) {
 			if (StringUtils.isEmpty(remessaCnp.getCabecalho().getEmBranco53().trim())
 					|| StringUtils.isBlank(remessaCnp.getCabecalho().getEmBranco53().trim())) {
-				throw new InfraException(
-						"O campo 'emBranco53' não pode ser vazio! Neste campo deverá ser enviado o Código IBGE do município.");
+				throw new InfraException("O campo 'emBranco53' não pode ser vazio! Neste campo deverá ser enviado o Código IBGE do município.");
 			}
 			if (instituicaoMediator.getCartorioPorCodigoIBGE(remessaCnp.getCabecalho().getEmBranco53()) == null) {
 				throw new InfraException("Código da comarca " + remessaCnp.getCabecalho().getEmBranco53() + " inválido !");

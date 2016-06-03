@@ -97,6 +97,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.add(disjunction);
 
 		criteria.add(Restrictions.eq("batimento.data", dataBatimento));
+		criteria.setProjection(Projections.distinct(Projections.property("batimento.remessa")));
 		return criteria.list();
 	}
 

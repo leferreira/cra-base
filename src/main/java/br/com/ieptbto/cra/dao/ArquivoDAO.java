@@ -139,8 +139,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 						}
 						if (pedidosDesistenciaComErro.isEmpty()) {
 							desistenciaProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(quantidadeDesistenciasCartorio);
-							desistenciaProtestos.getRodapeCartorio()
-									.setSomaTotalCancelamentoDesistencia(quantidadeDesistenciasCartorio * 2);
+							desistenciaProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(quantidadeDesistenciasCartorio * 2);
 							desistenciaProtestos.setDesistencias(pedidosProcessados);
 							desistenciasProtesto.add(desistenciaProtestos);
 						} else {
@@ -348,8 +347,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return arquivo;
 	}
 
-	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos,
-			Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
+	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos, Municipio municipio,
+			LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.createAlias("instituicaoEnvio", "instituicaoEnvio");
 		criteria.createAlias("tipoArquivo", "tipoArquivo");

@@ -302,6 +302,7 @@ public class TituloDAO extends AbstractBaseDAO {
 			new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
 					+ " não foi encontrado em nossa base de dados. Verifique os dados do título...");
 		}
+
 		return titulo;
 	}
 

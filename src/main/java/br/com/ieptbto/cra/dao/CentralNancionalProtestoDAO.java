@@ -3,6 +3,7 @@ package br.com.ieptbto.cra.dao;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
@@ -157,7 +158,15 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(CabecalhoCnp.class);
 		criteria.add(Restrictions.ilike("emBranco53", codigoMunicipio, MatchMode.EXACT));
 		criteria.setProjection(Projections.max("numeroRemessaArquivo"));
-		return Integer.valueOf(String.class.cast(criteria.uniqueResult()));
+		String resultado = criteria.uniqueResult().toString();
+
+		Integer numeroSequencial = 1;
+		if (resultado != null) {
+			if (StringUtils.isNotEmpty(resultado.trim()) && StringUtils.isNotBlank(resultado.trim())) {
+				numeroSequencial = Integer.valueOf(resultado);
+			}
+		}
+		return numeroSequencial;
 	}
 
 	@SuppressWarnings("unchecked")

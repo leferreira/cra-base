@@ -66,7 +66,7 @@ public class CentralNacionalProtestoMediator {
 		arquivoCnp.setInstituicaoEnvio(usuario.getInstituicao());
 		arquivoCnp.setRemessasCnp(ConversorArquivoCnpVO.converterParaRemessaCnp(arquivoCnpVO));
 
-		fabricaValidacaoCNP.validarArquivoCnpCartorio(arquivoCnp);
+		// fabricaValidacaoCNP.validarArquivoCnpCartorio(arquivoCnp);
 		return centralNancionalProtestoDAO.salvarArquivoCartorioCentralNacionalProtesto(usuario, arquivoCnp);
 	}
 

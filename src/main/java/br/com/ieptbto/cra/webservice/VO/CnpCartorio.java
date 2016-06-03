@@ -5,47 +5,49 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
+
 @XmlRootElement(name = "cartorio")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CnpCartorio {
 
-	@XmlElement(name = "codigo", required = true)
+	@XmlElement(name = "codigo", defaultValue = StringUtils.EMPTY)
 	private String codigo;
 
-	@XmlElement(name = "nome", required = true)
+	@XmlElement(name = "nome", defaultValue = StringUtils.EMPTY)
 	private String nomeFantasia;
 
-	@XmlElement(name = "razao", required = true)
+	@XmlElement(name = "razao", defaultValue = StringUtils.EMPTY)
 	private String razaoSocial;
 
-	@XmlElement(name = "tabeliao", required = true)
+	@XmlElement(name = "tabeliao", defaultValue = StringUtils.EMPTY)
 	private String tabeliao;
 
-	@XmlElement(name = "responsavel", required = true)
+	@XmlElement(name = "responsavel", defaultValue = StringUtils.EMPTY)
 	private String responsavel;
 
-	@XmlElement(name = "cnpj", required = true)
+	@XmlElement(name = "cnpj", defaultValue = StringUtils.EMPTY)
 	private String cnpj;
 
-	@XmlElement(name = "endereco", required = true)
+	@XmlElement(name = "endereco", defaultValue = StringUtils.EMPTY)
 	private String endereco;
 
-	@XmlElement(name = "bairro", required = true)
+	@XmlElement(name = "bairro", defaultValue = StringUtils.EMPTY)
 	private String bairro;
 
-	@XmlElement(name = "uf", required = true)
+	@XmlElement(name = "uf", defaultValue = StringUtils.EMPTY)
 	private String uf;
 
-	@XmlElement(name = "telefone", required = true)
+	@XmlElement(name = "telefone", defaultValue = StringUtils.EMPTY)
 	private String telefone;
 
-	@XmlElement(name = "participante", required = true)
+	@XmlElement(name = "participante", defaultValue = StringUtils.EMPTY)
 	private String participante;
 
-	@XmlElement(name = "ultimoEnvio", required = true)
+	@XmlElement(name = "ultimoEnvio", defaultValue = StringUtils.EMPTY)
 	private String ultimoEnvio;
 
-	@XmlElement(name = "municipio", required = true)
+	@XmlElement(name = "municipio", defaultValue = StringUtils.EMPTY)
 	private CnpMunicipioCartorio municipio;
 
 	public String getCodigo() {

@@ -71,12 +71,12 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		return id;
 	}
 
-	@Column(name = "NOME_FANTASIA", nullable = false, unique = true, length = 100)
+	@Column(name = "NOME_FANTASIA", nullable = false, length = 100)
 	public String getNomeFantasia() {
 		return nomeFantasia;
 	}
 
-	@Column(name = "CNPJ", nullable = false, unique = true, length = 50)
+	@Column(name = "CNPJ", nullable = false, length = 50)
 	public String getCnpj() {
 		if (cnpj == null) {
 			cnpj = StringUtils.EMPTY;
@@ -84,7 +84,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		return cnpj.replace(".", "").replace("-", "").replace("/", "").trim();
 	}
 
-	@Column(name = "RAZAO_SOCIAL", length = 100, nullable = false, unique = true)
+	@Column(name = "RAZAO_SOCIAL", length = 100, nullable = false)
 	public String getRazaoSocial() {
 		return razaoSocial;
 	}
