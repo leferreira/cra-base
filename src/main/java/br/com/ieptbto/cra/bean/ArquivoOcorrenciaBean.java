@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.bean;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
@@ -73,9 +74,9 @@ public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOc
 		this.nomeUsuario = ac.getRemessaAutorizacaoCancelamento().getArquivo().getUsuarioEnvio().getNome();
 	}
 
-	public void parseToBatimento(Batimento batimento, List<Deposito> depositos) {
+	public void parseToBatimento(Batimento batimento, List<Deposito> depositos, BigDecimal totalPagos) {
 		this.batimento = batimento;
-		this.mensagem = "Depósitos vínculados: \r\n";
+		this.mensagem = "Total (Pagos): R$" + totalPagos.toString() + ". Depósitos vínculados: \r\n";
 		for (Deposito deposito : depositos) {
 			this.mensagem =
 					this.mensagem.concat(DataUtil.localDateToString(deposito.getData()) + " - R$" + deposito.getValorCredito().toString() + "; \r\n");

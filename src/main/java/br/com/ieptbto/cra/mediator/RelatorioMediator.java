@@ -22,6 +22,7 @@ import br.com.ieptbto.cra.dao.RelatorioDAO;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.XlsUtil;
 
@@ -38,35 +39,35 @@ public class RelatorioMediator extends BaseMediator {
 	private File arquivoFisico;
 	private FileUpload file;
 
-	public List<TituloRemessa> relatorioTitulosPorSituacao(SituacaoTituloRelatorio situacaoTitulo, Instituicao instituicao, Instituicao cartorio,
-			LocalDate dataInicio, LocalDate dataFim) {
+	public List<TituloRemessa> relatorioTitulosPorSituacao(SituacaoTituloRelatorio situacaoTitulo, TipoInstituicaoCRA tipoInstituicao,
+			Instituicao instituicao, Instituicao cartorio, LocalDate dataInicio, LocalDate dataFim) {
 
 		if (situacaoTitulo.equals(SituacaoTituloRelatorio.GERAL)) {
-			return relatorioDAO.relatorioTitulosGeral(dataInicio, dataFim, instituicao, cartorio);
+			return relatorioDAO.relatorioTitulosGeral(dataInicio, dataFim, tipoInstituicao, instituicao, cartorio);
 
 		} else if (situacaoTitulo.equals(SituacaoTituloRelatorio.SEM_CONFIRMACAO)) {
-			return relatorioDAO.relatorioTitulosSemConfirmacao(dataInicio, dataFim, instituicao, cartorio);
+			return relatorioDAO.relatorioTitulosSemConfirmacao(dataInicio, dataFim, tipoInstituicao, instituicao, cartorio);
 
 		} else if (situacaoTitulo.equals(SituacaoTituloRelatorio.COM_CONFIRMACAO)) {
-			return relatorioDAO.relatorioTitulosConfirmadosSemRetorno(dataInicio, dataFim, instituicao, cartorio);
+			return relatorioDAO.relatorioTitulosConfirmadosSemRetorno(dataInicio, dataFim, tipoInstituicao, instituicao, cartorio);
 
 		} else if (situacaoTitulo.equals(SituacaoTituloRelatorio.COM_RETORNO)) {
-			return relatorioDAO.relatorioTitulosRetorno(dataInicio, dataFim, instituicao, cartorio);
+			return relatorioDAO.relatorioTitulosRetorno(dataInicio, dataFim, tipoInstituicao, instituicao, cartorio);
 
 		} else if (situacaoTitulo.equals(SituacaoTituloRelatorio.PAGOS)) {
-			return relatorioDAO.relatorioTitulosPagos(dataInicio, dataFim, instituicao, cartorio);
+			return relatorioDAO.relatorioTitulosPagos(dataInicio, dataFim, tipoInstituicao, instituicao, cartorio);
 
 		} else if (situacaoTitulo.equals(SituacaoTituloRelatorio.PROTESTADOS)) {
-			return relatorioDAO.relatorioTitulosProtestados(dataInicio, dataFim, instituicao, cartorio);
+			return relatorioDAO.relatorioTitulosProtestados(dataInicio, dataFim, tipoInstituicao, instituicao, cartorio);
 
 		} else if (situacaoTitulo.equals(SituacaoTituloRelatorio.RETIRADOS_DEVOLVIDOS)) {
-			return relatorioDAO.relatorioTitulosRetiradosDevolvidos(dataInicio, dataFim, instituicao, cartorio);
+			return relatorioDAO.relatorioTitulosRetiradosDevolvidos(dataInicio, dataFim, tipoInstituicao, instituicao, cartorio);
 
 		} else if (situacaoTitulo.equals(SituacaoTituloRelatorio.DESISTÊNCIA_DE_PROTESTO)) {
-			return relatorioDAO.relatorioTitulosDesistenciaProtesto(dataInicio, dataFim, instituicao, cartorio);
+			return relatorioDAO.relatorioTitulosDesistenciaProtesto(dataInicio, dataFim, tipoInstituicao, instituicao, cartorio);
 
 		} else if (situacaoTitulo.equals(SituacaoTituloRelatorio.AUTORIZACAO_CANCELAMENTO)) {
-			return relatorioDAO.relatorioTitulosAutorizacaoCancelamento(dataInicio, dataFim, instituicao, cartorio);
+			return relatorioDAO.relatorioTitulosAutorizacaoCancelamento(dataInicio, dataFim, tipoInstituicao, instituicao, cartorio);
 		}
 		return null;
 	}
