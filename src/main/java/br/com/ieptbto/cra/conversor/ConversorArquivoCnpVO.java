@@ -3,6 +3,8 @@ package br.com.ieptbto.cra.conversor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import br.com.ieptbto.cra.conversor.arquivo.CabecalhoCnpConversor;
 import br.com.ieptbto.cra.conversor.arquivo.DateConversor;
 import br.com.ieptbto.cra.conversor.arquivo.RodapeCnpConversor;
@@ -51,9 +53,16 @@ public class ConversorArquivoCnpVO {
 
 			remessaVO.setTitulosCnpVO(new ArrayList<TituloCnpVO>());
 			for (TituloCnp titulo : remessa.getTitulos()) {
-				remessaVO.getTitulosCnpVO().add(new TituloCnpConversor().converter(titulo, TituloCnpVO.class));
+				TituloCnpVO tituloVO = new TituloCnpConversor().converter(titulo, TituloCnpVO.class);
+				if (titulo.getTipoInformacao() != null) {
+					if (StringUtils.isNotBlank(titulo.getTipoInformacao().trim()) && StringUtils.isNotEmpty(titulo.getTipoInformacao().trim())) {
+						if (titulo.getTipoInformacao().trim().equals("C")) {
+							tituloVO.setCodigoOperacao("E");
+						}
+					}
+				}
+				remessaVO.getTitulosCnpVO().add(tituloVO);
 			}
-
 			remessaVO.setRodapeCnpVO(new RodapeCnpConversor().converter(remessa.getRodape(), RodapeCnpVO.class));
 			remessasVO.add(remessaVO);
 		}

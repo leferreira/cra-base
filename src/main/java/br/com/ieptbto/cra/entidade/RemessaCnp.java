@@ -36,7 +36,7 @@ public class RemessaCnp extends AbstractEntidade<RemessaCnp> {
 	private List<TituloCnp> titulos;
 	private RodapeCnp rodape;
 	private LocalDate dataLiberacaoConsulta;
-	private boolean arquivoLiberadoConsulta;
+	private Boolean arquivoLiberadoConsulta;
 
 	@Override
 	@Id

@@ -54,12 +54,9 @@ public class RegraAgenciaDestino {
 				aplicarRegraBradesco();
 			} else if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BANCO_DO_BRASIL)) {
 				aplicarRegraBB(bancoTipoRegra);
-			} else if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.SANTANDER)
-					|| bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.HSBC)
-					|| bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.MERCANTIL)
-					|| bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BRB)
-					|| bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BIC)
-					|| bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.SAFRA)) {
+			} else if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.SANTANDER) || bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.HSBC)
+					|| bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.MERCANTIL) || bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BRB)
+					|| bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BIC) || bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.SAFRA)) {
 				aplicarRegraOutros(bancoTipoRegra);
 			}
 		} else {
@@ -73,8 +70,7 @@ public class RegraAgenciaDestino {
 			agenciaItau = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.ITAU);
 		}
 
-		AgenciaCAF agenciaCAF =
-				arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaItau, BancoTipoRegraBasicaInstrumento.ITAU);
+		AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaItau, BancoTipoRegraBasicaInstrumento.ITAU);
 		if (agenciaCAF != null) {
 			setAgenciaDestino(agenciaCAF.getCodigoAgencia());
 			setMunicipioDestino(agenciaCAF.getNomeAgencia());
@@ -95,8 +91,7 @@ public class RegraAgenciaDestino {
 
 		} else {
 			agenciaBradesco = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.BRADESCO);
-			AgenciaCAF agenciaCAF =
-					arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaBradesco, BancoTipoRegraBasicaInstrumento.BRADESCO);
+			AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaBradesco, BancoTipoRegraBasicaInstrumento.BRADESCO);
 
 			if (agenciaCAF != null) {
 				setAgenciaDestino(agenciaCAF.getCodigoAgencia());
@@ -114,20 +109,19 @@ public class RegraAgenciaDestino {
 		String numeroContrato = new RegraBancoDoBrasilAgencia().aplicarRegraEspecifica(getTitulo());
 		AgenciaBancoDoBrasil agenciaBB = arquivoDeParaDAO.buscarAgenciaArquivoBancoDoBrasil(numeroContrato);
 		if (agenciaBB == null) {
-			throw new InfraException(
-					"Não foi possível identificar a agência Banco do Brasil para o título Nosso Número "
-							+ getTitulo().getNossoNumero() + ".");
-		}
-
-		AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaBB.getAgenciaDestino(), bancoRegra);
-		if (agenciaCAF != null) {
-			setAgenciaDestino(agenciaCAF.getCodigoAgencia());
-			setMunicipioDestino(agenciaCAF.getCidade());
-			setUfDestino(agenciaCAF.getUf());
+			new InfraException(
+					"Não foi possível identificar a agência Banco do Brasil para o título Nosso Número " + getTitulo().getNossoNumero() + ".");
 		} else {
-			throw new InfraException(
-					"Não foi possível identificar a agência Banco do Brasil para o título Nosso Número "
-							+ getTitulo().getNossoNumero() + ".");
+
+			AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaBB.getAgenciaDestino(), bancoRegra);
+			if (agenciaCAF != null) {
+				setAgenciaDestino(agenciaCAF.getCodigoAgencia());
+				setMunicipioDestino(agenciaCAF.getCidade());
+				setUfDestino(agenciaCAF.getUf());
+			} else {
+				new InfraException(
+						"Não foi possível identificar a agência Banco do Brasil para o título Nosso Número " + getTitulo().getNossoNumero() + ".");
+			}
 		}
 	}
 
@@ -148,8 +142,7 @@ public class RegraAgenciaDestino {
 
 	private String aplicarRegraBasica(BancoTipoRegraBasicaInstrumento bancoTipoRegra) {
 		TipoRegraInstrumento tipoRegra = bancoTipoRegra.getTipoRegraBasicaInstrumento();
-		return getTitulo().getAgenciaCodigoCedente().substring(tipoRegra.getPosicaoInicialCampo(),
-				tipoRegra.getPosicaoFinalCampo());
+		return getTitulo().getAgenciaCodigoCedente().substring(tipoRegra.getPosicaoInicialCampo(), tipoRegra.getPosicaoFinalCampo());
 	}
 
 	public String getAgenciaDestino() {

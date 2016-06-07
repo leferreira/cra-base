@@ -41,6 +41,7 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 	private List<EtiquetaSLIP> etiquetas;
 	private List<EnvelopeSLIP> envelopes;
 	private List<InstrumentoProtesto> instrumentosProtesto;
+	private List<InstrumentoProtesto> instrumentosAgenciaNaoEncontrada;
 
 	/**
 	 * Salvar entrada de instrumento de protesto na CRA
@@ -52,6 +53,7 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 
 		for (Retorno retorno : titulosProtestados) {
 			InstrumentoProtesto instrumentoBuscado = instrumentoDao.isTituloJaFoiGeradoInstrumento(retorno);
+
 			if (instrumentoBuscado == null) {
 				InstrumentoProtesto instrumento = new InstrumentoProtesto();
 				instrumento.setDataDeEntrada(new LocalDate());
@@ -65,13 +67,6 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 		}
 	}
 
-	/**
-	 * Processar instrumentos recebidos e gerar slip, etiquetas e envelopes
-	 * 
-	 * @param instrumentos
-	 * @param listaRetorno
-	 * @return
-	 */
 	public InstrumentoProtestoMediator processarInstrumentos(List<InstrumentoProtesto> instrumentos, List<Retorno> listaRetorno) {
 		this.setInstrumentosProtesto(instrumentos);
 		this.titulosProtestados = listaRetorno;
@@ -91,29 +86,26 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 	private void gerarSLIP(List<InstrumentoProtesto> instrumentos) {
 
 		for (InstrumentoProtesto instrumento : instrumentos) {
-			gerarEtiqueta(instrumento);
+			RegraAgenciaDestino regraAgencia = regraAgenciaDestino.regraAgenciaDestino(instrumento.getTituloRetorno().getTitulo());
+			instrumento.getTituloRetorno().setRemessa(instrumentoDao.buscarPorPK(instrumento.getTituloRetorno().getRemessa(), Remessa.class));
+
+			if (StringUtils.isNotEmpty(regraAgencia.getAgenciaDestino().trim())) {
+				EtiquetaSLIP novaEtiqueta = new EtiquetaSLIP();
+				novaEtiqueta.parseToTitulo(instrumento.getTituloRetorno());
+				novaEtiqueta.setAgenciaDestino(regraAgencia.getAgenciaDestino());
+				novaEtiqueta.setMunicipioAgenciaDestino(regraAgencia.getMunicipioDestino());
+				novaEtiqueta.setUfAgenciaDestino(regraAgencia.getUfDestino());
+				novaEtiqueta.setInstrumentoProtesto(instrumento);
+				getEtiquetas().add(novaEtiqueta);
+
+				logger.info("Etiqueta SLIP - Nosso Número: " + novaEtiqueta.getNossoNumero() + " gerada!");
+			}
 		}
-	}
-
-	private void gerarEtiqueta(InstrumentoProtesto instrumento) {
-		RegraAgenciaDestino regraAgencia = regraAgenciaDestino.regraAgenciaDestino(instrumento.getTituloRetorno().getTitulo());
-		instrumento.getTituloRetorno().setRemessa(instrumentoDao.buscarPorPK(instrumento.getTituloRetorno().getRemessa(), Remessa.class));
-
-		EtiquetaSLIP novaEtiqueta = new EtiquetaSLIP();
-		novaEtiqueta.parseToTitulo(instrumento.getTituloRetorno());
-		novaEtiqueta.setAgenciaDestino(regraAgencia.getAgenciaDestino());
-		novaEtiqueta.setMunicipioAgenciaDestino(regraAgencia.getMunicipioDestino());
-		novaEtiqueta.setUfAgenciaDestino(regraAgencia.getUfDestino());
-		novaEtiqueta.setInstrumentoProtesto(instrumento);
-		getEtiquetas().add(novaEtiqueta);
-
-		logger.info("Etiqueta SLIP - Nosso Número: " + novaEtiqueta.getNossoNumero() + " gerada!");
 	}
 
 	private void gerarEnvelopes() {
 		HashMap<Integer, EnvelopeSLIP> mapaEnvelopes = new HashMap<Integer, EnvelopeSLIP>();
 
-		logger.info("Gerando envelopes.");
 		for (EtiquetaSLIP etiqueta : getEtiquetas()) {
 			if (mapaEnvelopes.containsKey(Integer.parseInt(
 					new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino())
@@ -147,7 +139,6 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 				getEnvelopes().add(envelope);
 			}
 		}
-		logger.info("Envelopes gerados.");
 	}
 
 	private void ordenarEtiquetasInstrumentos() {
@@ -176,7 +167,15 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 		if (titulosProtestados == null) {
 			titulosProtestados = new ArrayList<Retorno>();
 		}
+
 		return titulosProtestados;
+	}
+
+	public List<InstrumentoProtesto> getInstrumentosAgenciaNaoEncontrada() {
+		if (instrumentosAgenciaNaoEncontrada == null) {
+			instrumentosAgenciaNaoEncontrada = new ArrayList<InstrumentoProtesto>();
+		}
+		return instrumentosAgenciaNaoEncontrada;
 	}
 
 	public Retorno buscarTituloProtestado(String numeroProtocolo, String codigoIBGE) {

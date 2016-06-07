@@ -238,7 +238,7 @@ public class TituloDAO extends AbstractBaseDAO {
 			} else {
 				logger.error(new InfraException("Titulo nosso número" + titulo.getNossoNumero() + " já tem retorno!"));
 				throw new InfraException("Título com o nosso número " + tituloRetorno.getNossoNumero() + " e o protocolo "
-						+ tituloRetorno.getNumeroProtocoloCartorio() + ", já foi enviado em outro arquivo de retorno!");
+						+ tituloRetorno.getNumeroProtocoloCartorio() + ", já foi enviado em outro arquivo de retorno...");
 			}
 		}
 		return null;

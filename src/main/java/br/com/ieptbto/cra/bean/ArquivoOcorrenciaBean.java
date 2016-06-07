@@ -76,11 +76,18 @@ public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOc
 
 	public void parseToBatimento(Batimento batimento, List<Deposito> depositos, BigDecimal totalPagos) {
 		this.batimento = batimento;
-		this.mensagem = "Total (Pagos): R$" + totalPagos.toString() + ". Depósitos vínculados: \r\n";
+		if (totalPagos != null) {
+			this.mensagem = "Total (Pagos): R$" + totalPagos.toString() + ". ";
+		}
+		this.mensagem = "Depósitos vínculados: \r\n";
 		for (Deposito deposito : depositos) {
 			this.mensagem =
 					this.mensagem.concat(DataUtil.localDateToString(deposito.getData()) + " - R$" + deposito.getValorCredito().toString() + "; \r\n");
 			this.nomeUsuario = deposito.getUsuario().getNome();
+		}
+		if (depositos.isEmpty()) {
+			this.mensagem = "Liberação sem identificação de depósitos";
+			this.nomeUsuario = "CRA";
 		}
 		this.dataHora = "";
 	}

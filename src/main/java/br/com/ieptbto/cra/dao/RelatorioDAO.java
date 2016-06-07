@@ -16,6 +16,7 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
+import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 
 /**
  * @author Thasso Araújo
@@ -133,6 +134,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		}
 		criteria.add(Restrictions.isNull("retorno.id"));
 		criteria.add(Restrictions.ne("confirmacao.tipoOcorrencia", TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante()));
+		criteria.add(Restrictions.ne("confirmacao.numeroProtocoloCartorio", ConfiguracaoBase.ZERO));
 		criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
 		return criteria.list();
 	}
