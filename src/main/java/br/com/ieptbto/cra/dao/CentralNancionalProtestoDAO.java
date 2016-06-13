@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
@@ -175,5 +176,24 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(ArquivoCnp.class);
 		criteria.setProjection(Projections.groupProperty("instituicaoEnvio"));
 		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
+	public List<TituloCnp> buscarTitulosPorMunicipio(Municipio municipio) {
+		Criteria criteria = getCriteria(TituloCnp.class);
+		criteria.createAlias("remessa", "remessa");
+		criteria.createAlias("remessa.cabecalho", "cabecalho");
+		criteria.add(Restrictions.eq("cabecalho.emBranco53", municipio.getCodigoIBGE()));
+		return criteria.list();
+	}
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
+	public CabecalhoCnp ultimoCabecalhoCnpCartorio(Municipio municipio) {
+		Criteria criteria = getCriteria(CabecalhoCnp.class);
+		criteria.add(Restrictions.eq("emBranco53", municipio.getCodigoIBGE()));
+		criteria.addOrder(Order.desc("id"));
+		criteria.setMaxResults(1);
+		return CabecalhoCnp.class.cast(criteria.uniqueResult());
 	}
 }

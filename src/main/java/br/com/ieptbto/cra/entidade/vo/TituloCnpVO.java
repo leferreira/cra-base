@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
  * @author Thasso Araújo
@@ -188,7 +189,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	private String sequenciaRegistro;
 
 	public String getCodigoRegistro() {
-		return codigoRegistro;
+		return RemoverAcentosUtil.removeAcentos(codigoRegistro);
 	}
 
 	public void setCodigoRegistro(String codigoRegistro) {
@@ -196,7 +197,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getTipoInformacao() {
-		return tipoInformacao;
+		return RemoverAcentosUtil.removeAcentos(tipoInformacao);
 	}
 
 	public void setTipoInformacao(String tipoInformacao) {
@@ -204,7 +205,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getCodigoOperacao() {
-		return codigoOperacao;
+		return RemoverAcentosUtil.removeAcentos(codigoOperacao);
 	}
 
 	public void setCodigoOperacao(String codigoOperacao) {
@@ -212,7 +213,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getCodigoUnidadeFederativa() {
-		return codigoUnidadeFederativa;
+		return RemoverAcentosUtil.removeAcentos(codigoUnidadeFederativa);
 	}
 
 	public void setCodigoUnidadeFederativa(String codigoUnidadeFederativa) {
@@ -220,7 +221,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getCodigoPracaEmbratel() {
-		return codigoPracaEmbratel;
+		return RemoverAcentosUtil.removeAcentos(codigoPracaEmbratel);
 	}
 
 	public void setCodigoPracaEmbratel(String codigoPracaEmbratel) {
@@ -228,7 +229,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getEmBranco10() {
-		return emBranco10;
+		return RemoverAcentosUtil.removeAcentos(emBranco10);
 	}
 
 	public void setEmBranco10(String emBranco10) {
@@ -236,7 +237,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getNomeCredor() {
-		return nomeCredor;
+		return RemoverAcentosUtil.removeAcentos(nomeCredor);
 	}
 
 	public void setNomeCredor(String nomeCredor) {
@@ -244,7 +245,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getNumeroDocumentoCredor() {
-		return numeroDocumentoCredor;
+		return RemoverAcentosUtil.removeAcentos(numeroDocumentoCredor);
 	}
 
 	public void setNumeroDocumentoCredor(String numeroDocumentoCredor) {
@@ -252,7 +253,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getComplementoDocumentoCredor() {
-		return complementoDocumentoCredor;
+		return RemoverAcentosUtil.removeAcentos(complementoDocumentoCredor);
 	}
 
 	public void setComplementoDocumentoCredor(String complementoDocumentoCredor) {
@@ -260,7 +261,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getDigitoControleDocumentoCredor() {
-		return digitoControleDocumentoCredor;
+		return RemoverAcentosUtil.removeAcentos(digitoControleDocumentoCredor);
 	}
 
 	public void setDigitoControleDocumentoCredor(String digitoControleDocumentoCredor) {
@@ -268,7 +269,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getEnderecoCredor() {
-		return enderecoCredor;
+		return RemoverAcentosUtil.removeAcentos(enderecoCredor);
 	}
 
 	public void setEnderecoCredor(String enderecoCredor) {
@@ -276,7 +277,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getCepCredor() {
-		return cepCredor;
+		return RemoverAcentosUtil.removeAcentos(cepCredor);
 	}
 
 	public void setCepCredor(String cepCredor) {
@@ -284,7 +285,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getCidadeCredor() {
-		return cidadeCredor;
+		return RemoverAcentosUtil.removeAcentos(cidadeCredor);
 	}
 
 	public void setCidadeCredor(String cidadeCredor) {
@@ -292,7 +293,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getUfCredor() {
-		return ufCredor;
+		return RemoverAcentosUtil.removeAcentos(ufCredor);
 	}
 
 	public void setUfCredor(String ufCredor) {
@@ -300,7 +301,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getMunicipioEnderecoCredor() {
-		return municipioEnderecoCredor;
+		return RemoverAcentosUtil.removeAcentos(municipioEnderecoCredor);
 	}
 
 	public void setMunicipioEnderecoCredor(String municipioEnderecoCredor) {
@@ -308,7 +309,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getTipoPessoaCredor() {
-		return tipoPessoaCredor;
+		return RemoverAcentosUtil.removeAcentos(tipoPessoaCredor);
 	}
 
 	public void setTipoPessoaCredor(String tipoPessoaCredor) {
@@ -316,7 +317,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getTipoDocumentoCredor() {
-		return tipoDocumentoCredor;
+		return RemoverAcentosUtil.removeAcentos(tipoDocumentoCredor);
 	}
 
 	public void setTipoDocumentoCredor(String tipoDocumentoCredor) {
@@ -324,7 +325,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getEmBranco226() {
-		return emBranco226;
+		return RemoverAcentosUtil.removeAcentos(emBranco226);
 	}
 
 	public void setEmBranco226(String emBranco226) {
@@ -332,7 +333,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getValorProtesto() {
-		return valorProtesto;
+		return RemoverAcentosUtil.removeAcentos(valorProtesto);
 	}
 
 	public void setValorProtesto(String valorProtesto) {
@@ -340,7 +341,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getDataProtesto() {
-		return dataProtesto;
+		return RemoverAcentosUtil.removeAcentos(dataProtesto);
 	}
 
 	public void setDataProtesto(String dataProtesto) {
@@ -348,7 +349,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getTipoPessoaDevedor() {
-		return tipoPessoaDevedor;
+		return RemoverAcentosUtil.removeAcentos(tipoPessoaDevedor);
 	}
 
 	public void setTipoPessoaDevedor(String tipoPessoaDevedor) {
@@ -356,7 +357,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getTipoDocumentoDevedor() {
-		return tipoDocumentoDevedor;
+		return RemoverAcentosUtil.removeAcentos(tipoDocumentoDevedor);
 	}
 
 	public void setTipoDocumentoDevedor(String tipoDocumentoDevedor) {
@@ -364,7 +365,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getNumeroCoResponsavel() {
-		return numeroCoResponsavel;
+		return RemoverAcentosUtil.removeAcentos(numeroCoResponsavel);
 	}
 
 	public void setNumeroCoResponsavel(String numeroCoResponsavel) {
@@ -372,7 +373,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getEmBranco273() {
-		return emBranco273;
+		return RemoverAcentosUtil.removeAcentos(emBranco273);
 	}
 
 	public void setEmBranco273(String emBranco273) {
@@ -380,7 +381,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getNomeDevedor() {
-		return nomeDevedor;
+		return RemoverAcentosUtil.removeAcentos(nomeDevedor);
 	}
 
 	public void setNomeDevedor(String nomeDevedor) {
@@ -388,7 +389,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getEmBranco343() {
-		return emBranco343;
+		return RemoverAcentosUtil.removeAcentos(emBranco343);
 	}
 
 	public void setEmBranco343(String emBranco343) {
@@ -396,7 +397,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getNumeroDocumentoDevedor() {
-		return numeroDocumentoDevedor;
+		return RemoverAcentosUtil.removeAcentos(numeroDocumentoDevedor);
 	}
 
 	public void setNumeroDocumentoDevedor(String numeroDocumentoDevedor) {
@@ -404,7 +405,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getComplementoDocumentoDevedor() {
-		return complementoDocumentoDevedor;
+		return RemoverAcentosUtil.removeAcentos(complementoDocumentoDevedor);
 	}
 
 	public void setComplementoDocumentoDevedor(String complementoDomentoDevedor) {
@@ -412,7 +413,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getDigitoControleDocumentoDevedor() {
-		return digitoControleDocumentoDevedor;
+		return RemoverAcentosUtil.removeAcentos(digitoControleDocumentoDevedor);
 	}
 
 	public void setDigitoControleDocumentoDevedor(String digitoControleDocumentoDevedor) {
@@ -420,7 +421,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getEmBranco361() {
-		return emBranco361;
+		return RemoverAcentosUtil.removeAcentos(emBranco361);
 	}
 
 	public void setEmBranco361(String emBranco361) {
@@ -428,7 +429,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getEnderecoDevedor() {
-		return enderecoDevedor;
+		return RemoverAcentosUtil.removeAcentos(enderecoDevedor);
 	}
 
 	public void setEnderecoDevedor(String enderecoDevedor) {
@@ -436,7 +437,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getCepDevedor() {
-		return cepDevedor;
+		return RemoverAcentosUtil.removeAcentos(cepDevedor);
 	}
 
 	public void setCepDevedor(String cepDevedor) {
@@ -444,7 +445,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getCidadeDevedor() {
-		return cidadeDevedor;
+		return RemoverAcentosUtil.removeAcentos(cidadeDevedor);
 	}
 
 	public void setCidadeDevedor(String cidadeDevedor) {
@@ -452,7 +453,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getUfDevedor() {
-		return ufDevedor;
+		return RemoverAcentosUtil.removeAcentos(ufDevedor);
 	}
 
 	public void setUfDevedor(String ufDevedor) {
@@ -460,7 +461,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getNumeroCartorio() {
-		return numeroCartorio;
+		return RemoverAcentosUtil.removeAcentos(numeroCartorio);
 	}
 
 	public void setNumeroCartorio(String numeroCartorio) {
@@ -468,7 +469,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getNumeroProtocoloCartorio() {
-		return numeroProtocoloCartorio;
+		return RemoverAcentosUtil.removeAcentos(numeroProtocoloCartorio);
 	}
 
 	public void setNumeroProtocoloCartorio(String numeroProtocoloCartorio) {
@@ -476,7 +477,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getEmBranco458() {
-		return emBranco458;
+		return RemoverAcentosUtil.removeAcentos(emBranco458);
 	}
 
 	public void setEmBranco458(String emBranco458) {
@@ -484,7 +485,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getDataCancelamentoProtesto() {
-		return dataCancelamentoProtesto;
+		return RemoverAcentosUtil.removeAcentos(dataCancelamentoProtesto);
 	}
 
 	public void setDataCancelamentoProtesto(String dataCancelamentoProtesto) {
@@ -492,7 +493,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getEspecieProtesto() {
-		return especieProtesto;
+		return RemoverAcentosUtil.removeAcentos(especieProtesto);
 	}
 
 	public void setEspecieProtesto(String especieProtesto) {
@@ -500,7 +501,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getCodigoErro3Posicoes() {
-		return codigoErro3Posicoes;
+		return RemoverAcentosUtil.removeAcentos(codigoErro3Posicoes);
 	}
 
 	public void setCodigoErro3Posicoes(String codigoErro3Posicoes) {
@@ -508,7 +509,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getSequenciaRegistro() {
-		return sequenciaRegistro;
+		return RemoverAcentosUtil.removeAcentos(sequenciaRegistro);
 	}
 
 	public void setSequenciaRegistro(String sequenciaRegistro) {
@@ -516,7 +517,7 @@ public class TituloCnpVO extends AbstractArquivoVO {
 	}
 
 	public String getEmBranco487() {
-		return emBranco487;
+		return RemoverAcentosUtil.removeAcentos(emBranco487);
 	}
 
 	public void setEmBranco487(String emBranco487) {

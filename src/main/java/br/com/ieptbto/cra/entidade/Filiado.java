@@ -55,7 +55,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 
 	@Column(name = "RAZAO_SOCIAL", length = 45)
 	public String getRazaoSocial() {
-		if (razaoSocial == null){
+		if (razaoSocial == null) {
 			return StringUtils.EMPTY;
 		}
 		return razaoSocial;
@@ -63,7 +63,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 
 	@Column(name = "CPF_CNPJ", length = 18, nullable = false)
 	public String getCnpjCpf() {
-		if (cnpjCpf == null){
+		if (cnpjCpf == null) {
 			cnpjCpf = StringUtils.EMPTY;
 		}
 		return cnpjCpf.replace(".", "").replace("-", "").replace("/", "").trim();
@@ -79,12 +79,12 @@ public class Filiado extends AbstractEntidade<Filiado> {
 
 	@Column(name = "CEP", length = 10)
 	public String getCep() {
-		if (cep == null){
+		if (cep == null) {
 			cep = StringUtils.EMPTY;
 		}
 		return cep.replace(".", "").replace("-", "").trim();
 	}
-	
+
 	@ManyToOne
 	@JoinColumn(name = "MUNICIPIO_ID")
 	public Municipio getMunicipio() {
@@ -100,7 +100,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	public String getCodigoFiliado() {
 		return codigoFiliado;
 	}
-	
+
 	@ManyToOne
 	@JoinColumn(name = "INSTITUICAO_ID")
 	public Instituicao getInstituicaoConvenio() {
@@ -121,7 +121,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	public Boolean isAtivo() {
 		return ativo;
 	}
-	
+
 	@OneToMany(mappedBy = "filiado")
 	public List<SetorFiliado> getSetoresFiliado() {
 		return setoresFiliado;
@@ -146,7 +146,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	public void setCep(String cep) {
 		this.cep = cep;
 	}
-	
+
 	public void setSetoresFiliado(List<SetorFiliado> setoresFiliado) {
 		this.setoresFiliado = setoresFiliado;
 	}
@@ -181,9 +181,9 @@ public class Filiado extends AbstractEntidade<Filiado> {
 
 	@Transient
 	public String getSituacao() {
-		if (isAtivo() == null || isAtivo() !=null && isAtivo() == false) {
+		if (isAtivo() == null || isAtivo() != null && isAtivo() == false) {
 			return "Não Ativo";
-		} 
+		}
 		return "Ativo";
 	}
 
@@ -194,7 +194,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 			setAtivo(false);
 		}
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Filiado) {
@@ -207,7 +207,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		if (getId() == 0) {
@@ -215,7 +215,7 @@ public class Filiado extends AbstractEntidade<Filiado> {
 		}
 		return getId();
 	}
-	
+
 	@Override
 	public int compareTo(Filiado entidade) {
 		CompareToBuilder compareTo = new CompareToBuilder();

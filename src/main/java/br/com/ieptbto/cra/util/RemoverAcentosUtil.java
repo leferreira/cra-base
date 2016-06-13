@@ -1,6 +1,8 @@
 package br.com.ieptbto.cra.util;
 
 import java.io.Serializable;
+import java.text.Normalizer;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -12,32 +14,14 @@ public class RemoverAcentosUtil implements Serializable {
 	/***/
 	private static final long serialVersionUID = 1L;
 
+	public static String value =
+			"À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö Ø Ù Ú Û Ü Ý Þ ß à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ø ù ú û ü ý þ ÿ ";
+
 	public static String removeAcentos(String str) {
 		if (str != null || str != StringUtils.EMPTY) {
-	       str = str.replaceAll("[ÂÀÁÄÃ]", "A");
-	       str = str.replaceAll("[âãàáä]", "a");
-	       str = str.replaceAll("[ÊÈÉË]", "E");
-	       str = str.replaceAll("[êèéë]", "e");
-	       str = str.replaceAll("[ÎÍÌÏ]", "I");
-	       str = str.replaceAll("[îíìï]", "i");
-	       str = str.replaceAll("[ÔÕÒÓÖ]", "O");
-	       str = str.replaceAll("[ôõòóö]", "o");
-	       str = str.replaceAll("[ÛÙÚÜ]", "U");
-	       str = str.replaceAll("[ûúùü]", "u");
-	       str = str.replaceAll("Ç", "C");
-	       str = str.replaceAll("ç", "c");
-	       str = str.replaceAll("[ýÿ]", "y");
-	       str = str.replaceAll("Ý", "Y");
-	       str = str.replaceAll("ñ", "n");
-	       str = str.replaceAll("Ñ", "N");
-	       str = str.replaceAll("Ñ", "N");
-	       str = str.replaceAll("º", " ");
-	       str = str.replaceAll("ª", " ");
-	       str = str.replaceAll("[-+=*&amp;%$#@!_]", " ");
-	       str = str.replaceAll("['\"]", " ");
-	       str = str.replaceAll("[<>()\\{\\}]", " ");
-	       str = str.replaceAll("['\\\\.,()|/]", " ");
-	       str = str.replaceAll("[^!-ÿ]{1}[^ -ÿ]{0,}[^!-ÿ]{1}|[^!-ÿ]{1}", " ");
+			String nfdNormalizedString = Normalizer.normalize(str, Normalizer.Form.NFD);
+			Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+			return pattern.matcher(nfdNormalizedString).replaceAll("");
 		}
 		return str;
 	}

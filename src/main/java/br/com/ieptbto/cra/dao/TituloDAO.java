@@ -236,7 +236,7 @@ public class TituloDAO extends AbstractBaseDAO {
 			if (titulo.getRetorno() == null) {
 				return titulo;
 			} else {
-				logger.error(new InfraException("Titulo nosso número" + titulo.getNossoNumero() + " já tem retorno!"));
+				logger.error(new InfraException("Titulo nosso número " + titulo.getNossoNumero() + " já tem retorno!"));
 				throw new InfraException("Título com o nosso número " + tituloRetorno.getNossoNumero() + " e o protocolo "
 						+ tituloRetorno.getNumeroProtocoloCartorio() + ", já foi enviado em outro arquivo de retorno...");
 			}
@@ -248,7 +248,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao);
 
 		if (titulo == null) {
-			throw new InfraException("Título com o nosso número =" + tituloConfirmacao.getNossoNumero()
+			throw new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
 					+ " não foi localizado na CRA. Verifique os dados do arquivo ou se já foi enviado anteriormente...");
 		}
 		if (tituloConfirmacao.getTipoOcorrencia() != null) {
@@ -319,6 +319,8 @@ public class TituloDAO extends AbstractBaseDAO {
 				return titulo;
 			} else {
 				logger.error(new InfraException("Titulo nº" + titulo.getNumeroTitulo() + " já tem confirmação."));
+				throw new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
+						+ " já foi enviado em outro arquivo de confirmação! Por favor verifique os dados do arquivo...");
 			}
 		}
 		return null;

@@ -69,6 +69,36 @@ public class ConversorArquivoCnpVO {
 		return remessasVO;
 	}
 
+	public static List<RemessaCnpVO> converterParaRemessaCnpVO5Anos(List<RemessaCnp> remessasCnp) {
+		List<RemessaCnpVO> remessasVO = new ArrayList<RemessaCnpVO>();
+		int sequencialRegistro = 1;
+		for (RemessaCnp remessa : remessasCnp) {
+			RemessaCnpVO remessaVO = new RemessaCnpVO();
+			remessa.getCabecalho().setSequenciaRegistro(Integer.toString(sequencialRegistro));
+			remessaVO.setCabecalhoCnpVO(new CabecalhoCnpConversor().converter(remessa.getCabecalho(), CabecalhoCnpVO.class));
+
+			remessaVO.setTitulosCnpVO(new ArrayList<TituloCnpVO>());
+			for (TituloCnp titulo : remessa.getTitulos()) {
+				sequencialRegistro++;
+				titulo.setSequenciaRegistro(Integer.toString(sequencialRegistro));
+				TituloCnpVO tituloVO = new TituloCnpConversor().converter(titulo, TituloCnpVO.class);
+				if (titulo.getTipoInformacao() != null) {
+					if (StringUtils.isNotBlank(titulo.getTipoInformacao().trim()) && StringUtils.isNotEmpty(titulo.getTipoInformacao().trim())) {
+						if (titulo.getTipoInformacao().trim().equals("C")) {
+							tituloVO.setCodigoOperacao("E");
+						}
+					}
+				}
+				remessaVO.getTitulosCnpVO().add(tituloVO);
+			}
+			sequencialRegistro++;
+			remessaVO.setRodapeCnpVO(new RodapeCnpConversor().converter(remessa.getRodape(), RodapeCnpVO.class));
+			remessaVO.getRodapeCnpVO().setSequenciaRegistro(Integer.toString(sequencialRegistro));
+			remessasVO.add(remessaVO);
+		}
+		return remessasVO;
+	}
+
 	public static List<RemessaCnpVO> converterParaRemessaCnpNacionalVO(List<RemessaCnp> remessasCnp) {
 		List<RemessaCnpVO> remessasVO = new ArrayList<RemessaCnpVO>();
 

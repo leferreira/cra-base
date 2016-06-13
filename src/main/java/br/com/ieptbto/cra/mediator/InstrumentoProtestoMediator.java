@@ -41,7 +41,6 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 	private List<EtiquetaSLIP> etiquetas;
 	private List<EnvelopeSLIP> envelopes;
 	private List<InstrumentoProtesto> instrumentosProtesto;
-	private List<InstrumentoProtesto> instrumentosAgenciaNaoEncontrada;
 
 	/**
 	 * Salvar entrada de instrumento de protesto na CRA
@@ -169,13 +168,6 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 		}
 
 		return titulosProtestados;
-	}
-
-	public List<InstrumentoProtesto> getInstrumentosAgenciaNaoEncontrada() {
-		if (instrumentosAgenciaNaoEncontrada == null) {
-			instrumentosAgenciaNaoEncontrada = new ArrayList<InstrumentoProtesto>();
-		}
-		return instrumentosAgenciaNaoEncontrada;
 	}
 
 	public Retorno buscarTituloProtestado(String numeroProtocolo, String codigoIBGE) {

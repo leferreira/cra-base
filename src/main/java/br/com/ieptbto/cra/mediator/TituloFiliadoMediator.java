@@ -14,7 +14,7 @@ import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.SetorFiliado;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
+import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
 
 /**
@@ -51,18 +51,13 @@ public class TituloFiliadoMediator {
 		tituloFiliadoDAO.enviarTitulosPendentes(listaTitulosFiliado);
 	}
 
-	public List<TituloFiliado> consultarTitulosFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim, Municipio pracaProtesto,
-			TituloFiliado tituloBuscado, SituacaoTituloConvenio situacaoTituloAguardando) {
-		return tituloFiliadoDAO.consultarTitulosFiliado(filiado, dataInicio, dataFim, pracaProtesto, tituloBuscado, situacaoTituloAguardando);
-	}
-
-	public List<TituloFiliado> consultarTitulosConvenio(Instituicao convenio, LocalDate dataInicio, LocalDate dataFim, Filiado filiado, Municipio pracaProtesto,
-			TituloFiliado tituloBuscado) {
-		return tituloFiliadoDAO.consultarTitulosConvenio(convenio, dataInicio, dataFim, filiado, pracaProtesto, tituloBuscado);
-	}
-
 	public List<Avalista> buscarAvalistasPorTitulo(TituloFiliado titulo) {
 		return tituloFiliadoDAO.avalistasTituloFiliado(titulo);
+	}
+
+	public List<TituloRemessa> buscarListaTitulos(Usuario user, LocalDate dataInicio, Instituicao instiuicaoCartorio, String numeroTitulo,
+			String nomeDevedor, String documentoDevedor, String codigoFiliado) {
+		return tituloFiliadoDAO.buscarListaTitulos(user, dataInicio, instiuicaoCartorio, numeroTitulo, nomeDevedor, documentoDevedor, codigoFiliado);
 	}
 
 	public List<TituloFiliado> buscarTitulosParaRelatorioFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim,

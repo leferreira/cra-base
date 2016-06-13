@@ -19,6 +19,7 @@ import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.SetorFiliado;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
+import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -176,7 +177,8 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.ilike("documentoDevedor", tituloFiliado.getDocumentoDevedor(), MatchMode.ANYWHERE));
 
 		if (dataInicio != null && dataFim != null)
-			criteria.add(Restrictions.between("dataEnvioCRA", new java.sql.Date(dataInicio.toDate().getTime()), new java.sql.Date(dataFim.toDate().getTime())));
+			criteria.add(Restrictions.between("dataEnvioCRA", new java.sql.Date(dataInicio.toDate().getTime()),
+					new java.sql.Date(dataFim.toDate().getTime())));
 
 		if (pracaProtesto != null)
 			criteria.add(Restrictions.ilike("pracaProtesto", pracaProtesto));
@@ -210,7 +212,8 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("filiado", filiado));
 
 		if (dataInicio != null && dataFim != null)
-			criteria.add(Restrictions.between("dataEnvioCRA", new java.sql.Date(dataInicio.toDate().getTime()), new java.sql.Date(dataFim.toDate().getTime())));
+			criteria.add(Restrictions.between("dataEnvioCRA", new java.sql.Date(dataInicio.toDate().getTime()),
+					new java.sql.Date(dataFim.toDate().getTime())));
 
 		if (pracaProtesto != null)
 			criteria.add(Restrictions.eq("pracaProtesto", pracaProtesto));
@@ -299,5 +302,35 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("situacaoTituloConvenio", SituacaoTituloConvenio.FINALIZADO));
 		criteria.add(Restrictions.between("dataEnvioCRA", dataInicio, dataFim));
 		return criteria.list().size();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<TituloRemessa> buscarListaTitulos(Usuario user, LocalDate dataInicio, Instituicao instiuicaoCartorio, String numeroTitulo,
+			String nomeDevedor, String documentoDevedor, String codigoFiliado) {
+		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.createAlias("remessa", "remessa");
+		criteria.add(Restrictions.eq("remessa.instituicaoOrigem", user.getInstituicao()));
+
+		if (codigoFiliado != null && !codigoFiliado.trim().isEmpty()) {
+			criteria.add(Restrictions.ilike("agenciaCodigoCedente", codigoFiliado, MatchMode.EXACT));
+		}
+		if (numeroTitulo != null && numeroTitulo.trim() != StringUtils.EMPTY) {
+			criteria.add(Restrictions.ilike("numeroTitulo", numeroTitulo.trim(), MatchMode.EXACT));
+		}
+		if (nomeDevedor != null && nomeDevedor.trim() != StringUtils.EMPTY) {
+			criteria.add(Restrictions.ilike("nomeDevedor", nomeDevedor.trim(), MatchMode.ANYWHERE));
+		}
+		if (documentoDevedor != null && documentoDevedor.trim() != StringUtils.EMPTY) {
+			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", documentoDevedor.trim(), MatchMode.ANYWHERE));
+		}
+		if (dataInicio != null) {
+			criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataInicio.plusDays(1)));
+		}
+		if (instiuicaoCartorio != null) {
+			criteria.createAlias("remessa.cabecalho", "cabecalho");
+			criteria.add(Restrictions.ilike("cabecalho.codigoMunicipio", instiuicaoCartorio.getMunicipio().getCodigoIBGE()));
+		}
+		criteria.addOrder(Order.asc("nomeDevedor"));
+		return criteria.list();
 	}
 }
