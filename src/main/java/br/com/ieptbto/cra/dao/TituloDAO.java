@@ -319,8 +319,6 @@ public class TituloDAO extends AbstractBaseDAO {
 				return titulo;
 			} else {
 				logger.error(new InfraException("Titulo nº" + titulo.getNumeroTitulo() + " já tem confirmação."));
-				throw new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
-						+ " já foi enviado em outro arquivo de confirmação! Por favor verifique os dados do arquivo...");
 			}
 		}
 		return null;
@@ -431,6 +429,13 @@ public class TituloDAO extends AbstractBaseDAO {
 			criteria.createAlias("retorno", "retorno");
 			criteria.add(Restrictions.eq("retorno.remessa", remessa));
 		}
+		return criteria.list();
+	}
+
+	public List<TituloRemessa> carregarTitulosRemessaComDocumentosAnexos(Remessa remessa) {
+		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.add(Restrictions.eq("remessa", remessa));
+		criteria.createAlias("anexo", "anexo");
 		return criteria.list();
 	}
 }

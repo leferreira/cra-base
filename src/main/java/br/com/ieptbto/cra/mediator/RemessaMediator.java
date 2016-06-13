@@ -43,7 +43,6 @@ import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Rodape;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
-import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
@@ -438,14 +437,12 @@ public class RemessaMediator extends BaseMediator {
 		return null;
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void decodificarArquivosAnexos(Usuario user, String path, Remessa remessa) {
 
 		try {
-			List<Titulo> titulos = tituloDAO.carregarTitulosGenerico(remessa);
+			List<TituloRemessa> titulos = tituloDAO.carregarTitulosRemessaComDocumentosAnexos(remessa);
 			if (!titulos.isEmpty()) {
-				for (Titulo titulo : titulos) {
-					TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
+				for (TituloRemessa tituloRemessa : titulos) {
 					if (tituloRemessa.getAnexo() != null) {
 						DecoderString decoderString = new DecoderString();
 						String nomeArquivoZip =

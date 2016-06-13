@@ -12,9 +12,7 @@ import br.com.ieptbto.cra.mediator.CentralNacionalProtestoMediator;
  */
 public class CargaInicialPage extends WebPage {
 
-	/**
-	 * 
-	 */
+	/***/
 	private static final long serialVersionUID = 1L;
 
 	@SpringBean
