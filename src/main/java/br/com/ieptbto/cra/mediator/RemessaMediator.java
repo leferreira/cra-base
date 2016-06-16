@@ -445,8 +445,8 @@ public class RemessaMediator extends BaseMediator {
 				for (TituloRemessa tituloRemessa : titulos) {
 					if (tituloRemessa.getAnexo() != null) {
 						DecoderString decoderString = new DecoderString();
-						String nomeArquivoZip =
-								tituloRemessa.getNomeDevedor() + "_" + tituloRemessa.getNumeroTitulo().replaceAll("\\\\", "").replaceAll("\\/", "");
+						String nomeArquivoZip = tituloRemessa.getNomeDevedor().replace(" ", "_").replace("/", "") + "_"
+								+ tituloRemessa.getNumeroTitulo().replace("\\", "").replace("/", "");
 
 						decoderString.decode(tituloRemessa.getAnexo().getDocumentoAnexo(),
 								ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA
@@ -459,9 +459,11 @@ public class RemessaMediator extends BaseMediator {
 		} catch (FileNotFoundException e) {
 			logger.info("O arquivo ZIP em anexo não pode ser criado.");
 			e.printStackTrace();
+			throw new InfraException("Não foi possível gerar o arquivo de anexos! Por favor, entre em contato com a CRA...");
 		} catch (IOException e) {
-			logger.info("O arquivo ZIP em anexo não pode ser criado.");
+			logger.info(e);
 			e.printStackTrace();
+			throw new InfraException("Não foi possível gerar o arquivo de anexos! Por favor, entre em contato com a CRA...");
 		}
 	}
 

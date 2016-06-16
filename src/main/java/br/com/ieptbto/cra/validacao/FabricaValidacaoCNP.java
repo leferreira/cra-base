@@ -44,18 +44,20 @@ public class FabricaValidacaoCNP {
 				throw new InfraException("Código da comarca " + remessaCnp.getCabecalho().getEmBranco53() + " inválido !");
 			}
 
-			int sequencialRemessa = centralNacionalProtestoMediator.buscarSequencialCabecalhoCnp(remessaCnp.getCabecalho().getEmBranco53());
-			if (StringUtils.isEmpty(remessaCnp.getCabecalho().getNumeroRemessaArquivo().trim())
-					|| StringUtils.isBlank(remessaCnp.getCabecalho().getNumeroRemessaArquivo().trim())) {
-				throw new InfraException(
-						"Número de Sequêncial do Arquivo não pode ser vazio ! Último sequencial correto foi " + sequencialRemessa + ".");
-			}
-			sequencialRemessa++;
-			if (sequencialRemessa != Integer.valueOf(remessaCnp.getCabecalho().getNumeroRemessaArquivo())) {
-				throw new InfraException("Número de Sequêncial " + remessaCnp.getCabecalho().getNumeroRemessaArquivo()
-						+ " da CNP é inválido. Último sequencial correto foi " + (sequencialRemessa - 1) + ".");
-			}
-			remessaCnp.getCabecalho().setEmBranco2("01");
+			// int sequencialRemessa =
+			// centralNacionalProtestoMediator.buscarSequencialCabecalhoCnp(remessaCnp.getCabecalho().getEmBranco53());
+			// if
+			// (StringUtils.isEmpty(remessaCnp.getCabecalho().getNumeroRemessaArquivo().trim())
+			// ||
+			// StringUtils.isBlank(remessaCnp.getCabecalho().getNumeroRemessaArquivo().trim()))
+			// {
+			// throw new InfraException(
+			// "Número de Sequêncial do Arquivo não pode ser vazio ! Último
+			// sequencial correto foi " + sequencialRemessa + ".");
+			// }
+			// sequencialRemessa++;
+			// remessaCnp.getCabecalho().setNumeroRemessaArquivo(Integer.toString(sequencialRemessa));
+			// remessaCnp.getCabecalho().setEmBranco2("01");
 		}
 	}
 

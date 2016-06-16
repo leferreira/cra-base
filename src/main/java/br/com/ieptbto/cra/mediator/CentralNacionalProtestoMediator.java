@@ -54,7 +54,6 @@ public class CentralNacionalProtestoMediator {
 	TituloDAO tituloDAO;
 	@Autowired
 	FabricaValidacaoCNP fabricaValidacaoCNP;
-
 	@Autowired
 	MunicipioDAO municipioDAO;
 	@Autowired
