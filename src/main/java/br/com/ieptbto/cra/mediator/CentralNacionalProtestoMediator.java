@@ -59,8 +59,6 @@ public class CentralNacionalProtestoMediator {
 	@Autowired
 	InstituicaoDAO instituicaoDAO;
 
-	int contador = 1;
-
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public ArquivoCnpVO gerarArquivoNacional() {
 		ArquivoCnp arquivoCnp = new ArquivoCnp();

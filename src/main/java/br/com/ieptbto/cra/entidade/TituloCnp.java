@@ -369,7 +369,6 @@ public class TituloCnp extends AbstractEntidade<TituloCnp> {
 
 	@Override
 	public int compareTo(TituloCnp entidade) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

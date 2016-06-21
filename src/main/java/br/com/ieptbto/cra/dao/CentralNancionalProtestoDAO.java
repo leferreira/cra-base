@@ -68,7 +68,7 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = false)
 	public List<RemessaCnp> buscarRemessasCnpPendentes() {
 		List<RemessaCnp> remessaGeradas = new ArrayList<RemessaCnp>();
 		Criteria criteria = getCriteria(RemessaCnp.class);
@@ -85,7 +85,7 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		return remessaGeradas;
 	}
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = false)
 	public void salvarArquivoCnpNacional(ArquivoCnp arquivoCnp) {
 		Transaction transaction = getBeginTransation();
 

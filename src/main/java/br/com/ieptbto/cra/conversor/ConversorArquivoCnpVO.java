@@ -61,6 +61,24 @@ public class ConversorArquivoCnpVO {
 						}
 					}
 				}
+				if (titulo.getNumeroDocumentoDevedor() != null) {
+					if (titulo.getNumeroDocumentoDevedor().length() > 11) {
+						titulo.setNumeroDocumentoDevedor("1");
+						titulo.setTipoPessoaDevedor("J");
+					} else {
+						titulo.setNumeroDocumentoDevedor("2");
+						titulo.setTipoPessoaDevedor("F");
+					}
+				}
+				if (titulo.getNumeroDocumentoCredor() != null) {
+					if (titulo.getNumeroDocumentoCredor().length() > 11) {
+						titulo.setNumeroDocumentoCredor("1");
+						titulo.setTipoPessoaCredor("J");
+					} else {
+						titulo.setNumeroDocumentoCredor("2");
+						titulo.setTipoPessoaCredor("F");
+					}
+				}
 				remessaVO.getTitulosCnpVO().add(tituloVO);
 			}
 			remessaVO.setRodapeCnpVO(new RodapeCnpConversor().converter(remessa.getRodape(), RodapeCnpVO.class));
