@@ -167,53 +167,58 @@ public class CentralNacionalProtestoMediator {
 						+ "]  deverá ser processado separadamente...");
 
 			} else {
-
-				RemessaCnp remessaCnp = new RemessaCnp();
-				remessaCnp.setCabecalho(centralNancionalProtestoDAO.ultimoCabecalhoCnpCartorio(municipio));
-				remessaCnp.setTitulos(centralNancionalProtestoDAO.buscarTitulosPorMunicipio(municipio));
-				RodapeCnp rod = new RodapeCnp();
-				rod.setCodigoRegistro("9");
-				remessaCnp.setRodape(rod);
-
-				if (!remessaCnp.getTitulos().isEmpty()) {
+				File arquivo = new File(ConfiguracaoBase.DIRETORIO_BASE + municipio.getNomeMunicipio());
+				if (arquivo.exists()) {
 					logger.info("==========================================================");
-					logger.info("Municipio:  " + municipio.getNomeMunicipio() + "  -  Qtd. Títulos:  " + remessaCnp.getTitulos().size());
+					logger.info("Municipio:  " + municipio.getNomeMunicipio() + "   -   Arquivo já criado!");
+				} else {
 
-					ArquivoCnp arquivoCnp = new ArquivoCnp();
-					arquivoCnp.setRemessasCnp(new ArrayList<RemessaCnp>());
-					arquivoCnp.getRemessasCnp().add(remessaCnp);
+					RemessaCnp remessaCnp = new RemessaCnp();
+					remessaCnp.setCabecalho(centralNancionalProtestoDAO.ultimoCabecalhoCnpCartorio(municipio));
+					remessaCnp.setTitulos(centralNancionalProtestoDAO.buscarTitulosPorMunicipio(municipio));
+					RodapeCnp rod = new RodapeCnp();
+					rod.setCodigoRegistro("9");
+					remessaCnp.setRodape(rod);
 
-					ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
-					arquivoCnpVO.setRemessasCnpVO(ConversorArquivoCnpVO.converterParaRemessaCnpVO5Anos(arquivoCnp.getRemessasCnp()));
-					try {
-						Writer writer = new StringWriter();
-						JAXBContext context;
-						context = JAXBContext.newInstance(arquivoCnpVO.getClass());
+					if (!remessaCnp.getTitulos().isEmpty()) {
+						logger.info("==========================================================");
+						logger.info("Municipio:  " + municipio.getNomeMunicipio() + "  -  Qtd. Títulos:  " + remessaCnp.getTitulos().size());
 
-						Marshaller marshaller = context.createMarshaller();
-						marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-						marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
-						JAXBElement<Object> element = new JAXBElement<Object>(new QName("cnp"), Object.class, arquivoCnpVO);
-						marshaller.marshal(element, writer);
-						String msg = writer.toString();
-						msg = msg.replace(" xsi:type=\"arquivoCnpVO\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", "");
-						writer.flush();
-						writer.close();
-						File arquivo = new File(ConfiguracaoBase.DIRETORIO_BASE + municipio.getNomeMunicipio());
-						BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivo));
-						logger.info("Escrevendo os dados no arquivo...");
-						bWrite.write(msg);
-						bWrite.flush();
-						bWrite.close();
-						logger.info("  ");
-						logger.info("Arquivo 5 Anos gerado com sucesso!");
-						logger.info("  ");
-					} catch (JAXBException e) {
-						logger.error(e.getMessage(), e.getCause());
-						new InfraException(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao(), e.getCause());
-					} catch (IOException e) {
-						logger.error(e.getMessage(), e.getCause());
-						new InfraException(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao(), e.getCause());
+						ArquivoCnp arquivoCnp = new ArquivoCnp();
+						arquivoCnp.setRemessasCnp(new ArrayList<RemessaCnp>());
+						arquivoCnp.getRemessasCnp().add(remessaCnp);
+
+						ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
+						arquivoCnpVO.setRemessasCnpVO(ConversorArquivoCnpVO.converterParaRemessaCnpVO5Anos(arquivoCnp.getRemessasCnp()));
+						try {
+							Writer writer = new StringWriter();
+							JAXBContext context;
+							context = JAXBContext.newInstance(arquivoCnpVO.getClass());
+
+							Marshaller marshaller = context.createMarshaller();
+							marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+							marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
+							JAXBElement<Object> element = new JAXBElement<Object>(new QName("cnp"), Object.class, arquivoCnpVO);
+							marshaller.marshal(element, writer);
+							String msg = writer.toString();
+							msg = msg.replace(" xsi:type=\"arquivoCnpVO\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", "");
+							writer.flush();
+							writer.close();
+							BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivo));
+							logger.info("Escrevendo os dados no arquivo...");
+							bWrite.write(msg);
+							bWrite.flush();
+							bWrite.close();
+							logger.info("  ");
+							logger.info("Arquivo 5 Anos gerado com sucesso!");
+							logger.info("  ");
+						} catch (JAXBException e) {
+							logger.error(e.getMessage(), e.getCause());
+							new InfraException(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao(), e.getCause());
+						} catch (IOException e) {
+							logger.error(e.getMessage(), e.getCause());
+							new InfraException(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao(), e.getCause());
+						}
 					}
 				}
 			}

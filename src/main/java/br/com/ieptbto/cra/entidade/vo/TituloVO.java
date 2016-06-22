@@ -68,8 +68,7 @@ public class TituloVO extends AbstractArquivoVO {
 
 	@XmlAttribute(name = "t07", required = true)
 	@IAtributoArquivo(ordem = 7, posicao = 124, tamanho = 45,
-			descricao = "Identificar o endereço do Sacador/Vendedor. Informar o endereço do cedente se não houver sacador.",
-			obrigatoriedade = true)
+			descricao = "Identificar o endereço do Sacador/Vendedor. Informar o endereço do cedente se não houver sacador.", obrigatoriedade = true)
 	private String enderecoSacadorVendedor;
 
 	@XmlAttribute(name = "t08", required = true)
@@ -79,8 +78,7 @@ public class TituloVO extends AbstractArquivoVO {
 
 	@XmlAttribute(name = "t09", required = true)
 	@IAtributoArquivo(ordem = 9, posicao = 177, tamanho = 20,
-			descricao = "Identificar a cidade do Sacador/Devedor. Informar a cidade do cedente se não houver sacador.",
-			obrigatoriedade = true)
+			descricao = "Identificar a cidade do Sacador/Devedor. Informar a cidade do cedente se não houver sacador.", obrigatoriedade = true)
 	private String cidadeSacadorVendedor;
 
 	@XmlAttribute(name = "t10", required = true)
@@ -183,8 +181,7 @@ public class TituloVO extends AbstractArquivoVO {
 	private String cidadeDevedor;
 
 	@XmlAttribute(name = "t30", required = true)
-	@IAtributoArquivo(ordem = 30, posicao = 444, tamanho = 2, descricao = "Identificar a Unidade Federal do devedor.",
-			obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 30, posicao = 444, tamanho = 2, descricao = "Identificar a Unidade Federal do devedor.", obrigatoriedade = true)
 	private String ufDevedor;
 
 	@XmlAttribute(name = "t31", required = true)
@@ -234,8 +231,8 @@ public class TituloVO extends AbstractArquivoVO {
 	private String valorCustasCartorioDistribuidor;
 
 	@XmlAttribute(name = "t41", required = true)
-	@IAtributoArquivo(ordem = 41, posicao = 518, tamanho = 6,
-			descricao = "Uso restrito do 7º Ofício do Rio de Janeiro. Preencher com zeros.", obrigatoriedade = false, formato = "000000")
+	@IAtributoArquivo(ordem = 41, posicao = 518, tamanho = 6, descricao = "Uso restrito do 7º Ofício do Rio de Janeiro. Preencher com zeros.",
+			obrigatoriedade = false, formato = "000000")
 	private String registroDistribuicao;
 
 	@XmlAttribute(name = "t42", required = true)
@@ -257,14 +254,12 @@ public class TituloVO extends AbstractArquivoVO {
 
 	@XmlAttribute(name = "t45", required = true)
 	@IAtributoArquivo(ordem = 45, posicao = 554, tamanho = 3,
-			descricao = "Identificar o número de parcelas do contrato - exclusivo para protesto de letra de câmbio.",
-			obrigatoriedade = false)
+			descricao = "Identificar o número de parcelas do contrato - exclusivo para protesto de letra de câmbio.", obrigatoriedade = false)
 	private String numeroParcelaContrato;
 
 	@XmlAttribute(name = "t46", required = true)
 	@IAtributoArquivo(ordem = 46, posicao = 557, tamanho = 1,
-			descricao = "Identificar o logotipo do banco na letra de câmbio, quando existir mais bancos no conglomerado.",
-			obrigatoriedade = false)
+			descricao = "Identificar o logotipo do banco na letra de câmbio, quando existir mais bancos no conglomerado.", obrigatoriedade = false)
 	private String tipoLetraCambio;
 
 	@XmlAttribute(name = "t47", required = true)
@@ -280,8 +275,7 @@ public class TituloVO extends AbstractArquivoVO {
 
 	@XmlAttribute(name = "t49", required = true)
 	@IAtributoArquivo(ordem = 49, posicao = 567, tamanho = 1,
-			descricao = "Informar a letra 'I' para solicitação ao cartório a emissão da 2ª via do Instrumento de Protesto.",
-			obrigatoriedade = false)
+			descricao = "Informar a letra 'I' para solicitação ao cartório a emissão da 2ª via do Instrumento de Protesto.", obrigatoriedade = false)
 	private String instrumentoProtesto;
 
 	@XmlAttribute(name = "t50", required = true)
@@ -290,14 +284,13 @@ public class TituloVO extends AbstractArquivoVO {
 	private String valorDemaisDespesas;
 
 	@XmlAttribute(name = "t51", required = true)
-	@IAtributoArquivo(ordem = 51, posicao = 578, tamanho = 19,
-			descricao = "Espaço reservado para futuras implementações. Preencher com brancos.", obrigatoriedade = false)
+	@IAtributoArquivo(ordem = 51, posicao = 578, tamanho = 19, descricao = "Espaço reservado para futuras implementações. Preencher com brancos.",
+			obrigatoriedade = false)
 	private String complementoRegistro;
 
 	@XmlAttribute(name = "t52", required = true)
 	@IAtributoArquivo(ordem = 52, posicao = 597, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 4,
-			descricao = "Número sequêncial do registro do arquivo, independente da quantidade de praças dentro do arquivo.",
-			obrigatoriedade = false)
+			descricao = "Número sequêncial do registro do arquivo, independente da quantidade de praças dentro do arquivo.", obrigatoriedade = false)
 	private String numeroSequencialArquivo;
 
 	public String getIdentificacaoRegistro() {
@@ -414,6 +407,9 @@ public class TituloVO extends AbstractArquivoVO {
 	}
 
 	public String getEnderecoDevedor() {
+		if (enderecoDevedor != null) {
+			enderecoDevedor = RemoverAcentosUtil.removeAcentos(enderecoDevedor);
+		}
 		return enderecoDevedor;
 	}
 
@@ -741,8 +737,7 @@ public class TituloVO extends AbstractArquivoVO {
 			if (propertyAccessCCR.isReadableProperty(propertyName) && propertyAccessTituloVO.isWritableProperty(propertyName)) {
 				String valor = "";
 				if (propertyAccessCCR.getPropertyValue(propertyName) != null) {
-					valor = getValorString(propertyAccessCCR.getPropertyValue(propertyName),
-							new CampoArquivo(propertyName, tituloVO.getClass()));
+					valor = getValorString(propertyAccessCCR.getPropertyValue(propertyName), new CampoArquivo(propertyName, tituloVO.getClass()));
 				}
 				propertyAccessTituloVO.setPropertyValue(propertyName, valor.trim());
 			}
@@ -779,8 +774,7 @@ public class TituloVO extends AbstractArquivoVO {
 			if (propertyAccessCCR.isReadableProperty(propertyName) && propertyAccessTituloVO.isWritableProperty(propertyName)) {
 				String valor = "";
 				if (propertyAccessCCR.getPropertyValue(propertyName) != null) {
-					valor = getValorString(propertyAccessCCR.getPropertyValue(propertyName),
-							new CampoArquivo(propertyName, tituloVO.getClass()));
+					valor = getValorString(propertyAccessCCR.getPropertyValue(propertyName), new CampoArquivo(propertyName, tituloVO.getClass()));
 				}
 				propertyAccessTituloVO.setPropertyValue(propertyName, valor.trim());
 			}
@@ -799,8 +793,7 @@ public class TituloVO extends AbstractArquivoVO {
 			if (propertyAccessCCR.isReadableProperty(propertyName) && propertyAccessTituloVO.isWritableProperty(propertyName)) {
 				String valor = "";
 				if (propertyAccessCCR.getPropertyValue(propertyName) != null) {
-					valor = getValorString(propertyAccessCCR.getPropertyValue(propertyName),
-							new CampoArquivo(propertyName, tituloVO.getClass()));
+					valor = getValorString(propertyAccessCCR.getPropertyValue(propertyName), new CampoArquivo(propertyName, tituloVO.getClass()));
 				}
 				propertyAccessTituloVO.setPropertyValue(propertyName, valor.trim());
 			}

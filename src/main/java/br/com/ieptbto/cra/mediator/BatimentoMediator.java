@@ -189,4 +189,8 @@ public class BatimentoMediator {
 	public List<Deposito> buscarDepositosArquivoRetorno(Batimento batimento) {
 		return batimentoDAO.buscarDepositosArquivoRetorno(batimento);
 	}
+
+	public List<Remessa> carregarRetornosVinculados(Deposito deposito) {
+		return batimentoDAO.carregarRetornosVinculados(deposito);
+	}
 }

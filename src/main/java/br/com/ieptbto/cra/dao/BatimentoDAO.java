@@ -190,4 +190,13 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("batimentosDeposito.batimento", batimento));
 		return criteria.list();
 	}
+
+	@SuppressWarnings("unchecked")
+	public List<Remessa> carregarRetornosVinculados(Deposito deposito) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("batimento", "batimento");
+		criteria.createAlias("batimento.depositosBatimento", "depositosBatimento");
+		criteria.add(Restrictions.eq("depositosBatimento.deposito", deposito));
+		return criteria.list();
+	}
 }
