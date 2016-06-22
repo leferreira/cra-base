@@ -306,10 +306,16 @@ public class TituloVO extends AbstractArquivoVO {
 	}
 
 	public String getNomeCedenteFavorecido() {
+		if (nomeCedenteFavorecido != null) {
+			return RemoverAcentosUtil.removeAcentos(nomeCedenteFavorecido);
+		}
 		return nomeCedenteFavorecido;
 	}
 
 	public String getNomeSacadorVendedor() {
+		if (nomeSacadorVendedor != null) {
+			return RemoverAcentosUtil.removeAcentos(nomeSacadorVendedor);
+		}
 		return nomeSacadorVendedor;
 	}
 
@@ -332,6 +338,9 @@ public class TituloVO extends AbstractArquivoVO {
 	}
 
 	public String getCidadeSacadorVendedor() {
+		if (cidadeSacadorVendedor != null) {
+			return RemoverAcentosUtil.removeAcentos(cidadeSacadorVendedor);
+		}
 		return cidadeSacadorVendedor;
 	}
 
@@ -391,6 +400,9 @@ public class TituloVO extends AbstractArquivoVO {
 	}
 
 	public String getNomeDevedor() {
+		if (nomeDevedor != null) {
+			return RemoverAcentosUtil.removeAcentos(nomeDevedor);
+		}
 		return nomeDevedor;
 	}
 
@@ -408,7 +420,7 @@ public class TituloVO extends AbstractArquivoVO {
 
 	public String getEnderecoDevedor() {
 		if (enderecoDevedor != null) {
-			enderecoDevedor = RemoverAcentosUtil.removeAcentos(enderecoDevedor);
+			return RemoverAcentosUtil.removeAcentos(enderecoDevedor);
 		}
 		return enderecoDevedor;
 	}
@@ -418,6 +430,9 @@ public class TituloVO extends AbstractArquivoVO {
 	}
 
 	public String getCidadeDevedor() {
+		if (cidadeDevedor != null) {
+			return RemoverAcentosUtil.removeAcentos(cidadeDevedor);
+		}
 		return cidadeDevedor;
 	}
 
@@ -461,6 +476,9 @@ public class TituloVO extends AbstractArquivoVO {
 	}
 
 	public String getBairroDevedor() {
+		if (bairroDevedor != null) {
+			return RemoverAcentosUtil.removeAcentos(bairroDevedor);
+		}
 		return bairroDevedor;
 	}
 
