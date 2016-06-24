@@ -19,6 +19,7 @@ import br.com.ieptbto.cra.entidade.vo.RemessaCnpVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeCnpVO;
 import br.com.ieptbto.cra.entidade.vo.TituloCnpVO;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
  * @author Thasso Araújo
@@ -63,22 +64,30 @@ public class ConversorArquivoCnpVO {
 				}
 				if (titulo.getNumeroDocumentoDevedor() != null) {
 					if (titulo.getNumeroDocumentoDevedor().length() > 11) {
-						titulo.setNumeroDocumentoDevedor("1");
-						titulo.setTipoPessoaDevedor("J");
+						tituloVO.setTipoDocumentoDevedor("1");
+						tituloVO.setTipoPessoaDevedor("J");
 					} else {
-						titulo.setNumeroDocumentoDevedor("2");
-						titulo.setTipoPessoaDevedor("F");
+						tituloVO.setTipoDocumentoDevedor("2");
+						tituloVO.setTipoPessoaDevedor("F");
 					}
 				}
 				if (titulo.getNumeroDocumentoCredor() != null) {
 					if (titulo.getNumeroDocumentoCredor().length() > 11) {
-						titulo.setNumeroDocumentoCredor("1");
-						titulo.setTipoPessoaCredor("J");
+						tituloVO.setTipoDocumentoCredor("1");
+						tituloVO.setTipoPessoaCredor("J");
 					} else {
-						titulo.setNumeroDocumentoCredor("2");
-						titulo.setTipoPessoaCredor("F");
+						tituloVO.setTipoDocumentoCredor("2");
+						tituloVO.setTipoPessoaCredor("F");
 					}
 				}
+				tituloVO.setCidadeCredor(RemoverAcentosUtil.removeAcentos(titulo.getCidadeCredor()));
+				tituloVO.setMunicipioEnderecoCredor(RemoverAcentosUtil.removeAcentos(titulo.getMunicipioEnderecoCredor()));
+				tituloVO.setEnderecoCredor(RemoverAcentosUtil.removeAcentos(titulo.getEnderecoCredor()));
+				tituloVO.setNomeCredor(RemoverAcentosUtil.removeAcentos(titulo.getNomeCredor()));
+
+				tituloVO.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(titulo.getCidadeDevedor()));
+				tituloVO.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(titulo.getEnderecoDevedor()));
+				tituloVO.setNomeDevedor(RemoverAcentosUtil.removeAcentos(titulo.getNomeDevedor()));
 				remessaVO.getTitulosCnpVO().add(tituloVO);
 			}
 			remessaVO.setRodapeCnpVO(new RodapeCnpConversor().converter(remessa.getRodape(), RodapeCnpVO.class));
@@ -109,22 +118,30 @@ public class ConversorArquivoCnpVO {
 				}
 				if (titulo.getNumeroDocumentoDevedor() != null) {
 					if (titulo.getNumeroDocumentoDevedor().length() > 11) {
-						titulo.setNumeroDocumentoDevedor("1");
-						titulo.setTipoPessoaDevedor("J");
+						tituloVO.setTipoDocumentoDevedor("1");
+						tituloVO.setTipoPessoaDevedor("J");
 					} else {
-						titulo.setNumeroDocumentoDevedor("2");
-						titulo.setTipoPessoaDevedor("F");
+						tituloVO.setTipoDocumentoDevedor("2");
+						tituloVO.setTipoPessoaDevedor("F");
 					}
 				}
 				if (titulo.getNumeroDocumentoCredor() != null) {
 					if (titulo.getNumeroDocumentoCredor().length() > 11) {
-						titulo.setNumeroDocumentoCredor("1");
-						titulo.setTipoPessoaCredor("J");
+						tituloVO.setTipoDocumentoCredor("1");
+						tituloVO.setTipoPessoaCredor("J");
 					} else {
-						titulo.setNumeroDocumentoCredor("2");
-						titulo.setTipoPessoaCredor("F");
+						tituloVO.setTipoDocumentoCredor("2");
+						tituloVO.setTipoPessoaCredor("F");
 					}
 				}
+				tituloVO.setCidadeCredor(RemoverAcentosUtil.removeAcentos(titulo.getCidadeCredor()));
+				tituloVO.setMunicipioEnderecoCredor(RemoverAcentosUtil.removeAcentos(titulo.getMunicipioEnderecoCredor()));
+				tituloVO.setEnderecoCredor(RemoverAcentosUtil.removeAcentos(titulo.getEnderecoCredor()));
+				tituloVO.setNomeCredor(RemoverAcentosUtil.removeAcentos(titulo.getNomeCredor()));
+
+				tituloVO.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(titulo.getCidadeDevedor()));
+				tituloVO.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(titulo.getEnderecoDevedor()));
+				tituloVO.setNomeDevedor(RemoverAcentosUtil.removeAcentos(titulo.getNomeDevedor()));
 				remessaVO.getTitulosCnpVO().add(tituloVO);
 			}
 			sequencialRegistro++;
@@ -161,22 +178,30 @@ public class ConversorArquivoCnpVO {
 				}
 				if (titulo.getNumeroDocumentoDevedor() != null) {
 					if (titulo.getNumeroDocumentoDevedor().length() > 11) {
-						titulo.setNumeroDocumentoDevedor("1");
-						titulo.setTipoPessoaDevedor("J");
+						tituloVO.setTipoDocumentoDevedor("1");
+						tituloVO.setTipoPessoaDevedor("J");
 					} else {
-						titulo.setNumeroDocumentoDevedor("2");
-						titulo.setTipoPessoaDevedor("F");
+						tituloVO.setTipoDocumentoDevedor("2");
+						tituloVO.setTipoPessoaDevedor("F");
 					}
 				}
 				if (titulo.getNumeroDocumentoCredor() != null) {
 					if (titulo.getNumeroDocumentoCredor().length() > 11) {
-						titulo.setNumeroDocumentoCredor("1");
-						titulo.setTipoPessoaCredor("J");
+						tituloVO.setTipoDocumentoCredor("1");
+						tituloVO.setTipoPessoaCredor("J");
 					} else {
-						titulo.setNumeroDocumentoCredor("2");
-						titulo.setTipoPessoaCredor("F");
+						tituloVO.setTipoDocumentoCredor("2");
+						tituloVO.setTipoPessoaCredor("F");
 					}
 				}
+				tituloVO.setCidadeCredor(RemoverAcentosUtil.removeAcentos(titulo.getCidadeCredor()));
+				tituloVO.setMunicipioEnderecoCredor(RemoverAcentosUtil.removeAcentos(titulo.getMunicipioEnderecoCredor()));
+				tituloVO.setEnderecoCredor(RemoverAcentosUtil.removeAcentos(titulo.getEnderecoCredor()));
+				tituloVO.setNomeCredor(RemoverAcentosUtil.removeAcentos(titulo.getNomeCredor()));
+
+				tituloVO.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(titulo.getCidadeDevedor()));
+				tituloVO.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(titulo.getEnderecoDevedor()));
+				tituloVO.setNomeDevedor(RemoverAcentosUtil.removeAcentos(titulo.getNomeDevedor()));
 				remessaVO.getTitulosCnpVO().add(tituloVO);
 			}
 			sequencialRegistro++;

@@ -15,6 +15,8 @@ import javax.persistence.Transient;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+
 /**
  * 
  * @author Lefer
@@ -100,7 +102,7 @@ public class TituloCnp extends AbstractEntidade<TituloCnp> {
 	}
 
 	public String getNomeCredor() {
-		return nomeCredor;
+		return RemoverAcentosUtil.removeAcentos(nomeCredor);
 	}
 
 	public String getNumeroDocumentoCredor() {
@@ -116,7 +118,7 @@ public class TituloCnp extends AbstractEntidade<TituloCnp> {
 	}
 
 	public String getEnderecoCredor() {
-		return enderecoCredor;
+		return RemoverAcentosUtil.removeAcentos(enderecoCredor);
 	}
 
 	public String getCepCredor() {
@@ -124,7 +126,7 @@ public class TituloCnp extends AbstractEntidade<TituloCnp> {
 	}
 
 	public String getCidadeCredor() {
-		return cidadeCredor;
+		return RemoverAcentosUtil.removeAcentos(cidadeCredor);
 	}
 
 	public String getUfCredor() {
@@ -132,7 +134,7 @@ public class TituloCnp extends AbstractEntidade<TituloCnp> {
 	}
 
 	public String getMunicipioEnderecoCredor() {
-		return municipioEnderecoCredor;
+		return RemoverAcentosUtil.removeAcentos(municipioEnderecoCredor);
 	}
 
 	public String getTipoPessoaCredor() {
@@ -164,7 +166,7 @@ public class TituloCnp extends AbstractEntidade<TituloCnp> {
 	}
 
 	public String getNomeDevedor() {
-		return nomeDevedor;
+		return RemoverAcentosUtil.removeAcentos(nomeDevedor);
 	}
 
 	public String getNumeroDocumentoDevedor() {
@@ -180,7 +182,7 @@ public class TituloCnp extends AbstractEntidade<TituloCnp> {
 	}
 
 	public String getEnderecoDevedor() {
-		return enderecoDevedor;
+		return RemoverAcentosUtil.removeAcentos(enderecoDevedor);
 	}
 
 	public String getCepDevedor() {
@@ -188,7 +190,7 @@ public class TituloCnp extends AbstractEntidade<TituloCnp> {
 	}
 
 	public String getCidadeDevedor() {
-		return cidadeDevedor;
+		return RemoverAcentosUtil.removeAcentos(cidadeDevedor);
 	}
 
 	public String getUfDevedor() {

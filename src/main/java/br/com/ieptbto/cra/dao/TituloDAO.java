@@ -185,10 +185,12 @@ public class TituloDAO extends AbstractBaseDAO {
 						pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
 				if (tituloRetorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
 					if (dataOcorrenciaRetorno.isAfter(dataMovimentoDesistencia) || dataOcorrenciaRetorno.equals(dataMovimentoDesistencia)) {
-						throw new InfraException("PROTESTO INDEVIDO! Título com o nosso número " + tituloRetorno.getNossoNumero() + " e o protocolo "
-								+ tituloRetorno.getNumeroProtocoloCartorio() + ", protestado em "
-								+ DataUtil.localDateToString(tituloRetorno.getDataOcorrencia())
-								+ ", já contém um pedido de desistência. Favor faça o CANCELAMENTO!");
+						throw new InfraException(
+								"<span class=\"alert-link\">PROTESTO INDEVIDO!</span> Título com o nosso número <span class=\"alert-link\">"
+										+ tituloRetorno.getNossoNumero() + "</span> e o protocolo <span class=\"alert-link\">"
+										+ tituloRetorno.getNumeroProtocoloCartorio() + "</span>, protestado em "
+										+ DataUtil.localDateToString(tituloRetorno.getDataOcorrencia())
+										+ ", já contém um pedido de desistência. Favor faça o <span class=\"alert-link\">CANCELAMENTO</span>!");
 					}
 				}
 			}

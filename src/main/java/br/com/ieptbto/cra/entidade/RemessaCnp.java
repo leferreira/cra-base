@@ -52,18 +52,18 @@ public class RemessaCnp extends AbstractEntidade<RemessaCnp> {
 		return arquivo;
 	}
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "CABECALHO_CNP_ID")
 	public CabecalhoCnp getCabecalho() {
 		return cabecalho;
 	}
 
-	@OneToMany(mappedBy = "remessa", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "remessa", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	public List<TituloCnp> getTitulos() {
 		return titulos;
 	}
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "RODAPE_CNP_ID")
 	public RodapeCnp getRodape() {
 		return rodape;
@@ -99,17 +99,16 @@ public class RemessaCnp extends AbstractEntidade<RemessaCnp> {
 		this.rodape = rodape;
 	}
 
-	public void setArquivoLiberadoConsulta(boolean arquivoLiberadoConsulta) {
-		this.arquivoLiberadoConsulta = arquivoLiberadoConsulta;
-	}
-
 	public void setDataLiberacaoConsulta(LocalDate dataLiberacaoConsulta) {
 		this.dataLiberacaoConsulta = dataLiberacaoConsulta;
 	}
 
+	public void setArquivoLiberadoConsulta(boolean arquivoLiberadoConsulta) {
+		this.arquivoLiberadoConsulta = arquivoLiberadoConsulta;
+	}
+
 	@Override
 	public int compareTo(RemessaCnp entidade) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

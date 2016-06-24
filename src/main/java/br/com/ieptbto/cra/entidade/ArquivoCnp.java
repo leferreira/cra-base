@@ -44,7 +44,7 @@ public class ArquivoCnp extends AbstractEntidade<ArquivoCnp> {
 		return this.id;
 	}
 
-	@OneToMany(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "arquivo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	public List<RemessaCnp> getRemessasCnp() {
 		return remessasCnp;
 	}

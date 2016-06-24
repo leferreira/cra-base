@@ -49,6 +49,7 @@ import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.processador.FabricaRegistro;
 import br.com.ieptbto.cra.processador.FabricaRegistroDesistenciaProtesto;
 import br.com.ieptbto.cra.validacao.ValidarCabecalhoRemessa;
+import br.com.ieptbto.cra.validacao.ValidarRodape;
 import br.com.ieptbto.cra.validacao.regra.RegraValidaTipoArquivoTXT;
 
 /**
@@ -65,12 +66,14 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	@Autowired
 	private ValidarCabecalhoRemessa validarCabecalhoRemessa;
 	@Autowired
+	private ValidarRodape validarRodape;
+	@Autowired
 	private GeradorDeArquivosTXT geradorDeArquivosTXT;
 	@Autowired
 	private ConversorDesistenciaProtesto conversorDesistenciaProtesto;
 	@Autowired
 	private ConversorCancelamentoProtesto conversorCancelamentoProtesto;
-	private List<Exception> errosCabecalho;
+	private List<Exception> erros;
 	private Remessa remessa;
 	private List<Remessa> remessas;
 	private DesistenciaProtesto desistenciaProtesto;
@@ -82,7 +85,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		this.arquivoFisico = arquivoFisico;
 		this.arquivo = arquivo;
 		this.erros = erros;
-		this.errosCabecalho = new ArrayList<Exception>();
+		this.erros = new ArrayList<Exception>();
 		validar();
 		return this;
 	}
@@ -103,7 +106,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		this.remessaDesistenciaProtesto = remessa;
 		return gerarArquivoDesistenciaProtesto();
 	}
-	
+
 	public File fabricaArquivoCancelamentoProtestoTXT(File arquivoFisico, RemessaCancelamentoProtesto remessa, List<Exception> erros) {
 		this.arquivoFisico = arquivoFisico;
 		this.erros = erros;
@@ -121,14 +124,14 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	private File gerarArquivoAutorizacaoCancelamento() {
 		List<Arquivo> arquivos = new ArrayList<Arquivo>();
 		arquivos.add(getArquivo());
-		
+
 		return geradorDeArquivosTXT.gerar(conversorCancelamentoProtesto.converter(this.remessaAutorizacaoCancelamento), getArquivoFisico());
 	}
 
 	private File gerarArquivoCancelamentoProtesto() {
 		List<Arquivo> arquivos = new ArrayList<Arquivo>();
 		arquivos.add(getArquivo());
-		
+
 		return geradorDeArquivosTXT.gerar(conversorCancelamentoProtesto.converter(this.remessaCancelamentoProtesto), getArquivoFisico());
 	}
 
@@ -230,9 +233,9 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		int somatorioQtdRemessa = 0;
 		if (remessaVO.getCabecalho() != null) {
 			somatorioQtdRemessa = Integer.parseInt(remessaVO.getCabecalho().getQtdRegistrosRemessa())
-			        + Integer.parseInt(remessaVO.getCabecalho().getQtdTitulosRemessa())
-			        + Integer.parseInt(remessaVO.getCabecalho().getQtdIndicacoesRemessa())
-			        + Integer.parseInt(remessaVO.getCabecalho().getQtdOriginaisRemessa());
+					+ Integer.parseInt(remessaVO.getCabecalho().getQtdTitulosRemessa())
+					+ Integer.parseInt(remessaVO.getCabecalho().getQtdIndicacoesRemessa())
+					+ Integer.parseInt(remessaVO.getCabecalho().getQtdOriginaisRemessa());
 		}
 		return Integer.toString(somatorioQtdRemessa);
 	}
@@ -251,8 +254,8 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 	public Arquivo converter() {
 		if (TipoArquivoEnum.REMESSA.equals(getArquivo().getTipoArquivo().getTipoArquivo())
-		        || TipoArquivoEnum.CONFIRMACAO.equals(getArquivo().getTipoArquivo().getTipoArquivo())
-		        || TipoArquivoEnum.RETORNO.equals(getArquivo().getTipoArquivo().getTipoArquivo())) {
+				|| TipoArquivoEnum.CONFIRMACAO.equals(getArquivo().getTipoArquivo().getTipoArquivo())
+				|| TipoArquivoEnum.RETORNO.equals(getArquivo().getTipoArquivo().getTipoArquivo())) {
 			return processarRemessaConfirmacaoRetorno();
 		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(getArquivo().getTipoArquivo().getTipoArquivo())) {
 			return processarDesistenciaProtesto();
@@ -300,29 +303,27 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 		if (TipoRegistroDesistenciaProtesto.HEADER_APRESENTANTE.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			CabecalhoArquivoDesistenciaProtestoVO cabecalhoVO = CabecalhoArquivoDesistenciaProtestoVO.class.cast(registro);
-			CabecalhoArquivo cabecalhoArquivo = new CabecalhoArquivoDesistenciaProtestoConversor().converter(CabecalhoArquivo.class,
-			        cabecalhoVO);
+			CabecalhoArquivo cabecalhoArquivo = new CabecalhoArquivoDesistenciaProtestoConversor().converter(CabecalhoArquivo.class, cabecalhoVO);
 			remessa.setCabecalho(cabecalhoArquivo);
 
 		} else if (TipoRegistroDesistenciaProtesto.HEADER_CARTORIO.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			desistenciaProtesto = new DesistenciaProtesto();
 			desistenciaProtesto.setDesistencias(new ArrayList<PedidoDesistencia>());
 			CabecalhoCartorioDesistenciaProtestoVO cabecalhoCartorioVO = CabecalhoCartorioDesistenciaProtestoVO.class.cast(registro);
-			CabecalhoCartorio cabecalhoCartorio = new CabecalhoCartorioDesistenciaProtestoConversor().converter(CabecalhoCartorio.class,
-			        cabecalhoCartorioVO);
+			CabecalhoCartorio cabecalhoCartorio =
+					new CabecalhoCartorioDesistenciaProtestoConversor().converter(CabecalhoCartorio.class, cabecalhoCartorioVO);
 			desistenciaProtesto.setCabecalhoCartorio(cabecalhoCartorio);
 
 		} else if (TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			RegistroDesistenciaProtestoVO tituloDesistenciaProtesto = RegistroDesistenciaProtestoVO.class.cast(registro);
-			PedidoDesistencia pedidoDesistencia = new RegistroDesistenciaProtestoConversor()
-			        .converter(PedidoDesistencia.class, tituloDesistenciaProtesto);
+			PedidoDesistencia pedidoDesistencia =
+					new RegistroDesistenciaProtestoConversor().converter(PedidoDesistencia.class, tituloDesistenciaProtesto);
 			desistenciaProtesto.getDesistencias().add(pedidoDesistencia);
 			pedidoDesistencia.setDesistenciaProtesto(desistenciaProtesto);
 
 		} else if (TipoRegistroDesistenciaProtesto.TRAILLER_CARTORIO.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			RodapeCartorioDesistenciaProtestoVO rodapeCartorioVO = RodapeCartorioDesistenciaProtestoVO.class.cast(registro);
-			RodapeCartorio rodapeCartorio = new RodapeCartorioDesistenciaProtestoConversor().converter(RodapeCartorio.class,
-			        rodapeCartorioVO);
+			RodapeCartorio rodapeCartorio = new RodapeCartorioDesistenciaProtestoConversor().converter(RodapeCartorio.class, rodapeCartorioVO);
 			desistenciaProtesto.setRodapeCartorio(rodapeCartorio);
 			remessa.getDesistenciaProtesto().add(desistenciaProtesto);
 			desistenciaProtesto.setRemessaDesistenciaProtesto(remessa);
@@ -384,20 +385,20 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 			CabecalhoVO cabecalhoVO = CabecalhoVO.class.cast(registro);
 			CabecalhoRemessa cabecalho = new CabecalhoConversor().converter(CabecalhoRemessa.class, cabecalhoVO);
 			cabecalho.setRemessa(remessa);
-			validarCabecalhoRemessa.validar(cabecalho, errosCabecalho);
+			validarCabecalhoRemessa.validar(cabecalho, erros);
 
-			if (errosCabecalho.isEmpty()) {
+			if (erros.isEmpty()) {
 				remessa.setCabecalho(cabecalho);
 				remessa.setInstituicaoDestino(getInstituicaoDeDestino(cabecalho));
 				remessa.setInstituicaoOrigem(getArquivo().getInstituicaoEnvio());
 			} else {
-				getErros().addAll(errosCabecalho);
+				getErros().addAll(erros);
 			}
 
 		} else if (TipoRegistro.TITULO.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			TituloVO tituloVO = TituloVO.class.cast(registro);
 			Titulo titulo;
-			if (errosCabecalho.isEmpty()) {
+			if (erros.isEmpty()) {
 				if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
 					titulo = new ConfirmacaoConversor().converter(Confirmacao.class, tituloVO);
 				} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
@@ -409,13 +410,15 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 				remessa.getTitulos().add(titulo);
 			}
 		} else if (TipoRegistro.RODAPE.getConstante().equals(registro.getIdentificacaoRegistro())) {
-			if (errosCabecalho.isEmpty()) {
+
+			if (erros.isEmpty()) {
 				RodapeVO rodapeVO = RodapeVO.class.cast(registro);
 				Rodape rodape = new RodapeConversor().converter(Rodape.class, rodapeVO);
+				validarRodape.validar(rodape, erros);
 				remessa.setRodape(rodape);
 				rodape.setRemessa(remessa);
 			} else {
-				errosCabecalho = new ArrayList<Exception>();
+				erros = new ArrayList<Exception>();
 			}
 		} else {
 			getErros().add(new InfraException("O Tipo do registro não foi encontrado: [" + registro.getIdentificacaoRegistro() + " ]"));
@@ -427,7 +430,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 	private Instituicao getInstituicaoDeDestino(CabecalhoRemessa cabecalho) {
 		if (TipoArquivoEnum.CONFIRMACAO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))
-		        || TipoArquivoEnum.RETORNO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))) {
+				|| TipoArquivoEnum.RETORNO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))) {
 			return instituicaoMediator.getInstituicaoPorCodigoPortador(cabecalho.getNumeroCodigoPortador());
 		} else {
 			return instituicaoMediator.getCartorioPorCodigoIBGE(cabecalho.getCodigoMunicipio());
