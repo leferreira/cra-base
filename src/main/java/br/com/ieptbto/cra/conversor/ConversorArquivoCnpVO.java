@@ -157,9 +157,9 @@ public class ConversorArquivoCnpVO {
 
 	public static List<RemessaCnpVO> converterParaRemessaCnpNacionalVO(List<RemessaCnp> remessasCnp) {
 		List<RemessaCnpVO> remessasVO = new ArrayList<RemessaCnpVO>();
-		int sequencialRegistro = 1;
 
 		for (RemessaCnp remessa : remessasCnp) {
+			int sequencialRegistro = 1;
 			RemessaCnpVO remessaVO = new RemessaCnpVO();
 			remessa.getCabecalho().setSequenciaRegistro(Integer.toString(sequencialRegistro));
 

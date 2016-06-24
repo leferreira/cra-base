@@ -104,25 +104,6 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		}
 	}
 
-	// @Transactional(propagation = Propagation.NOT_SUPPORTED)
-	// public void salvarArquivoCnpNacional(ArquivoCnp arquivoCnp) {
-	// SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	// try {
-	// for (RemessaCnp remessaCnp : arquivoCnp.getRemessasCnp()) {
-	// Query query = createSQLQuery("UPDATE tb_remessa_cnp AS rem " + "SET
-	// data_liberacao='" + dateFormat.format(new LocalDate().toDate())
-	// + "', arquivo_liberado_consulta=true " + "WHERE id_remessa_cnp=" +
-	// remessaCnp.getId());
-	// query.executeUpdate();
-	// }
-	//
-	// } catch (Exception ex) {
-	// logger.error(ex.getMessage(), ex);
-	// throw new InfraException("Não foi possível inserir esses dados na
-	// base.");
-	// }
-	// }
-
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public RemessaCnp isArquivoJaDisponibilizadoConsultaPorData(LocalDate dataLiberacao) {
 		Criteria criteria = getCriteria(RemessaCnp.class);
@@ -137,6 +118,7 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		List<RemessaCnp> remessaGeradas = new ArrayList<RemessaCnp>();
 		Criteria criteria = getCriteria(RemessaCnp.class);
 		criteria.add(Restrictions.eq("dataLiberacaoConsulta", dataLiberacao));
+		criteria.add(Restrictions.eq("arquivoLiberadoConsulta", true));
 
 		List<RemessaCnp> remessas = criteria.list();
 		for (RemessaCnp remessa : remessas) {
