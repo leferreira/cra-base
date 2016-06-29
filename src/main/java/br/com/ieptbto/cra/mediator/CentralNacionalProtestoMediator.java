@@ -64,7 +64,7 @@ public class CentralNacionalProtestoMediator {
 		ArquivoCnp arquivoCnp = new ArquivoCnp();
 		arquivoCnp.setRemessasCnp(centralNancionalProtestoDAO.buscarRemessasCnpPendentes());
 		ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
-		arquivoCnpVO.setRemessasCnpVO(ConversorArquivoCnpVO.converterParaRemessaCnpNacionalVO(arquivoCnp.getRemessasCnp()));
+		arquivoCnpVO.setRemessasCnpVO(ConversorArquivoCnpVO.converterParaRemessaCnpVO(arquivoCnp.getRemessasCnp()));
 
 		centralNancionalProtestoDAO.salvarArquivoCnpNacional(arquivoCnp);
 		return arquivoCnpVO;

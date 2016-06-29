@@ -43,7 +43,64 @@ public class CpfCnpjUtil {
 	}
 
 	public static void main(String[] args) {
-		System.out.printf("CPF Valido:%s \n", CpfCnpjUtil.isValidCPF("01115375502"));
-		System.out.printf("CNPJ Valido:%s \n", CpfCnpjUtil.isValidCNPJ("13642634756318"));
+		System.out.println("CPF = 04789764109");
+		System.out.printf("Numero do Documento:%s \n", CpfCnpjUtil.buscarNumeroDocumento("04789764109"));
+		System.out.printf("Complemento Doc.:%s \n", CpfCnpjUtil.buscarComplementoDocumento("04789764109"));
+		System.out.printf("Dígito Controle:%s \n", CpfCnpjUtil.calcularDigitoControle("04789764109"));
+		System.out.println("CNPJ = 03952030000196");
+		System.out.printf("Numero do Documento:%s \n", CpfCnpjUtil.buscarNumeroDocumento("03952030000196"));
+		System.out.printf("Complemento Doc.:%s \n", CpfCnpjUtil.buscarComplementoDocumento("03952030000196"));
+		System.out.printf("Dígito Controle:%s \n", CpfCnpjUtil.calcularDigitoControle("03952030000196"));
+	}
+
+	public static String buscarComplementoDocumento(String numeroDocumento) {
+		String digitoControle = "";
+		if (numeroDocumento != null) {
+			if (numeroDocumento.isEmpty()) {
+				return digitoControle;
+			}
+			if (numeroDocumento.length() > 11) {
+				return numeroDocumento.substring(8, 12);
+			}
+		}
+		return digitoControle;
+	}
+
+	public static String buscarNumeroDocumento(String numeroDocumento) {
+		String digitoControle = "";
+		if (numeroDocumento != null) {
+			if (numeroDocumento.isEmpty()) {
+				return digitoControle;
+			}
+			if (numeroDocumento.length() > 11) {
+				return numeroDocumento.substring(0, 8);
+			} else {
+				return numeroDocumento.substring(0, 9);
+			}
+		}
+		return digitoControle;
+	}
+
+	public static String calcularDigitoControle(String numeroDocumento) {
+		String digitoControle = "";
+		Integer digito1 = 0;
+		Integer digito2 = 0;
+		if (numeroDocumento != null) {
+			if (numeroDocumento.isEmpty()) {
+				return digitoControle;
+			}
+			if (numeroDocumento.length() > 11) {
+				digito1 = calcularDigito(numeroDocumento.substring(0, 12), pesoCNPJ);
+				digito2 = calcularDigito(numeroDocumento.substring(0, 12) + digito1, pesoCNPJ);
+				digitoControle = digito1.toString();
+				digitoControle = digitoControle.concat(digito2.toString());
+			} else {
+				digito1 = calcularDigito(numeroDocumento.substring(0, 9), pesoCPF);
+				digito2 = calcularDigito(numeroDocumento.substring(0, 9) + digito1, pesoCPF);
+				digitoControle = digito1.toString();
+				digitoControle = digitoControle.concat(digito2.toString());
+			}
+		}
+		return digitoControle;
 	}
 }

@@ -39,9 +39,6 @@ public class Rodape extends AbstractEntidade<Rodape> implements FieldHandled {
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private Remessa remessa;
-	/**
-	 * Registros do rodape
-	 */
 	private TipoRegistro identificacaoRegistro;
 	private String numeroCodigoPortador;
 	private String nomePortador;
@@ -109,9 +106,9 @@ public class Rodape extends AbstractEntidade<Rodape> implements FieldHandled {
 
 		if (this.remessa != null) {
 			if (this.remessa.getCabecalho() != null) {
-				somatorioQtdRemessa = new BigDecimal(this.remessa.getCabecalho().getQtdRegistrosRemessa()
-				        + this.remessa.getCabecalho().getQtdTitulosRemessa() + this.remessa.getCabecalho().getQtdIndicacoesRemessa()
-				        + this.remessa.getCabecalho().getQtdOriginaisRemessa());
+				somatorioQtdRemessa =
+						new BigDecimal(this.remessa.getCabecalho().getQtdRegistrosRemessa() + this.remessa.getCabecalho().getQtdTitulosRemessa()
+								+ this.remessa.getCabecalho().getQtdIndicacoesRemessa() + this.remessa.getCabecalho().getQtdOriginaisRemessa());
 			}
 		}
 		return somatorioQtdRemessa;
