@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.util;
 
 public class CpfCnpjUtil {
+
 	private static final int[] pesoCPF = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
 	private static final int[] pesoCNPJ = { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
 
@@ -43,22 +44,16 @@ public class CpfCnpjUtil {
 	}
 
 	public static void main(String[] args) {
-		System.out.println("CPF = 04789764109");
-		System.out.printf("Numero do Documento:%s \n", CpfCnpjUtil.buscarNumeroDocumento("04789764109"));
-		System.out.printf("Complemento Doc.:%s \n", CpfCnpjUtil.buscarComplementoDocumento("04789764109"));
-		System.out.printf("Dígito Controle:%s \n", CpfCnpjUtil.calcularDigitoControle("04789764109"));
-		System.out.println("CNPJ = 03952030000196");
-		System.out.printf("Numero do Documento:%s \n", CpfCnpjUtil.buscarNumeroDocumento("03952030000196"));
-		System.out.printf("Complemento Doc.:%s \n", CpfCnpjUtil.buscarComplementoDocumento("03952030000196"));
-		System.out.printf("Dígito Controle:%s \n", CpfCnpjUtil.calcularDigitoControle("03952030000196"));
+		System.out.println(isValidCPF("38430267187"));
 	}
 
 	public static String buscarComplementoDocumento(String numeroDocumento) {
 		String digitoControle = "";
 		if (numeroDocumento != null) {
-			if (numeroDocumento.isEmpty()) {
+			if (numeroDocumento.trim().isEmpty()) {
 				return digitoControle;
 			}
+			numeroDocumento = numeroDocumento.replace(" ", "");
 			if (numeroDocumento.length() > 11) {
 				return numeroDocumento.substring(8, 12);
 			}
@@ -69,9 +64,10 @@ public class CpfCnpjUtil {
 	public static String buscarNumeroDocumento(String numeroDocumento) {
 		String digitoControle = "";
 		if (numeroDocumento != null) {
-			if (numeroDocumento.isEmpty()) {
+			if (numeroDocumento.trim().isEmpty()) {
 				return digitoControle;
 			}
+			numeroDocumento = numeroDocumento.replace(" ", "");
 			if (numeroDocumento.length() > 11) {
 				return numeroDocumento.substring(0, 8);
 			} else {
@@ -86,9 +82,10 @@ public class CpfCnpjUtil {
 		Integer digito1 = 0;
 		Integer digito2 = 0;
 		if (numeroDocumento != null) {
-			if (numeroDocumento.isEmpty()) {
+			if (numeroDocumento.trim().isEmpty()) {
 				return digitoControle;
 			}
+			numeroDocumento = numeroDocumento.replace(" ", "");
 			if (numeroDocumento.length() > 11) {
 				digito1 = calcularDigito(numeroDocumento.substring(0, 12), pesoCNPJ);
 				digito2 = calcularDigito(numeroDocumento.substring(0, 12) + digito1, pesoCNPJ);

@@ -377,6 +377,9 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 
 	@Column(name = "TABELIAO", length = 150)
 	public String getTabeliao() {
+		if (tabeliao == null) {
+			tabeliao = StringUtils.EMPTY;
+		}
 		return tabeliao;
 	}
 
@@ -391,5 +394,13 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 
 	public void setBairro(String bairro) {
 		this.bairro = bairro;
+	}
+
+	@Transient
+	public String getTelefoneSemDDD() {
+		if (telefone != null) {
+			return telefone.replaceAll("\\((10)|([1-9][1-9])\\)", "").replace("(", "").replace("-", "");
+		}
+		return StringUtils.EMPTY;
 	}
 }

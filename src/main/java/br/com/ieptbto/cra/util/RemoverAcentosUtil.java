@@ -38,6 +38,7 @@ public class RemoverAcentosUtil implements Serializable {
 			retorno = retorno.replace("*", " ");
 			retorno = retorno.replace("º", " ");
 			retorno = retorno.replace("ª", " ");
+			retorno = retorno.replace("�", "");
 
 			String nfdNormalizedString = Normalizer.normalize(retorno, Normalizer.Form.NFD);
 			Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");

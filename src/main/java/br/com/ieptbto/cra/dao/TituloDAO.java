@@ -278,8 +278,8 @@ public class TituloDAO extends AbstractBaseDAO {
 					}
 				}
 			}
-			if (tituloConfirmacao.getTipoOcorrencia().isEmpty() && tituloConfirmacao.getNumeroProtocoloCartorio().isEmpty()
-					&& tituloConfirmacao.getCodigoIrregularidade().isEmpty()) {
+			if (tituloConfirmacao.getTipoOcorrencia().trim().isEmpty() && tituloConfirmacao.getNumeroProtocoloCartorio().trim().isEmpty()
+					&& tituloConfirmacao.getCodigoIrregularidade().trim().isEmpty()) {
 				throw new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
 						+ " está com o protocolo, tipo ocorrência e código irregularidade em branco! Favor verifique os dados do arquivo...");
 			}
@@ -320,7 +320,8 @@ public class TituloDAO extends AbstractBaseDAO {
 			if (titulo.getConfirmacao() == null) {
 				return titulo;
 			} else {
-				logger.error(new InfraException("Titulo nº" + titulo.getNumeroTitulo() + " já tem confirmação."));
+				throw new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
+						+ ", já foi enviado anteriormente em outro arquivo de confirmação...");
 			}
 		}
 		return null;

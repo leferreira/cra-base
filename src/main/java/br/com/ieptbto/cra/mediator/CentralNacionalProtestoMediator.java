@@ -1,288 +1,273 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.namespace.QName;
-
-import org.apache.log4j.Logger;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.conversor.ConversorArquivoCnpVO;
+import br.com.ieptbto.cra.conversor.ConversorCnpVO;
 import br.com.ieptbto.cra.dao.CentralNancionalProtestoDAO;
-import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.dao.MunicipioDAO;
-import br.com.ieptbto.cra.dao.TituloDAO;
-import br.com.ieptbto.cra.entidade.ArquivoCnp;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.LoteCnp;
 import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.entidade.RemessaCnp;
-import br.com.ieptbto.cra.entidade.RodapeCnp;
-import br.com.ieptbto.cra.entidade.TituloCnp;
-import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.RegistroCnp;
 import br.com.ieptbto.cra.entidade.vo.ArquivoCnpVO;
+import br.com.ieptbto.cra.entidade.vo.CabecalhoCnpVO;
+import br.com.ieptbto.cra.entidade.vo.RemessaCnpVO;
+import br.com.ieptbto.cra.entidade.vo.RodapeCnpVO;
+import br.com.ieptbto.cra.entidade.vo.TituloCnpVO;
+import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.validacao.FabricaValidacaoCNP;
-import br.com.ieptbto.cra.webservice.VO.CodigoErro;
+import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+import br.com.ieptbto.cra.validacao.ValidarRegistroCnp;
 
 /**
  * @author Thasso Araújo
  *
  */
 @Service
-public class CentralNacionalProtestoMediator {
+public class CentralNacionalProtestoMediator extends BaseMediator {
 
-	protected static final Logger logger = Logger.getLogger(CentralNacionalProtestoMediator.class);
-
+	@Autowired
+	ValidarRegistroCnp validarRegistroCnp;
 	@Autowired
 	CentralNancionalProtestoDAO centralNancionalProtestoDAO;
 	@Autowired
-	TituloDAO tituloDAO;
-	@Autowired
-	FabricaValidacaoCNP fabricaValidacaoCNP;
-	@Autowired
 	MunicipioDAO municipioDAO;
-	@Autowired
-	InstituicaoDAO instituicaoDAO;
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public ArquivoCnpVO gerarArquivoNacional() {
-		ArquivoCnp arquivoCnp = new ArquivoCnp();
-		arquivoCnp.setRemessasCnp(centralNancionalProtestoDAO.buscarRemessasCnpPendentes());
-		ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
-		arquivoCnpVO.setRemessasCnpVO(ConversorArquivoCnpVO.converterParaRemessaCnpVO(arquivoCnp.getRemessasCnp()));
-
-		centralNancionalProtestoDAO.salvarArquivoCnpNacional(arquivoCnp);
-		return arquivoCnpVO;
+	public List<Instituicao> consultarCartoriosCentralNacionalProtesto() {
+		return centralNancionalProtestoDAO.consultarCartoriosCentralNacionalProtesto();
 	}
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public ArquivoCnpVO buscarArquivoNacionalPorData(LocalDate dataLiberacao) {
-		ArquivoCnp arquivoCnp = new ArquivoCnp();
-		arquivoCnp.setRemessasCnp(centralNancionalProtestoDAO.buscarRemessasCnpPorData(dataLiberacao));
+	public LoteCnp processarLoteCartorio(Instituicao instituicao, ArquivoCnpVO arquivoCnpVO) {
+		LoteCnp loteCnp = new LoteCnp();
+		loteCnp.setDataRecebimento(new LocalDate().toDate());
+		loteCnp.setInstituicaoOrigem(instituicao);
+		loteCnp.setRegistrosCnp(new ArrayList<RegistroCnp>());
+		loteCnp.setStatus(false);
 
-		ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
-		arquivoCnpVO.setRemessasCnpVO(ConversorArquivoCnpVO.converterParaRemessaCnpVO(arquivoCnp.getRemessasCnp()));
-		return arquivoCnpVO;
+		List<RegistroCnp> registros = new ConversorCnpVO().converterArquivoCnpVOParaRegistrosCnp(arquivoCnpVO);
+		for (RegistroCnp registro : registros) {
+			if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
+				if (validarRegistroCnp.validarProtesto(registro)) {
+					loteCnp.getRegistrosCnp().add(registro);
+				}
+			} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
+				if (validarRegistroCnp.validarCancelamento(registro)) {
+					loteCnp.getRegistrosCnp().add(registro);
+				}
+			}
+		}
+		return centralNancionalProtestoDAO.salvarLote(loteCnp);
 	}
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public ArquivoCnp processarArquivoCartorio(Usuario usuario, ArquivoCnpVO arquivoCnpVO) {
-		ArquivoCnp arquivoCnp = new ArquivoCnp();
-		arquivoCnp.setDataEnvio(new LocalDate());
-		arquivoCnp.setInstituicaoEnvio(usuario.getInstituicao());
-		arquivoCnp.setRemessasCnp(ConversorArquivoCnpVO.converterParaRemessaCnp(arquivoCnpVO));
-
-		fabricaValidacaoCNP.validarArquivoCnpCartorio(arquivoCnp);
-		return centralNancionalProtestoDAO.salvarArquivoCartorioCentralNacionalProtesto(usuario, arquivoCnp);
-	}
-
-	public boolean isInstituicaoEnviouArquivoCnpHoje(Instituicao instituicao) {
-		ArquivoCnp arquivoCnp = centralNancionalProtestoDAO.getArquivoCnpHojeInstituicao(instituicao);
-		if (arquivoCnp != null) {
+	public boolean isCartorioEnviouLoteCnpHoje(Instituicao instituicao) {
+		LoteCnp lote = centralNancionalProtestoDAO.isCartorioEnviouLoteCnpHoje(instituicao);
+		if (lote != null) {
 			return true;
 		}
 		return false;
 	}
 
-	public boolean isArquivoJaDisponibilizadoConsultaPorData(LocalDate dataLiberacao) {
-		RemessaCnp remessaCnp = centralNancionalProtestoDAO.isArquivoJaDisponibilizadoConsultaPorData(dataLiberacao);
-		if (remessaCnp != null) {
+	public ArquivoCnpVO processarLoteNacional() {
+		List<LoteCnp> lotes = centralNancionalProtestoDAO.buscarLotesPendentesEnvio();
+
+		HashMap<Integer, RemessaCnpVO> mapaLotesLiberados = new HashMap<Integer, RemessaCnpVO>();
+		for (LoteCnp lote : lotes) {
+			if (mapaLotesLiberados.containsKey(lote.getInstituicaoOrigem().getId())) {
+				Integer sequencial = lote.getRegistrosCnp().size() + 1;
+				List<TituloCnpVO> titulosVO = new ConversorCnpVO().converterRegistrosCnpParaTitulosCnpVO(lote, sequencial);
+				mapaLotesLiberados.get(lote.getInstituicaoOrigem().getId()).getTitulosCnpVO().addAll(titulosVO);
+			} else {
+				mapaLotesLiberados.put(lote.getInstituicaoOrigem().getId(), criarRemessaCnpVO(lote));
+			}
+		}
+
+		ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
+		arquivoCnpVO.setRemessasCnpVO(new ArrayList<RemessaCnpVO>(mapaLotesLiberados.values()));
+		centralNancionalProtestoDAO.salvarLiberacaoLotesCnp(lotes);
+		return arquivoCnpVO;
+	}
+
+	public ArquivoCnpVO processarLoteNacionalPorData(LocalDate data) {
+		List<LoteCnp> lotes = centralNancionalProtestoDAO.buscarLotesParaEnvioPorDate(data);
+
+		HashMap<Integer, RemessaCnpVO> mapaLotesLiberados = new HashMap<Integer, RemessaCnpVO>();
+		for (LoteCnp lote : lotes) {
+			if (mapaLotesLiberados.containsKey(lote.getInstituicaoOrigem().getId())) {
+				Integer sequencial = lote.getRegistrosCnp().size() + 1;
+				List<TituloCnpVO> titulosVO = new ConversorCnpVO().converterRegistrosCnpParaTitulosCnpVO(lote, sequencial);
+				mapaLotesLiberados.get(lote.getInstituicaoOrigem().getId()).getTitulosCnpVO().addAll(titulosVO);
+			} else {
+				mapaLotesLiberados.put(lote.getInstituicaoOrigem().getMunicipio().getId(), reenviarRemessaCnpVO(lote, data));
+			}
+		}
+
+		ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
+		arquivoCnpVO.setRemessasCnpVO(new ArrayList<RemessaCnpVO>(mapaLotesLiberados.values()));
+		return arquivoCnpVO;
+	}
+
+	private RemessaCnpVO criarRemessaCnpVO(LoteCnp lote) {
+		RemessaCnpVO remessaCnpVO = new RemessaCnpVO();
+		remessaCnpVO.setCabecalhoCnpVO(gerarCabecalhoCnp(lote.getInstituicaoOrigem()));
+		remessaCnpVO.setTitulosCnpVO(new ConversorCnpVO().converterRegistrosCnpParaTitulosCnpVO(lote, 2));
+		remessaCnpVO.setRodapeCnpVO(getRodapeCnpVO(remessaCnpVO.getTitulosCnpVO().size() + 2));
+		lote.setSequencialLiberacao(Integer.valueOf(remessaCnpVO.getCabecalhoCnpVO().getNumeroRemessaArquivo()));
+		return remessaCnpVO;
+	}
+
+	private RemessaCnpVO reenviarRemessaCnpVO(LoteCnp lote, LocalDate dataLiberacao) {
+		RemessaCnpVO remessaCnpVO = new RemessaCnpVO();
+		remessaCnpVO.setCabecalhoCnpVO(gerarCabecalhoCnp(lote.getInstituicaoOrigem(), dataLiberacao));
+		remessaCnpVO.setTitulosCnpVO(new ConversorCnpVO().converterRegistrosCnpParaTitulosCnpVO(lote, 2));
+		remessaCnpVO.setRodapeCnpVO(getRodapeCnpVO(remessaCnpVO.getTitulosCnpVO().size() + 2));
+		return remessaCnpVO;
+	}
+
+	private CabecalhoCnpVO gerarCabecalhoCnp(Instituicao instituicao) {
+		CabecalhoCnpVO cabecalhoCnpVO = new CabecalhoCnpVO();
+		cabecalhoCnpVO.setCodigoRegistro("1");
+		cabecalhoCnpVO.setEmBranco2("");
+		cabecalhoCnpVO.setDataMovimento(DataUtil.localDateToStringddMMyyyy(new LocalDate()));
+		instituicao.setMunicipio(municipioDAO.carregarMunicipio(instituicao.getMunicipio()));
+		cabecalhoCnpVO.setEmBranco53(instituicao.getMunicipio().getCodigoIBGE());
+		cabecalhoCnpVO.setNumeroRemessaArquivo(centralNancionalProtestoDAO.gerarSequencialCnp(instituicao));
+		cabecalhoCnpVO.setTipoDocumento("1");
+		cabecalhoCnpVO.setIdentificacaoDoArquivo("CENTRAL_NACIONAL_PROTESTO");
+		cabecalhoCnpVO.setCodigoRemessa("E");
+		cabecalhoCnpVO.setNumeroDDD("0063");
+		cabecalhoCnpVO.setNumeroTelefoneInstituicaoInformante(instituicao.getTelefoneSemDDD());
+		cabecalhoCnpVO.setNumeroRamalContato("");
+		cabecalhoCnpVO.setNomeContatoInstituicaoInformante(RemoverAcentosUtil.removeAcentos(instituicao.getTabeliao()));
+		cabecalhoCnpVO.setNumeroVersaoSoftware("1");
+		cabecalhoCnpVO.setCodigoEDI("");
+		cabecalhoCnpVO.setPeriodicidadeEnvio("D");
+		cabecalhoCnpVO.setSequenciaRegistro("1");
+		return cabecalhoCnpVO;
+	}
+
+	private CabecalhoCnpVO gerarCabecalhoCnp(Instituicao instituicao, LocalDate data) {
+		CabecalhoCnpVO cabecalhoCnpVO = new CabecalhoCnpVO();
+		cabecalhoCnpVO.setCodigoRegistro("1");
+		cabecalhoCnpVO.setEmBranco2("");
+		cabecalhoCnpVO.setDataMovimento(DataUtil.localDateToStringddMMyyyy(new LocalDate()));
+		instituicao.setMunicipio(municipioDAO.carregarMunicipio(instituicao.getMunicipio()));
+		cabecalhoCnpVO.setEmBranco53(instituicao.getMunicipio().getCodigoIBGE());
+		cabecalhoCnpVO.setNumeroRemessaArquivo(centralNancionalProtestoDAO.gerarSequencialCnp(instituicao, data));
+		cabecalhoCnpVO.setTipoDocumento("1");
+		cabecalhoCnpVO.setIdentificacaoDoArquivo("CENTRAL_NACIONAL_PROTESTO");
+		cabecalhoCnpVO.setCodigoRemessa("E");
+		cabecalhoCnpVO.setNumeroDDD("0063");
+		cabecalhoCnpVO.setNumeroTelefoneInstituicaoInformante(instituicao.getTelefoneSemDDD());
+		cabecalhoCnpVO.setNumeroRamalContato("");
+		cabecalhoCnpVO.setNomeContatoInstituicaoInformante(RemoverAcentosUtil.removeAcentos(instituicao.getTabeliao()));
+		cabecalhoCnpVO.setNumeroVersaoSoftware("1");
+		cabecalhoCnpVO.setCodigoEDI("");
+		cabecalhoCnpVO.setPeriodicidadeEnvio("D");
+		cabecalhoCnpVO.setSequenciaRegistro("1");
+		return cabecalhoCnpVO;
+	}
+
+	private RodapeCnpVO getRodapeCnpVO(Integer sequencial) {
+		RodapeCnpVO rodape = new RodapeCnpVO();
+		rodape.setCodigoRegistro(TipoRegistro.RODAPE.getConstante());
+		rodape.setSequenciaRegistro(Integer.toString(sequencial));
+		return rodape;
+	}
+
+	public boolean isLoteLiberadoConsultaPorData(LocalDate localDate) {
+		LoteCnp lote = centralNancionalProtestoDAO.isLoteLiberadoConsultaPorData(localDate);
+		if (lote != null) {
 			return true;
 		}
 		return false;
 	}
 
 	public List<String> consultarProtestos(String documentoDevedor) {
-		List<String> municipiosComProtesto = new ArrayList<String>();
-		List<TituloCnp> titulosProtestados = centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
+		List<String> pracasComProtesto = new ArrayList<String>();
+		List<RegistroCnp> protestos = centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
 
-		for (TituloCnp titulo : titulosProtestados) {
-			TituloCnp tituloCancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
-
-			if (tituloCancelamento == null) {
-				Municipio municipio =
-						centralNancionalProtestoDAO.carregarMunicipioCartorio(titulo.getRemessa().getArquivo().getInstituicaoEnvio().getMunicipio());
-				if (!municipiosComProtesto.contains(municipio.getNomeMunicipio().toUpperCase())) {
-					municipiosComProtesto.add(municipio.getNomeMunicipio().toUpperCase());
+		for (RegistroCnp titulo : protestos) {
+			RegistroCnp cancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
+			if (cancelamento == null) {
+				Municipio municipio = municipioDAO.carregarMunicipio(titulo.getLoteCnp().getInstituicaoOrigem().getMunicipio());
+				if (!pracasComProtesto.contains(municipio.getNomeMunicipio().toUpperCase())) {
+					pracasComProtesto.add(municipio.getNomeMunicipio().toUpperCase());
 				}
 			}
 		}
-		return municipiosComProtesto;
+		return pracasComProtesto;
 	}
 
 	public List<Instituicao> consultarProtestosWs(String documentoDevedor) {
 		List<Instituicao> cartorios = new ArrayList<Instituicao>();
-		List<TituloCnp> titulosProtestados = centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
+		List<RegistroCnp> protestos = centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
 
-		for (TituloCnp titulo : titulosProtestados) {
-			TituloCnp tituloCancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
+		for (RegistroCnp titulo : protestos) {
+			RegistroCnp cancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
 
-			if (tituloCancelamento == null) {
-				if (!cartorios.contains(titulo.getRemessa().getArquivo().getInstituicaoEnvio())) {
-					Municipio municipio = centralNancionalProtestoDAO
-							.carregarMunicipioCartorio(titulo.getRemessa().getArquivo().getInstituicaoEnvio().getMunicipio());
-					titulo.getRemessa().getArquivo().getInstituicaoEnvio().setMunicipio(municipio);
-					cartorios.add(titulo.getRemessa().getArquivo().getInstituicaoEnvio());
+			if (cancelamento == null) {
+				if (!cartorios.contains(titulo.getLoteCnp().getInstituicaoOrigem())) {
+					cartorios.add(titulo.getLoteCnp().getInstituicaoOrigem());
 				}
 			}
 		}
 		return cartorios;
 	}
 
-	public int buscarSequencialCabecalhoCnp(String codigoMunicipio) {
-		return centralNancionalProtestoDAO.buscarSequencialCabecalhoCnp(codigoMunicipio);
-	}
+	public void importarCSVCnp(Instituicao instituicao, FileUpload uploadedFile) {
+		int numeroLinha = 2;
 
-	public List<Instituicao> consultarCartoriosCentralNacionalProtesto() {
-		return centralNancionalProtestoDAO.consultarCartoriosCentralNacionalProtesto();
-	}
+		try {
+			LoteCnp loteCnp = new LoteCnp();
+			loteCnp.setDataRecebimento(new LocalDate().toDate());
+			loteCnp.setInstituicaoOrigem(instituicao);
+			loteCnp.setStatus(false);
+			loteCnp.setRegistrosCnp(new ArrayList<RegistroCnp>());
 
-	public void gerarArquivo5AnosTocantins() {
-		File diretorioBase = new File(ConfiguracaoBase.DIRETORIO_BASE);
-		if (!diretorioBase.exists()) {
-			diretorioBase.mkdirs();
-		}
+			BufferedReader reader = new BufferedReader(new InputStreamReader(uploadedFile.getInputStream()));
+			String linha = reader.readLine();
 
-		List<Municipio> municipios = municipioDAO.listarTodosTocantins();
-		for (final Municipio municipio : municipios) {
+			while ((linha = reader.readLine()) != null) {
+				linha = linha.replace("&amp;", " ");
+				linha = RemoverAcentosUtil.removeAcentos(linha);
+				String dados[] = linha.split(Pattern.quote(";"));
 
-			if (municipio.getId() == 14 || municipio.getId() == 11 || municipio.getId() == 20 || municipio.getId() == 10) {
-				logger.info("==========================================================");
-				logger.info(municipio.getNomeMunicipio() + " => [id=" + municipio.getId() + "] [codigoIbge=" + municipio.getCodigoIBGE()
-						+ "]  deverá ser processado separadamente...");
-
-			} else {
-				File arquivo = new File(ConfiguracaoBase.DIRETORIO_BASE + municipio.getNomeMunicipio());
-				if (arquivo.exists()) {
-					logger.info("==========================================================");
-					logger.info("Municipio:  " + municipio.getNomeMunicipio() + "   -   Arquivo já criado!");
-				} else {
-
-					RemessaCnp remessaCnp = new RemessaCnp();
-					remessaCnp.setCabecalho(centralNancionalProtestoDAO.ultimoCabecalhoCnpCartorio(municipio));
-					remessaCnp.setTitulos(centralNancionalProtestoDAO.buscarTitulosPorMunicipio(municipio));
-					RodapeCnp rod = new RodapeCnp();
-					rod.setCodigoRegistro("9");
-					remessaCnp.setRodape(rod);
-
-					if (!remessaCnp.getTitulos().isEmpty()) {
-						logger.info("==========================================================");
-						logger.info("Municipio:  " + municipio.getNomeMunicipio() + "  -  Qtd. Títulos:  " + remessaCnp.getTitulos().size());
-
-						ArquivoCnp arquivoCnp = new ArquivoCnp();
-						arquivoCnp.setRemessasCnp(new ArrayList<RemessaCnp>());
-						arquivoCnp.getRemessasCnp().add(remessaCnp);
-
-						ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
-						arquivoCnpVO.setRemessasCnpVO(ConversorArquivoCnpVO.converterParaRemessaCnpVO5Anos(arquivoCnp.getRemessasCnp()));
-						try {
-							Writer writer = new StringWriter();
-							JAXBContext context;
-							context = JAXBContext.newInstance(arquivoCnpVO.getClass());
-
-							Marshaller marshaller = context.createMarshaller();
-							marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-							marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
-							JAXBElement<Object> element = new JAXBElement<Object>(new QName("cnp"), Object.class, arquivoCnpVO);
-							marshaller.marshal(element, writer);
-							String msg = writer.toString();
-							msg = msg.replace(" xsi:type=\"arquivoCnpVO\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", "");
-							writer.flush();
-							writer.close();
-							BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivo));
-							logger.info("Escrevendo os dados no arquivo...");
-							bWrite.write(msg);
-							bWrite.flush();
-							bWrite.close();
-							logger.info("  ");
-							logger.info("Arquivo 5 Anos gerado com sucesso!");
-							logger.info("  ");
-						} catch (JAXBException e) {
-							logger.error(e.getMessage(), e.getCause());
-							new InfraException(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao(), e.getCause());
-						} catch (IOException e) {
-							logger.error(e.getMessage(), e.getCause());
-							new InfraException(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao(), e.getCause());
-						}
+				RegistroCnp registro = new RegistroCnp();
+				registro.carregar(dados);
+				if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
+					if (validarRegistroCnp.validarProtesto(registro)) {
+						loteCnp.getRegistrosCnp().add(registro);
+					}
+				} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
+					if (validarRegistroCnp.validarCancelamento(registro)) {
+						loteCnp.getRegistrosCnp().add(registro);
 					}
 				}
+				numeroLinha++;
 			}
-		}
-	}
-
-	public void gerarArquivo5AnosPorMunicipio(String municipioParametro) {
-		File diretorioBase = new File(ConfiguracaoBase.DIRETORIO_BASE);
-		if (!diretorioBase.exists()) {
-			diretorioBase.mkdirs();
-		}
-
-		Municipio municipio = municipioDAO.buscaMunicipioPorCodigoIBGE(municipioParametro);
-		if (municipio == null) {
-			logger.info("Municipio com o código " + municipioParametro + " não encontrado!");
-		} else {
-			RemessaCnp remessaCnp = new RemessaCnp();
-			remessaCnp.setCabecalho(centralNancionalProtestoDAO.ultimoCabecalhoCnpCartorio(municipio));
-			remessaCnp.setTitulos(centralNancionalProtestoDAO.buscarTitulosPorMunicipio(municipio));
-			RodapeCnp rod = new RodapeCnp();
-			rod.setCodigoRegistro("9");
-			remessaCnp.setRodape(rod);
-
-			if (!remessaCnp.getTitulos().isEmpty()) {
-				logger.info("==========================================================");
-				logger.info("Municipio:  " + municipio.getNomeMunicipio() + "  -  Qtd. Títulos:  " + remessaCnp.getTitulos().size());
-
-				ArquivoCnp arquivoCnp = new ArquivoCnp();
-				arquivoCnp.setRemessasCnp(new ArrayList<RemessaCnp>());
-				arquivoCnp.getRemessasCnp().add(remessaCnp);
-
-				ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
-				arquivoCnpVO.setRemessasCnpVO(ConversorArquivoCnpVO.converterParaRemessaCnpVO5Anos(arquivoCnp.getRemessasCnp()));
-				try {
-					Writer writer = new StringWriter();
-					JAXBContext context;
-					context = JAXBContext.newInstance(arquivoCnpVO.getClass());
-
-					Marshaller marshaller = context.createMarshaller();
-					marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-					marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
-					JAXBElement<Object> element = new JAXBElement<Object>(new QName("cnp"), Object.class, arquivoCnpVO);
-					marshaller.marshal(element, writer);
-					String msg = writer.toString();
-					msg = msg.replace(" xsi:type=\"arquivoCnpVO\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", "");
-					writer.flush();
-					writer.close();
-					File arquivo = new File(ConfiguracaoBase.DIRETORIO_BASE + municipio.getNomeMunicipio());
-					BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivo));
-					logger.info("Escrevendo os dados no arquivo...");
-					bWrite.write(msg);
-					bWrite.flush();
-					bWrite.close();
-					logger.info("  ");
-					logger.info("Arquivo 5 Anos gerado com sucesso!");
-					logger.info("  ");
-				} catch (JAXBException e) {
-					logger.error(e.getMessage(), e.getCause());
-					new InfraException(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao(), e.getCause());
-				} catch (IOException e) {
-					logger.error(e.getMessage(), e.getCause());
-					new InfraException(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao(), e.getCause());
-				}
-			}
+			reader.close();
+			centralNancionalProtestoDAO.salvarLote(loteCnp);
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+			throw new InfraException("Não foi possível abrir o arquivo enviado.");
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e.getCause());
+			e.printStackTrace();
+			throw new InfraException(
+					"Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do arquivo da cnp!");
 		}
 	}
 }

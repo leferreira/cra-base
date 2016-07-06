@@ -1,12 +1,11 @@
 package br.com.ieptbto.cra.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -15,14 +14,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.entidade.ArquivoCnp;
-import br.com.ieptbto.cra.entidade.CabecalhoCnp;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.LoteCnp;
 import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.entidade.RemessaCnp;
-import br.com.ieptbto.cra.entidade.TituloCnp;
-import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.RegistroCnp;
+import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.util.CpfCnpjUtil;
 
 /**
  * @author Thasso Araújo
@@ -32,169 +30,165 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public ArquivoCnp salvarArquivoCartorioCentralNacionalProtesto(Usuario user, ArquivoCnp arquivoCnp) {
-		Transaction transaction = getBeginTransation();
-		try {
-			arquivoCnp = save(arquivoCnp);
-
-			for (RemessaCnp remessaCnp : arquivoCnp.getRemessasCnp()) {
-				remessaCnp.setArquivoLiberadoConsulta(false);
-				remessaCnp.setArquivo(arquivoCnp);
-				remessaCnp.setCabecalho(save(remessaCnp.getCabecalho()));
-				remessaCnp.setRodape(save(remessaCnp.getRodape()));
-				remessaCnp = save(remessaCnp);
-
-				for (TituloCnp tituloCnp : remessaCnp.getTitulos()) {
-					tituloCnp.setRemessa(remessaCnp);
-					save(tituloCnp);
-				}
-			}
-			transaction.commit();
-			logger.info("O arquivo CNP do cartório " + user.getInstituicao().getNomeFantasia() + " foi salvo na base de dados. ");
-		} catch (Exception ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível inserir esses dados na base.");
-		}
-		return arquivoCnp;
-	}
-
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public ArquivoCnp getArquivoCnpHojeInstituicao(Instituicao instituicao) {
-		Criteria criteria = getCriteria(ArquivoCnp.class);
-		criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));
-		criteria.add(Restrictions.eq("dataEnvio", new LocalDate()));
-		return ArquivoCnp.class.cast(criteria.uniqueResult());
-	}
-
-	@SuppressWarnings("unchecked")
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public List<RemessaCnp> buscarRemessasCnpPendentes() {
-		List<RemessaCnp> remessaGeradas = new ArrayList<RemessaCnp>();
-		Criteria criteria = getCriteria(RemessaCnp.class);
-		criteria.add(Restrictions.eq("arquivoLiberadoConsulta", false));
-
-		List<RemessaCnp> remessas = criteria.list();
-		for (RemessaCnp remessa : remessas) {
-			Criteria criteriaTituloCNP = getCriteria(TituloCnp.class);
-			criteriaTituloCNP.add(Restrictions.eq("remessa", remessa));
-
-			remessa.setTitulos(criteriaTituloCNP.list());
-			remessaGeradas.add(remessa);
-		}
-		return remessaGeradas;
-	}
-
-	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = false)
-	public void salvarArquivoCnpNacional(ArquivoCnp arquivoCnp) {
+	public void salvarLiberacaoLotesCnp(List<LoteCnp> lotes) {
 		Transaction transaction = getBeginTransation();
 
 		try {
-			for (RemessaCnp remessaCnp : arquivoCnp.getRemessasCnp()) {
-				remessaCnp.setDataLiberacaoConsulta(new LocalDate());
-				remessaCnp.setArquivoLiberadoConsulta(true);
-				update(remessaCnp);
+			for (LoteCnp lote : lotes) {
+				lote.setDataLiberacao(new LocalDate().toDate());
+				lote.setStatus(true);
+				update(lote);
 			}
 			transaction.commit();
-			logger.info("O arquivo CNP do nacional foi disponibilizado com sucesso. ");
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível inserir esses dados na base.");
+			throw new InfraException("Não foi possível marcar os lotes de registros da cnp como liberados na dados na base.");
 		}
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public RemessaCnp isArquivoJaDisponibilizadoConsultaPorData(LocalDate dataLiberacao) {
-		Criteria criteria = getCriteria(RemessaCnp.class);
-		criteria.add(Restrictions.eq("dataLiberacaoConsulta", dataLiberacao));
+	public LoteCnp salvarLote(LoteCnp loteCnp) {
+		Transaction transaction = getBeginTransation();
+
+		try {
+			loteCnp = save(loteCnp);
+
+			for (RegistroCnp registroCnp : loteCnp.getRegistrosCnp()) {
+				registroCnp.setLoteCnp(loteCnp);
+				save(registroCnp);
+			}
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível salvar o lote de registros cnp na dados na base.");
+		}
+		return loteCnp;
+	}
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public LoteCnp isCartorioEnviouLoteCnpHoje(Instituicao instituicao) {
+		Criteria criteria = getCriteria(LoteCnp.class);
+		criteria.add(Restrictions.eq("instituicaoOrigem", instituicao));
+		criteria.add(Restrictions.eq("dataRecebimento", new Date(new LocalDate().toDate().getTime())));
 		criteria.setMaxResults(1);
-		return RemessaCnp.class.cast(criteria.uniqueResult());
+		return LoteCnp.class.cast(criteria.uniqueResult());
+	}
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public LoteCnp isLoteLiberadoConsultaPorData(LocalDate dataLiberaca) {
+		Criteria criteria = getCriteria(LoteCnp.class);
+		criteria.setMaxResults(1);
+		criteria.add(Restrictions.eq("dataLiberacao", new Date(dataLiberaca.toDate().getTime())));
+		criteria.add(Restrictions.eq("status", true));
+		return LoteCnp.class.cast(criteria.uniqueResult());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public List<RemessaCnp> buscarRemessasCnpPorData(LocalDate dataLiberacao) {
-		List<RemessaCnp> remessaGeradas = new ArrayList<RemessaCnp>();
-		Criteria criteria = getCriteria(RemessaCnp.class);
-		criteria.add(Restrictions.eq("dataLiberacaoConsulta", dataLiberacao));
-		criteria.add(Restrictions.eq("arquivoLiberadoConsulta", true));
-
-		List<RemessaCnp> remessas = criteria.list();
-		for (RemessaCnp remessa : remessas) {
-			Criteria criteriaTituloCNP = getCriteria(TituloCnp.class);
-			criteriaTituloCNP.add(Restrictions.eq("remessa", remessa));
-
-			remessa.setTitulos(criteriaTituloCNP.list());
-			remessaGeradas.add(remessa);
-		}
-		return remessaGeradas;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public List<TituloCnp> consultarProtestos(String documentoDevedor) {
-		Criteria criteria = getCriteria(TituloCnp.class);
-		criteria.add(Restrictions.ilike("numeroDocumentoDevedor", documentoDevedor, MatchMode.EXACT));
-		criteria.add(Restrictions.eq("tipoInformacao", "P"));
-		criteria.addOrder(org.hibernate.criterion.Order.asc("cidadeDevedor"));
+	public List<RegistroCnp> consultarProtestos(String documentoDevedor) {
+		Criteria criteria = getCriteria(RegistroCnp.class);
+		criteria.add(Restrictions.eq("numeroDocumentoDevedor", CpfCnpjUtil.buscarNumeroDocumento(documentoDevedor)));
+		criteria.add(Restrictions.eq("complementoDocumentoDevedor", CpfCnpjUtil.buscarComplementoDocumento(documentoDevedor)));
+		criteria.add(Restrictions.eq("digitoControleDocumentoDevedor", CpfCnpjUtil.calcularDigitoControle(documentoDevedor)));
+		criteria.add(Restrictions.eq("tipoRegistroCnp", TipoRegistroCnp.PROTESTO.toString()));
 		return criteria.list();
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public TituloCnp consultarCancelamento(String documentoDevedor, String numeroProtocoloCartorio) {
-		Criteria criteria = getCriteria(TituloCnp.class);
-		criteria.add(Restrictions.ilike("numeroDocumentoDevedor", documentoDevedor, MatchMode.EXACT));
-		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numeroProtocoloCartorio, MatchMode.EXACT));
-		criteria.add(Restrictions.eq("tipoInformacao", "C"));
-		return TituloCnp.class.cast(criteria.uniqueResult());
+	public RegistroCnp consultarCancelamento(String documentoDevedor, String numeroProtocoloCartorio) {
+		Criteria criteria = getCriteria(RegistroCnp.class);
+		criteria.add(Restrictions.eq("numeroDocumentoDevedor", CpfCnpjUtil.buscarNumeroDocumento(documentoDevedor)));
+		criteria.add(Restrictions.eq("complementoDocumentoDevedor", CpfCnpjUtil.buscarComplementoDocumento(documentoDevedor)));
+		criteria.add(Restrictions.eq("digitoControleDocumentoDevedor", CpfCnpjUtil.calcularDigitoControle(documentoDevedor)));
+		criteria.add(Restrictions.eq("tipoRegistroCnp", TipoRegistroCnp.CANCELAMENTO.toString()));
+		criteria.add(Restrictions.eq("numeroProtocoloCartorio", numeroProtocoloCartorio));
+		return RegistroCnp.class.cast(criteria.uniqueResult());
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Municipio carregarMunicipioCartorio(Municipio municipio) {
-		return buscarPorPK(municipio, Municipio.class);
+	public RegistroCnp buscarProtestoCancelamento(Municipio municipio, RegistroCnp registro) {
+		Criteria criteria = getCriteria(RegistroCnp.class);
+		criteria.createAlias("loteCnp", "loteCnp");
+		criteria.createAlias("loteCnp.instituicaoOrigem", "instituicaoOrigem");
+		criteria.add(Restrictions.eq("instituicaoOrigem.municipio", municipio));
+		criteria.add(Restrictions.eq("tipoInformacao", "P"));
+		criteria.add(Restrictions.eq("dataProtesto", registro.getDataProtesto()));
+		criteria.add(Restrictions.eq("numeroProtocoloCartorio", registro.getNumeroProtocoloCartorio()));
+		criteria.setMaxResults(1);
+		return RegistroCnp.class.cast(criteria.uniqueResult());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
+	public List<LoteCnp> buscarLotesPendentesEnvio() {
+		Criteria criteria = getCriteria(LoteCnp.class);
+		criteria.add(Restrictions.eq("status", false));
+		criteria.addOrder(Order.asc("instituicaoOrigem"));
+
+		List<LoteCnp> lotes = criteria.list();
+		for (LoteCnp loteCnp : lotes) {
+			Criteria criteriaRegistros = getCriteria(RegistroCnp.class);
+			criteriaRegistros.add(Restrictions.eq("loteCnp", loteCnp));
+			criteriaRegistros.addOrder(Order.desc("tipoRegistroCnp")).addOrder(Order.asc("numeroProtocoloCartorio"));
+			loteCnp.setRegistrosCnp(new ArrayList<RegistroCnp>());
+			loteCnp.getRegistrosCnp().addAll(criteriaRegistros.list());
+		}
+		return lotes;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
+	public List<LoteCnp> buscarLotesParaEnvioPorDate(LocalDate data) {
+		Criteria criteria = getCriteria(LoteCnp.class);
+		criteria.add(Restrictions.eq("dataLiberacao", new Date(data.toDate().getTime())));
+		criteria.add(Restrictions.eq("status", true));
+		criteria.addOrder(Order.asc("instituicaoOrigem"));
+
+		List<LoteCnp> lotes = criteria.list();
+		for (LoteCnp loteCnp : lotes) {
+			Criteria criteriaRegistros = getCriteria(RegistroCnp.class);
+			criteriaRegistros.add(Restrictions.eq("loteCnp", loteCnp));
+			criteriaRegistros.addOrder(Order.desc("tipoRegistroCnp")).addOrder(Order.asc("numeroProtocoloCartorio"));
+			loteCnp.setRegistrosCnp(new ArrayList<RegistroCnp>());
+			loteCnp.getRegistrosCnp().addAll(criteriaRegistros.list());
+		}
+		return lotes;
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public int buscarSequencialCabecalhoCnp(String codigoMunicipio) {
-		Criteria criteria = getCriteria(CabecalhoCnp.class);
-		criteria.add(Restrictions.ilike("emBranco53", codigoMunicipio, MatchMode.EXACT));
-		criteria.setProjection(Projections.max("numeroRemessaArquivo"));
+	public String gerarSequencialCnp(Instituicao instituicao) {
+		Criteria criteria = getCriteria(LoteCnp.class);
+		criteria.add(Restrictions.eq("instituicaoOrigem", instituicao));
+		criteria.setProjection(Projections.max("sequencialLiberacao"));
 		String resultado = criteria.uniqueResult().toString();
 
-		Integer numeroSequencial = 1;
-		if (resultado != null) {
-			if (StringUtils.isNotEmpty(resultado.trim()) && StringUtils.isNotBlank(resultado.trim())) {
-				numeroSequencial = Integer.valueOf(resultado);
-			}
+		if (!resultado.trim().isEmpty()) {
+			return Integer.toString(Integer.valueOf(resultado) + 1);
 		}
-		return numeroSequencial;
+		return Integer.toString(1);
+	}
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public String gerarSequencialCnp(Instituicao instituicao, LocalDate data) {
+		Criteria criteria = getCriteria(LoteCnp.class);
+		criteria.add(Restrictions.eq("instituicaoOrigem", instituicao));
+		criteria.add(Restrictions.eq("dataLiberacao", new Date(data.toDate().getTime())));
+		criteria.setProjection(Projections.max("sequencialLiberacao"));
+		String resultado = criteria.uniqueResult().toString();
+
+		if (!resultado.trim().isEmpty()) {
+			return resultado;
+		}
+		return Integer.toString(1);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<Instituicao> consultarCartoriosCentralNacionalProtesto() {
-		Criteria criteria = getCriteria(ArquivoCnp.class);
-		criteria.setProjection(Projections.groupProperty("instituicaoEnvio"));
+		Criteria criteria = getCriteria(LoteCnp.class);
+		criteria.setProjection(Projections.groupProperty("instituicaoOrigem"));
 		return criteria.list();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
-	public List<TituloCnp> buscarTitulosPorMunicipio(Municipio municipio) {
-		Criteria criteria = getCriteria(TituloCnp.class);
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.emBranco53", municipio.getCodigoIBGE()));
-		return criteria.list();
-	}
-
-	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
-	public CabecalhoCnp ultimoCabecalhoCnpCartorio(Municipio municipio) {
-		Criteria criteria = getCriteria(CabecalhoCnp.class);
-		criteria.add(Restrictions.eq("emBranco53", municipio.getCodigoIBGE()));
-		criteria.addOrder(Order.desc("id"));
-		criteria.setMaxResults(1);
-		return CabecalhoCnp.class.cast(criteria.uniqueResult());
 	}
 }
