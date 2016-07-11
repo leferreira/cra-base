@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
@@ -28,6 +30,7 @@ import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.CraAcao;
+import br.com.ieptbto.cra.enumeration.LayoutArquivo;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -108,15 +111,34 @@ public class ArquivoMediator extends BaseMediator {
 		String codigoMunicipio = StringUtils.EMPTY;
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(uploadedFile.getInputStream()));
-			codigoMunicipio = reader.readLine().substring(92, 99);
+			String linha = reader.readLine();
+			if (LayoutArquivo.TXT.equals(LayoutArquivo.get(linha))) {
+				codigoMunicipio = linha.substring(92, 99);
+			} else if (LayoutArquivo.XML.equals(LayoutArquivo.get(linha))) {
+				while (!linha.contains("h15") && (linha = reader.readLine()) != null) {
+					Pattern pattern = null;
+					if (linha.contains("'")) {
+						pattern = Pattern.compile("'[0-9][0-9][0-9][0-9][0-9][0-9][0-9]'");
+					} else {
+						pattern = Pattern.compile("\"[0-9][0-9][0-9][0-9][0-9][0-9][0-9]\"");
+					}
+					Matcher m = pattern.matcher(linha);
+					if (m.find()) {
+						codigoMunicipio = m.group().replace("\"", "").replace("'", "");
+					}
+				}
+			} else {
+				throw new InfraException(
+						"Não foi possível identificar o layout do arquivo. Os dados internos podem estar ilegíveis ou não segue o manual FEBRABAN.");
+			}
 			reader.close();
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			throw new InfraException("Não foi possível ler o cabeçalho do arquivo!");
+			throw new InfraException("Não foi possível ler o cabeçalho do arquivo enviado! Por favor entre em contato com o IEPTB!");
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new InfraException("Não foi possível ler o cabeçalho do arquivo!");
+			throw new InfraException("Não foi possível ler o cabeçalho do arquivo enviado! Por favor entre em contato com o IEPTB!");
 		}
 
 		if (StringUtils.isEmpty(codigoMunicipio) || StringUtils.isBlank(codigoMunicipio) || codigoMunicipio.trim().length() != 7) {

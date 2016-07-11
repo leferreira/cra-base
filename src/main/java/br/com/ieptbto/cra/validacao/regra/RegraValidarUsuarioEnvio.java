@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.validacao.regra;
 
-import java.io.File;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +24,11 @@ public class RegraValidarUsuarioEnvio extends RegrasDeEntrada {
 	UsuarioMediator usuarioMediator;
 	@Autowired
 	InstituicaoMediator instituicaoMediator;
-	private File arquivo;
+
+	private Arquivo arquivo;
 	private Usuario usuario;
 
-	protected void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
+	protected void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		setArquivo(arquivo);
 		setUsuario(usuario);
 		setErros(erros);
@@ -49,7 +49,7 @@ public class RegraValidarUsuarioEnvio extends RegrasDeEntrada {
 	 * Verifica se a instituição do usuário de envio tem permissão para envio do
 	 * arquivo.
 	 */
-	private void verificaInstituicaoDoUsuario() { 
+	private void verificaInstituicaoDoUsuario() {
 		if (instituicaoMediator.isInstituicaoNaoExiste(getUsuario().getInstituicao())) {
 			throw new InfraException(Erro.INSTITUICAO_NAO_CADASTRADA.getMensagemErro());
 		}
@@ -60,7 +60,6 @@ public class RegraValidarUsuarioEnvio extends RegrasDeEntrada {
 	}
 
 	private void verificarHorarioDeEnvio() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -71,7 +70,7 @@ public class RegraValidarUsuarioEnvio extends RegrasDeEntrada {
 		verificarHorarioDeEnvio();
 	}
 
-	public File getArquivo() {
+	public Arquivo getArquivo() {
 		return arquivo;
 	}
 
@@ -79,7 +78,7 @@ public class RegraValidarUsuarioEnvio extends RegrasDeEntrada {
 		return usuario;
 	}
 
-	public void setArquivo(File arquivo) {
+	public void setArquivo(Arquivo arquivo) {
 		this.arquivo = arquivo;
 	}
 

@@ -26,7 +26,7 @@ public class UsuarioMediator {
 	private InstituicaoDAO instituicaoDao;
 	@Autowired
 	private UsuarioFiliadoDAO usuarioFiliadoDAO;
-	
+
 	public Usuario buscarUsuarioPorPK(Usuario usuario) {
 		return usuarioDao.buscarPorPK(usuario);
 	}
@@ -56,6 +56,9 @@ public class UsuarioMediator {
 		if (usuario != null && usuario.isSenha(senha)) {
 			if (instituicaoDao.isInstituicaoAtiva(usuario.getInstituicao())) {
 				if (usuario.isStatus() == true) {
+					if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
+						new InfraException(Erro.USUARIO_CONVENIO.getMensagemErro());
+					}
 					logger.info("O usuário <<" + usuario.getLogin() + ">> entrou na CRA.");
 					return usuario;
 				} else {
@@ -74,7 +77,7 @@ public class UsuarioMediator {
 		Usuario usuario = usuarioDao.buscarUsuarioPorLogin(login);
 		if (usuario != null && usuario.isSenha(senha)) {
 			if (!TipoInstituicaoCRA.CONVENIO.equals(usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao())) {
-				throw new InfraException("Esse usuário não é de uma conveniada");
+				throw new InfraException("Este usuário não é de uma conveniada!");
 			}
 			if (instituicaoDao.isInstituicaoAtiva(usuario.getInstituicao())) {
 				if (usuario.isStatus() == true) {

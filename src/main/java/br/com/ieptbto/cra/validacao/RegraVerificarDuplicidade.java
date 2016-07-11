@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.validacao;
 
-import java.io.File;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,17 +26,15 @@ public class RegraVerificarDuplicidade extends RegrasDeEntrada {
 	@Autowired
 	private ArquivoDAO arquivoDAO;
 	private Usuario usuario;
-	private File arquivo;
-	private Arquivo arquivoProcessado;
+	private Arquivo arquivo;
 	private Instituicao instituicaoEnvio;
-	
+
 	@Override
-	public void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
-		setArquivo(arquivo);
+	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		setUsuario(usuario);
 		setErros(erros);
-		setArquivoProcessado(arquivoProcessado);
-		
+		setArquivo(arquivo);
+
 		executar();
 	}
 
@@ -45,18 +42,18 @@ public class RegraVerificarDuplicidade extends RegrasDeEntrada {
 	protected void executar() {
 		verificarDuplicidade();
 	}
-	
+
 	private void verificarDuplicidade() {
 		TipoArquivoEnum tipoArquivo = null;
-		
-		if (getArquivo().getName().length() == 12) {
-			tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getName().substring(0, 1));
-		} else if (getArquivo().getName().length() == 13) { 
-			tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getName().substring(0, 2));
+
+		if (getArquivo().getNomeArquivo().length() == 12) {
+			tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo().substring(0, 1));
+		} else if (getArquivo().getNomeArquivo().length() == 13) {
+			tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo().substring(0, 2));
 		} else {
 			throw new InfraException("Não foi possível identificar o tipo do arquivo ! Verifique o nome do arquivo !");
 		}
-		
+
 		setInstituicaoEnvio(buscarInstituicaoEnvioArquivo(tipoArquivo));
 		verificarExistencia();
 	}
@@ -64,40 +61,30 @@ public class RegraVerificarDuplicidade extends RegrasDeEntrada {
 	private Instituicao buscarInstituicaoEnvioArquivo(TipoArquivoEnum tipoArquivo) {
 
 		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA)) {
-			return instituicaoMediator.getInstituicaoPorCodigoPortador(getArquivo().getName().substring(1, 4));			
-		} else if (tipoArquivo.equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)
-				|| tipoArquivo.equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
-			return instituicaoMediator.getInstituicaoPorCodigoPortador(getArquivo().getName().substring(2, 5));
-		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO) 
-				|| tipoArquivo.equals(TipoArquivoEnum.RETORNO)
+			return instituicaoMediator.getInstituicaoPorCodigoPortador(getArquivo().getNomeArquivo().substring(1, 4));
+		} else if (tipoArquivo.equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO) || tipoArquivo.equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
+			return instituicaoMediator.getInstituicaoPorCodigoPortador(getArquivo().getNomeArquivo().substring(2, 5));
+		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO) || tipoArquivo.equals(TipoArquivoEnum.RETORNO)
 				|| tipoArquivo.equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
-			return instituicaoMediator.getCartorioPorCodigoIBGE(getArquivoProcessado().getRemessas().get(0).getCabecalho().getCodigoMunicipio());
+			return instituicaoMediator.getCartorioPorCodigoIBGE(getArquivo().getRemessas().get(0).getCabecalho().getCodigoMunicipio());
 		} else {
 			throw new InfraException("Não foi possível validar a duplicidade do arquivo !");
 		}
 	}
-	
+
 	private void verificarExistencia() {
-		if (arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(getInstituicaoEnvio(), getArquivo().getName()) != null) {
-			throw new InfraException("Não foi possível importar, pois, o arquivo [ "+ getArquivo().getName()
-					+" ] já foi enviado para a CRA !");
+		if (arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(getInstituicaoEnvio(), getArquivo().getNomeArquivo()) != null) {
+			throw new InfraException(
+					"Não foi possível importar, pois, o arquivo [ " + getArquivo().getNomeArquivo() + " ] já foi enviado para a CRA !");
 		}
 	}
-	
+
 	public Usuario getUsuario() {
 		return usuario;
 	}
 
-	public File getArquivo() {
-		return arquivo;
-	}
-
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
-	}
-
-	public void setArquivo(File arquivo) {
-		this.arquivo = arquivo;
 	}
 
 	public Instituicao getInstituicaoEnvio() {
@@ -108,11 +95,11 @@ public class RegraVerificarDuplicidade extends RegrasDeEntrada {
 		this.instituicaoEnvio = instituicaoEnvio;
 	}
 
-	public Arquivo getArquivoProcessado() {
-		return arquivoProcessado;
+	public Arquivo getArquivo() {
+		return arquivo;
 	}
 
-	public void setArquivoProcessado(Arquivo arquivoProcessado) {
-		this.arquivoProcessado = arquivoProcessado;
+	public void setArquivo(Arquivo arquivo) {
+		this.arquivo = arquivo;
 	}
 }

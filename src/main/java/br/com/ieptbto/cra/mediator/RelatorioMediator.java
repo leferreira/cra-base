@@ -2,7 +2,6 @@ package br.com.ieptbto.cra.mediator;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,15 +84,11 @@ public class RelatorioMediator extends BaseMediator {
 		}
 
 		try {
-			setArquivoFisico(new File(ConfiguracaoBase.DIRETORIO_TEMP_BASE + ConfiguracaoBase.BARRA + fileUpload.getClientFileName()));
+			setArquivoFisico(new File(ConfiguracaoBase.DIRETORIO_TEMP_BASE + fileUpload.getClientFileName()));
 			getFile().writeTo(getArquivoFisico());
 
-			File file = new File(ConfiguracaoBase.DIRETORIO_TEMP_BASE + ConfiguracaoBase.BARRA + fileUpload.getClientFileName());
+			File file = new File(ConfiguracaoBase.DIRETORIO_TEMP_BASE + fileUpload.getClientFileName());
 			Workbook planilha = null;
-			file.createNewFile();
-			FileOutputStream fileOut = new FileOutputStream(file);
-			fileOut.write(fileUpload.getBytes());
-			fileOut.close();
 			FileInputStream fileIn = new FileInputStream(file);
 
 			if (fileUpload.getClientFileName().contains("xlsx")) {

@@ -5,13 +5,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.LayoutArquivo;
 import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.exception.ValidacaoErroException;
@@ -23,35 +24,37 @@ import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
  *
  */
 @Service
-public class RegraValidaTipoArquivoTXT extends RegrasDeEntrada {
+public class RegraValidaTipoArquivoTXT {
 
 	private static final int POSICAO_FINAL_NUMERO_LINHA = 600;
 	private static final int POSICAO_INICIAL_NUMERO_LINHA = 596;
 	private static final Logger logger = Logger.getLogger(RegraValidaTipoArquivoTXT.class);
 	private File arquivo;
+	private List<Exception> erros;
 	private String linha;
 
-	public void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
+	public void validar(File arquivo, Usuario usuario, List<Exception> erros) {
 		this.arquivo = arquivo;
-		setErros(erros);
+		this.erros = erros;
 		executar();
 	}
 
-	@Override
 	protected void executar() {
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(arquivo)));
 			linha = reader.readLine();
 			reader.close();
-			validaInicioLinha(linha);
-			validaTamanhoLinha(linha, arquivo);
+
+			if (LayoutArquivo.TXT.equals(LayoutArquivo.get(linha))) {
+				validaInicioLinha(linha);
+				validaTamanhoLinha(linha, arquivo);
+			}
 
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 			getErros().add(new ValidacaoErroException(arquivo.getName(), e.getMessage(), e.getCause()));
 			throw new InfraException(Erro.NAO_FOI_POSSIVEL_VERIFICAR_A_PRIMEIRA_LINHA_DO_ARQUIVO.getMensagemErro());
 		}
-
 	}
 
 	/**
@@ -87,6 +90,12 @@ public class RegraValidaTipoArquivoTXT extends RegrasDeEntrada {
 
 	private int getNumeroLinha() {
 		return Integer.parseInt(linha.substring(POSICAO_INICIAL_NUMERO_LINHA, POSICAO_FINAL_NUMERO_LINHA));
+	}
 
+	public List<Exception> getErros() {
+		if (erros == null) {
+			erros = new ArrayList<Exception>();
+		}
+		return erros;
 	}
 }

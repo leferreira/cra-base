@@ -29,7 +29,8 @@ public enum Erro {
 					CODIGO_PORTADOR_CABECALHO_INVALIDO("", "Número do código do portador no cabeçalho inválido."),
 					NOME_APRESENTANTE_CABECALHO_INVALIDO("", "Nome do apresentante no cabeçalho inválido."),
 					CODIGO_PORTADOR_RODAPE_INVALIDO("", "Número do código do portador no rodapé inválido."),
-					NOME_APRESENTANTE_RODAPE_INVALIDO("", "Nome do apresentante no rodapé inválido.");//
+					NOME_APRESENTANTE_RODAPE_INVALIDO("", "Nome do apresentante no rodapé inválido."),
+					USUARIO_CONVENIO("", "Este usuário deve acessar via IEPTB Convênios!");//
 
 	private String codigoErro;
 	private String mensagem;

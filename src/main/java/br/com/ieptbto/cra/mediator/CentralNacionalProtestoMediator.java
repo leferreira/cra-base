@@ -69,6 +69,9 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 				}
 			}
 		}
+		if (loteCnp.getRegistrosCnp().isEmpty()) {
+			return null;
+		}
 		return centralNancionalProtestoDAO.salvarLote(loteCnp);
 	}
 

@@ -33,6 +33,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.exception.ValidacaoErroException;
 import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 import br.com.ieptbto.cra.validacao.FabricaValidacaoArquivo;
+import br.com.ieptbto.cra.validacao.regra.RegraValidaTipoArquivoTXT;
 
 /**
  * @author Thasso Araújo
@@ -47,6 +48,8 @@ public class ProcessadorArquivo extends Processador {
 	private FabricaDeArquivo fabricaDeArquivo;
 	@Autowired
 	private FabricaValidacaoArquivo fabricaValidacaoArquivo;
+	@Autowired
+	private RegraValidaTipoArquivoTXT validarTipoArquivoTXT;
 
 	private FileUpload file;
 	private Usuario usuario;
@@ -230,7 +233,8 @@ public class ProcessadorArquivo extends Processador {
 	private void validarArquivo() {
 		logger.info("Iniciar validação do arquivoFisico " + getFile().getClientFileName() + " enviado pelo usuário " + getUsuario().getLogin());
 
-		fabricaValidacaoArquivo.validar(getArquivoFisico(), getArquivo(), getUsuario(), getErros());
+		fabricaValidacaoArquivo.validar(getArquivo(), getUsuario(), getErros());
+		validarTipoArquivoTXT.validar(getArquivoFisico(), getUsuario(), getErros());
 
 		logger.info("Fim validação do arquivoFisico " + getFile().getClientFileName() + " enviado pelo usuário " + getUsuario().getLogin());
 	}

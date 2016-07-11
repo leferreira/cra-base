@@ -30,6 +30,8 @@ import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.XmlCraException;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.validacao.ValidarCabecalhoRemessa;
+import br.com.ieptbto.cra.validacao.ValidarRodape;
 
 /**
  * 
@@ -39,186 +41,200 @@ import br.com.ieptbto.cra.util.DataUtil;
 @Service
 public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 
-    private List<RemessaVO> arquivoVO;
-    @Autowired
-    private InstituicaoMediator instituicaoMediator;
+	@Autowired
+	private ValidarCabecalhoRemessa validarCabecalhoRemessa;
+	@Autowired
+	private ValidarRodape validarRodape;
+	@Autowired
+	private InstituicaoMediator instituicaoMediator;
+	private List<RemessaVO> arquivoVO;
 
-    public void fabrica(List<RemessaVO> arquivoFisico, Arquivo arquivo, List<Exception> erros) {
-	this.arquivoVO = arquivoFisico;
-	this.arquivo = arquivo;
-	this.erros = erros;
-	converter();
-    }
+	public void fabrica(List<RemessaVO> arquivoFisico, Arquivo arquivo, List<Exception> erros) {
+		this.arquivoVO = arquivoFisico;
+		this.arquivo = arquivo;
+		this.erros = erros;
+		converter();
+	}
 
-    public Arquivo processarConfirmacaoXML(Arquivo arquivo, ConfirmacaoVO confirmacaoVO, List<Exception> erros) {
-	this.arquivo = arquivo;
-	this.erros = erros;
+	public Arquivo processarConfirmacaoXML(Arquivo arquivo, ConfirmacaoVO confirmacaoVO, List<Exception> erros) {
+		this.arquivo = arquivo;
+		this.erros = erros;
 
-	RemessaVO remessaVO = new RemessaVO();
-	remessaVO.setCabecalho(confirmacaoVO.getCabecalho());
-	remessaVO.setRodapes(confirmacaoVO.getRodape());
-	remessaVO.setTitulos(new ArrayList<TituloVO>());
-	remessaVO.getTitulos().addAll(confirmacaoVO.getTitulos());
+		RemessaVO remessaVO = new RemessaVO();
+		remessaVO.setCabecalho(confirmacaoVO.getCabecalho());
+		remessaVO.setRodapes(confirmacaoVO.getRodape());
+		remessaVO.setTitulos(new ArrayList<TituloVO>());
+		remessaVO.getTitulos().addAll(confirmacaoVO.getTitulos());
 
-	Remessa remessa = new Remessa();
-	remessa.setArquivo(arquivo);
-	remessa.setCabecalho(getCabecalho(remessaVO.getCabecalho()));
-	remessa.getCabecalho().setRemessa(remessa);
-	remessa.setRodape(getRodape(remessaVO.getRodape()));
-	remessa.getRodape().setRemessa(remessa);
-	remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho()));
-	remessa.setInstituicaoOrigem(getArquivo().getInstituicaoEnvio());
-	remessa.setDataRecebimento(getDataRecebimento(remessaVO.getCabecalho().getDataMovimento()));
-	remessa.setTitulos(getTitulos(remessaVO.getTitulos(), remessa));
-	arquivo.getRemessas().add(remessa);
-
-	return arquivo;
-
-    }
-
-    public Arquivo processarRetornoXML(Arquivo arquivo, RetornoVO retornoVO, List<Exception> erros) {
-	this.arquivo = arquivo;
-	this.erros = erros;
-
-	RemessaVO remessaVO = new RemessaVO();
-	remessaVO.setCabecalho(retornoVO.getCabecalho());
-	remessaVO.setRodapes(retornoVO.getRodape());
-	remessaVO.setTitulos(new ArrayList<TituloVO>());
-	remessaVO.getTitulos().addAll(retornoVO.getTitulos());
-
-	Remessa remessa = new Remessa();
-	remessa.setArquivo(arquivo);
-	remessa.setCabecalho(getCabecalho(remessaVO.getCabecalho()));
-	remessa.getCabecalho().setRemessa(remessa);
-	remessa.setRodape(getRodape(remessaVO.getRodape()));
-	remessa.getRodape().setRemessa(remessa);
-	remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho()));
-	remessa.setInstituicaoOrigem(getArquivo().getInstituicaoEnvio());
-	remessa.setDataRecebimento(getDataRecebimento(remessaVO.getCabecalho().getDataMovimento()));
-	remessa.setTitulos(getTitulos(remessaVO.getTitulos(), remessa));
-	arquivo.getRemessas().add(remessa);
-
-	return arquivo;
-    }
-
-    public Arquivo converter() {
-	for (RemessaVO remessaVO : getArquivoVO()) {
-	    if (validar(remessaVO)) {
 		Remessa remessa = new Remessa();
-		remessa.setArquivo(getArquivo());
+		remessa.setArquivo(arquivo);
 		remessa.setCabecalho(getCabecalho(remessaVO.getCabecalho()));
 		remessa.getCabecalho().setRemessa(remessa);
 		remessa.setRodape(getRodape(remessaVO.getRodape()));
 		remessa.getRodape().setRemessa(remessa);
-		remessa.setArquivo(getArquivo());
 		remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho()));
 		remessa.setInstituicaoOrigem(getArquivo().getInstituicaoEnvio());
 		remessa.setDataRecebimento(getDataRecebimento(remessaVO.getCabecalho().getDataMovimento()));
 		remessa.setTitulos(getTitulos(remessaVO.getTitulos(), remessa));
-		getArquivo().getRemessas().add(remessa);
-	    }
+		arquivo.getRemessas().add(remessa);
+
+		verificarCabecalhoRodape(remessa);
+		return arquivo;
+
 	}
-	return getArquivo();
-    }
 
-    private boolean validar(RemessaVO remessaVO) {
-	validarCodigoMunicipio(remessaVO);
-	validarMunicipioAtivo(remessaVO);
+	public Arquivo processarRetornoXML(Arquivo arquivo, RetornoVO retornoVO, List<Exception> erros) {
+		this.arquivo = arquivo;
+		this.erros = erros;
 
-	if (getErros().isEmpty()) {
-	    return true;
+		RemessaVO remessaVO = new RemessaVO();
+		remessaVO.setCabecalho(retornoVO.getCabecalho());
+		remessaVO.setRodapes(retornoVO.getRodape());
+		remessaVO.setTitulos(new ArrayList<TituloVO>());
+		remessaVO.getTitulos().addAll(retornoVO.getTitulos());
+
+		Remessa remessa = new Remessa();
+		remessa.setArquivo(arquivo);
+		remessa.setCabecalho(getCabecalho(remessaVO.getCabecalho()));
+		remessa.getCabecalho().setRemessa(remessa);
+		remessa.setRodape(getRodape(remessaVO.getRodape()));
+		remessa.getRodape().setRemessa(remessa);
+		remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho()));
+		remessa.setInstituicaoOrigem(getArquivo().getInstituicaoEnvio());
+		remessa.setDataRecebimento(getDataRecebimento(remessaVO.getCabecalho().getDataMovimento()));
+		remessa.setTitulos(getTitulos(remessaVO.getTitulos(), remessa));
+		arquivo.getRemessas().add(remessa);
+
+		verificarCabecalhoRodape(remessa);
+		return arquivo;
 	}
-	return false;
-    }
 
-    private void validarMunicipioAtivo(RemessaVO remessaVO) {
-	try {
-	    getInstituicaoDestino(remessaVO.getCabecalho());
-
-	} catch (Exception ex) {
-	    logger.error(ex.getMessage(), ex.getCause());
-	    getErros().add(new XmlCraException(ex.getMessage(), remessaVO.getCabecalho().getCodigoMunicipio(), remessaVO.getCabecalho().getCodigoMunicipio(), CodigoErro.CRA_MUNICIPIO_NAO_CADASTRADO_NA_CRA));
+	private void verificarCabecalhoRodape(Remessa remessa) {
+		validarCabecalhoRemessa.validar(remessa.getCabecalho(), erros);
+		validarRodape.validar(remessa.getRodape(), erros);
 	}
-    }
 
-    private void validarCodigoMunicipio(RemessaVO remessaVO) {
-	if (StringUtils.isEmpty(remessaVO.getCabecalho().getCodigoMunicipio())) {
-	    logger.error(CodigoErro.CRA_CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao());
-	    getErros().add(new XmlCraException(CodigoErro.CRA_CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao(), remessaVO.getCabecalho().getCodigoMunicipio(), remessaVO.getCabecalho().getCodigoMunicipio(), CodigoErro.CRA_CODIGO_DO_MUNICIPIO_NAO_INFORMADO));
-	}
-    }
-
-    private LocalDate getDataRecebimento(String dataMovimento) {
-	if (dataMovimento.equals("00000000") || dataMovimento == null) {
-	    return new LocalDate();
-	}
-	return DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, dataMovimento);
-    }
-
-    @SuppressWarnings("rawtypes")
-    private List<Titulo> getTitulos(List<TituloVO> titulosVO, Remessa remessa) {
-	List<Titulo> titulos = new ArrayList<Titulo>();
-	Titulo titulo = null;
-	for (TituloVO tituloVO : titulosVO) {
-	    if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-		titulo = TituloRemessa.parseTituloVO(tituloVO);
-		verificarAnexoComplementoRegistro(remessa.getInstituicaoOrigem(), TituloRemessa.class.cast(titulo), tituloVO);
-	    } else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-		titulo = Confirmacao.parseTituloVO(tituloVO);
-	    } else if (TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-		titulo = Retorno.parseTituloVO(tituloVO);
-	    }
-
-	    titulo.setRemessa(remessa);
-	    titulos.add(titulo);
-	}
-	return titulos;
-    }
-
-    private void verificarAnexoComplementoRegistro(Instituicao instituicaoEnvio, TituloRemessa titulo, TituloVO tituloVO) {
-	if (instituicaoEnvio.getTipoCampo51().equals(TipoCampo51.DOCUMENTOS_COMPACTADOS)) {
-	    if (tituloVO.getComplementoRegistro() != null) {
-		if (!tituloVO.getComplementoRegistro().trim().equals(StringUtils.EMPTY)) {
-		    titulo.setComplementoRegistro(tituloVO.getComplementoRegistro());
-
-		    Anexo anexoArquivo = new Anexo();
-		    anexoArquivo.setTitulo(titulo);
-		    anexoArquivo.setDocumentoAnexo(tituloVO.getComplementoRegistro());
-
-		    titulo.setAnexo(anexoArquivo);
-		    titulo.setComplementoRegistro(StringUtils.EMPTY);
+	public Arquivo converter() {
+		for (RemessaVO remessaVO : getArquivoVO()) {
+			if (validar(remessaVO)) {
+				Remessa remessa = new Remessa();
+				remessa.setArquivo(getArquivo());
+				remessa.setCabecalho(getCabecalho(remessaVO.getCabecalho()));
+				remessa.getCabecalho().setRemessa(remessa);
+				remessa.setRodape(getRodape(remessaVO.getRodape()));
+				remessa.getRodape().setRemessa(remessa);
+				remessa.setArquivo(getArquivo());
+				remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho()));
+				remessa.setInstituicaoOrigem(getArquivo().getInstituicaoEnvio());
+				remessa.setDataRecebimento(getDataRecebimento(remessaVO.getCabecalho().getDataMovimento()));
+				remessa.setTitulos(getTitulos(remessaVO.getTitulos(), remessa));
+				getArquivo().getRemessas().add(remessa);
+			}
 		}
-	    }
+		return getArquivo();
 	}
-    }
 
-    private Instituicao getInstituicaoDestino(CabecalhoVO cabecalho) {
-	if (TipoArquivoEnum.REMESSA.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))) {
-	    return instituicaoMediator.getCartorioPorCodigoIBGE(cabecalho.getCodigoMunicipio());
-	} else if (TipoArquivoEnum.CONFIRMACAO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))
-		|| TipoArquivoEnum.RETORNO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))) {
-	    return instituicaoMediator.getInstituicaoPorCodigoPortador(cabecalho.getNumeroCodigoPortador());
+	private boolean validar(RemessaVO remessaVO) {
+		validarCodigoMunicipio(remessaVO);
+		validarMunicipioAtivo(remessaVO);
+
+		if (getErros().isEmpty()) {
+			return true;
+		}
+		return false;
 	}
-	return null;
-    }
 
-    private Rodape getRodape(RodapeVO rodapeVO) {
-	return Rodape.parseRodapeVO(rodapeVO);
-    }
+	private void validarMunicipioAtivo(RemessaVO remessaVO) {
+		try {
+			getInstituicaoDestino(remessaVO.getCabecalho());
 
-    private CabecalhoRemessa getCabecalho(CabecalhoVO cabecalhoVO) {
-	return CabecalhoRemessa.parseCabecalhoVO(cabecalhoVO);
-    }
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex.getCause());
+			getErros().add(new XmlCraException(ex.getMessage(), remessaVO.getCabecalho().getCodigoMunicipio(),
+					remessaVO.getCabecalho().getCodigoMunicipio(), CodigoErro.CRA_MUNICIPIO_NAO_CADASTRADO_NA_CRA));
+		}
+	}
 
-    @Override
-    public void validar() {
-    }
+	private void validarCodigoMunicipio(RemessaVO remessaVO) {
+		if (StringUtils.isEmpty(remessaVO.getCabecalho().getCodigoMunicipio())) {
+			logger.error(CodigoErro.CRA_CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao());
+			getErros().add(new XmlCraException(CodigoErro.CRA_CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao(),
+					remessaVO.getCabecalho().getCodigoMunicipio(), remessaVO.getCabecalho().getCodigoMunicipio(),
+					CodigoErro.CRA_CODIGO_DO_MUNICIPIO_NAO_INFORMADO));
+		}
+	}
 
-    public List<RemessaVO> getArquivoVO() {
-	return arquivoVO;
-    }
+	private LocalDate getDataRecebimento(String dataMovimento) {
+		if (dataMovimento.equals("00000000") || dataMovimento == null) {
+			return new LocalDate();
+		}
+		return DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, dataMovimento);
+	}
 
-    public void setArquivoVO(List<RemessaVO> arquivoVO) {
-	this.arquivoVO = arquivoVO;
-    }
+	@SuppressWarnings("rawtypes")
+	private List<Titulo> getTitulos(List<TituloVO> titulosVO, Remessa remessa) {
+		List<Titulo> titulos = new ArrayList<Titulo>();
+		Titulo titulo = null;
+		for (TituloVO tituloVO : titulosVO) {
+			if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				titulo = TituloRemessa.parseTituloVO(tituloVO);
+				verificarAnexoComplementoRegistro(remessa.getInstituicaoOrigem(), TituloRemessa.class.cast(titulo), tituloVO);
+			} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				titulo = Confirmacao.parseTituloVO(tituloVO);
+			} else if (TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				titulo = Retorno.parseTituloVO(tituloVO);
+			}
+
+			titulo.setRemessa(remessa);
+			titulos.add(titulo);
+		}
+		return titulos;
+	}
+
+	private void verificarAnexoComplementoRegistro(Instituicao instituicaoEnvio, TituloRemessa titulo, TituloVO tituloVO) {
+		if (instituicaoEnvio.getTipoCampo51().equals(TipoCampo51.DOCUMENTOS_COMPACTADOS)) {
+			if (tituloVO.getComplementoRegistro() != null) {
+				if (!tituloVO.getComplementoRegistro().trim().equals(StringUtils.EMPTY)) {
+					titulo.setComplementoRegistro(tituloVO.getComplementoRegistro());
+
+					Anexo anexoArquivo = new Anexo();
+					anexoArquivo.setTitulo(titulo);
+					anexoArquivo.setDocumentoAnexo(tituloVO.getComplementoRegistro());
+
+					titulo.setAnexo(anexoArquivo);
+					titulo.setComplementoRegistro(StringUtils.EMPTY);
+				}
+			}
+		}
+	}
+
+	private Instituicao getInstituicaoDestino(CabecalhoVO cabecalho) {
+		if (TipoArquivoEnum.REMESSA.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))) {
+			return instituicaoMediator.getCartorioPorCodigoIBGE(cabecalho.getCodigoMunicipio());
+		} else if (TipoArquivoEnum.CONFIRMACAO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))
+				|| TipoArquivoEnum.RETORNO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))) {
+			return instituicaoMediator.getInstituicaoPorCodigoPortador(cabecalho.getNumeroCodigoPortador());
+		}
+		return null;
+	}
+
+	private Rodape getRodape(RodapeVO rodapeVO) {
+		return Rodape.parseRodapeVO(rodapeVO);
+	}
+
+	private CabecalhoRemessa getCabecalho(CabecalhoVO cabecalhoVO) {
+		return CabecalhoRemessa.parseCabecalhoVO(cabecalhoVO);
+	}
+
+	@Override
+	public void validar() {
+	}
+
+	public List<RemessaVO> getArquivoVO() {
+		return arquivoVO;
+	}
+
+	public void setArquivoVO(List<RemessaVO> arquivoVO) {
+		this.arquivoVO = arquivoVO;
+	}
 }

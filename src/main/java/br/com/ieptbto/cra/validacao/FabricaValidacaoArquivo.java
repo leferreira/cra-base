@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.validacao;
 
-import java.io.File;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +21,11 @@ public class FabricaValidacaoArquivo {
 
 	@Autowired
 	private FabricaRegrasDeEntrada fabricaRegrasDeEntrada;
-	private File arquivoFisico;
 	private Arquivo arquivoProcessado;
 	private Usuario usuario;
 	private List<Exception> erros;
 
-	public void validar(File arquivoFisico, Arquivo arquivo ,Usuario usuario, List<Exception> erros) {
-		this.arquivoFisico = arquivoFisico;
+	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		this.arquivoProcessado = arquivo;
 		this.usuario = usuario;
 		this.erros = erros;
@@ -36,11 +33,7 @@ public class FabricaValidacaoArquivo {
 	}
 
 	private void validarEntradaDoArquivo() {
-		fabricaRegrasDeEntrada.validar(getArquivoFisico(), getArquivoProcessado(), getUsuario(), getErros());
-	}
-
-	public File getArquivoFisico() {
-		return arquivoFisico;
+		fabricaRegrasDeEntrada.validar(getArquivoProcessado(), getUsuario(), getErros());
 	}
 
 	public Usuario getUsuario() {
@@ -49,10 +42,6 @@ public class FabricaValidacaoArquivo {
 
 	public List<Exception> getErros() {
 		return erros;
-	}
-
-	public void setArquivoFisico(File arquivoFisico) {
-		this.arquivoFisico = arquivoFisico;
 	}
 
 	public void setUsuario(Usuario usuario) {

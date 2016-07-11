@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.CraServiceDAO;
 import br.com.ieptbto.cra.entidade.CraServiceConfig;
+import br.com.ieptbto.cra.enumeration.CraServiceEnum;
 
 @Service
 public class CraServiceMediator {
@@ -24,6 +25,18 @@ public class CraServiceMediator {
 
 	public List<CraServiceConfig> carregarServicos() {
 		return craServiceDAO.carregarServicos();
+	}
+
+	public boolean verificarServicoIndisponivel(CraServiceEnum craService) {
+		CraServiceConfig service = craServiceDAO.verificarServicoIndisponivel(craService);
+		if (service != null) {
+			if (service.getAtivo().getStatus() == true) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

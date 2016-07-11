@@ -89,7 +89,8 @@ public enum CodigoErro {
 						SERPRO_NAO_EXISTE_REMESSA_PARA_A_CONFIRMACAO("0004", "NÃO EXISTE REMESSA PARA A CONFIRMACAO."),
 						SERPRO_NUMERO_PROTOCOLO_INVALIDO("2005", "NUMERO PROTOOCOLO INVALIDO"),
 
-						CNP_SUCESSO("0000", "Envio efetuado com sucesso"),
+						CNP_SUCESSO("0000", "Envio efetuado com sucesso."),
+						CNP_LOTE_VAZIO("0000", "O lote enviado está vazio ou todos os registros estão inválidos."),
 						CNP_USUARIO_NAO_PERMITIDO_ENVIO("0001", "Usuario não pode enviar arquivo CNP."),
 						CNP_USUARIO_NAO_PERMITIDO_CONSULTA("0001", "Usuario não pode consultar arquivos CNP."),
 						CNP_NAO_HA_ARQUIVOS_DISPONIVEIS("0001", "Não há arquivos disponíveis."),

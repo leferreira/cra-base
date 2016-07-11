@@ -62,7 +62,7 @@ public class InstituicaoMediator {
 		return instituicaoDAO.getCartorios();
 	}
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = false)
 	public Instituicao getCartorioPorCodigoIBGE(String codigoMunicipio) {
 		Instituicao instituicao = instituicaoDAO.getCartorioPeloCodigoMunicipio(codigoMunicipio);
 		if (instituicao == null) {
@@ -72,7 +72,7 @@ public class InstituicaoMediator {
 		return instituicao;
 	}
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = false)
 	public Instituicao getInstituicaoPorCodigoPortador(String codigoPortador) {
 		Instituicao instituicao = instituicaoDAO.getInstituicaoPorCodigo(codigoPortador);
 		if (instituicao == null) {

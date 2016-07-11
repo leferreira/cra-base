@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.validacao.regra;
 
-import java.io.File;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +30,14 @@ public class FabricaRegrasDeEntrada {
 	private RegraValidarHoraEnvio regraHoraEnvio;
 	@Autowired
 	private RegraNumeroSequencialRemessa regraNumeroSequencialRemessaCabecalho;
-	
-	public void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
-		regraNomeArquivo.validar(arquivo, arquivoProcessado, usuario, erros);
-		regraValidarInstituicaoEnvio.validar(arquivo, arquivoProcessado, usuario, erros);
-		regraValidarUsuarioEnvio.validar(arquivo, arquivoProcessado, usuario, erros);
-		regraValidarDuplicidade.validar(arquivo, arquivoProcessado, usuario, erros);
-		regraHoraEnvio.validar(arquivo, arquivoProcessado, usuario, erros);
-		regraNumeroSequencialRemessaCabecalho.validar(arquivo, arquivoProcessado, usuario, erros);
+
+	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+		regraNomeArquivo.validar(arquivo, usuario, erros);
+		regraValidarInstituicaoEnvio.validar(arquivo, usuario, erros);
+		regraValidarUsuarioEnvio.validar(arquivo, usuario, erros);
+		regraValidarDuplicidade.validar(arquivo, usuario, erros);
+		regraHoraEnvio.validar(arquivo, usuario, erros);
+		regraNumeroSequencialRemessaCabecalho.validar(arquivo, usuario, erros);
 	}
 
 }

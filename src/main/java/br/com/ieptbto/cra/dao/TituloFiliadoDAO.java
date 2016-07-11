@@ -270,7 +270,6 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 			for (TituloFiliado tituloFiliado : listaTitulosConvenios) {
 				tituloFiliado.setSituacaoTituloConvenio(SituacaoTituloConvenio.EM_PROCESSO);
 				update(tituloFiliado);
-				logger.info("Titulo Filiado enviado para o cartório com sucesso {" + tituloFiliado.getId() + "}");
 			}
 			transaction.commit();
 		} catch (Exception ex) {

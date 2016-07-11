@@ -44,7 +44,11 @@ public class CpfCnpjUtil {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(isValidCPF("38430267187"));
+		if (!CpfCnpjUtil.isValidCNPJ("00000032456166") && !CpfCnpjUtil.isValidCPF("00000032456166")) {
+			System.out.println("invalido");
+		} else {
+			System.out.println("valido");
+		}
 	}
 
 	public static String buscarComplementoDocumento(String numeroDocumento) {

@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.RegistroCnp;
+import br.com.ieptbto.cra.util.CpfCnpjUtil;
+import br.com.ieptbto.cra.util.DataUtil;
 
 /**
  * @author Thasso Araújo
@@ -21,6 +23,14 @@ public class ValidarRegistroCnp {
 		if (registro.getNumeroDocumentoCredor().trim().isEmpty()) {
 			return false;
 		}
+		if (Integer.valueOf(registro.getNumeroDocumentoCredor()) == 0) {
+			return false;
+		}
+		String numeroDocumentoCredor = registro.getNumeroDocumentoCredor().trim() + registro.getComplementoDocumentoCredor().trim()
+				+ registro.getDigitoControleDocumentoCredor().trim();
+		if (!CpfCnpjUtil.isValidCNPJ(numeroDocumentoCredor) && !CpfCnpjUtil.isValidCPF(numeroDocumentoCredor)) {
+			return false;
+		}
 		if (registro.getNumeroDocumentoDevedor() == null) {
 			return false;
 		}
@@ -28,7 +38,18 @@ public class ValidarRegistroCnp {
 		if (registro.getNumeroDocumentoDevedor().trim().isEmpty()) {
 			return false;
 		}
+		if (Integer.valueOf(registro.getNumeroDocumentoDevedor()) == 0) {
+			return false;
+		}
+		String numeroDocumentoDevedor = registro.getNumeroDocumentoDevedor().trim() + registro.getComplementoDocumentoDevedor().trim()
+				+ registro.getDigitoControleDocumentoDevedor().trim();
+		if (!CpfCnpjUtil.isValidCNPJ(numeroDocumentoDevedor) && !CpfCnpjUtil.isValidCPF(numeroDocumentoDevedor)) {
+			return false;
+		}
 		if (registro.getDataProtesto() == null) {
+			return false;
+		}
+		if (registro.getDataProtesto().before(DataUtil.stringToLocalDate("01/01/2011").toDate())) {
 			return false;
 		}
 		if (registro.getValorProtesto() == null) {
@@ -54,6 +75,14 @@ public class ValidarRegistroCnp {
 		if (registro.getNumeroDocumentoCredor().trim().isEmpty()) {
 			return false;
 		}
+		if (Integer.valueOf(registro.getNumeroDocumentoCredor()) == 0) {
+			return false;
+		}
+		String numeroDocumentoCredor = registro.getNumeroDocumentoCredor().trim() + registro.getComplementoDocumentoCredor().trim()
+				+ registro.getDigitoControleDocumentoCredor().trim();
+		if (!CpfCnpjUtil.isValidCNPJ(numeroDocumentoCredor) && !CpfCnpjUtil.isValidCPF(numeroDocumentoCredor)) {
+			return false;
+		}
 		if (registro.getNumeroDocumentoDevedor() == null) {
 			return false;
 		}
@@ -61,7 +90,18 @@ public class ValidarRegistroCnp {
 		if (registro.getNumeroDocumentoDevedor().trim().isEmpty()) {
 			return false;
 		}
+		String numeroDocumentoDevedor = registro.getNumeroDocumentoDevedor().trim() + registro.getComplementoDocumentoDevedor().trim()
+				+ registro.getDigitoControleDocumentoDevedor().trim();
+		if (!CpfCnpjUtil.isValidCNPJ(numeroDocumentoDevedor) && !CpfCnpjUtil.isValidCPF(numeroDocumentoDevedor)) {
+			return false;
+		}
+		if (Integer.valueOf(registro.getNumeroDocumentoDevedor()) == 0) {
+			return false;
+		}
 		if (registro.getDataProtesto() == null) {
+			return false;
+		}
+		if (registro.getDataProtesto().before(DataUtil.stringToLocalDate("01/01/2011").toDate())) {
 			return false;
 		}
 		if (registro.getValorProtesto() == null) {
@@ -77,6 +117,9 @@ public class ValidarRegistroCnp {
 			return false;
 		}
 		if (registro.getDataCancelamentoProtesto() == null) {
+			return false;
+		}
+		if (registro.getDataCancelamentoProtesto().before(DataUtil.stringToLocalDate("01/01/2011").toDate())) {
 			return false;
 		}
 		return true;

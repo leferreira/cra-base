@@ -49,7 +49,7 @@ import br.com.ieptbto.cra.processador.ProcessadorRemessaConveniada;
  *
  */
 @Service
-public class ConvenioMediator {
+public class ConvenioMediator extends BaseMediator {
 
 	@Autowired
 	ProcessadorRemessaConveniada processadorRemessaConveniada;

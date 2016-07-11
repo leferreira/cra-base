@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.validacao.regra;
 
-import java.io.File;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +26,13 @@ public class RegraValidarInstituicaoEnvio extends RegrasDeEntrada {
 	private TipoInstituicaoMediator tipoInstituicaoMediator;
 	private Instituicao instituicao;
 	private TipoArquivoEnum tipoArquivo;
-	
+
 	@Override
-	protected void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
+	protected void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		this.arquivo = arquivo;
 		this.usuario = usuario;
 		this.instituicao = usuario.getInstituicao();
-		this.tipoArquivo = arquivoProcessado.getTipoArquivo().getTipoArquivo();
+		this.tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
 		setErros(erros);
 
 		executar();

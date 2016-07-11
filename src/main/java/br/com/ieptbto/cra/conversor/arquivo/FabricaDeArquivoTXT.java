@@ -50,13 +50,7 @@ import br.com.ieptbto.cra.processador.FabricaRegistro;
 import br.com.ieptbto.cra.processador.FabricaRegistroDesistenciaProtesto;
 import br.com.ieptbto.cra.validacao.ValidarCabecalhoRemessa;
 import br.com.ieptbto.cra.validacao.ValidarRodape;
-import br.com.ieptbto.cra.validacao.regra.RegraValidaTipoArquivoTXT;
 
-/**
- * 
- * @author Lefer
- *
- */
 @SuppressWarnings("rawtypes")
 @Service
 public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
@@ -447,7 +441,6 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 	@Override
 	public void validar() {
-		new RegraValidaTipoArquivoTXT().validar(arquivoFisico, arquivo, arquivo.getUsuarioEnvio(), erros);
 
 	}
 

@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.validacao.regra;
 
-import java.io.File;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -16,15 +15,13 @@ import br.com.ieptbto.cra.entidade.Usuario;
 public class RegraNumeroSequencialRemessa extends RegrasDeEntrada {
 
 	private Usuario usuario;
-	private File arquivo;
-	private Arquivo arquivoProcessado;
+	private Arquivo arquivo;
 
 	@Override
-	protected void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
+	protected void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		setArquivo(arquivo);
 		setUsuario(usuario);
 		setErros(erros);
-		setArquivoProcessado(arquivoProcessado);
 
 		executar();
 	}
@@ -37,7 +34,7 @@ public class RegraNumeroSequencialRemessa extends RegrasDeEntrada {
 		return usuario;
 	}
 
-	public File getArquivo() {
+	public Arquivo getArquivo() {
 		return arquivo;
 	}
 
@@ -45,15 +42,7 @@ public class RegraNumeroSequencialRemessa extends RegrasDeEntrada {
 		this.usuario = usuario;
 	}
 
-	public void setArquivo(File arquivo) {
+	public void setArquivo(Arquivo arquivo) {
 		this.arquivo = arquivo;
-	}
-
-	public Arquivo getArquivoProcessado() {
-		return arquivoProcessado;
-	}
-
-	public void setArquivoProcessado(Arquivo arquivoProcessado) {
-		this.arquivoProcessado = arquivoProcessado;
 	}
 }

@@ -6,28 +6,30 @@ package br.com.ieptbto.cra.enumeration;
  */
 public enum StatusRemessa implements AbstractCraEnum {
 
-	AGUARDANDO("A","Aguardando"), ENVIADO("E","Enviado"), RECEBIDO("R","Recebido");
+														AGUARDANDO("A", "Aguardando"),
+														ENVIADO("E", "Enviado"),
+														RECEBIDO("R", "Recebido");
 
-    private String constante;
-    private String label;
+	private String constante;
+	private String label;
 
-    private StatusRemessa(String constante, String label) {
-	this.constante = constante;
-	this.label = label;
-    }
+	private StatusRemessa(String constante, String label) {
+		this.constante = constante;
+		this.label = label;
+	}
 
-    @Override
-    public String getConstante() {
-	return constante;
-    }
+	@Override
+	public String getConstante() {
+		return constante;
+	}
 
-    @Override
-    public String getLabel() {
-	return label;
-    }
+	@Override
+	public String getLabel() {
+		return label;
+	}
 
-    @Override
-    public String toString() {
-	return label.toUpperCase();
-    }
+	@Override
+	public String toString() {
+		return label.toUpperCase();
+	}
 }

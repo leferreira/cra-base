@@ -1,6 +1,5 @@
 package br.com.ieptbto.cra.validacao.regra;
 
-import java.io.File;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ import br.com.ieptbto.cra.util.DataUtil;
 public class RegraNomeArquivo extends RegrasDeEntrada {
 
 	@Override
-	protected void validar(File arquivo, Arquivo arquivoProcessado, Usuario usuario, List<Exception> erros) {
+	protected void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		this.usuario = usuario;
 		this.arquivo = arquivo;
 		setErros(erros);
@@ -33,41 +32,41 @@ public class RegraNomeArquivo extends RegrasDeEntrada {
 	}
 
 	private void validarNomeArquivo() {
-		int tamanhoNome = arquivo.getName().length();
-		
-		if (arquivo.getName().endsWith(".txt") || arquivo.getName().endsWith(".TXT")) {
+		int tamanhoNome = arquivo.getNomeArquivo().length();
+
+		if (arquivo.getNomeArquivo().endsWith(".txt") || arquivo.getNomeArquivo().endsWith(".TXT")) {
 			logger.error(Erro.EXTENSAO_NOME_ARQUIVO_INVALIDA.getMensagemErro());
 			throw new InfraException(Erro.EXTENSAO_NOME_ARQUIVO_INVALIDA.getMensagemErro());
 		}
 
-		if (arquivo.getName().startsWith(TipoArquivoEnum.REMESSA.getConstante()) ||
-				arquivo.getName().startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante()) ||
-				arquivo.getName().startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
+		if (arquivo.getNomeArquivo().startsWith(TipoArquivoEnum.REMESSA.getConstante())
+				|| arquivo.getNomeArquivo().startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())
+				|| arquivo.getNomeArquivo().startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
 			if (tamanhoNome != 12) {
 				logger.error(Erro.TAMANHO_NOME_ARQUIVO_INVALIDO.getMensagemErro());
 				throw new InfraException(Erro.TAMANHO_NOME_ARQUIVO_INVALIDO.getMensagemErro());
 			}
-			
+
 			try {
-				DataUtil.stringToLocalDate("ddMM.yy", arquivo.getName().substring(4, 10));
+				DataUtil.stringToLocalDate("ddMM.yy", arquivo.getNomeArquivo().substring(4, 10));
 			} catch (Exception ex) {
 				logger.error(Erro.DATA_NOME_ARQUIVO_INVALIDA.getMensagemErro());
 				throw new InfraException(Erro.DATA_NOME_ARQUIVO_INVALIDA.getMensagemErro());
 			}
-		} else if (arquivo.getName().startsWith(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.getConstante()) ||
-				arquivo.getName().startsWith(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.getConstante()) ||
-				arquivo.getName().startsWith(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.getConstante())) {
+		} else if (arquivo.getNomeArquivo().startsWith(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.getConstante())
+				|| arquivo.getNomeArquivo().startsWith(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.getConstante())
+				|| arquivo.getNomeArquivo().startsWith(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.getConstante())) {
 			if (tamanhoNome != 13) {
 				logger.error(Erro.TAMANHO_NOME_ARQUIVO_INVALIDO.getMensagemErro());
 				throw new InfraException(Erro.TAMANHO_NOME_ARQUIVO_INVALIDO.getMensagemErro());
 			}
 			try {
-				DataUtil.stringToLocalDate("ddMM.yy", arquivo.getName().substring(5, 12));
+				DataUtil.stringToLocalDate("ddMM.yy", arquivo.getNomeArquivo().substring(5, 12));
 			} catch (Exception ex) {
 				logger.error(Erro.DATA_NOME_ARQUIVO_INVALIDA.getMensagemErro());
 				throw new InfraException(Erro.DATA_NOME_ARQUIVO_INVALIDA.getMensagemErro());
 			}
 		}
-		
+
 	}
 }

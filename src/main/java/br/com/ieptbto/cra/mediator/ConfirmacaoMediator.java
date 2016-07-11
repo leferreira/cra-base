@@ -32,6 +32,7 @@ import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.XmlCraException;
 import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.validacao.FabricaValidacaoArquivo;
 import br.com.ieptbto.cra.webservice.VO.Descricao;
 import br.com.ieptbto.cra.webservice.VO.Detalhamento;
 import br.com.ieptbto.cra.webservice.VO.Mensagem;
@@ -59,6 +60,8 @@ public class ConfirmacaoMediator {
 	private TipoArquivoMediator tipoArquivoMediator;
 	@Autowired
 	private ArquivoDAO arquivoDAO;
+	@Autowired
+	private FabricaValidacaoArquivo fabricaValidacaoArquivo;
 	private Instituicao cra;
 	private TipoArquivo tipoArquivo;
 	private Arquivo arquivo;
@@ -76,6 +79,7 @@ public class ConfirmacaoMediator {
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public MensagemXml processarXML(ConfirmacaoVO confirmacaoVO, Usuario usuario, String nomeArquivo) {
 		this.arquivo = new Arquivo();
+
 		getArquivo().setDataEnvio(new LocalDate());
 		getArquivo().setDataRecebimento(new LocalDate().toDate());
 		getArquivo().setHoraEnvio(new LocalTime());
@@ -89,7 +93,8 @@ public class ConfirmacaoMediator {
 
 		logger.info("Iniciar processo do arquivo " + nomeArquivo);
 
-		fabricaDeArquivosXML.processarConfirmacaoXML(getArquivo(), confirmacaoVO, erros);
+		fabricaDeArquivosXML.processarConfirmacaoXML(getArquivo(), confirmacaoVO, getErros());
+		fabricaValidacaoArquivo.validar(getArquivo(), usuario, getErros());
 
 		logger.info("Fim de processo do arquivo " + nomeArquivo);
 
@@ -244,6 +249,9 @@ public class ConfirmacaoMediator {
 	}
 
 	public List<Exception> getErros() {
+		if (erros == null) {
+			erros = new ArrayList<Exception>();
+		}
 		return erros;
 	}
 

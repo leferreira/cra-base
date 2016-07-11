@@ -5,9 +5,13 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.CraServiceConfig;
+import br.com.ieptbto.cra.enumeration.CraServiceEnum;
 
 @Repository
 public class CraServiceDAO extends AbstractBaseDAO {
@@ -42,5 +46,12 @@ public class CraServiceDAO extends AbstractBaseDAO {
 			transaction.rollback();
 			System.out.println(ex.getMessage());
 		}
+	}
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public CraServiceConfig verificarServicoIndisponivel(CraServiceEnum craService) {
+		Criteria criteria = getCriteria(CraServiceConfig.class);
+		criteria.add(Restrictions.eq("craService", craService));
+		return CraServiceConfig.class.cast(criteria.uniqueResult());
 	}
 }
