@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -24,7 +23,6 @@ import br.com.ieptbto.cra.entidade.vo.ArquivoCnpVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoCnpVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaCnpVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeCnpVO;
-import br.com.ieptbto.cra.entidade.vo.TituloCnpVO;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -84,41 +82,31 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 	}
 
 	public ArquivoCnpVO processarLoteNacional() {
-		List<LoteCnp> lotes = centralNancionalProtestoDAO.buscarLotesPendentesEnvio();
-
-		HashMap<Integer, RemessaCnpVO> mapaLotesLiberados = new HashMap<Integer, RemessaCnpVO>();
-		for (LoteCnp lote : lotes) {
-			if (mapaLotesLiberados.containsKey(lote.getInstituicaoOrigem().getId())) {
-				Integer sequencial = lote.getRegistrosCnp().size() + 1;
-				List<TituloCnpVO> titulosVO = new ConversorCnpVO().converterRegistrosCnpParaTitulosCnpVO(lote, sequencial);
-				mapaLotesLiberados.get(lote.getInstituicaoOrigem().getId()).getTitulosCnpVO().addAll(titulosVO);
-			} else {
-				mapaLotesLiberados.put(lote.getInstituicaoOrigem().getId(), criarRemessaCnpVO(lote));
-			}
-		}
+		List<Instituicao> cartoriosPendentes = centralNancionalProtestoDAO.buscarCartoriosComLotesPendentesEnvioNacional();
 
 		ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
-		arquivoCnpVO.setRemessasCnpVO(new ArrayList<RemessaCnpVO>(mapaLotesLiberados.values()));
-		centralNancionalProtestoDAO.salvarLiberacaoLotesCnp(lotes);
-		return arquivoCnpVO;
-	}
+		arquivoCnpVO.setRemessasCnpVO(new ArrayList<RemessaCnpVO>());
+		for (Instituicao cartorio : cartoriosPendentes) {
+			List<LoteCnp> lotes = centralNancionalProtestoDAO.buscarLotesPendentesEnvio(cartorio);
 
-	public ArquivoCnpVO processarLoteNacionalPorData(LocalDate data) {
-		List<LoteCnp> lotes = centralNancionalProtestoDAO.buscarLotesParaEnvioPorDate(data);
-
-		HashMap<Integer, RemessaCnpVO> mapaLotesLiberados = new HashMap<Integer, RemessaCnpVO>();
-		for (LoteCnp lote : lotes) {
-			if (mapaLotesLiberados.containsKey(lote.getInstituicaoOrigem().getId())) {
-				Integer sequencial = lote.getRegistrosCnp().size() + 1;
-				List<TituloCnpVO> titulosVO = new ConversorCnpVO().converterRegistrosCnpParaTitulosCnpVO(lote, sequencial);
-				mapaLotesLiberados.get(lote.getInstituicaoOrigem().getId()).getTitulosCnpVO().addAll(titulosVO);
-			} else {
-				mapaLotesLiberados.put(lote.getInstituicaoOrigem().getMunicipio().getId(), reenviarRemessaCnpVO(lote, data));
+			RemessaCnpVO remessaCnpVO = null;
+			for (LoteCnp lote : lotes) {
+				if (remessaCnpVO == null) {
+					remessaCnpVO = criarRemessaCnpVO(lote);
+				} else {
+					Integer sequencial = remessaCnpVO.getTitulosCnpVO().size() + 1;
+					lote.setSequencialLiberacao(Integer.valueOf(remessaCnpVO.getCabecalhoCnpVO().getNumeroRemessaArquivo()));
+					remessaCnpVO.getTitulosCnpVO().addAll(new ConversorCnpVO().converterRegistrosCnpParaTitulosCnpVO(lote, sequencial));
+					remessaCnpVO.getRodapeCnpVO().setSequenciaRegistro(Integer.toString(remessaCnpVO.getTitulosCnpVO().size() + 2));
+				}
+				centralNancionalProtestoDAO.salvarLiberacaoLoteCnp(lote);
+			}
+			if (remessaCnpVO != null) {
+				if (!remessaCnpVO.getTitulosCnpVO().isEmpty()) {
+					arquivoCnpVO.getRemessasCnpVO().add(remessaCnpVO);
+				}
 			}
 		}
-
-		ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
-		arquivoCnpVO.setRemessasCnpVO(new ArrayList<RemessaCnpVO>(mapaLotesLiberados.values()));
 		return arquivoCnpVO;
 	}
 
@@ -128,14 +116,6 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 		remessaCnpVO.setTitulosCnpVO(new ConversorCnpVO().converterRegistrosCnpParaTitulosCnpVO(lote, 2));
 		remessaCnpVO.setRodapeCnpVO(getRodapeCnpVO(remessaCnpVO.getTitulosCnpVO().size() + 2));
 		lote.setSequencialLiberacao(Integer.valueOf(remessaCnpVO.getCabecalhoCnpVO().getNumeroRemessaArquivo()));
-		return remessaCnpVO;
-	}
-
-	private RemessaCnpVO reenviarRemessaCnpVO(LoteCnp lote, LocalDate dataLiberacao) {
-		RemessaCnpVO remessaCnpVO = new RemessaCnpVO();
-		remessaCnpVO.setCabecalhoCnpVO(gerarCabecalhoCnp(lote.getInstituicaoOrigem(), dataLiberacao));
-		remessaCnpVO.setTitulosCnpVO(new ConversorCnpVO().converterRegistrosCnpParaTitulosCnpVO(lote, 2));
-		remessaCnpVO.setRodapeCnpVO(getRodapeCnpVO(remessaCnpVO.getTitulosCnpVO().size() + 2));
 		return remessaCnpVO;
 	}
 
@@ -159,6 +139,42 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 		cabecalhoCnpVO.setPeriodicidadeEnvio("D");
 		cabecalhoCnpVO.setSequenciaRegistro("1");
 		return cabecalhoCnpVO;
+	}
+
+	public ArquivoCnpVO processarLoteNacionalPorData(LocalDate data) {
+		List<Instituicao> cartoriosEnviaram = centralNancionalProtestoDAO.buscarCartoriosEviaramLotesNacionalPorData(data);
+
+		ArquivoCnpVO arquivoCnpVO = new ArquivoCnpVO();
+		arquivoCnpVO.setRemessasCnpVO(new ArrayList<RemessaCnpVO>());
+		for (Instituicao cartorio : cartoriosEnviaram) {
+			List<LoteCnp> lotes = centralNancionalProtestoDAO.buscarLotesParaEnvioPorDate(cartorio, data);
+
+			RemessaCnpVO remessaCnpVO = null;
+			for (LoteCnp lote : lotes) {
+				if (remessaCnpVO == null) {
+					remessaCnpVO = reenviarRemessaCnpVO(lote, data);
+				} else {
+					Integer sequencial = remessaCnpVO.getTitulosCnpVO().size() + 1;
+					lote.setSequencialLiberacao(Integer.valueOf(remessaCnpVO.getCabecalhoCnpVO().getNumeroRemessaArquivo()));
+					remessaCnpVO.getTitulosCnpVO().addAll(new ConversorCnpVO().converterRegistrosCnpParaTitulosCnpVO(lote, sequencial));
+					remessaCnpVO.getRodapeCnpVO().setSequenciaRegistro(Integer.toString(remessaCnpVO.getTitulosCnpVO().size() + 2));
+				}
+			}
+			if (remessaCnpVO != null) {
+				if (!remessaCnpVO.getTitulosCnpVO().isEmpty()) {
+					arquivoCnpVO.getRemessasCnpVO().add(remessaCnpVO);
+				}
+			}
+		}
+		return arquivoCnpVO;
+	}
+
+	private RemessaCnpVO reenviarRemessaCnpVO(LoteCnp lote, LocalDate dataLiberacao) {
+		RemessaCnpVO remessaCnpVO = new RemessaCnpVO();
+		remessaCnpVO.setCabecalhoCnpVO(gerarCabecalhoCnp(lote.getInstituicaoOrigem(), dataLiberacao));
+		remessaCnpVO.setTitulosCnpVO(new ConversorCnpVO().converterRegistrosCnpParaTitulosCnpVO(lote, 2));
+		remessaCnpVO.setRodapeCnpVO(getRodapeCnpVO(remessaCnpVO.getTitulosCnpVO().size() + 2));
+		return remessaCnpVO;
 	}
 
 	private CabecalhoCnpVO gerarCabecalhoCnp(Instituicao instituicao, LocalDate data) {

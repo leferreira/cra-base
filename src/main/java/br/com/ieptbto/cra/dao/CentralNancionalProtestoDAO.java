@@ -30,15 +30,13 @@ import br.com.ieptbto.cra.util.CpfCnpjUtil;
 public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public void salvarLiberacaoLotesCnp(List<LoteCnp> lotes) {
+	public void salvarLiberacaoLoteCnp(LoteCnp lote) {
 		Transaction transaction = getBeginTransation();
 
 		try {
-			for (LoteCnp lote : lotes) {
-				lote.setDataLiberacao(new LocalDate().toDate());
-				lote.setStatus(true);
-				update(lote);
-			}
+			lote.setDataLiberacao(new LocalDate().toDate());
+			lote.setStatus(true);
+			update(lote);
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
@@ -122,10 +120,29 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 
 	@SuppressWarnings("unchecked")
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
-	public List<LoteCnp> buscarLotesPendentesEnvio() {
+	public List<Instituicao> buscarCartoriosComLotesPendentesEnvioNacional() {
 		Criteria criteria = getCriteria(LoteCnp.class);
 		criteria.add(Restrictions.eq("status", false));
-		criteria.addOrder(Order.asc("instituicaoOrigem"));
+		criteria.setProjection(Projections.groupProperty("instituicaoOrigem"));
+		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
+	public List<Instituicao> buscarCartoriosEviaramLotesNacionalPorData(LocalDate data) {
+		Criteria criteria = getCriteria(LoteCnp.class);
+		criteria.add(Restrictions.eq("status", true));
+		criteria.add(Restrictions.eq("dataLiberacao", new Date(data.toDate().getTime())));
+		criteria.setProjection(Projections.groupProperty("instituicaoOrigem"));
+		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public List<LoteCnp> buscarLotesPendentesEnvio(Instituicao cartorio) {
+		Criteria criteria = getCriteria(LoteCnp.class);
+		criteria.add(Restrictions.eq("status", false));
+		criteria.add(Restrictions.eq("instituicaoOrigem", cartorio));
 
 		List<LoteCnp> lotes = criteria.list();
 		for (LoteCnp loteCnp : lotes) {
@@ -140,11 +157,11 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 
 	@SuppressWarnings("unchecked")
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
-	public List<LoteCnp> buscarLotesParaEnvioPorDate(LocalDate data) {
+	public List<LoteCnp> buscarLotesParaEnvioPorDate(Instituicao cartorio, LocalDate data) {
 		Criteria criteria = getCriteria(LoteCnp.class);
 		criteria.add(Restrictions.eq("dataLiberacao", new Date(data.toDate().getTime())));
 		criteria.add(Restrictions.eq("status", true));
-		criteria.addOrder(Order.asc("instituicaoOrigem"));
+		criteria.add(Restrictions.eq("instituicaoOrigem", cartorio));
 
 		List<LoteCnp> lotes = criteria.list();
 		for (LoteCnp loteCnp : lotes) {
