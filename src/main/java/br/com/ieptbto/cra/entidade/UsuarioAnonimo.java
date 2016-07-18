@@ -7,7 +7,6 @@ public class UsuarioAnonimo extends Usuario {
 
 	@Override
 	public Roles getRoles() {
-		// anonymous users have only one role
 		return new Roles("is_anonymous");
 	}
 

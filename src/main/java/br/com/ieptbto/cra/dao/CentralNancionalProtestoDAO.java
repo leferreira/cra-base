@@ -138,7 +138,7 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<LoteCnp> buscarLotesPendentesEnvio(Instituicao cartorio) {
 		Criteria criteria = getCriteria(LoteCnp.class);
 		criteria.add(Restrictions.eq("status", false));
@@ -174,7 +174,7 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		return lotes;
 	}
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public String gerarSequencialCnp(Instituicao instituicao) {
 		Criteria criteria = getCriteria(LoteCnp.class);
 		criteria.add(Restrictions.eq("instituicaoOrigem", instituicao));

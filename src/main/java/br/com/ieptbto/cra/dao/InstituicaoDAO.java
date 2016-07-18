@@ -32,10 +32,9 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	private MunicipioDAO municipioDAO;
 
 	public Instituicao salvar(Instituicao instituicao) {
-		Instituicao nova = new Instituicao();
 		Transaction transaction = getBeginTransation();
 		try {
-			nova = save(instituicao);
+			instituicao = save(instituicao);
 			transaction.commit();
 			logger.info(instituicao.getTipoInstituicao().getTipoInstituicao() + " foi salvo na base de dados. ");
 		} catch (Exception ex) {
@@ -43,7 +42,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 			logger.error(ex.getMessage(), ex);
 			throw new InfraException("Não foi possível inserir esses dados na base.");
 		}
-		return nova;
+		return instituicao;
 	}
 
 	public Instituicao alterar(Instituicao instituicao) {
@@ -154,6 +153,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	 * @return List<Instituicao>
 	 */
 	@SuppressWarnings({ "unchecked" })
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<Instituicao> getCartorios() {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");

@@ -184,7 +184,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 		} catch (InfraException ex) {
 			transaction.rollback();
-			logger.error(ex.getMessage());
+			logger.error(ex.getMessage(), ex);
 			throw new InfraException(ex.getMessage());
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);

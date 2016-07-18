@@ -174,7 +174,12 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		tituloVO.setUfDevedor(RemoverAcentosUtil.removeAcentos(entidade.getUfDevedor()));
 		tituloVO.setNumeroCartorio(entidade.getNumeroCartorio());
 		tituloVO.setNumeroProtocoloCartorio(RemoverAcentosUtil.removeAcentos(entidade.getNumeroProtocoloCartorio()));
-		tituloVO.setDataCancelamentoProtesto(new DateConversor().getValorConvertidoParaString(new LocalDate(entidade.getDataCancelamentoProtesto())));
+		if (entidade.getDataCancelamentoProtesto() != null) {
+			tituloVO.setDataCancelamentoProtesto(
+					new DateConversor().getValorConvertidoParaString(new LocalDate(entidade.getDataCancelamentoProtesto())));
+		} else {
+			tituloVO.setDataCancelamentoProtesto("");
+		}
 		tituloVO.setEspecieProtesto(entidade.getEspecieProtesto());
 		return tituloVO;
 	}
