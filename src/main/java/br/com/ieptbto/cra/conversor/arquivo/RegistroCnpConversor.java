@@ -160,6 +160,9 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		tituloVO.setTipoPessoaCredor(entidade.getTipoPessoaCredor());
 		tituloVO.setTipoDocumentoCredor(entidade.getTipoDocumentoCredor());
 		tituloVO.setValorProtesto(new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(entidade.getValorProtesto()));
+		if (tituloVO.getValorProtesto().contains("E")) {
+			tituloVO.getValorProtesto().replace("E", "");
+		}
 		tituloVO.setDataProtesto(new DateConversor().getValorConvertidoParaString(new LocalDate(entidade.getDataProtesto())));
 		tituloVO.setTipoPessoaDevedor(entidade.getTipoPessoaDevedor());
 		tituloVO.setTipoDocumentoDevedor(entidade.getTipoDocumentoDevedor());

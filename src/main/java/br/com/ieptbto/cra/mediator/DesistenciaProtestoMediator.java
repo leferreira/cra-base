@@ -168,12 +168,12 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Arquivo processarDesistencia(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados, List<Exception> erros, Usuario usuario) {
+	public Arquivo processarDesistencia(String nomeArquivo, String dados, List<Exception> erros, Usuario usuario) {
 		Arquivo arquivo = new Arquivo();
 
-		if (layoutPadraoXML.equals(LayoutPadraoXML.CRA_NACIONAL)) {
+		if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.CRA_NACIONAL)) {
 			arquivo = conversorArquivoDesistenciaProtesto.converter(converterStringParaVO(dados), erros);
-		} else if (layoutPadraoXML.equals(LayoutPadraoXML.SERPRO)) {
+		} else if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.SERPRO)) {
 			DesistenciaSerproVO desistenciaCancelamentoSerpro = converterStringParaDesistenciaCancelamentoSerproVO(dados);
 			RemessaDesistenciaProtesto remessaDesistencia =
 					converterDesistenciaCancelamentoSerpro(arquivo, usuario.getInstituicao(), desistenciaCancelamentoSerpro, erros);

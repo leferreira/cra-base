@@ -137,7 +137,7 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Arquivo processarAutorizacaoCancelamento(String nomeArquivo, LayoutPadraoXML layoutPadraoXML, String dados, List<Exception> erros,
+	public Arquivo processarAutorizacaoCancelamento(String nomeArquivo, String dados, List<Exception> erros,
 			Usuario usuario) {
 		Arquivo arquivo = new Arquivo();
 		arquivo.setNomeArquivo(nomeArquivo);
@@ -151,7 +151,7 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 		arquivo.setTipoArquivo(getTipoArquivoAutorizaoCancelamentoProtesto());
 		arquivo.setStatusArquivo(getStatusArquivo());
 
-		if (layoutPadraoXML.equals(LayoutPadraoXML.SERPRO)) {
+		if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.SERPRO)) {
 			RemessaAutorizacaoCancelamento remessaAC = converterAutorizacaoCancelamentoSerpro(arquivo, usuario.getInstituicao(),
 					converterStringParaAutorizacaoCancelamentoSerproVO(dados), erros);
 			arquivo.setRemessaAutorizacao(remessaAC);

@@ -189,7 +189,6 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
 			transaction.rollback();
-			throw new InfraException("Não foi possível inserir esse arquivo na base de dados.");
 		}
 		return arquivoSalvo;
 	}

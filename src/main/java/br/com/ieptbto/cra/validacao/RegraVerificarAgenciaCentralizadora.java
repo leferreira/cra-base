@@ -36,7 +36,7 @@ public class RegraVerificarAgenciaCentralizadora extends RegraCabecalho {
 		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
 
 		} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)) {
-
+			verificarAgencia();
 		} else if (TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
 			verificarAgencia();
 		}

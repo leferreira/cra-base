@@ -62,10 +62,10 @@ public class RegraVerificarDuplicidade extends RegrasDeEntrada {
 
 		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA)) {
 			return instituicaoMediator.getInstituicaoPorCodigoPortador(getArquivo().getNomeArquivo().substring(1, 4));
-		} else if (tipoArquivo.equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO) || tipoArquivo.equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
-			return instituicaoMediator.getInstituicaoPorCodigoPortador(getArquivo().getNomeArquivo().substring(2, 5));
-		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO) || tipoArquivo.equals(TipoArquivoEnum.RETORNO)
+		} else if (tipoArquivo.equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO) || tipoArquivo.equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)
 				|| tipoArquivo.equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
+			return instituicaoMediator.getInstituicaoPorCodigoPortador(getArquivo().getNomeArquivo().substring(2, 5));
+		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO) || tipoArquivo.equals(TipoArquivoEnum.RETORNO)) {
 			return instituicaoMediator.getCartorioPorCodigoIBGE(getArquivo().getRemessas().get(0).getCabecalho().getCodigoMunicipio());
 		} else {
 			throw new InfraException("Não foi possível validar a duplicidade do arquivo !");

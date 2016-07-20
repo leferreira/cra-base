@@ -64,7 +64,6 @@ public class ConfirmacaoMediator {
 	private FabricaValidacaoArquivo fabricaValidacaoArquivo;
 	private Instituicao cra;
 	private TipoArquivo tipoArquivo;
-	private Arquivo arquivo;
 	private List<Exception> erros;
 
 	public List<Remessa> buscarConfirmacoesPendentesDeEnvio() {
@@ -76,36 +75,27 @@ public class ConfirmacaoMediator {
 		return confirmacaoDAO.verificarArquivoConfirmacaoGeradoCra(getCra());
 	}
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly=true)
 	public MensagemXml processarXML(ConfirmacaoVO confirmacaoVO, Usuario usuario, String nomeArquivo) {
-		this.arquivo = new Arquivo();
+		Arquivo arquivo = new Arquivo();
 
-		getArquivo().setDataEnvio(new LocalDate());
-		getArquivo().setDataRecebimento(new LocalDate().toDate());
-		getArquivo().setHoraEnvio(new LocalTime());
-		getArquivo().setInstituicaoEnvio(usuario.getInstituicao());
-		getArquivo().setNomeArquivo(nomeArquivo);
-		getArquivo().setTipoArquivo(getTipoArquivo());
-		getArquivo().setUsuarioEnvio(usuario);
-		getArquivo().setRemessas(new ArrayList<Remessa>());
-		getArquivo().setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.CONFIRMACAO));
-		getArquivo().setStatusArquivo(getStatusEnviado());
+		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setDataRecebimento(new LocalDate().toDate());
+		arquivo.setHoraEnvio(new LocalTime());
+		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
+		arquivo.setNomeArquivo(nomeArquivo);
+		arquivo.setUsuarioEnvio(usuario);
+		arquivo.setRemessas(new ArrayList<Remessa>());
+		arquivo.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.CONFIRMACAO));
+		arquivo.setStatusArquivo(getStatusEnviado());
 
-		logger.info("Iniciar processo do arquivo " + nomeArquivo);
+		logger.info("Iniciar processamento do arquivo " + nomeArquivo);
+		fabricaDeArquivosXML.processarConfirmacaoXML(arquivo, confirmacaoVO, getErros());
+		fabricaValidacaoArquivo.validar(arquivo, usuario, getErros());
+		logger.info("Fim de processamento do arquivo " + nomeArquivo);
 
-		fabricaDeArquivosXML.processarConfirmacaoXML(getArquivo(), confirmacaoVO, getErros());
-		fabricaValidacaoArquivo.validar(getArquivo(), usuario, getErros());
-
-		logger.info("Fim de processo do arquivo " + nomeArquivo);
-
-		setArquivo(salvarArquivo(getArquivo(), usuario));
-
-		return gerarResposta(getArquivo(), usuario);
-	}
-
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Arquivo salvarArquivo(Arquivo arquivo, Usuario usuario) {
-		return arquivoDAO.salvar(arquivo, usuario, new ArrayList<Exception>());
+		arquivo = arquivoDAO.salvar(arquivo, usuario, new ArrayList<Exception>());
+		return gerarResposta(arquivo, usuario);
 	}
 
 	private MensagemXml gerarResposta(Arquivo arquivo, Usuario usuario) {
@@ -167,12 +157,13 @@ public class ConfirmacaoMediator {
 		setCra(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
 		setTipoArquivo(tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.CONFIRMACAO));
 
+		Arquivo arquivo = null;
 		Instituicao instituicaoDestino = new Instituicao();
 		for (Remessa confirmacao : confirmacoesParaEnvio) {
 
 			if (arquivo == null || !instituicaoDestino.equals(confirmacao.getInstituicaoDestino())) {
 				instituicaoDestino = confirmacao.getInstituicaoDestino();
-				criarNovoArquivoDeConfirmacao(instituicaoDestino, confirmacao);
+				arquivo = criarNovoArquivoDeConfirmacao(instituicaoDestino, confirmacao);
 
 				List<Remessa> confirmacoes = confirmacaoDAO.buscarConfirmacoesPendentesPorInstituicao(instituicaoDestino);
 				arquivo.setRemessas(confirmacoes);
@@ -195,15 +186,16 @@ public class ConfirmacaoMediator {
 		return StringUtils.EMPTY;
 	}
 
-	private void criarNovoArquivoDeConfirmacao(Instituicao destino, Remessa confirmacao) {
-		this.arquivo = new Arquivo();
-		getArquivo().setTipoArquivo(getTipoArquivo());
-		getArquivo().setNomeArquivo(gerarNomeArquivoConfirmacao(confirmacao));
-		getArquivo().setInstituicaoRecebe(destino);
-		getArquivo().setInstituicaoEnvio(getCra());
-		getArquivo().setDataEnvio(new LocalDate());
-		getArquivo().setHoraEnvio(new LocalTime());
-		getArquivo().setDataRecebimento(new LocalDate().toDate());
+	private Arquivo criarNovoArquivoDeConfirmacao(Instituicao destino, Remessa confirmacao) {
+		Arquivo arquivo = new Arquivo();
+		arquivo.setTipoArquivo(getTipoArquivo());
+		arquivo.setNomeArquivo(gerarNomeArquivoConfirmacao(confirmacao));
+		arquivo.setInstituicaoRecebe(destino);
+		arquivo.setInstituicaoEnvio(getCra());
+		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setHoraEnvio(new LocalTime());
+		arquivo.setDataRecebimento(new LocalDate().toDate());
+		return arquivo;
 	}
 
 	private StatusArquivo getStatusEnviado() {
@@ -232,20 +224,12 @@ public class ConfirmacaoMediator {
 		return tipoArquivo;
 	}
 
-	public Arquivo getArquivo() {
-		return arquivo;
-	}
-
 	public void setCra(Instituicao cra) {
 		this.cra = cra;
 	}
 
 	public void setTipoArquivo(TipoArquivo tipoArquivo) {
 		this.tipoArquivo = tipoArquivo;
-	}
-
-	public void setArquivo(Arquivo arquivo) {
-		this.arquivo = arquivo;
 	}
 
 	public List<Exception> getErros() {

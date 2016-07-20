@@ -59,25 +59,24 @@ public class RetornoMediator {
 	protected static final Logger logger = Logger.getLogger(ConfirmacaoMediator.class);
 
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 	@Autowired
-	TipoArquivoDAO tipoArquivoDAO;
+	private TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
-	RetornoDAO retornoDAO;
+	private RetornoDAO retornoDAO;
 	@Autowired
-	BatimentoDAO batimentoDAO;
+	private BatimentoDAO batimentoDAO;
 	@Autowired
-	TipoArquivoMediator tipoArquivoMediator;
+	private TipoArquivoMediator tipoArquivoMediator;
 	@Autowired
-	FabricaDeArquivoXML fabricaDeArquivosXML;
+	private FabricaDeArquivoXML fabricaDeArquivosXML;
 	@Autowired
-	ArquivoDAO arquivoDAO;
+	private ArquivoDAO arquivoDAO;
 	@Autowired
-	FabricaValidacaoArquivo fabricaValidacaoArquivo;
+	private FabricaValidacaoArquivo fabricaValidacaoArquivo;
 
 	private Instituicao cra;
 	private TipoArquivo tipoArquivo;
-	private Arquivo arquivo;
 	private List<Exception> erros;
 
 	public Retorno carregarTituloRetornoPorId(int id) {
@@ -120,7 +119,6 @@ public class RetornoMediator {
 	}
 
 	public void salvarBatimentos(List<Remessa> retornos) {
-
 		Boolean arquivoRetornoGeradoHoje = verificarArquivoRetornoGeradoCra();
 		for (Remessa retorno : retornos) {
 			Batimento batimento = new Batimento();
@@ -185,13 +183,14 @@ public class RetornoMediator {
 		this.cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
 		this.tipoArquivo = tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.RETORNO);
 
+		Arquivo arquivo = null;
 		Instituicao instituicaoDestino = new Instituicao();
 		for (Remessa retorno : retornos) {
 
 			retorno = retornoDAO.buscarPorPK(retorno);
 			if (arquivo == null || !instituicaoDestino.equals(retorno.getInstituicaoDestino())) {
 				instituicaoDestino = retorno.getInstituicaoDestino();
-				criarNovoArquivoDeRetorno(instituicaoDestino, retorno);
+				arquivo = criarNovoArquivoDeRetorno(instituicaoDestino, retorno);
 
 				if (!arquivosRetorno.containsKey(instituicaoDestino.getCodigoCompensacao()) && arquivo != null) {
 					List<Remessa> retornosDaInstituicao = retornoDAO.buscarRetornosConfirmadosPorInstituicao(instituicaoDestino);
@@ -204,15 +203,16 @@ public class RetornoMediator {
 		retornoDAO.gerarRetornos(usuarioAcao, retornosArquivos);
 	}
 
-	private void criarNovoArquivoDeRetorno(Instituicao destino, Remessa retorno) {
-		this.arquivo = new Arquivo();
-		getArquivo().setTipoArquivo(getTipoArquivo());
-		getArquivo().setNomeArquivo(gerarNomeArquivoRetorno(retorno));
-		getArquivo().setInstituicaoRecebe(destino);
-		getArquivo().setInstituicaoEnvio(getCra());
-		getArquivo().setDataEnvio(new LocalDate());
-		getArquivo().setDataRecebimento(new LocalDate().toDate());
-		getArquivo().setHoraEnvio(new LocalTime());
+	private Arquivo criarNovoArquivoDeRetorno(Instituicao destino, Remessa retorno) {
+		Arquivo arquivo = new Arquivo();
+		arquivo.setTipoArquivo(getTipoArquivo());
+		arquivo.setNomeArquivo(gerarNomeArquivoRetorno(retorno));
+		arquivo.setInstituicaoRecebe(destino);
+		arquivo.setInstituicaoEnvio(getCra());
+		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setDataRecebimento(new LocalDate().toDate());
+		arquivo.setHoraEnvio(new LocalTime());
+		return arquivo;
 	}
 
 	private String gerarNomeArquivoRetorno(Remessa retorno) {
@@ -233,36 +233,27 @@ public class RetornoMediator {
 		return tipoArquivo;
 	}
 
-	public Arquivo getArquivo() {
-		return arquivo;
-	}
-
-	/**
-	 * PROCESSAR RETORNO XML RECEBIDO
-	 */
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly=true)
 	public MensagemXml processarXML(RetornoVO retornoVO, Usuario usuario, String nomeArquivo) {
-		this.arquivo = new Arquivo();
-		getArquivo().setDataEnvio(new LocalDate());
-		getArquivo().setDataRecebimento(new LocalDate().toDate());
-		getArquivo().setHoraEnvio(new LocalTime());
-		getArquivo().setInstituicaoEnvio(usuario.getInstituicao());
-		getArquivo().setNomeArquivo(nomeArquivo);
-		getArquivo().setTipoArquivo(getTipoArquivo());
-		getArquivo().setUsuarioEnvio(usuario);
-		getArquivo().setRemessas(new ArrayList<Remessa>());
-		getArquivo().setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.RETORNO));
-		getArquivo().setStatusArquivo(getStatusEnviado());
+		Arquivo arquivo = new Arquivo();
+		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setDataRecebimento(new LocalDate().toDate());
+		arquivo.setHoraEnvio(new LocalTime());
+		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
+		arquivo.setNomeArquivo(nomeArquivo);
+		arquivo.setTipoArquivo(getTipoArquivo());
+		arquivo.setUsuarioEnvio(usuario);
+		arquivo.setRemessas(new ArrayList<Remessa>());
+		arquivo.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.RETORNO));
+		arquivo.setStatusArquivo(getStatusEnviado());
 
 		logger.info("Iniciar processo do arquivo [" + nomeArquivo + "] do usuário [" + usuario.getLogin() + "]");
-
-		fabricaDeArquivosXML.processarRetornoXML(getArquivo(), retornoVO, erros);
-		fabricaValidacaoArquivo.validar(getArquivo(), usuario, getErros());
-
+		fabricaDeArquivosXML.processarRetornoXML(arquivo, retornoVO, erros);
+		fabricaValidacaoArquivo.validar(arquivo, usuario, getErros());
 		logger.info("Fim de processo do arquivo [" + nomeArquivo + "] do usuário [" + usuario.getLogin() + "]");
 
-		setArquivo(salvarArquivo(getArquivo(), usuario));
-		return gerarResposta(getArquivo(), usuario);
+		arquivo = arquivoDAO.salvar(arquivo, usuario, new ArrayList<Exception>());
+		return gerarResposta(arquivo, usuario);
 	}
 
 	private StatusArquivo getStatusEnviado() {
@@ -270,11 +261,6 @@ public class RetornoMediator {
 		status.setData(new LocalDateTime());
 		status.setSituacaoArquivo(SituacaoArquivo.ENVIADO);
 		return status;
-	}
-
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Arquivo salvarArquivo(Arquivo arquivo, Usuario usuario) {
-		return arquivoDAO.salvar(arquivo, usuario, new ArrayList<Exception>());
 	}
 
 	private MensagemXml gerarResposta(Arquivo arquivo, Usuario usuario) {
@@ -339,10 +325,6 @@ public class RetornoMediator {
 			return remessa.getCabecalho().getNumeroCodigoPortador();
 		}
 		return StringUtils.EMPTY;
-	}
-
-	public void setArquivo(Arquivo arquivo) {
-		this.arquivo = arquivo;
 	}
 
 	public List<Exception> getErros() {
