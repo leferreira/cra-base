@@ -19,7 +19,6 @@ import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
-import br.com.ieptbto.cra.enumeration.BancoAgenciaCentralizadoraCodigoCartorio;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.util.DataUtil;
 
@@ -146,14 +145,6 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> implements Fie
 	public String getAgenciaCentralizadora() {
 		if (agenciaCentralizadora == null) {
 			agenciaCentralizadora = StringUtils.EMPTY;
-		}
-
-		BancoAgenciaCentralizadoraCodigoCartorio agencia =
-				BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(this.numeroCodigoPortador);
-		if (agencia != null) {
-			if (agencia.getAgenciaCentralizadora() != null) {
-				agenciaCentralizadora = agencia.getAgenciaCentralizadora();
-			}
 		}
 		return agenciaCentralizadora.trim();
 	}

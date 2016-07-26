@@ -185,7 +185,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
 
 		for (Remessa remessa : getRemessas()) {
-			setArquivo(remessa.getArquivo());
+			this.arquivo = remessa.getArquivo();
 			RemessaVO remessaVO = new RemessaVO();
 			remessaVO.setTitulos(new ArrayList<TituloVO>());
 			BigDecimal valorTotalTitulos = BigDecimal.ZERO;
@@ -447,5 +447,4 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	public List<Remessa> getRemessas() {
 		return remessas;
 	}
-
 }

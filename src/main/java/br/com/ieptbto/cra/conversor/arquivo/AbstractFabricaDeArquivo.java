@@ -14,6 +14,7 @@ import br.com.ieptbto.cra.entidade.Arquivo;
  *
  */
 public abstract class AbstractFabricaDeArquivo {
+
 	protected static final Logger logger = Logger.getLogger(AbstractFabricaDeArquivo.class);
 	protected File arquivoFisico;
 	protected Arquivo arquivo;
@@ -27,6 +28,10 @@ public abstract class AbstractFabricaDeArquivo {
 		return arquivoFisico;
 	}
 
+	public void setArquivoFisico(File arquivoFisico) {
+		this.arquivoFisico = arquivoFisico;
+	}
+
 	public Arquivo getArquivo() {
 		if (arquivo == null) {
 			arquivo = new Arquivo();
@@ -34,22 +39,10 @@ public abstract class AbstractFabricaDeArquivo {
 		return arquivo;
 	}
 
-	public void setArquivoFisico(File arquivoFisico) {
-		this.arquivoFisico = arquivoFisico;
-	}
-
-	public void setArquivo(Arquivo arquivo) {
-		this.arquivo = arquivo;
-	}
-
 	public List<Exception> getErros() {
 		if (erros == null) {
 			erros = new ArrayList<Exception>();
 		}
 		return erros;
-	}
-
-	public void setErros(List<Exception> erros) {
-		this.erros = erros;
 	}
 }

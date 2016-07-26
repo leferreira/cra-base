@@ -71,14 +71,11 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 		this.titulosProtestados = listaRetorno;
 		this.etiquetas = null;
 		this.envelopes = null;
-		logger.info("Gerando " + listaRetorno.size() + " instrumentos de protesto.");
 
 		gerarSLIP(instrumentos);
 		ordenarEtiquetasInstrumentos();
 		gerarEnvelopes();
 		salvarEnvelopesEtiquetas();
-
-		logger.info("Instrumentos de protesto processados e etiquetas geradas.");
 		return this;
 	}
 
@@ -96,8 +93,6 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 				novaEtiqueta.setUfAgenciaDestino(regraAgencia.getUfDestino());
 				novaEtiqueta.setInstrumentoProtesto(instrumento);
 				getEtiquetas().add(novaEtiqueta);
-
-				logger.info("Etiqueta SLIP - Nosso Número: " + novaEtiqueta.getNossoNumero() + " gerada!");
 			}
 		}
 	}
@@ -196,6 +191,10 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 
 	public void alterarInstrumentosParaGerado(List<InstrumentoProtesto> instrumentosProtesto) {
 		instrumentoDao.alterarParaInstrumentosGerados(instrumentosProtesto);
+	}
+
+	public void removerInstrumento(InstrumentoProtesto instrumentoProtesto) {
+		instrumentoDao.removerInstrumento(instrumentoProtesto);
 	}
 }
 

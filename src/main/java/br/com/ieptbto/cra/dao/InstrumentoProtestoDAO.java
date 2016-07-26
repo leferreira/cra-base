@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -129,5 +130,15 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(InstrumentoProtesto.class);
 		criteria.add(Restrictions.eq("tituloRetorno", tituloRetorno));
 		return InstrumentoProtesto.class.cast(criteria.uniqueResult());
+	}
+
+	public void removerInstrumento(InstrumentoProtesto instrumentoProtesto) {
+
+		try {
+			Query query = createSQLQuery("DELETE FROM tb_instrumento_protesto WHERE id_instrumento_protesto=" + instrumentoProtesto.getId() + ";");
+			query.executeUpdate();
+		} catch (Exception ex) {
+			logger.info(ex.getMessage());
+		}
 	}
 }

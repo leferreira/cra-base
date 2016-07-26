@@ -1,7 +1,6 @@
 package br.com.ieptbto.cra.slip.regra;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +20,6 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Service
 public class RegraAgenciaDestino {
 
-	private static final Logger logger = Logger.getLogger(RegraAgenciaDestino.class);
-
 	@Autowired
 	ArquivoDeParaDAO arquivoDeParaDAO;
 
@@ -37,9 +34,7 @@ public class RegraAgenciaDestino {
 		this.municipioDestino = StringUtils.EMPTY;
 		this.ufDestino = StringUtils.EMPTY;
 
-		logger.info("Aplicando regra de agência destino");
 		processar();
-
 		return this;
 	}
 

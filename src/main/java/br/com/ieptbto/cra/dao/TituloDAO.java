@@ -225,6 +225,8 @@ public class TituloDAO extends AbstractBaseDAO {
 	public TituloRemessa buscaTituloRetornoSalvo(Retorno tituloRetorno) {
 		Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio().trim());
 		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.createAlias("remessa.cabecalho", "cabecalho");
+		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", tituloRetorno.getRemessa().getCabecalho().getCodigoMunicipio()));
 		criteria.add(Restrictions.ilike("codigoPortador", tituloRetorno.getCodigoPortador(), MatchMode.EXACT));
 		criteria.add(Restrictions.ilike("agenciaCodigoCedente", tituloRetorno.getAgenciaCodigoCedente(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("nossoNumero", tituloRetorno.getNossoNumero().trim(), MatchMode.EXACT));
@@ -308,6 +310,9 @@ public class TituloDAO extends AbstractBaseDAO {
 
 	public TituloRemessa buscaTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.createAlias("remessa", "remessa");
+		criteria.createAlias("remessa.cabecalho", "cabecalho");
+		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", tituloConfirmacao.getRemessa().getCabecalho().getCodigoMunicipio()));
 		criteria.add(Restrictions.like("codigoPortador", tituloConfirmacao.getCodigoPortador().trim(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("nossoNumero", tituloConfirmacao.getNossoNumero(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("numeroTitulo", tituloConfirmacao.getNumeroTitulo(), MatchMode.EXACT));
@@ -360,8 +365,13 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", codigoIBGE));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("tipoOcorrencia", TipoOcorrencia.PROTESTADO.getConstante(), MatchMode.EXACT));
-		criteria.setMaxResults(1);
-		return Retorno.class.cast(criteria.uniqueResult());
+		List<Retorno> retornos = criteria.list();
+		for (Retorno retorno : retornos) {
+			if (Integer.valueOf(retorno.getCodigoPortador()) < 800) {
+				return retorno;
+			}
+		}
+		return null;
 	}
 
 	public TituloRemessa buscarTituloDesistenciaProtesto(PedidoDesistencia pedidoDesistenciaCancelamento) {

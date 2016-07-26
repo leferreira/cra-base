@@ -1,5 +1,6 @@
 package br.com.ieptbto.cra.entidade;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -47,7 +48,7 @@ public class InstrumentoProtesto extends AbstractEntidade<InstrumentoProtesto> {
 		this.id = id;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "RETORNO_ID")
 	public Retorno getTituloRetorno() {
 		return tituloRetorno;

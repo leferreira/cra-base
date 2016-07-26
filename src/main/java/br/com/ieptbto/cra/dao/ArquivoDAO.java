@@ -49,7 +49,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @Repository
 public class ArquivoDAO extends AbstractBaseDAO {
-
+ 
 	@Autowired
 	TituloDAO tituloDAO;
 	@Autowired
@@ -112,7 +112,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 						remessa.setCabecalho(save(remessa.getCabecalho()));
 						remessa.setRodape(save(remessa.getRodape()));
 					}
-					transaction.commit();
+					transaction.commit();						
 				}
 			} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
 				if (arquivo.getRemessaDesistenciaProtesto() != null) {

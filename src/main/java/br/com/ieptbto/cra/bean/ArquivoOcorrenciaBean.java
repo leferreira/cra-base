@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.Batimento;
@@ -94,9 +96,15 @@ public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOc
 
 	public void parseToInstrumentoProtesto(InstrumentoProtesto instrumentoProtesto) {
 		this.instrumentoProtesto = instrumentoProtesto;
-		this.mensagem = "Slip gerada em ";
-		this.dataHora = DataUtil.localDateToString(instrumentoProtesto.getEtiquetaSlip().getEnvelope().getDataGeracao());
-		this.nomeUsuario = instrumentoProtesto.getUsuario().getNome();
+		if (instrumentoProtesto.getEtiquetaSlip() != null) {
+			this.mensagem = "Slip gerada em ";
+			this.dataHora = DataUtil.localDateToString(instrumentoProtesto.getEtiquetaSlip().getEnvelope().getDataGeracao());
+			this.nomeUsuario = instrumentoProtesto.getUsuario().getNome();
+		} else {
+			this.mensagem = "Slip aguardando geração ";
+			this.dataHora = StringUtils.EMPTY;
+			this.nomeUsuario = StringUtils.EMPTY;
+		}
 	}
 
 	public Arquivo getArquivo() {

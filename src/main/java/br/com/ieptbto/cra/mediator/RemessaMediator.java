@@ -133,6 +133,8 @@ public class RemessaMediator extends BaseMediator {
 
 		ArrayList<Arquivo> arquivos = new ArrayList<>();
 		arquivos.add(remessa.getArquivo());
+		logger.info("A instituição " + instituicao.getNomeFantasia() + " fez o download do arquivo de remessa " + nomeArquivo
+				+ " que foi enviado para " + remessa.getInstituicaoDestino().getNomeFantasia() + ".");
 		return conversorRemessaArquivo.converterRemessaVO(remessa);
 	}
 

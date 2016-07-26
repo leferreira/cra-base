@@ -481,7 +481,7 @@ public class RegistroCnp extends AbstractEntidade<RegistroCnp> {
 		}
 		if (dados[23] != null) {
 			try {
-				this.setValorProtesto(new BigDecimal(dados[23].trim().replace("\"", "").replace(".", "").replace(",", ".")));
+				this.setValorProtesto(new BigDecimal(dados[23].trim().replace("\"", "")));
 
 			} catch (Exception ex) {
 				this.setValorProtesto(BigDecimal.ZERO);

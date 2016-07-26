@@ -2,22 +2,25 @@ package br.com.ieptbto.cra.validacao;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
+import br.com.ieptbto.cra.enumeration.BancoAgenciaCentralizadoraCodigoCartorio;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.CabecalhoMediator;
 import br.com.ieptbto.cra.validacao.regra.RegraCabecalho;
 
 /**
- * 
- * @author Lefer
+ * @author Thasso Araújo
  *
  */
 @Service
 public class RegraVerificarAgenciaCentralizadora extends RegraCabecalho {
+
+	private static final String AGENCIA_PALMAS = "1886";
+	private static final String CODIGO_MUNICIPIO_PALMAS = "1721000";
 
 	@Autowired
 	private CabecalhoMediator cabecalhoMediator;
@@ -43,17 +46,25 @@ public class RegraVerificarAgenciaCentralizadora extends RegraCabecalho {
 	}
 
 	private void verificarAgencia() {
-		CabecalhoRemessa ultimoCabecalhoRemessa = cabecalhoMediator.buscarUltimoCabecalhoRemessa(getCabecalhoRemessa());
+		BancoAgenciaCentralizadoraCodigoCartorio agencia =
+				BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(getCabecalhoRemessa().getNumeroCodigoPortador());
+		if (agencia != null) {
+			if (agencia.getAgenciaCentralizadora() != null) {
+				getCabecalhoRemessa().setAgenciaCentralizadora(agencia.getAgenciaCentralizadora());
+			}
+		}
 
+		CabecalhoRemessa ultimoCabecalhoRemessa = cabecalhoMediator.buscarUltimoCabecalhoRemessa(getCabecalhoRemessa());
 		if (ultimoCabecalhoRemessa != null) {
 			if (ultimoCabecalhoRemessa.getAgenciaCentralizadora() != null) {
-				if (StringUtils.isNotBlank(ultimoCabecalhoRemessa.getAgenciaCentralizadora().trim())
-						|| StringUtils.isNotEmpty(ultimoCabecalhoRemessa.getAgenciaCentralizadora().trim())) {
-					if (getCabecalhoRemessa().getAgenciaCentralizadora() != ultimoCabecalhoRemessa.getAgenciaCentralizadora()) {
-						getCabecalhoRemessa().setAgenciaCentralizadora(ultimoCabecalhoRemessa.getAgenciaCentralizadora());
-					}
-				}
+				getCabecalhoRemessa().setAgenciaCentralizadora(ultimoCabecalhoRemessa.getAgenciaCentralizadora());
 			}
+			if (getCabecalhoRemessa().getAgenciaCentralizadora().trim().equals(AGENCIA_PALMAS)
+					&& !getCabecalhoRemessa().getAgenciaCentralizadora().trim().equals(CODIGO_MUNICIPIO_PALMAS)) {
+				throw new InfraException("Não foi possível identificar a agência centralizadora. Entre em contato com o IEPTB-TO!");
+			}
+		} else {
+			throw new InfraException("Não foi possível identificar a agência centralizadora. Entre em contato com o IEPTB-TO!");
 		}
 	}
 }

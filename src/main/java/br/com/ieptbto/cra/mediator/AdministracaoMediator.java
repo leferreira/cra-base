@@ -236,7 +236,7 @@ public class AdministracaoMediator extends BaseMediator {
 	private CabecalhoCnpVO gerarCabecalhoCnp(Instituicao instituicao) {
 		CabecalhoCnpVO cabecalhoCnpVO = new CabecalhoCnpVO();
 		cabecalhoCnpVO.setCodigoRegistro("1");
-		cabecalhoCnpVO.setEmBranco2("");
+		cabecalhoCnpVO.setEmBranco2("01");
 		cabecalhoCnpVO.setDataMovimento(DataUtil.localDateToStringddMMyyyy(new LocalDate()));
 		// instituicao.setMunicipio(municipioDAO.carregarMunicipio(instituicao.getMunicipio()));
 		cabecalhoCnpVO.setEmBranco53(instituicao.getMunicipio().getCodigoIBGE());
