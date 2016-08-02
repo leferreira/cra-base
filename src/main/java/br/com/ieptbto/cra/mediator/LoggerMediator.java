@@ -30,4 +30,8 @@ public class LoggerMediator {
 	public List<LogCra> buscarAcoes(LocalDate dataInicio, LocalDate dataFim, Instituicao instituicao) {
 		return loggerDAO.buscarAcoes(dataInicio, dataFim, instituicao);
 	}
+
+	public List<LogCra> buscarUltimosLogDeErros() {
+		return loggerDAO.buscarUltimosLogDeErros();
+	}
 }

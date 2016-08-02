@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.LogCra;
+import br.com.ieptbto.cra.enumeration.TipoLog;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -45,8 +46,19 @@ public class LoggerDAO extends AbstractBaseDAO {
 
 		if (instituicao != null) {
 			criteria.add(Restrictions.ilike("instituicao", instituicao.getNomeFantasia(), MatchMode.ANYWHERE));
+		} else {
+			criteria.add(Restrictions.ne("tipoLog", TipoLog.ALERTA));
 		}
 		criteria.addOrder(Order.desc("id")).addOrder(Order.desc("data"));
+		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<LogCra> buscarUltimosLogDeErros() {
+		Criteria criteria = getCriteria(LogCra.class);
+		criteria.add(Restrictions.eq("tipoLog", TipoLog.OCORRENCIA_ERRO));
+		criteria.addOrder(Order.desc("id"));
+		criteria.setMaxResults(4);
 		return criteria.list();
 	}
 }

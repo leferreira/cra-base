@@ -28,12 +28,12 @@ public class TaxaCraMediator extends BaseMediator {
 		return taxaCraDAO.buscarTaxasCra();
 	}
 
-	public TaxaCra salvarTaxa(TaxaCra taxaCra) {
+	public TaxaCra salvarTaxa(TaxaCra taxaCra, TaxaCra taxaCraAtual) {
 		List<TaxaCra> taxasInicial = taxaCraDAO.buscarTaxasComDataInicialNoPeriodo(taxaCra);
 		if (!taxasInicial.isEmpty()) {
 			throw new InfraException("A data inicial contém vigências em conflito! Altere as vigências das taxas para que não exista conflitos!");
 		}
 
-		return taxaCraDAO.salvarTaxa(taxaCra);
+		return taxaCraDAO.salvarTaxa(taxaCra, taxaCraAtual);
 	}
 }

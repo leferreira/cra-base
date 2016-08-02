@@ -186,17 +186,17 @@ public class RelatorioDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
 			criteria.createAlias("remessa.instituicaoDestino", "instituicaoDestino");
 			criteria.createAlias("instituicaoDestino.municipio", "municipio");
-			criteria.addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
+			criteria.addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("retorno.dataOcorrencia")).addOrder(Order.asc("id"));
 		}
 		if (cartorio != null && bancoConvenio == null) {
 			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
 			criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-			criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("id"));
+			criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("retorno.dataOcorrencia")).addOrder(Order.asc("id"));
 		}
 		if (bancoConvenio != null && cartorio != null) {
 			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
 			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.addOrder(Order.asc("id"));
+			criteria.addOrder(Order.asc("retorno.dataOcorrencia")).addOrder(Order.asc("id"));
 		}
 		if (tipoInstituicao != null && bancoConvenio == null) {
 			if (cartorio == null) {
@@ -330,5 +330,4 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		}
 		return TituloRemessa.class.cast(criteria.uniqueResult());
 	}
-
 }

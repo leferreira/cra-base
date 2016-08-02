@@ -249,4 +249,8 @@ public class DataUtil implements Serializable {
 		return formatHora.format(date);
 	}
 
+	public static String dateToString(Date date) {
+		SimpleDateFormat formatData = new SimpleDateFormat("dd/MM/yyyy");
+		return formatData.format(date);
+	}
 }

@@ -23,6 +23,6 @@ public enum TipoLog {
 	}
 
 	public String getLabel() {
-		return label;
+		return label.toUpperCase();
 	}
 }

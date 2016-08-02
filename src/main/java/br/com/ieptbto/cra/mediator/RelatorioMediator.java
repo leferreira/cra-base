@@ -17,7 +17,9 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.bean.TituloTaxaCraBean;
 import br.com.ieptbto.cra.dao.RelatorioDAO;
+import br.com.ieptbto.cra.dao.TaxaCraDAO;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
@@ -34,6 +36,8 @@ public class RelatorioMediator extends BaseMediator {
 
 	@Autowired
 	RelatorioDAO relatorioDAO;
+	@Autowired
+	TaxaCraDAO taxaCraDAO;
 
 	private File arquivoFisico;
 	private FileUpload file;
@@ -69,6 +73,19 @@ public class RelatorioMediator extends BaseMediator {
 			return relatorioDAO.relatorioTitulosAutorizacaoCancelamento(dataInicio, dataFim, tipoInstituicao, instituicao, cartorio);
 		}
 		return null;
+	}
+
+	public List<TituloTaxaCraBean> relatorioTitulosPagosTaxaCra(Instituicao convenio, Instituicao cartorio, LocalDate dataInicio, LocalDate dataFim) {
+		List<TituloRemessa> titulosRemessa = relatorioDAO.relatorioTitulosPagos(dataInicio, dataFim, TipoInstituicaoCRA.CONVENIO, convenio, cartorio);
+
+		List<TituloTaxaCraBean> titulos = new ArrayList<TituloTaxaCraBean>();
+		for (TituloRemessa tituloRemessa : titulosRemessa) {
+			TituloTaxaCraBean titulo = new TituloTaxaCraBean();
+			titulo.parseToTituloRemessa(tituloRemessa);
+			titulo.setTaxaCra(taxaCraDAO.buscarTaxaCraVigente(tituloRemessa.getRetorno().getDataOcorrencia()));
+			titulos.add(titulo);
+		}
+		return titulos;
 	}
 
 	public List<TituloRemessa> relatorioTitulosPlanilhaPendencias(FileUpload fileUpload) {

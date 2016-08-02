@@ -36,14 +36,11 @@ public class TaxaCraDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public TaxaCra salvarTaxa(TaxaCra taxaCra) {
+	public TaxaCra salvarTaxa(TaxaCra taxaCra, TaxaCra taxaCraAtual) {
 		Transaction transaction = getBeginTransation();
 		try {
-			if (taxaCra.getId() == 0) {
-				taxaCra = save(taxaCra);
-			} else {
-				taxaCra = update(taxaCra);
-			}
+			update(taxaCraAtual);
+			taxaCra = save(taxaCra);
 			transaction.commit();
 
 		} catch (Exception ex) {

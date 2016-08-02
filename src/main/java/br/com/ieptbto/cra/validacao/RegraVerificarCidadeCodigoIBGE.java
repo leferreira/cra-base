@@ -29,11 +29,9 @@ public class RegraVerificarCidadeCodigoIBGE extends RegraCabecalho {
 	protected void executar() {
 		Municipio municipio = municipioMediator.buscaMunicipioPorCodigoIBGE(getCabecalhoRemessa().getCodigoMunicipio());
 		if (municipio == null) {
-			getErros().add(
-			        new ValidacaoErroException(getCabecalhoRemessa().getRemessa().getArquivo().getNomeArquivo(),
-			                Erro.CODIGO_IBGE_NAO_CADASTRADO, getCabecalhoRemessa().getCodigoMunicipio().toString()));
+			getErros().add(new ValidacaoErroException(getCabecalhoRemessa().getRemessa().getArquivo().getNomeArquivo(),
+					Erro.CODIGO_IBGE_NAO_CADASTRADO, getCabecalhoRemessa().getCodigoMunicipio().toString()));
 			logger.error(Erro.CODIGO_IBGE_NAO_CADASTRADO.getMensagemErro());
 		}
-
 	}
 }

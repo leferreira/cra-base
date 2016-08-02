@@ -60,11 +60,11 @@ public class RegraVerificarAgenciaCentralizadora extends RegraCabecalho {
 				getCabecalhoRemessa().setAgenciaCentralizadora(ultimoCabecalhoRemessa.getAgenciaCentralizadora());
 			}
 			if (getCabecalhoRemessa().getAgenciaCentralizadora().trim().equals(AGENCIA_PALMAS)
-					&& !getCabecalhoRemessa().getAgenciaCentralizadora().trim().equals(CODIGO_MUNICIPIO_PALMAS)) {
-				throw new InfraException("Não foi possível identificar a agência centralizadora. Entre em contato com o IEPTB-TO!");
+					&& !getCabecalhoRemessa().getCodigoMunicipio().trim().equals(CODIGO_MUNICIPIO_PALMAS)) {
+				throw new InfraException("Não foi possível identificar a agência centralizadora. Entre em contato com a CRA!");
 			}
 		} else {
-			throw new InfraException("Não foi possível identificar a agência centralizadora. Entre em contato com o IEPTB-TO!");
+			throw new InfraException("Não foi possível identificar a agência centralizadora. Entre em contato com a CRA!");
 		}
 	}
 }

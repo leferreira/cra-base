@@ -12,38 +12,38 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "mensagem")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Mensagem {
+public class Mensagem extends MensagemCra {
 
-    @XmlAttribute(name = "descricao")
-    private String descricao;
+	@XmlAttribute(name = "descricao")
+	private String descricao;
 
-    @XmlAttribute(name = "codigo")
-    private String codigo;
+	@XmlAttribute(name = "codigo")
+	private String codigo;
 
-    @XmlAttribute(name = "municipio")
-    private String municipio;
+	@XmlAttribute(name = "municipio")
+	private String municipio;
 
-    public String getDescricao() {
-	return descricao;
-    }
+	public String getDescricao() {
+		return descricao;
+	}
 
-    public String getCodigo() {
-	return codigo;
-    }
+	public String getCodigo() {
+		return codigo;
+	}
 
-    public String getMunicipio() {
-	return municipio;
-    }
+	public String getMunicipio() {
+		return municipio;
+	}
 
-    public void setMunicipio(String municipio) {
-	this.municipio = municipio;
-    }
+	public void setMunicipio(String municipio) {
+		this.municipio = municipio;
+	}
 
-    public void setCodigo(String codigo) {
-	this.codigo = codigo;
-    }
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
 
-    public void setDescricao(String descricao) {
-	this.descricao = descricao;
-    }
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
 }

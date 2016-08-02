@@ -13,11 +13,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "relatorio")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class MensagemXmlSerpro {
+public class MensagemXmlSerpro extends MensagemCra {
 
 	@XmlElement(name = "nome_arquivo")
 	private String nomeArquivo;
-	
+
 	@XmlElement(name = "comarca")
 	private List<ComarcaDetalhamentoSerpro> comarca;
 

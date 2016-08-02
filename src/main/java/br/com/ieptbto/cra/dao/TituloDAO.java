@@ -225,6 +225,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	public TituloRemessa buscaTituloRetornoSalvo(Retorno tituloRetorno) {
 		Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio().trim());
 		Criteria criteria = getCriteria(TituloRemessa.class);
+		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("remessa.cabecalho", "cabecalho");
 		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", tituloRetorno.getRemessa().getCabecalho().getCodigoMunicipio()));
 		criteria.add(Restrictions.ilike("codigoPortador", tituloRetorno.getCodigoPortador(), MatchMode.EXACT));

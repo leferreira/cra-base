@@ -62,6 +62,7 @@ import br.com.ieptbto.cra.webservice.VO.ComarcaDetalhamentoSerpro;
 import br.com.ieptbto.cra.webservice.VO.Descricao;
 import br.com.ieptbto.cra.webservice.VO.Detalhamento;
 import br.com.ieptbto.cra.webservice.VO.Mensagem;
+import br.com.ieptbto.cra.webservice.VO.MensagemCra;
 import br.com.ieptbto.cra.webservice.VO.MensagemXml;
 import br.com.ieptbto.cra.webservice.VO.MensagemXmlSerpro;
 
@@ -146,7 +147,7 @@ public class RemessaMediator extends BaseMediator {
 	 * @return object
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Object processarArquivoXML(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
+	public MensagemCra processarArquivoXML(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
 		Arquivo arquivo = processarArquivoXMLManual(arquivoRecebido, usuario, nomeArquivo);
 
 		if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.SERPRO)) {
@@ -329,7 +330,6 @@ public class RemessaMediator extends BaseMediator {
 		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
 		List<AutorizacaoCancelamento> autorizacaoCancelamento =
 				autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
-
 		Arquivo arquivo = new Arquivo();
 		arquivo.setRemessas(remessas);
 		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
@@ -358,7 +358,6 @@ public class RemessaMediator extends BaseMediator {
 		} else if (nomeArquivo.startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
 			arquivo = arquivoDAO.buscarArquivoInstituicaoRetorno(nomeArquivo, instituicao);
 		}
-
 		if (arquivo == null) {
 			return new ArrayList<RemessaVO>();
 		}
