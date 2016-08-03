@@ -117,13 +117,11 @@ public class RemessaMediator extends BaseMediator {
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public RemessaVO buscarRemessaParaCartorio(Remessa remessa, Instituicao instituicao, String nomeArquivo) {
+	public RemessaVO buscarRemessaParaCartorio(Usuario usuario, String nomeArquivo) {
+		Remessa remessa = null;
+		logger.info("Usuario " + usuario.getLogin() + " está buscando a remessa " + nomeArquivo + " na CRA.");
 		if (nomeArquivo.startsWith(TipoArquivoEnum.REMESSA.getConstante())) {
-			remessa = remessaDAO.baixarArquivoCartorioRemessa(instituicao, nomeArquivo);
-		} else if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
-			remessa = remessaDAO.baixarArquivoCartorioConfirmacao(instituicao, nomeArquivo);
-		} else if (nomeArquivo.startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
-			remessa = remessaDAO.baixarArquivoCartorioRetorno(instituicao, nomeArquivo);
+			remessa = remessaDAO.baixarArquivoCartorioRemessa(usuario.getInstituicao(), nomeArquivo);
 		}
 
 		if (remessa == null) {
@@ -134,8 +132,8 @@ public class RemessaMediator extends BaseMediator {
 
 		ArrayList<Arquivo> arquivos = new ArrayList<>();
 		arquivos.add(remessa.getArquivo());
-		logger.info("A instituição " + instituicao.getNomeFantasia() + " fez o download do arquivo " + nomeArquivo + " que foi enviado para "
-				+ remessa.getInstituicaoDestino().getNomeFantasia() + ".");
+		logger.info("O Usuario " + usuario.getLogin() + " da instituição " + usuario.getInstituicao().getNomeFantasia()
+				+ " fez o download do arquivo " + nomeArquivo + " que foi enviado para " + remessa.getInstituicaoDestino().getNomeFantasia() + ".");
 		return conversorRemessaArquivo.converterRemessaVO(remessa);
 	}
 

@@ -81,7 +81,6 @@ public class ConversorRemessaArquivo {
 		arquivo.setRemessas(new ArrayList<Remessa>());
 
 		fabricaDeArquivo.processarArquivoXML(remessas, arquivo.getUsuarioEnvio(), arquivo.getNomeArquivo(), arquivo, erros);
-
 		return arquivo;
 	}
 
@@ -113,8 +112,6 @@ public class ConversorRemessaArquivo {
 		remessaVO.setCabecalho(CabecalhoVO.parseCabecalho(remessa.getCabecalho()));
 		remessaVO.getTitulos().addAll(converterTitulos(remessa.getTitulos()));
 		remessaVO.setRodapes(RodapeVO.parseRodape(remessa.getRodape(), remessa.getCabecalho()));
-
 		return remessaVO;
 	}
-
 }
