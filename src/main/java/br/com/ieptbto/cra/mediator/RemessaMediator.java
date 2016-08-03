@@ -134,8 +134,8 @@ public class RemessaMediator extends BaseMediator {
 
 		ArrayList<Arquivo> arquivos = new ArrayList<>();
 		arquivos.add(remessa.getArquivo());
-		logger.info("A instituição " + instituicao.getNomeFantasia() + " fez o download do arquivo de remessa " + nomeArquivo
-				+ " que foi enviado para " + remessa.getInstituicaoDestino().getNomeFantasia() + ".");
+		logger.info("A instituição " + instituicao.getNomeFantasia() + " fez o download do arquivo " + nomeArquivo + " que foi enviado para "
+				+ remessa.getInstituicaoDestino().getNomeFantasia() + ".");
 		return conversorRemessaArquivo.converterRemessaVO(remessa);
 	}
 
@@ -172,9 +172,9 @@ public class RemessaMediator extends BaseMediator {
 		arquivo.setDataRecebimento(new LocalDate().toDate());
 		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
 
-		logger.info("Iniciar processador do arquivo " + nomeArquivo);
+		logger.info("Iniciar processador do arquivo " + nomeArquivo + " do usuário " + usuario.getLogin());
 		processadorArquivo.processarArquivo(arquivoRecebido, usuario, nomeArquivo, arquivo, getErros());
-		logger.info("Fim processador do arquivo " + nomeArquivo);
+		logger.info("Fim processador do arquivo " + nomeArquivo + " do usuário " + usuario.getLogin());
 		arquivo = salvarArquivo(arquivo, usuario);
 		return arquivo;
 	}

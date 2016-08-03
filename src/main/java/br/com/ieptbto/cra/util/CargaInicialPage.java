@@ -62,7 +62,7 @@ public class CargaInicialPage extends WebPage {
 				}
 				cnp.append("</cnp>");
 				System.out.println("=============================================================");
-				File arquivo = new File("C:\\Users\\Thasso Araújo\\Documents\\jboss-as-7.1.1.Final\\ARQUIVOS_CRA\\" + "CNP-TO-26072016-4.xml");
+				File arquivo = new File("C:\\Users\\Thasso Araújo\\Documents\\jboss-as-7.1.1.Final\\ARQUIVOS_CRA\\" + "CNP-TO-03082016-4.xml");
 				BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivo));
 				System.out.println("Escrevendo os dados no arquivo...");
 				bWrite.write(cnp.toString());

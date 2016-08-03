@@ -90,13 +90,12 @@ public class ProcessadorArquivo extends Processador {
 		this.arquivo = arquivo;
 		this.erros = erros;
 
-		logger.info("Início do processamento do arquivoXML" + nomeArquivo + " do usuário " + getUsuario().getLogin());
+		logger.info("Início do processamento do arquivoXML" + nomeArquivo + " do usuário " + usuario.getLogin());
 		verificaDiretorio();
 		setArquivoFisico(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + nomeArquivo));
 		salvarXMLTemporario(arquivoRecebido);
 
 		fabricaDeArquivo.processarArquivoXML(arquivoRecebido, getUsuario(), nomeArquivo, getArquivo(), getErros());
-
 		logger.info("Fim do processamento do arquivoXML " + nomeArquivo + " do usuário " + getUsuario().getLogin());
 	}
 

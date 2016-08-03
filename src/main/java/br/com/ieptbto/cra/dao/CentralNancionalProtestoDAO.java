@@ -157,6 +157,25 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 
 	@SuppressWarnings("unchecked")
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
+	public List<LoteCnp> buscarLotesProtesto5Anos(Instituicao cartorio) {
+		Criteria criteria = getCriteria(LoteCnp.class);
+		criteria.add(Restrictions.eq("status", false));
+		criteria.add(Restrictions.eq("instituicaoOrigem", cartorio));
+
+		List<LoteCnp> lotes = criteria.list();
+		for (LoteCnp loteCnp : lotes) {
+			Criteria criteriaRegistros = getCriteria(RegistroCnp.class);
+			criteriaRegistros.add(Restrictions.eq("loteCnp", loteCnp));
+			criteriaRegistros.add(Restrictions.eq("tipoRegistroCnp", TipoRegistroCnp.PROTESTO));
+			criteriaRegistros.addOrder(Order.desc("tipoRegistroCnp")).addOrder(Order.asc("numeroProtocoloCartorio"));
+			loteCnp.setRegistrosCnp(new ArrayList<RegistroCnp>());
+			loteCnp.getRegistrosCnp().addAll(criteriaRegistros.list());
+		}
+		return lotes;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<LoteCnp> buscarLotesParaEnvioPorDate(Instituicao cartorio, LocalDate data) {
 		Criteria criteria = getCriteria(LoteCnp.class);
 		criteria.add(Restrictions.eq("dataLiberacao", new Date(data.toDate().getTime())));

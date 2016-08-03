@@ -16,6 +16,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
 /**
@@ -109,7 +111,29 @@ public class LoteCnp extends AbstractEntidade<LoteCnp> {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof LoteCnp) {
+			LoteCnp modalidade = LoteCnp.class.cast(obj);
+			EqualsBuilder equalsBuilder = new EqualsBuilder();
+			equalsBuilder.append(this.getId(), modalidade.getId());
+			equalsBuilder.append(this.getDataRecebimento(), modalidade.getDataRecebimento());
+			equalsBuilder.append(this.getInstituicaoOrigem(), modalidade.getInstituicaoOrigem());
+			return equalsBuilder.isEquals();
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		if (getId() == 0) {
+			return 0;
+		}
+		return getId();
+	}
+
+	@Override
 	public int compareTo(LoteCnp entidade) {
-		return 0;
+		CompareToBuilder compareTo = new CompareToBuilder();
+		return compareTo.toComparison();
 	}
 }

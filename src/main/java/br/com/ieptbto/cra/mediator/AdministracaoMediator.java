@@ -98,7 +98,7 @@ public class AdministracaoMediator extends BaseMediator {
 					logger.info("==========================================================");
 					logger.info("Municipio:  " + cartorio.getMunicipio().getNomeMunicipio() + "   -   Arquivo já criado!");
 				} else {
-					List<LoteCnp> lotes = centralNancionalProtestoDAO.buscarLotesPendentesEnvio(cartorio);
+					List<LoteCnp> lotes = centralNancionalProtestoDAO.buscarLotesProtesto5Anos(cartorio);
 
 					LoteCnp novoLote = new LoteCnp();
 					novoLote.setRegistrosCnp(new ArrayList<RegistroCnp>());
