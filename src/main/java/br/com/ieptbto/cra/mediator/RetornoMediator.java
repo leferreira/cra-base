@@ -233,7 +233,7 @@ public class RetornoMediator {
 		return tipoArquivo;
 	}
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly=true)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public MensagemXml processarXML(RetornoVO retornoVO, Usuario usuario, String nomeArquivo) {
 		Arquivo arquivo = new Arquivo();
 		arquivo.setDataEnvio(new LocalDate());
@@ -247,10 +247,10 @@ public class RetornoMediator {
 		arquivo.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.RETORNO));
 		arquivo.setStatusArquivo(getStatusEnviado());
 
-		logger.info("Iniciar processo do arquivo [" + nomeArquivo + "] do usuário [" + usuario.getLogin() + "]");
+		logger.info("Iniciar processamento do arquivo " + nomeArquivo + " enviado por " + usuario.getLogin());
 		fabricaDeArquivosXML.processarRetornoXML(arquivo, retornoVO, erros);
 		fabricaValidacaoArquivo.validar(arquivo, usuario, getErros());
-		logger.info("Fim de processo do arquivo [" + nomeArquivo + "] do usuário [" + usuario.getLogin() + "]");
+		logger.info("Fim do processamento do arquivo " + nomeArquivo + " enviado por " + usuario.getLogin());
 
 		arquivo = arquivoDAO.salvar(arquivo, usuario, new ArrayList<Exception>());
 		return gerarResposta(arquivo, usuario);

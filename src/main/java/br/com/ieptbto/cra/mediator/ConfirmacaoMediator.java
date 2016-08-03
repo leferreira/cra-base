@@ -75,7 +75,7 @@ public class ConfirmacaoMediator {
 		return confirmacaoDAO.verificarArquivoConfirmacaoGeradoCra(getCra());
 	}
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly=true)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public MensagemXml processarXML(ConfirmacaoVO confirmacaoVO, Usuario usuario, String nomeArquivo) {
 		Arquivo arquivo = new Arquivo();
 
@@ -89,10 +89,10 @@ public class ConfirmacaoMediator {
 		arquivo.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.CONFIRMACAO));
 		arquivo.setStatusArquivo(getStatusEnviado());
 
-		logger.info("Iniciar processamento do arquivo " + nomeArquivo);
+		logger.info("Iniciar processamento do arquivo " + nomeArquivo + " enviado por " + usuario.getLogin());
 		fabricaDeArquivosXML.processarConfirmacaoXML(arquivo, confirmacaoVO, getErros());
 		fabricaValidacaoArquivo.validar(arquivo, usuario, getErros());
-		logger.info("Fim de processamento do arquivo " + nomeArquivo);
+		logger.info("Fim de processamento do arquivo " + nomeArquivo + " enviado por " + usuario.getLogin());
 
 		arquivo = arquivoDAO.salvar(arquivo, usuario, new ArrayList<Exception>());
 		return gerarResposta(arquivo, usuario);
