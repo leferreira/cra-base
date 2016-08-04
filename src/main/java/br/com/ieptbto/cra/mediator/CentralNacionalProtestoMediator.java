@@ -11,6 +11,8 @@ import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.conversor.ConversorCnpVO;
 import br.com.ieptbto.cra.dao.CentralNancionalProtestoDAO;
@@ -44,6 +46,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 	@Autowired
 	MunicipioDAO municipioDAO;
 
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<Instituicao> consultarCartoriosCentralNacionalProtesto() {
 		return centralNancionalProtestoDAO.consultarCartoriosCentralNacionalProtesto();
 	}

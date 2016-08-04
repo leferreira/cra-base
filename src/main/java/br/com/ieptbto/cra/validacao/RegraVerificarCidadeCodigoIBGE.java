@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.exception.Erro;
-import br.com.ieptbto.cra.exception.ValidacaoErroException;
+import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.MunicipioMediator;
 import br.com.ieptbto.cra.validacao.regra.RegraCabecalho;
 
@@ -29,9 +29,14 @@ public class RegraVerificarCidadeCodigoIBGE extends RegraCabecalho {
 	protected void executar() {
 		Municipio municipio = municipioMediator.buscaMunicipioPorCodigoIBGE(getCabecalhoRemessa().getCodigoMunicipio());
 		if (municipio == null) {
-			getErros().add(new ValidacaoErroException(getCabecalhoRemessa().getRemessa().getArquivo().getNomeArquivo(),
-					Erro.CODIGO_IBGE_NAO_CADASTRADO, getCabecalhoRemessa().getCodigoMunicipio().toString()));
-			logger.error(Erro.CODIGO_IBGE_NAO_CADASTRADO.getMensagemErro());
+			throw new InfraException("Código do Município " + getCabecalhoRemessa().getCodigoMunicipio() + " não encontrado ou inválido!");
+		}
+
+		if (!TipoArquivoEnum.REMESSA.equals(getCabecalhoRemessa().getRemessa().getArquivo().getTipoArquivo().getTipoArquivo())) {
+			Municipio municipioEnvio = municipioMediator.carregarMunicipio(getCabecalhoRemessa().getRemessa().getInstituicaoOrigem().getMunicipio());
+			if (!municipio.equals(municipioEnvio)) {
+				throw new InfraException("Código do Município no cabeçalho não pertence a instituição que está enviando o arquivo!");
+			}
 		}
 	}
 }
