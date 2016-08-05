@@ -81,7 +81,7 @@ public class UsuarioMediator {
             }
             if (instituicaoDao.isInstituicaoAtiva(usuario.getInstituicao())) {
                 if (usuario.isStatus() == true) {
-                    logger.info("O usuário <<" + usuario.getLogin() + ">> entrou na CRA.");
+                    logger.info("O usuário <<" + usuario.getLogin() + ">> entrou na CRA via convênio.");
                     return usuario;
                 } else {
                     logger.error(Erro.USUARIO_INATIVO.getMensagemErro());
@@ -96,7 +96,7 @@ public class UsuarioMediator {
             if (filiado != null && filiado.getUsuario().isSenha(senha)) {
                 if (filiado.getFiliado().isAtivo()) {
                     if (filiado.getUsuario().isStatus() == true) {
-                        logger.info("O usuário <<" + filiado.getUsuario().getLogin() + ">> entrou na CRA.");
+                        logger.info("O usuário <<" + filiado.getUsuario().getLogin() + ">> entrou na CRA via convênio.");
                         return filiado.getUsuario();
                     } else {
                         logger.error(Erro.USUARIO_INATIVO.getMensagemErro());
