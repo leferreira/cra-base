@@ -1,5 +1,6 @@
-package br.com.ieptbto.cra.validacao.regra;
+package br.com.ieptbto.cra.regra.entrada;
 
+import java.io.File;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,20 +21,22 @@ import br.com.ieptbto.cra.mediator.TipoInstituicaoMediator;
  *
  */
 @Service
-public class RegraValidarInstituicaoEnvio extends RegrasDeEntrada {
+public class RegraInstituicaoEnvio extends RegraEntrada {
 
 	@Autowired
-	private TipoInstituicaoMediator tipoInstituicaoMediator;
+	TipoInstituicaoMediator tipoInstituicaoMediator;
+
 	private Instituicao instituicao;
 	private TipoArquivoEnum tipoArquivo;
 
 	@Override
-	protected void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+	public void validar(File file, Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+		this.file = file;
 		this.arquivo = arquivo;
 		this.usuario = usuario;
+		this.erros = erros;
 		this.instituicao = usuario.getInstituicao();
 		this.tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
-		setErros(erros);
 
 		executar();
 	}
@@ -90,5 +93,4 @@ public class RegraValidarInstituicaoEnvio extends RegrasDeEntrada {
 	public void setTipoArquivo(TipoArquivoEnum tipoArquivo) {
 		this.tipoArquivo = tipoArquivo;
 	}
-
 }

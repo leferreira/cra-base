@@ -1,7 +1,6 @@
 package br.com.ieptbto.cra.mediator;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,6 +16,7 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.dao.ArquivoDAO;
@@ -29,6 +29,7 @@ import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.LayoutArquivo;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
@@ -45,13 +46,13 @@ import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 public class ArquivoMediator extends BaseMediator {
 
 	@Autowired
-	ArquivoDAO arquivoDAO;
+	private ArquivoDAO arquivoDAO;
 	@Autowired
-	TipoArquivoDAO tipoArquivoDAO;
+	private TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 	@Autowired
-	ProcessadorArquivo processadorArquivo;
+	private ProcessadorArquivo processadorArquivo;
 
 	private List<Exception> erros;
 	private Arquivo arquivo;
@@ -61,8 +62,16 @@ public class ArquivoMediator extends BaseMediator {
 		return arquivoDAO.buscarPorPK(arquivo, Arquivo.class);
 	}
 
+	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos, Municipio pracaProtesto,
+			LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
+		return arquivoDAO.buscarArquivosAvancado(arquivo, usuario, tipoArquivos, pracaProtesto, dataInicio, dataFim, situacoes);
+	}
+
+	public Arquivo buscarArquivoEnviado(Usuario usuario, String nomeArquivo) {
+		return arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(usuario.getInstituicao(), nomeArquivo);
+	}
+
 	/**
-	 * 
 	 * Salvar arquivo pela aplicação.
 	 * 
 	 * @param arquivo
@@ -71,18 +80,50 @@ public class ArquivoMediator extends BaseMediator {
 	 * @return
 	 */
 	public ArquivoMediator salvar(Arquivo arquivo, FileUpload uploadedFile, Usuario usuario) {
-		arquivo.setTipoArquivo(getTipoArquivo(arquivo));
-		arquivo.setHoraEnvio(new LocalTime());
-		arquivo.setDataEnvio(new LocalDate());
-		arquivo.setDataRecebimento(new LocalDate().toDate());
-		arquivo.setStatusArquivo(setStatusArquivo());
-		arquivo.setUsuarioEnvio(usuario);
-		arquivo.setInstituicaoEnvio(getInstituicaoEnvioArquivo(usuario, uploadedFile));
+		this.erros = new ArrayList<Exception>();
 
-		arquivo = processarArquivo(arquivo, uploadedFile);
-		setArquivo(arquivoDAO.salvar(arquivo, usuario, getErros()));
+		this.arquivo = arquivo;
+		this.arquivo.setNomeArquivo(uploadedFile.getClientFileName());
+		this.arquivo.setTipoArquivo(getTipoArquivo(arquivo));
+		this.arquivo.setHoraEnvio(new LocalTime());
+		this.arquivo.setDataEnvio(new LocalDate());
+		this.arquivo.setDataRecebimento(new LocalDate().toDate());
+		this.arquivo.setStatusArquivo(setStatusArquivo());
+		this.arquivo.setUsuarioEnvio(usuario);
+		this.arquivo.setInstituicaoEnvio(getInstituicaoEnvioArquivo(usuario, uploadedFile));
+
+		this.arquivo = processadorArquivo.processarArquivo(uploadedFile, arquivo, getErros());
+		this.arquivo = arquivoDAO.salvar(arquivo, usuario, getErros());
+
 		loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, getTipoAcaoEnvio(arquivo), "Arquivo " + arquivo.getNomeArquivo() + ", enviado por "
 				+ arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso via aplicação.");
+		return this;
+	}
+
+	/**
+	 * Salvar arquivo pelo ws.
+	 * 
+	 * @param arquivoRecebido
+	 * @param usuario
+	 * @param nomeArquivo
+	 * @return MensagemCra
+	 */
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public ArquivoMediator salvarWS(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
+		this.erros = new ArrayList<Exception>();
+
+		this.arquivo = new Arquivo();
+		this.arquivo.setNomeArquivo(nomeArquivo);
+		this.arquivo.setUsuarioEnvio(usuario);
+		this.arquivo.setRemessas(new ArrayList<Remessa>());
+		this.arquivo.setHoraEnvio(new LocalTime());
+		this.arquivo.setDataEnvio(new LocalDate());
+		this.arquivo.setDataRecebimento(new LocalDate().toDate());
+		this.arquivo.setInstituicaoEnvio(usuario.getInstituicao());
+
+		this.arquivo = processadorArquivo.processarArquivo(arquivoRecebido, arquivo, getErros());
+		this.arquivo = arquivoDAO.salvar(arquivo, usuario, getErros());
+
 		return this;
 	}
 
@@ -181,10 +222,6 @@ public class ArquivoMediator extends BaseMediator {
 		return tipoArquivoDAO.buscarTipoArquivo(arquivo);
 	}
 
-	private Arquivo processarArquivo(Arquivo arquivo, FileUpload uploadedFile) throws InfraException {
-		return processadorArquivo.processarArquivo(uploadedFile, arquivo, getErros());
-	}
-
 	public List<Exception> getErros() {
 		if (erros == null) {
 			erros = new ArrayList<Exception>();
@@ -202,42 +239,5 @@ public class ArquivoMediator extends BaseMediator {
 
 	public Arquivo getArquivo() {
 		return arquivo;
-	}
-
-	/**
-	 * Download de arquivos TXT de instituições e convênios
-	 * 
-	 * @param instituicao
-	 * @param arquivo
-	 * @return
-	 */
-	public File baixarArquivoTXT(Instituicao instituicao, Arquivo arquivo) {
-		List<Remessa> remessas = null;
-		if (!instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
-				&& !arquivo.getStatusArquivo().getSituacaoArquivo().equals(SituacaoArquivo.ENVIADO)) {
-			StatusArquivo status = new StatusArquivo();
-			status.setData(new LocalDateTime());
-			status.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
-			arquivo.setStatusArquivo(status);
-			arquivoDAO.alterarStatusArquivo(arquivo);
-		}
-
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
-			remessas = arquivoDAO.baixarArquivoInstituicaoRemessa(arquivo);
-		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
-			remessas = arquivoDAO.baixarArquivoInstituicaoConfirmacao(arquivo);
-		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-			remessas = arquivoDAO.baixarArquivoInstituicaoRetorno(arquivo);
-		}
-		return processadorArquivo.processarArquivoTXT(arquivo, remessas);
-	}
-
-	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos, Municipio pracaProtesto,
-			LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
-		return arquivoDAO.buscarArquivosAvancado(arquivo, usuario, tipoArquivos, pracaProtesto, dataInicio, dataFim, situacoes);
-	}
-
-	public Arquivo buscarArquivoEnviado(Usuario usuario, String nomeArquivo) {
-		return arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(usuario.getInstituicao(), nomeArquivo);
 	}
 }

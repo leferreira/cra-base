@@ -13,8 +13,9 @@ import br.com.ieptbto.cra.entidade.vo.RemessaVO;
  */
 public abstract class Gerador {
 
-	protected static final Logger logger = Logger.getLogger(AbstractFabricaDeArquivo.class);
+	protected static final Logger logger = Logger.getLogger(Gerador.class);
 	protected static final String NEW_LINE = "\r\n";
+
 	protected RemessaVO remessaVO;
 
 	public void setRemessaVO(RemessaVO remessaVO) {

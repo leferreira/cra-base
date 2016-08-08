@@ -33,7 +33,6 @@ public class ConversorArquivoVO {
 			remessa.setTipoArquivo(arquivoRecebido.getTipoArquivo());
 			remessas.add(remessa);
 		}
-
 		return remessas;
 	}
 

@@ -17,12 +17,12 @@ import br.com.ieptbto.cra.entidade.TituloFiliado;
 public class AvalistaMediator {
 
 	@Autowired
-	AvalistaDAO avalistaDAO;
+	private AvalistaDAO avalistaDAO;
 
 	public void removerAvalista(Avalista avalista) {
 		avalistaDAO.remover(avalista);
 	}
-	
+
 	public List<Avalista> buscarAvalistasPorTitulo(TituloFiliado titulo) {
 		return avalistaDAO.buscarAvalistasPorTitulo(titulo);
 	}

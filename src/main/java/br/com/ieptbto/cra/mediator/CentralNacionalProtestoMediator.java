@@ -11,8 +11,6 @@ import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.conversor.ConversorCnpVO;
 import br.com.ieptbto.cra.dao.CentralNancionalProtestoDAO;
@@ -28,9 +26,9 @@ import br.com.ieptbto.cra.entidade.vo.RodapeCnpVO;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.regra.FabricaRegraValidacaoCNP;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
-import br.com.ieptbto.cra.validacao.ValidarRegistroCnp;
 
 /**
  * @author Thasso Araújo
@@ -40,13 +38,12 @@ import br.com.ieptbto.cra.validacao.ValidarRegistroCnp;
 public class CentralNacionalProtestoMediator extends BaseMediator {
 
 	@Autowired
-	ValidarRegistroCnp validarRegistroCnp;
+	private FabricaRegraValidacaoCNP validarRegistroCnp;
 	@Autowired
-	CentralNancionalProtestoDAO centralNancionalProtestoDAO;
+	private CentralNancionalProtestoDAO centralNancionalProtestoDAO;
 	@Autowired
-	MunicipioDAO municipioDAO;
+	private MunicipioDAO municipioDAO;
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<Instituicao> consultarCartoriosCentralNacionalProtesto() {
 		return centralNancionalProtestoDAO.consultarCartoriosCentralNacionalProtesto();
 	}

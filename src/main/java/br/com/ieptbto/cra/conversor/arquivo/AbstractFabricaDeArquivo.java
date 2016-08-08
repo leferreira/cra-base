@@ -22,8 +22,6 @@ public abstract class AbstractFabricaDeArquivo {
 
 	public abstract Arquivo converter();
 
-	public abstract void validar();
-
 	public File getArquivoFisico() {
 		return arquivoFisico;
 	}

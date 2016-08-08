@@ -13,7 +13,7 @@ import br.com.ieptbto.cra.enumeration.CraServiceEnum;
 public class CraServiceMediator {
 
 	@Autowired
-	CraServiceDAO craServiceDAO;
+	private CraServiceDAO craServiceDAO;
 
 	public void atualizarStatusServico(CraServiceConfig service) {
 		craServiceDAO.atualizarStatusServico(service);

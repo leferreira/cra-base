@@ -1,16 +1,15 @@
-package br.com.ieptbto.cra.validacao.regra;
+package br.com.ieptbto.cra.regra.entrada;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.LayoutArquivo;
 import br.com.ieptbto.cra.exception.Erro;
@@ -24,35 +23,37 @@ import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
  *
  */
 @Service
-public class RegraValidaTipoArquivoTXT {
+public class RegraTipoArquivoTXT extends RegraEntrada {
 
 	private static final int POSICAO_FINAL_NUMERO_LINHA = 600;
 	private static final int POSICAO_INICIAL_NUMERO_LINHA = 596;
-	private static final Logger logger = Logger.getLogger(RegraValidaTipoArquivoTXT.class);
-	private File arquivo;
-	private List<Exception> erros;
 	private String linha;
 
-	public void validar(File arquivo, Usuario usuario, List<Exception> erros) {
+	public void validar(File file, Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+		this.file = file;
 		this.arquivo = arquivo;
+		this.usuario = usuario;
 		this.erros = erros;
+
 		executar();
 	}
 
 	protected void executar() {
 		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(arquivo)));
-			linha = reader.readLine();
-			reader.close();
+			if (file != null) {
+				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+				linha = reader.readLine();
+				reader.close();
 
-			if (LayoutArquivo.TXT.equals(LayoutArquivo.get(linha))) {
-				validaInicioLinha(linha);
-				validaTamanhoLinha(linha, arquivo);
+				if (LayoutArquivo.TXT.equals(LayoutArquivo.get(linha))) {
+					validaInicioLinha(linha);
+					validaTamanhoLinha(linha, file);
+				}
 			}
 
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			getErros().add(new ValidacaoErroException(arquivo.getName(), e.getMessage(), e.getCause()));
+			getErros().add(new ValidacaoErroException(file.getName(), e.getMessage(), e.getCause()));
 			throw new InfraException(Erro.NAO_FOI_POSSIVEL_VERIFICAR_A_PRIMEIRA_LINHA_DO_ARQUIVO.getMensagemErro());
 		}
 	}
@@ -90,12 +91,5 @@ public class RegraValidaTipoArquivoTXT {
 
 	private int getNumeroLinha() {
 		return Integer.parseInt(linha.substring(POSICAO_INICIAL_NUMERO_LINHA, POSICAO_FINAL_NUMERO_LINHA));
-	}
-
-	public List<Exception> getErros() {
-		if (erros == null) {
-			erros = new ArrayList<Exception>();
-		}
-		return erros;
 	}
 }

@@ -18,7 +18,7 @@ import br.com.ieptbto.cra.entidade.UsuarioFiliado;
 public class UsuarioFiliadoMediator {
 
 	@Autowired
-	UsuarioFiliadoDAO usuarioFiliadoDAO;
+	private UsuarioFiliadoDAO usuarioFiliadoDAO;
 
 	public UsuarioFiliado salvarUsuarioFiliado(UsuarioFiliado usuarioFiliado) {
 		return usuarioFiliadoDAO.salvar(usuarioFiliado);

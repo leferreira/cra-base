@@ -1,7 +1,6 @@
 package br.com.ieptbto.cra.mediator;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -47,14 +46,12 @@ import br.com.ieptbto.cra.entidade.vo.AutorizacaoCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.CartorioDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.ComarcaDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.TituloDesistenciaCancelamentoSerproVO;
-import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -68,17 +65,15 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 	protected static final Logger logger = Logger.getLogger(AutorizacaoCancelamentoMediator.class);
 
 	@Autowired
-	ConversorDesistenciaProtesto conversorArquivoDesistenciaProtesto;
+	private ConversorDesistenciaProtesto conversorArquivoDesistenciaProtesto;
 	@Autowired
-	ArquivoDAO arquivoDAO;
+	private ArquivoDAO arquivoDAO;
 	@Autowired
-	AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
+	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 	@Autowired
-	TipoArquivoDAO tipoArquivoDAO;
-	@Autowired
-	ProcessadorArquivo processadorArquivo;
+	private TipoArquivoDAO tipoArquivoDAO;
 
 	private int sequenciaRegistro = 2;
 	private int quantidadeDesistencias = 0;
@@ -94,51 +89,8 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 		return autorizacaoCancelamentoDAO.buscarAutorizacaoCancelamento(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
-	public File baixarAutorizacaoTXT(Usuario usuario, AutorizacaoCancelamento autorizacaoCancelamento) {
-		File file = null;
-
-		try {
-			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
-					&& autorizacaoCancelamento.getDownload() == false) {
-				autorizacaoCancelamentoDAO.alterarSituacaoAutorizacaoCancelamento(autorizacaoCancelamento, true);
-			}
-			autorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamento(autorizacaoCancelamento);
-
-			BigDecimal valorTotal = BigDecimal.ZERO;
-			int totalRegistro = 0;
-			for (PedidoAutorizacaoCancelamento pedido : autorizacaoCancelamento.getAutorizacoesCancelamentos()) {
-				valorTotal = valorTotal.add(pedido.getValorTitulo());
-				totalRegistro++;
-			}
-
-			RemessaAutorizacaoCancelamento remessa = new RemessaAutorizacaoCancelamento();
-			remessa.setCabecalho(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getCabecalho());
-			remessa.getCabecalho().setQuantidadeDesistencia(1);
-			remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
-			remessa.setAutorizacaoCancelamento(new ArrayList<AutorizacaoCancelamento>());
-			remessa.getAutorizacaoCancelamento().add(autorizacaoCancelamento);
-			remessa.setRodape(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getRodape());
-			remessa.getRodape().setQuantidadeDesistencia(1);
-			remessa.getRodape().setSomatorioValorTitulo(valorTotal);
-			remessa.setArquivo(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo());
-			file = processadorArquivo.processarRemessaAutorizacaoCancelamentoTXT(remessa, usuario);
-
-			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-				loggerCra.sucess(usuario, CraAcao.DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO,
-						"Arquivo " + autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo().getNomeArquivo()
-								+ ", recebido com sucesso por " + usuario.getInstituicao().getNomeFantasia() + ".");
-			}
-		} catch (Exception ex) {
-			logger.info(ex.getMessage(), ex);
-			loggerCra.error(usuario, CraAcao.DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO, "Erro Download Manual: " + ex.getMessage(), ex);
-			throw new InfraException("Não foi possível fazer o download do arquivo de Autorização de Cancelamento! Entre em contato com a CRA !");
-		}
-		return file;
-	}
-
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Arquivo processarAutorizacaoCancelamento(String nomeArquivo, String dados, List<Exception> erros,
-			Usuario usuario) {
+	public Arquivo processarAutorizacaoCancelamento(String nomeArquivo, String dados, List<Exception> erros, Usuario usuario) {
 		Arquivo arquivo = new Arquivo();
 		arquivo.setNomeArquivo(nomeArquivo);
 		arquivo.setUsuarioEnvio(usuario);

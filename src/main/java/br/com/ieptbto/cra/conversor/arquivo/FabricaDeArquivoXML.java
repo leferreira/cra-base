@@ -19,19 +19,13 @@ import br.com.ieptbto.cra.entidade.Rodape;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
-import br.com.ieptbto.cra.entidade.vo.ConfirmacaoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
-import br.com.ieptbto.cra.entidade.vo.RetornoVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoCampo51;
-import br.com.ieptbto.cra.error.CodigoErro;
-import br.com.ieptbto.cra.exception.XmlCraException;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.util.DataUtil;
-import br.com.ieptbto.cra.validacao.ValidarCabecalhoRemessa;
-import br.com.ieptbto.cra.validacao.ValidarRodape;
 
 /**
  * 
@@ -41,10 +35,6 @@ import br.com.ieptbto.cra.validacao.ValidarRodape;
 @Service
 public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 
-	@Autowired
-	private ValidarCabecalhoRemessa validarCabecalhoRemessa;
-	@Autowired
-	private ValidarRodape validarRodape;
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
 	private List<RemessaVO> arquivoVO;
@@ -56,112 +46,22 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 		converter();
 	}
 
-	public Arquivo processarConfirmacaoXML(Arquivo arquivo, ConfirmacaoVO confirmacaoVO, List<Exception> erros) {
-		this.arquivo = arquivo;
-		this.erros = erros;
-
-		RemessaVO remessaVO = new RemessaVO();
-		remessaVO.setCabecalho(confirmacaoVO.getCabecalho());
-		remessaVO.setRodapes(confirmacaoVO.getRodape());
-		remessaVO.setTitulos(new ArrayList<TituloVO>());
-		remessaVO.getTitulos().addAll(confirmacaoVO.getTitulos());
-
-		Remessa remessa = new Remessa();
-		remessa.setArquivo(arquivo);
-		remessa.setCabecalho(getCabecalho(remessaVO.getCabecalho()));
-		remessa.getCabecalho().setRemessa(remessa);
-		remessa.setRodape(getRodape(remessaVO.getRodape()));
-		remessa.getRodape().setRemessa(remessa);
-		remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho()));
-		remessa.setInstituicaoOrigem(getArquivo().getInstituicaoEnvio());
-		remessa.setDataRecebimento(getDataRecebimento(remessaVO.getCabecalho().getDataMovimento()));
-		remessa.setTitulos(getTitulos(remessaVO.getTitulos(), remessa));
-		arquivo.getRemessas().add(remessa);
-
-		verificarCabecalhoRodape(remessa);
-		return arquivo;
-
-	}
-
-	public Arquivo processarRetornoXML(Arquivo arquivo, RetornoVO retornoVO, List<Exception> erros) {
-		this.arquivo = arquivo;
-		this.erros = erros;
-
-		RemessaVO remessaVO = new RemessaVO();
-		remessaVO.setCabecalho(retornoVO.getCabecalho());
-		remessaVO.setRodapes(retornoVO.getRodape());
-		remessaVO.setTitulos(new ArrayList<TituloVO>());
-		remessaVO.getTitulos().addAll(retornoVO.getTitulos());
-
-		Remessa remessa = new Remessa();
-		remessa.setArquivo(arquivo);
-		remessa.setCabecalho(getCabecalho(remessaVO.getCabecalho()));
-		remessa.getCabecalho().setRemessa(remessa);
-		remessa.setRodape(getRodape(remessaVO.getRodape()));
-		remessa.getRodape().setRemessa(remessa);
-		remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho()));
-		remessa.setInstituicaoOrigem(getArquivo().getInstituicaoEnvio());
-		remessa.setDataRecebimento(getDataRecebimento(remessaVO.getCabecalho().getDataMovimento()));
-		remessa.setTitulos(getTitulos(remessaVO.getTitulos(), remessa));
-		arquivo.getRemessas().add(remessa);
-
-		verificarCabecalhoRodape(remessa);
-		return arquivo;
-	}
-
-	private void verificarCabecalhoRodape(Remessa remessa) {
-		validarCabecalhoRemessa.validar(remessa.getCabecalho(), erros);
-		validarRodape.validar(remessa.getRodape(), erros);
-	}
-
 	public Arquivo converter() {
 		for (RemessaVO remessaVO : getArquivoVO()) {
-			if (validar(remessaVO)) {
-				Remessa remessa = new Remessa();
-				remessa.setArquivo(getArquivo());
-				remessa.setCabecalho(getCabecalho(remessaVO.getCabecalho()));
-				remessa.getCabecalho().setRemessa(remessa);
-				remessa.setRodape(getRodape(remessaVO.getRodape()));
-				remessa.getRodape().setRemessa(remessa);
-				remessa.setArquivo(getArquivo());
-				remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho()));
-				remessa.setInstituicaoOrigem(getArquivo().getInstituicaoEnvio());
-				remessa.setDataRecebimento(getDataRecebimento(remessaVO.getCabecalho().getDataMovimento()));
-				remessa.setTitulos(getTitulos(remessaVO.getTitulos(), remessa));
-				getArquivo().getRemessas().add(remessa);
-			}
+			Remessa remessa = new Remessa();
+			remessa.setArquivo(getArquivo());
+			remessa.setCabecalho(getCabecalho(remessaVO.getCabecalho()));
+			remessa.getCabecalho().setRemessa(remessa);
+			remessa.setRodape(getRodape(remessaVO.getRodape()));
+			remessa.getRodape().setRemessa(remessa);
+			remessa.setArquivo(getArquivo());
+			remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho()));
+			remessa.setInstituicaoOrigem(getArquivo().getInstituicaoEnvio());
+			remessa.setDataRecebimento(getDataRecebimento(remessaVO.getCabecalho().getDataMovimento()));
+			remessa.setTitulos(getTitulos(remessaVO.getTitulos(), remessa));
+			getArquivo().getRemessas().add(remessa);
 		}
 		return getArquivo();
-	}
-
-	private boolean validar(RemessaVO remessaVO) {
-		validarCodigoMunicipio(remessaVO);
-		validarMunicipioAtivo(remessaVO);
-
-		if (getErros().isEmpty()) {
-			return true;
-		}
-		return false;
-	}
-
-	private void validarMunicipioAtivo(RemessaVO remessaVO) {
-		try {
-			getInstituicaoDestino(remessaVO.getCabecalho());
-
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex.getCause());
-			getErros().add(new XmlCraException(ex.getMessage(), remessaVO.getCabecalho().getCodigoMunicipio(),
-					remessaVO.getCabecalho().getCodigoMunicipio(), CodigoErro.CRA_MUNICIPIO_NAO_CADASTRADO_NA_CRA));
-		}
-	}
-
-	private void validarCodigoMunicipio(RemessaVO remessaVO) {
-		if (StringUtils.isEmpty(remessaVO.getCabecalho().getCodigoMunicipio())) {
-			logger.error(CodigoErro.CRA_CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao());
-			getErros().add(new XmlCraException(CodigoErro.CRA_CODIGO_DO_MUNICIPIO_NAO_INFORMADO.getDescricao(),
-					remessaVO.getCabecalho().getCodigoMunicipio(), remessaVO.getCabecalho().getCodigoMunicipio(),
-					CodigoErro.CRA_CODIGO_DO_MUNICIPIO_NAO_INFORMADO));
-		}
 	}
 
 	private LocalDate getDataRecebimento(String dataMovimento) {
@@ -224,10 +124,6 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 
 	private CabecalhoRemessa getCabecalho(CabecalhoVO cabecalhoVO) {
 		return CabecalhoRemessa.parseCabecalhoVO(cabecalhoVO);
-	}
-
-	@Override
-	public void validar() {
 	}
 
 	public List<RemessaVO> getArquivoVO() {

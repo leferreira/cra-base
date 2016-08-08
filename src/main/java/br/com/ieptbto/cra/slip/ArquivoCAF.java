@@ -1,4 +1,4 @@
-package br.com.ieptbto.cra.arquivoDePara;
+package br.com.ieptbto.cra.slip;
 
 import java.io.BufferedReader;
 import java.io.IOException;

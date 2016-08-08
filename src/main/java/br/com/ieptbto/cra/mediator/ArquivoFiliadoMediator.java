@@ -34,13 +34,13 @@ import br.com.ieptbto.cra.util.DataUtil;
 public class ArquivoFiliadoMediator {
 
 	@Autowired
-	TipoArquivoMediator tipoArquivoMediator;
+	private TipoArquivoMediator tipoArquivoMediator;
 	@Autowired
-	ConversorArquivoFiliado conversorArquivoFiliado;
+	private ConversorArquivoFiliado conversorArquivoFiliado;
 	@Autowired
-	ArquivoDAO arquivoDAO;
+	private ArquivoDAO arquivoDAO;
 	@Autowired
-	LayoutFiliadoDAO layoutFiliadoDao;
+	private LayoutFiliadoDAO layoutFiliadoDao;
 
 	protected static final Logger logger = Logger.getLogger(ArquivoFiliadoMediator.class);
 

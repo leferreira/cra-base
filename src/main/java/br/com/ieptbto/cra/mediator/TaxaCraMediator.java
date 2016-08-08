@@ -18,7 +18,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class TaxaCraMediator extends BaseMediator {
 
 	@Autowired
-	TaxaCraDAO taxaCraDAO;
+	private TaxaCraDAO taxaCraDAO;
 
 	public TaxaCra buscarTaxaCraVigente(LocalDate dataCancelamentoOuPagamento) {
 		return taxaCraDAO.buscarTaxaCraVigente(dataCancelamentoOuPagamento);

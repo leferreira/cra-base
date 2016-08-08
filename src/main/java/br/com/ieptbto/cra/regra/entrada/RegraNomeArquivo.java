@@ -1,5 +1,6 @@
-package br.com.ieptbto.cra.validacao.regra;
+package br.com.ieptbto.cra.regra.entrada;
 
+import java.io.File;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -16,13 +17,15 @@ import br.com.ieptbto.cra.util.DataUtil;
  *
  */
 @Service
-public class RegraNomeArquivo extends RegrasDeEntrada {
+public class RegraNomeArquivo extends RegraEntrada {
 
 	@Override
-	protected void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
-		this.usuario = usuario;
+	public void validar(File file, Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+		this.file = file;
 		this.arquivo = arquivo;
-		setErros(erros);
+		this.usuario = usuario;
+		this.erros = erros;
+
 		executar();
 	}
 

@@ -1,7 +1,6 @@
 package br.com.ieptbto.cra.mediator;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -55,14 +54,12 @@ import br.com.ieptbto.cra.entidade.vo.ComarcaDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.DesistenciaSerproVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.TituloDesistenciaCancelamentoSerproVO;
-import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -76,21 +73,19 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 	protected static final Logger logger = Logger.getLogger(DesistenciaProtestoMediator.class);
 
 	@Autowired
-	ConversorDesistenciaProtesto conversorArquivoDesistenciaProtesto;
+	private ConversorDesistenciaProtesto conversorArquivoDesistenciaProtesto;
 	@Autowired
-	ArquivoDAO arquivoDAO;
+	private ArquivoDAO arquivoDAO;
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 	@Autowired
-	TipoArquivoDAO tipoArquivoDAO;
+	private TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
-	DesistenciaDAO desistenciaDAO;
+	private DesistenciaDAO desistenciaDAO;
 	@Autowired
-	CancelamentoDAO cancelamentoDAO;
+	private CancelamentoDAO cancelamentoDAO;
 	@Autowired
-	AutorizacaoCancelamentoDAO autorizacaoDAO;
-	@Autowired
-	ProcessadorArquivo processadorArquivo;
+	private AutorizacaoCancelamentoDAO autorizacaoDAO;
 
 	private int sequenciaRegistro = 2;
 	private int quantidadeDesistencias = 0;
@@ -123,48 +118,6 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
 			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		return desistenciaDAO.buscarDesistenciaProtesto(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
-	}
-
-	public File baixarDesistenciaTXT(Usuario usuario, DesistenciaProtesto desistenciaProtesto) {
-		File file = null;
-
-		try {
-			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
-					&& desistenciaProtesto.getDownload() == false) {
-				desistenciaDAO.alterarSituacaoDesistenciaProtesto(desistenciaProtesto, true);
-			}
-			desistenciaProtesto = desistenciaDAO.buscarDesistenciaProtesto(desistenciaProtesto);
-
-			BigDecimal valorTotal = BigDecimal.ZERO;
-			int totalRegistro = 0;
-			for (PedidoDesistencia pedido : desistenciaProtesto.getDesistencias()) {
-				valorTotal = valorTotal.add(pedido.getValorTitulo());
-				totalRegistro++;
-			}
-
-			RemessaDesistenciaProtesto remessa = new RemessaDesistenciaProtesto();
-			remessa.setCabecalho(desistenciaProtesto.getRemessaDesistenciaProtesto().getCabecalho());
-			remessa.getCabecalho().setQuantidadeDesistencia(1);
-			remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
-			remessa.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>());
-			remessa.getDesistenciaProtesto().add(desistenciaProtesto);
-			remessa.setRodape(desistenciaProtesto.getRemessaDesistenciaProtesto().getRodape());
-			remessa.getRodape().setQuantidadeDesistencia(1);
-			remessa.getRodape().setSomatorioValorTitulo(valorTotal);
-			remessa.setArquivo(desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo());
-			file = processadorArquivo.processarRemessaDesistenciaProtestoTXT(remessa, usuario);
-
-			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-				loggerCra.sucess(usuario, CraAcao.DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO,
-						"Arquivo " + desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo() + ", recebido com sucesso por "
-								+ usuario.getInstituicao().getNomeFantasia() + ".");
-			}
-		} catch (Exception ex) {
-			logger.info(ex.getMessage(), ex);
-			loggerCra.error(usuario, CraAcao.DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO, "Erro Download Manual: " + ex.getMessage(), ex);
-			throw new InfraException("Não foi possível fazer o download do arquivo de Desistência de Protesto! Entre em contato com a CRA !");
-		}
-		return file;
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)

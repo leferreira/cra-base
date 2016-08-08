@@ -45,12 +45,11 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 public class AdministracaoMediator extends BaseMediator {
 
 	@Autowired
-	AdministracaoDAO administracaoDAO;
-
+	private AdministracaoDAO administracaoDAO;
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 	@Autowired
-	CentralNancionalProtestoDAO centralNancionalProtestoDAO;
+	private CentralNancionalProtestoDAO centralNancionalProtestoDAO;
 
 	public List<Arquivo> buscarArquivosParaRemover(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
 			ArrayList<TipoArquivoEnum> tiposArquivo) {

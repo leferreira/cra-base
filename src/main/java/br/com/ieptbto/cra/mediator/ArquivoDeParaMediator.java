@@ -4,8 +4,6 @@ import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.arquivoDePara.ArquivoBradesco;
-import br.com.ieptbto.cra.arquivoDePara.ArquivoCAF;
 import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
 import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
 import br.com.ieptbto.cra.entidade.AgenciaBradesco;
@@ -15,6 +13,8 @@ import br.com.ieptbto.cra.enumeration.BancoTipoRegraBasicaInstrumento;
 import br.com.ieptbto.cra.enumeration.PadraoArquivoDePara;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivoDeParaBB;
+import br.com.ieptbto.cra.slip.ArquivoBradesco;
+import br.com.ieptbto.cra.slip.ArquivoCAF;
 
 /**
  * @author Thasso Araújo
@@ -24,9 +24,9 @@ import br.com.ieptbto.cra.processador.ProcessadorArquivoDeParaBB;
 public class ArquivoDeParaMediator {
 
 	@Autowired
-	ArquivoDeParaDAO deParaDAO;
+	private ArquivoDeParaDAO deParaDAO;
 	@Autowired
-	ProcessadorArquivoDeParaBB processadorArquivoDeParaBB;
+	private ProcessadorArquivoDeParaBB processadorArquivoDeParaBB;
 
 	public void processarArquivo(FileUpload uploadedFile) {
 

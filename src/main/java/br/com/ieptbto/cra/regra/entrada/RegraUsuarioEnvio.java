@@ -1,5 +1,6 @@
-package br.com.ieptbto.cra.validacao.regra;
+package br.com.ieptbto.cra.regra.entrada;
 
+import java.io.File;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,49 +19,21 @@ import br.com.ieptbto.cra.mediator.UsuarioMediator;
  *
  */
 @Service
-public class RegraValidarUsuarioEnvio extends RegrasDeEntrada {
+public class RegraUsuarioEnvio extends RegraEntrada {
 
 	@Autowired
 	UsuarioMediator usuarioMediator;
 	@Autowired
 	InstituicaoMediator instituicaoMediator;
 
-	private Arquivo arquivo;
-	private Usuario usuario;
-
-	protected void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
-		setArquivo(arquivo);
-		setUsuario(usuario);
-		setErros(erros);
+	@Override
+	public void validar(File file, Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+		this.file = file;
+		this.arquivo = arquivo;
+		this.usuario = usuario;
+		this.erros = erros;
 
 		executar();
-	}
-
-	/**
-	 * Verifica se o usuário tem permissão para enviar o arquivo.
-	 */
-	private void verificarPermissaoDoUsuario() {
-		if (!usuarioMediator.isUsuarioAtivo(getUsuario())) {
-			throw new InfraException(Erro.USUARIO_INATIVO.getMensagemErro());
-		}
-	}
-
-	/**
-	 * Verifica se a instituição do usuário de envio tem permissão para envio do
-	 * arquivo.
-	 */
-	private void verificaInstituicaoDoUsuario() {
-		if (instituicaoMediator.isInstituicaoNaoExiste(getUsuario().getInstituicao())) {
-			throw new InfraException(Erro.INSTITUICAO_NAO_CADASTRADA.getMensagemErro());
-		}
-
-		if (!instituicaoMediator.isInstituicaoAtiva(getUsuario().getInstituicao())) {
-			throw new InfraException(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
-		}
-	}
-
-	private void verificarHorarioDeEnvio() {
-
 	}
 
 	@Override
@@ -70,20 +43,30 @@ public class RegraValidarUsuarioEnvio extends RegrasDeEntrada {
 		verificarHorarioDeEnvio();
 	}
 
-	public Arquivo getArquivo() {
-		return arquivo;
+	/**
+	 * Verifica se o usuário tem permissão para enviar o arquivo.
+	 */
+	private void verificarPermissaoDoUsuario() {
+		if (!usuarioMediator.isUsuarioAtivo(usuario)) {
+			throw new InfraException(Erro.USUARIO_INATIVO.getMensagemErro());
+		}
 	}
 
-	public Usuario getUsuario() {
-		return usuario;
+	/**
+	 * Verifica se a instituição do usuário de envio tem permissão para envio do
+	 * arquivo.
+	 */
+	private void verificaInstituicaoDoUsuario() {
+		if (instituicaoMediator.isInstituicaoNaoExiste(usuario.getInstituicao())) {
+			throw new InfraException(Erro.INSTITUICAO_NAO_CADASTRADA.getMensagemErro());
+		}
+
+		if (!instituicaoMediator.isInstituicaoAtiva(usuario.getInstituicao())) {
+			throw new InfraException(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
+		}
 	}
 
-	public void setArquivo(Arquivo arquivo) {
-		this.arquivo = arquivo;
-	}
+	private void verificarHorarioDeEnvio() {
 
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
 	}
-
 }

@@ -1,4 +1,4 @@
-package br.com.ieptbto.cra.validacao;
+package br.com.ieptbto.cra.regra;
 
 import java.math.BigDecimal;
 
@@ -13,7 +13,7 @@ import br.com.ieptbto.cra.util.DataUtil;
  *
  */
 @Service
-public class ValidarRegistroCnp {
+public class FabricaRegraValidacaoCNP {
 
 	public boolean validarProtesto(RegistroCnp registro) {
 		if (registro.getNumeroDocumentoCredor() == null) {

@@ -48,8 +48,6 @@ import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.processador.FabricaRegistro;
 import br.com.ieptbto.cra.processador.FabricaRegistroDesistenciaProtesto;
-import br.com.ieptbto.cra.validacao.ValidarCabecalhoRemessa;
-import br.com.ieptbto.cra.validacao.ValidarRodape;
 
 @SuppressWarnings("rawtypes")
 @Service
@@ -58,15 +56,12 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
 	@Autowired
-	private ValidarCabecalhoRemessa validarCabecalhoRemessa;
-	@Autowired
-	private ValidarRodape validarRodape;
-	@Autowired
 	private GeradorDeArquivosTXT geradorDeArquivosTXT;
 	@Autowired
 	private ConversorDesistenciaProtesto conversorDesistenciaProtesto;
 	@Autowired
 	private ConversorCancelamentoProtesto conversorCancelamentoProtesto;
+
 	private List<Exception> erros;
 	private Remessa remessa;
 	private List<Remessa> remessas;
@@ -80,7 +75,6 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		this.arquivo = arquivo;
 		this.erros = erros;
 		this.erros = new ArrayList<Exception>();
-		validar();
 		return this;
 	}
 
@@ -379,7 +373,6 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 			CabecalhoVO cabecalhoVO = CabecalhoVO.class.cast(registro);
 			CabecalhoRemessa cabecalho = new CabecalhoConversor().converter(CabecalhoRemessa.class, cabecalhoVO);
 			cabecalho.setRemessa(remessa);
-			validarCabecalhoRemessa.validar(cabecalho, erros);
 
 			if (erros.isEmpty()) {
 				remessa.setCabecalho(cabecalho);
@@ -408,7 +401,6 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 			if (erros.isEmpty()) {
 				RodapeVO rodapeVO = RodapeVO.class.cast(registro);
 				Rodape rodape = new RodapeConversor().converter(Rodape.class, rodapeVO);
-				validarRodape.validar(rodape, erros);
 				remessa.setRodape(rodape);
 				rodape.setRemessa(remessa);
 			} else {
@@ -437,11 +429,6 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 	public void setRemessa(Remessa remessa) {
 		this.remessa = remessa;
-	}
-
-	@Override
-	public void validar() {
-
 	}
 
 	public List<Remessa> getRemessas() {

@@ -17,17 +17,17 @@ import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 public class TipoArquivoMediator {
 
 	@Autowired
-	TipoArquivoDAO tipoArquivoDao;
-	
+	private TipoArquivoDAO tipoArquivoDao;
+
 	public TipoArquivo alterarTipoArquivo(TipoArquivo tipoArquivo) {
 		return tipoArquivoDao.alterar(tipoArquivo);
 	}
 
-	public List<TipoArquivo> getTiposArquivos(){
+	public List<TipoArquivo> getTiposArquivos() {
 		return tipoArquivoDao.buscarTiposArquivo();
 	}
-	
-	public TipoArquivo buscarTipoPorNome(TipoArquivoEnum tipoArquivo){
+
+	public TipoArquivo buscarTipoPorNome(TipoArquivoEnum tipoArquivo) {
 		return tipoArquivoDao.buscarPorTipoArquivo(tipoArquivo);
 	}
 }

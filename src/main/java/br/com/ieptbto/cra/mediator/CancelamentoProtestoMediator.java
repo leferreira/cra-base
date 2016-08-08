@@ -1,7 +1,6 @@
 package br.com.ieptbto.cra.mediator;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -48,14 +47,12 @@ import br.com.ieptbto.cra.entidade.vo.CancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.CartorioDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.ComarcaDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.TituloDesistenciaCancelamentoSerproVO;
-import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -69,17 +66,15 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 	protected static final Logger logger = Logger.getLogger(CancelamentoProtestoMediator.class);
 
 	@Autowired
-	ConversorDesistenciaProtesto conversorArquivoDesistenciaProtesto;
+	private ConversorDesistenciaProtesto conversorArquivoDesistenciaProtesto;
 	@Autowired
-	ArquivoDAO arquivoDAO;
+	private ArquivoDAO arquivoDAO;
 	@Autowired
-	CancelamentoDAO cancelamentoDAO;
+	private CancelamentoDAO cancelamentoDAO;
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 	@Autowired
-	TipoArquivoDAO tipoArquivoDAO;
-	@Autowired
-	ProcessadorArquivo processadorArquivo;
+	private TipoArquivoDAO tipoArquivoDAO;
 
 	private int sequenciaRegistro = 2;
 	private int quantidadeDesistencias = 0;
@@ -93,48 +88,6 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
 			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		return cancelamentoDAO.buscarCancelamentoProtesto(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
-	}
-
-	public File baixarCancelamentoTXT(Usuario usuario, CancelamentoProtesto cancelamentoProtesto) {
-		File file = null;
-
-		try {
-			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
-					&& cancelamentoProtesto.getDownload() == false) {
-				cancelamentoDAO.alterarSituacaoCancelamentoProtesto(cancelamentoProtesto, true);
-			}
-			cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoProtesto(cancelamentoProtesto);
-
-			BigDecimal valorTotal = BigDecimal.ZERO;
-			int totalRegistro = 0;
-			for (PedidoCancelamento pedido : cancelamentoProtesto.getCancelamentos()) {
-				valorTotal = valorTotal.add(pedido.getValorTitulo());
-				totalRegistro++;
-			}
-
-			RemessaCancelamentoProtesto remessa = new RemessaCancelamentoProtesto();
-			remessa.setCabecalho(cancelamentoProtesto.getRemessaCancelamentoProtesto().getCabecalho());
-			remessa.getCabecalho().setQuantidadeDesistencia(1);
-			remessa.getCabecalho().setQuantidadeRegistro(totalRegistro);
-			remessa.setCancelamentoProtesto(new ArrayList<CancelamentoProtesto>());
-			remessa.getCancelamentoProtesto().add(cancelamentoProtesto);
-			remessa.setRodape(cancelamentoProtesto.getRemessaCancelamentoProtesto().getRodape());
-			remessa.getRodape().setQuantidadeDesistencia(1);
-			remessa.getRodape().setSomatorioValorTitulo(valorTotal);
-			remessa.setArquivo(cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo());
-			file = processadorArquivo.processarRemessaCancelamentoProtestoTXT(remessa, usuario);
-
-			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-				loggerCra.sucess(usuario, CraAcao.DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO,
-						"Arquivo " + cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo().getNomeArquivo()
-								+ ", recebido com sucesso por " + usuario.getInstituicao().getNomeFantasia() + ".");
-			}
-		} catch (Exception ex) {
-			logger.info(ex.getMessage(), ex);
-			loggerCra.error(usuario, CraAcao.DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO, "Erro Download Manual: " + ex.getMessage(), ex);
-			throw new InfraException("Não foi possível fazer o download do arquivo de Cancelamento de Protesto! Entre em contato com a CRA !");
-		}
-		return file;
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)

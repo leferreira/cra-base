@@ -60,7 +60,6 @@ public class FabricaDeArquivo {
 	private TipoArquivoMediator tipoArquivoMediator;
 
 	public Arquivo processarArquivoFisico(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
-
 		String linha = getLinhaArquivo(arquivoFisico);
 
 		if (LayoutArquivo.TXT.equals(LayoutArquivo.get(linha))) {

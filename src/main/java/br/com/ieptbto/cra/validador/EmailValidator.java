@@ -1,4 +1,4 @@
-package br.com.ieptbto.cra.validator;
+package br.com.ieptbto.cra.validador;
 
 import org.apache.wicket.validation.CompoundValidator;
 import org.apache.wicket.validation.validator.PatternValidator;

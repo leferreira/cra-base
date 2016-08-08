@@ -38,9 +38,9 @@ public class BatimentoMediator {
 	public static final String CONSTANTE_TIPO_DEPOSITO_CARTORIO = "CARTORIO";
 
 	@Autowired
-	BatimentoDAO batimentoDAO;
+	private BatimentoDAO batimentoDAO;
 	@Autowired
-	RetornoMediator retornoMediator;
+	private RetornoMediator retornoMediator;
 
 	private Usuario usuario;
 	private FileUpload fileUpload;
