@@ -114,7 +114,7 @@ public class ProcessadorArquivo extends Processador {
 	}
 
 	private void converterArquivo() {
-		setArquivo(fabricaDeArquivo.processarArquivoFisico(getFile(), getArquivo(), getErros()));
+		setArquivo(fabricaDeArquivo.salvarArquivoFisico(getFile(), getArquivo(), getErros()));
 	}
 
 	private void validarArquivo() {

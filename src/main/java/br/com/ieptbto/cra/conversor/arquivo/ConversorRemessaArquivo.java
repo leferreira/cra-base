@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
@@ -20,7 +19,6 @@ import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
-import br.com.ieptbto.cra.fabrica.FabricaDeArquivo;
 
 /**
  * 
@@ -32,8 +30,6 @@ import br.com.ieptbto.cra.fabrica.FabricaDeArquivo;
 public class ConversorRemessaArquivo {
 
 	protected static final Logger logger = Logger.getLogger(ConversorRemessaArquivo.class);
-	@Autowired
-	private FabricaDeArquivo fabricaDeArquivo;
 
 	public ArquivoVO converter(Remessa remessa) {
 		ArquivoVO arquivo = new ArquivoVO();

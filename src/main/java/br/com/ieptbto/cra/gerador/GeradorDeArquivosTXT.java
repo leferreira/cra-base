@@ -1,4 +1,4 @@
-package br.com.ieptbto.cra.fabrica;
+package br.com.ieptbto.cra.gerador;
 
 import java.io.BufferedWriter;
 import java.io.File;

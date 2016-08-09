@@ -16,18 +16,18 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 public abstract class AbstractFabricaDeArquivo {
 
 	protected static final Logger logger = Logger.getLogger(AbstractFabricaDeArquivo.class);
-	protected File arquivoFisico;
+	protected File file;
 	protected Arquivo arquivo;
 	protected List<Exception> erros;
 
-	public abstract Arquivo converter();
+	public abstract Arquivo converter(File arquivoFisico, Arquivo arquivo, List<Exception> erros);
 
-	public File getArquivoFisico() {
-		return arquivoFisico;
+	public File getFile() {
+		return file;
 	}
 
-	public void setArquivoFisico(File arquivoFisico) {
-		this.arquivoFisico = arquivoFisico;
+	public void setFile(File arquivoFisico) {
+		this.file = arquivoFisico;
 	}
 
 	public Arquivo getArquivo() {
