@@ -49,7 +49,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @Repository
 public class ArquivoDAO extends AbstractBaseDAO {
- 
+
 	@Autowired
 	TituloDAO tituloDAO;
 	@Autowired
@@ -112,7 +112,6 @@ public class ArquivoDAO extends AbstractBaseDAO {
 						remessa.setCabecalho(save(remessa.getCabecalho()));
 						remessa.setRodape(save(remessa.getRodape()));
 					}
-					transaction.commit();						
 				}
 			} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
 				if (arquivo.getRemessaDesistenciaProtesto() != null) {
@@ -143,14 +142,13 @@ public class ArquivoDAO extends AbstractBaseDAO {
 							desistenciaProtestos.setDesistencias(pedidosProcessados);
 							desistenciasProtesto.add(desistenciaProtestos);
 						} else {
-							StringBuffer descricao = new StringBuffer();
-							String municipio = StringUtils.EMPTY;
+							String descricao = StringUtils.EMPTY;
+							String codigoMunicipio = StringUtils.EMPTY;
 							for (PedidoDesistencia pedidoDesistencia : pedidosDesistenciaComErro) {
-								descricao.append("Protocolo Inválido (" + pedidoDesistencia.getNumeroProtocolo() + ").");
-								municipio = pedidoDesistencia.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio();
+								descricao = descricao + "Protocolo Inválido (" + pedidoDesistencia.getNumeroProtocolo() + ").";
+								codigoMunicipio = pedidoDesistencia.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio();
 							}
-							erros.add(new DesistenciaCancelamentoException(descricao.toString(), municipio,
-									CodigoErro.CRA_PROTOCOLO_INVALIDO.getCodigo()));
+							erros.add(new DesistenciaCancelamentoException(descricao, codigoMunicipio, CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
 							pedidosDesistenciaComErro.clear();
 						}
 					}
@@ -172,8 +170,17 @@ public class ArquivoDAO extends AbstractBaseDAO {
 							save(pedido);
 						}
 					}
-					transaction.commit();
 				}
+
+				if (!erros.isEmpty()) {
+					/**
+					 * Caso haja algum erro no processamento será retornado o
+					 * arquivo sem finalizar a transação!
+					 */
+					return arquivo;
+				}
+				// transaction.commit();
+
 			} else if (TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
 				new InfraException("Não foi possivel enviar o Cancelamento de Protesto! Entre em contato com a CRA!");
 			} else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {

@@ -10,29 +10,27 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.joda.time.LocalDateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
 
-import br.com.ieptbto.cra.conversor.ConversorArquivoVO;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivoVO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoRetornoVO;
 import br.com.ieptbto.cra.entidade.vo.RetornoVO;
 import br.com.ieptbto.cra.enumeration.CraAcao;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.exception.XmlCraException;
+import br.com.ieptbto.cra.exception.TituloException;
 import br.com.ieptbto.cra.mediator.ArquivoMediator;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.webservice.VO.Descricao;
 import br.com.ieptbto.cra.webservice.VO.Detalhamento;
 import br.com.ieptbto.cra.webservice.VO.Mensagem;
 import br.com.ieptbto.cra.webservice.VO.MensagemCra;
+import br.com.ieptbto.cra.webservice.VO.MensagemErroCartorio;
 import br.com.ieptbto.cra.webservice.VO.MensagemXml;
 
 /**
@@ -40,14 +38,7 @@ import br.com.ieptbto.cra.webservice.VO.MensagemXml;
  *
  */
 @Service
-public class RetornoReceiver implements IArquivoReceiver {
-
-	protected static final Logger logger = Logger.getLogger(ConfirmacaoReceiver.class);
-
-	@Autowired
-	ArquivoMediator arquivoMediator;
-
-	private List<Exception> erros;
+public class RetornoReceiver extends AbstractArquivoReceiver {
 
 	@Override
 	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {
@@ -56,7 +47,7 @@ public class RetornoReceiver implements IArquivoReceiver {
 
 		ArquivoMediator arquivoRetorno = arquivoMediator.salvarWS(null, usuario, nomeArquivo);
 		if (!arquivoRetorno.getErros().isEmpty()) {
-
+			return gerarRespostaErrosRetorno(arquivoRetorno.getArquivo(), usuario, arquivoRetorno.getErros());
 		}
 		return gerarResposta(arquivoRetorno.getArquivo(), usuario);
 	}
@@ -91,69 +82,60 @@ public class RetornoReceiver implements IArquivoReceiver {
 
 	private MensagemXml gerarResposta(Arquivo arquivo, Usuario usuario) {
 		List<Mensagem> mensagens = new ArrayList<Mensagem>();
-		MensagemXml mensagemRetorno = new MensagemXml();
-		Descricao desc = new Descricao();
-		Detalhamento detal = new Detalhamento();
-		detal.setMensagem(mensagens);
+		MensagemXml mensagemXml = new MensagemXml();
+		Descricao descricao = new Descricao();
+		Detalhamento detalhamento = new Detalhamento();
+		detalhamento.setMensagem(mensagens);
 
-		mensagemRetorno.setDescricao(desc);
-		mensagemRetorno.setDetalhamento(detal);
-		mensagemRetorno.setCodigoFinal("0000");
-		mensagemRetorno.setDescricaoFinal("Arquivo processado com sucesso");
+		mensagemXml.setDescricao(descricao);
+		mensagemXml.setDetalhamento(detalhamento);
+		mensagemXml.setCodigoFinal(CodigoErro.CRA_SUCESSO.getCodigo());
+		mensagemXml.setDescricaoFinal(CodigoErro.CRA_SUCESSO.getDescricao());
 
-		desc.setDataEnvio(LocalDateTime.now().toString(DataUtil.PADRAO_FORMATACAO_DATAHORASEG));
-		desc.setTipoArquivo(CraAcao.ENVIO_ARQUIVO_RETORNO.getConstante());
-		desc.setDataMovimento(arquivo.getDataEnvio().toString(DataUtil.PADRAO_FORMATACAO_DATA));
-		desc.setPortador(arquivo.getInstituicaoEnvio().getCodigoCompensacao());
-		desc.setUsuario(usuario.getNome());
+		descricao.setDataEnvio(LocalDateTime.now().toString(DataUtil.PADRAO_FORMATACAO_DATAHORASEG));
+		descricao.setTipoArquivo(CraAcao.ENVIO_ARQUIVO_RETORNO.getConstante());
+		descricao.setDataMovimento(arquivo.getDataEnvio().toString(DataUtil.PADRAO_FORMATACAO_DATA));
+		descricao.setPortador(arquivo.getInstituicaoEnvio().getCodigoCompensacao());
+		descricao.setUsuario(usuario.getNome());
 
 		for (Remessa remessa : arquivo.getRemessas()) {
 			Mensagem mensagem = new Mensagem();
-			mensagem.setCodigo("0000");
-			mensagem.setMunicipio(getMunicipio(remessa));
-			mensagem.setDescricao(formatarMensagemRetorno(remessa));
+			mensagem.setCodigo(CodigoErro.CRA_SUCESSO.getCodigo());
+			mensagem.setMunicipio(remessa.getCabecalho().getCodigoMunicipio());
+			mensagem.setDescricao("Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
+					+ remessa.getCabecalho().getQtdTitulosRemessa() + " títulos receberam retorno.");
 			mensagens.add(mensagem);
 		}
-
-		if (getErros() != null) {
-			for (Exception ex : getErros()) {
-				XmlCraException exception = XmlCraException.class.cast(ex);
-				Mensagem mensagem = new Mensagem();
-				mensagem.setCodigo(exception.getErro().getCodigo());
-				mensagem.setMunicipio(exception.getCodigoIbge());
-				mensagem.setDescricao(
-						"Município: " + exception.getCodigoIbge() + " - " + exception.getMunicipio() + " - " + exception.getErro().getDescricao());
-				mensagens.add(mensagem);
-			}
-		}
-		return mensagemRetorno;
+		return mensagemXml;
 	}
 
-	private String formatarMensagemRetorno(Remessa remessa) {
-		if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-			return "Município: " + remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString() + " - "
-					+ remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - " + remessa.getCabecalho().getQtdTitulosRemessa()
-					+ " Títulos.";
-		} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
-				|| TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-			return "Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - " + remessa.getCabecalho().getQtdTitulosRemessa()
-					+ " títulos receberam retorno.";
+	private MensagemCra gerarRespostaErrosRetorno(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+		List<Mensagem> mensagens = new ArrayList<Mensagem>();
+		MensagemXml mensagemXml = new MensagemXml();
+		Descricao descricao = new Descricao();
+		Detalhamento detalhamento = new Detalhamento();
+		detalhamento.setMensagem(mensagens);
+
+		mensagemXml.setDescricao(descricao);
+		mensagemXml.setDetalhamento(detalhamento);
+		mensagemXml.setCodigoFinal(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getCodigo());
+		mensagemXml.setDescricaoFinal(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao());
+
+		descricao.setDataEnvio(LocalDateTime.now().toString(DataUtil.PADRAO_FORMATACAO_DATAHORASEG));
+		descricao.setTipoArquivo(Descricao.XML_UPLOAD_CONFIRMACAO);
+		descricao.setDataMovimento(arquivo.getDataEnvio().toString(DataUtil.PADRAO_FORMATACAO_DATA));
+		descricao.setPortador(arquivo.getInstituicaoEnvio().getCodigoCompensacao());
+		descricao.setUsuario(usuario.getNome());
+
+		for (Exception ex : erros) {
+			TituloException exception = TituloException.class.cast(ex);
+			MensagemErroCartorio mensagem = new MensagemErroCartorio();
+			mensagem.setCodigo(exception.getCodigoErro().getCodigo());
+			mensagem.setDescricao(exception.getDescricao());
+			mensagem.setNossoNumero(exception.getNossoNumero());
+			mensagem.setNumeroSequencialRegistro(exception.getNumeroSequencialRegistro());
+			mensagens.add(mensagem);
 		}
-		return StringUtils.EMPTY;
-
-	}
-
-	private String getMunicipio(Remessa remessa) {
-		if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-			return remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString();
-		} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())
-				|| TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-			return remessa.getCabecalho().getNumeroCodigoPortador();
-		}
-		return StringUtils.EMPTY;
-	}
-
-	public List<Exception> getErros() {
-		return erros;
+		return mensagemXml;
 	}
 }

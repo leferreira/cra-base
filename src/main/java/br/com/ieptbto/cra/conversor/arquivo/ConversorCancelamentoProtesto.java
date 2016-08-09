@@ -31,7 +31,7 @@ public class ConversorCancelamentoProtesto {
 
 		remessaVO.setCabecalhoArquivo(new CabecalhoArquivoDesistenciaProtestoConversor().converter(remessaCancelamentoProtesto.getCabecalho(), CabecalhoArquivoDesistenciaProtestoVO.class));
 
-		remessaVO.setRodapeArquivo(new RodapeArquivoDeistenciaProtestoVOConversor().converter(remessaCancelamentoProtesto.getRodape(),
+		remessaVO.setRodapeArquivo(new RodapeArquivoDesistenciaProtestoVOConversor().converter(remessaCancelamentoProtesto.getRodape(),
 		        RodapeArquivoDesistenciaProtestoVO.class));
 
 		for (CancelamentoProtesto cancelamento : remessaCancelamentoProtesto.getCancelamentoProtesto()) {
@@ -60,7 +60,7 @@ public class ConversorCancelamentoProtesto {
 
 		remessaVO.setCabecalhoArquivo(new CabecalhoArquivoDesistenciaProtestoConversor().converter(remessaAutorizacaoCancelamento.getCabecalho(), CabecalhoArquivoDesistenciaProtestoVO.class));
 
-		remessaVO.setRodapeArquivo(new RodapeArquivoDeistenciaProtestoVOConversor().converter(remessaAutorizacaoCancelamento.getRodape(),
+		remessaVO.setRodapeArquivo(new RodapeArquivoDesistenciaProtestoVOConversor().converter(remessaAutorizacaoCancelamento.getRodape(),
 		        RodapeArquivoDesistenciaProtestoVO.class));
 
 		for (AutorizacaoCancelamento ac : remessaAutorizacaoCancelamento.getAutorizacaoCancelamento()) {

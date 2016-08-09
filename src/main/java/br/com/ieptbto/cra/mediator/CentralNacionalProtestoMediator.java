@@ -12,7 +12,7 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.conversor.ConversorCnpVO;
+import br.com.ieptbto.cra.conversor.cnp.ConversorCnpVO;
 import br.com.ieptbto.cra.dao.CentralNancionalProtestoDAO;
 import br.com.ieptbto.cra.dao.MunicipioDAO;
 import br.com.ieptbto.cra.entidade.Instituicao;

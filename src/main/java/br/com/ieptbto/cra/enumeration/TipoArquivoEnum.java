@@ -2,18 +2,20 @@ package br.com.ieptbto.cra.enumeration;
 
 import javax.persistence.Entity;
 
+import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
 
 @Entity
-public enum TipoArquivoEnum implements AbstractCraEnum {
+public enum TipoArquivoEnum
+		implements AbstractCraEnum {
 
-												REMESSA("B", "TPR", "Remessa"),
-												CONFIRMACAO("C", "CRT", "Confirmação"),
-												RETORNO("R", "RTP", "Retorno"),
-												CANCELAMENTO_DE_PROTESTO("CP", "", "Cancelamento"),
-												DEVOLUCAO_DE_PROTESTO("DP", "", "Desistência"),
-												AUTORIZACAO_DE_CANCELAMENTO("AC", "", "Autorização");
+	REMESSA("B", "TPR", "Remessa"),
+	CONFIRMACAO("C", "CRT", "Confirmação"),
+	RETORNO("R", "RTP", "Retorno"),
+	CANCELAMENTO_DE_PROTESTO("CP", "", "Cancelamento"),
+	DEVOLUCAO_DE_PROTESTO("DP", "", "Desistência"),
+	AUTORIZACAO_DE_CANCELAMENTO("AC", "", "Autorização");
 
 	public String constante;
 	public String identificacaoTransacaoCabecalho;
@@ -39,6 +41,10 @@ public enum TipoArquivoEnum implements AbstractCraEnum {
 			}
 		}
 		throw new InfraException(Erro.TIPO_DE_ARQUIVO_NAO_ENCONTRADO.getMensagemErro() + valor);
+	}
+
+	public static TipoArquivoEnum getTipoArquivoEnum(Arquivo arquivo) {
+		return arquivo.getTipoArquivo().getTipoArquivo();
 	}
 
 	@Override

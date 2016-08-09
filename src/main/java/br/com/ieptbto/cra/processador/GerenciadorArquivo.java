@@ -7,8 +7,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
-import br.com.ieptbto.cra.conversor.arquivo.AbstractConversor;
-import br.com.ieptbto.cra.conversor.arquivo.CampoArquivo;
+import br.com.ieptbto.cra.conversor.AbstractConversor;
+import br.com.ieptbto.cra.conversor.CampoArquivo;
 import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
 
 public class GerenciadorArquivo extends AbstractGerenciadorArquivoLinha {

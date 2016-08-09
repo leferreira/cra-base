@@ -6,7 +6,6 @@ import java.util.List;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.conversor.ConversorDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoArquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoCartorio;
@@ -51,7 +50,7 @@ public class ConversorDesistenciaProtesto {
 		        remessaVo.getCabecalhoArquivo());
 		remessa.setCabecalho(cabecalhoArquivo);
 
-		RodapeArquivo rodapeArquivo = new RodapeArquivoDeistenciaProtestoVOConversor().converter(RodapeArquivo.class,
+		RodapeArquivo rodapeArquivo = new RodapeArquivoDesistenciaProtestoVOConversor().converter(RodapeArquivo.class,
 		        remessaVo.getRodapeArquivo());
 		remessa.setRodape(rodapeArquivo);
 
@@ -82,7 +81,7 @@ public class ConversorDesistenciaProtesto {
 		remessaVO.setCabecalhoArquivo(new CabecalhoArquivoDesistenciaProtestoConversor().converter(
 		        remessaDesistenciaProtesto.getCabecalho(), CabecalhoArquivoDesistenciaProtestoVO.class));
 
-		remessaVO.setRodapeArquivo(new RodapeArquivoDeistenciaProtestoVOConversor().converter(remessaDesistenciaProtesto.getRodape(),
+		remessaVO.setRodapeArquivo(new RodapeArquivoDesistenciaProtestoVOConversor().converter(remessaDesistenciaProtesto.getRodape(),
 		        RodapeArquivoDesistenciaProtestoVO.class));
 
 		for (DesistenciaProtesto desistencia : remessaDesistenciaProtesto.getDesistenciaProtesto()) {

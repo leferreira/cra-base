@@ -90,14 +90,13 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 						ac.setAutorizacoesCancelamentos(pedidosAutorizacao);
 						autorizacoesCancelamentos.add(ac);
 					} else {
-						StringBuffer descricao = new StringBuffer();
-						String municipio = StringUtils.EMPTY;
+						String descricao = StringUtils.EMPTY;
+						String codigoMunicipio = StringUtils.EMPTY;
 						for (PedidoAutorizacaoCancelamento pedidoAutorizacao : pedidosAutorizacaoErros) {
-							descricao.append("Protocolo Inválido (" + pedidoAutorizacao.getNumeroProtocolo() + ").");
-							municipio = pedidoAutorizacao.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio();
+							descricao = descricao + "Protocolo Inválido (" + pedidoAutorizacao.getNumeroProtocolo() + ").";
+							codigoMunicipio = pedidoAutorizacao.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio();
 						}
-						erros.add(new DesistenciaCancelamentoException(descricao.toString(), municipio,
-								CodigoErro.CRA_PROTOCOLO_INVALIDO.getCodigo()));
+						erros.add(new DesistenciaCancelamentoException(descricao, codigoMunicipio, CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
 						pedidosAutorizacaoErros.clear();
 					}
 				}
@@ -202,8 +201,7 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public AutorizacaoCancelamento alterarSituacaoAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento,
-			boolean download) {
+	public AutorizacaoCancelamento alterarSituacaoAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento, boolean download) {
 		Transaction transaction = getBeginTransation();
 
 		try {

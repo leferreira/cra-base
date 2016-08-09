@@ -95,8 +95,10 @@ public class ArquivoMediator extends BaseMediator {
 		this.arquivo = processadorArquivo.processarArquivo(uploadedFile, arquivo, getErros());
 		this.arquivo = arquivoDAO.salvar(arquivo, usuario, getErros());
 
-		loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, getTipoAcaoEnvio(arquivo), "Arquivo " + arquivo.getNomeArquivo() + ", enviado por "
-				+ arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso via aplicação.");
+		if (getErros().isEmpty()) {
+			loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, getTipoAcaoEnvio(arquivo), "Arquivo " + arquivo.getNomeArquivo()
+					+ ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso via aplicação.");
+		}
 		return this;
 	}
 
@@ -121,7 +123,7 @@ public class ArquivoMediator extends BaseMediator {
 		this.arquivo.setDataRecebimento(new LocalDate().toDate());
 		this.arquivo.setInstituicaoEnvio(usuario.getInstituicao());
 
-		this.arquivo = processadorArquivo.processarArquivo(arquivoRecebido, arquivo, getErros());
+		this.arquivo = processadorArquivo.processarArquivoWS(arquivoRecebido, arquivo, getErros());
 		this.arquivo = arquivoDAO.salvar(arquivo, usuario, getErros());
 
 		return this;
@@ -194,7 +196,7 @@ public class ArquivoMediator extends BaseMediator {
 
 	private CraAcao getTipoAcaoEnvio(Arquivo arquivo) {
 		CraAcao tipoAcao = null;
-		TipoArquivoEnum tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
+		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo);
 		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA)) {
 			tipoAcao = CraAcao.ENVIO_ARQUIVO_REMESSA;
 		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO)) {

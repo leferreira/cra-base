@@ -107,14 +107,13 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 						cancelamento.setCancelamentos(pedidosProcessados);
 						cancelamentosProtesto.add(cancelamento);
 					} else {
-						StringBuffer descricao = new StringBuffer();
-						String municipio = StringUtils.EMPTY;
+						String descricao = StringUtils.EMPTY;
+						String codigoMunicipio = StringUtils.EMPTY;
 						for (PedidoCancelamento pedidoCancelamento : pedidosCancelamentoErros) {
-							descricao.append("Protocolo Inválido (" + pedidoCancelamento.getNumeroProtocolo() + ").");
-							municipio = pedidoCancelamento.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio();
+							descricao = descricao + "Protocolo Inválido (" + pedidoCancelamento.getNumeroProtocolo() + ").";
+							codigoMunicipio = pedidoCancelamento.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio();
 						}
-						erros.add(new DesistenciaCancelamentoException(descricao.toString(), municipio,
-								CodigoErro.CRA_PROTOCOLO_INVALIDO.getCodigo()));
+						erros.add(new DesistenciaCancelamentoException(descricao, codigoMunicipio, CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
 						pedidosCancelamentoErros.clear();
 					}
 				}
@@ -156,8 +155,8 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio,
-			LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
+			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(CancelamentoProtesto.class);
 		criteria.createAlias("remessaCancelamentoProtesto", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
@@ -246,8 +245,8 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<TituloRemessa> buscarTitulosParaSolicitarCancelamento(TituloRemessa tituloRemessa, Instituicao bancoConvenio,
-			Municipio municipio, Usuario user) {
+	public List<TituloRemessa> buscarTitulosParaSolicitarCancelamento(TituloRemessa tituloRemessa, Instituicao bancoConvenio, Municipio municipio,
+			Usuario user) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 
 		criteria.createAlias("remessa", "remessa");
@@ -272,8 +271,7 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.ilike("nomeDevedor", tituloRemessa.getNomeDevedor(), MatchMode.ANYWHERE));
 
 		if (tituloRemessa.getNumeroIdentificacaoDevedor() != null && tituloRemessa.getNumeroIdentificacaoDevedor() != StringUtils.EMPTY)
-			criteria.add(
-					Restrictions.ilike("numeroIdentificacaoDevedor", tituloRemessa.getNumeroIdentificacaoDevedor(), MatchMode.ANYWHERE));
+			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", tituloRemessa.getNumeroIdentificacaoDevedor(), MatchMode.ANYWHERE));
 
 		if (municipio != null) {
 			criteria.createAlias("remessa.cabecalho", "cabecalho");
@@ -301,8 +299,7 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 	public List<TituloRemessa> buscarCancelamentosSolicitados() {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		Disjunction disjuntion = Restrictions.disjunction();
-		disjuntion
-				.add(Restrictions.eq("statusSolicitacaoCancelamento", StatusSolicitacaoCancelamento.SOLICITACAO_AUTORIZACAO_CANCELAMENTO));
+		disjuntion.add(Restrictions.eq("statusSolicitacaoCancelamento", StatusSolicitacaoCancelamento.SOLICITACAO_AUTORIZACAO_CANCELAMENTO));
 		disjuntion.add(Restrictions.eq("statusSolicitacaoCancelamento", StatusSolicitacaoCancelamento.SOLICITACAO_CANCELAMENTO_PROTESTO));
 		criteria.add(disjuntion);
 		return criteria.list();

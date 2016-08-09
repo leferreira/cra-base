@@ -5,6 +5,9 @@ import java.beans.PropertyDescriptor;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
+import br.com.ieptbto.cra.conversor.AbstractConversorArquivo;
+import br.com.ieptbto.cra.conversor.BigDecimalConversor;
+import br.com.ieptbto.cra.conversor.CampoArquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;

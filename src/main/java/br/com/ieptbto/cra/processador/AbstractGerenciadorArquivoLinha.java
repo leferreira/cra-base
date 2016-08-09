@@ -2,9 +2,9 @@ package br.com.ieptbto.cra.processador;
 
 import java.util.List;
 
-import br.com.ieptbto.cra.conversor.arquivo.AbstractConversor;
-import br.com.ieptbto.cra.conversor.arquivo.AtributoArquivoUtil;
-import br.com.ieptbto.cra.conversor.arquivo.CampoArquivo;
+import br.com.ieptbto.cra.conversor.AbstractConversor;
+import br.com.ieptbto.cra.conversor.AtributoArquivoUtil;
+import br.com.ieptbto.cra.conversor.CampoArquivo;
 import br.com.ieptbto.cra.conversor.arquivo.FabricaConversor;
 import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
 

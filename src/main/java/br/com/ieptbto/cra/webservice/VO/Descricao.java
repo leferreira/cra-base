@@ -18,6 +18,8 @@ public class Descricao {
 
 	public static String XML_UPLOAD_REMESSA = "XML_UPLOAD_REMESSA";
 	public static String XML_UPLOAD_SUSTACAO = "XML_UPLOAD_SUSTACAO";
+	public static String XML_UPLOAD_CONFIRMACAO = "XML_UPLOAD_CONFIRMACAO";
+	public static String XML_UPLOAD_RETORNO = "XML_UPLOAD_RETORNO";
 
 	@XmlElement(name = "dataEnvio")
 	private String dataEnvio;

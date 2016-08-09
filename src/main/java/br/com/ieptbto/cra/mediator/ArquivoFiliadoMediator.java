@@ -12,7 +12,7 @@ import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.conversor.arquivo.filiado.ConversorArquivoFiliado;
+import br.com.ieptbto.cra.conversor.convenio.ConversorArquivoFiliado;
 import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.LayoutFiliadoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;

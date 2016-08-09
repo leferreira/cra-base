@@ -4,12 +4,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import br.com.ieptbto.cra.conversor.arquivo.AbstractConversorArquivo;
+import br.com.ieptbto.cra.conversor.AbstractConversorArquivo;
 import br.com.ieptbto.cra.conversor.arquivo.CabecalhoArquivoDesistenciaProtestoConversor;
 import br.com.ieptbto.cra.conversor.arquivo.CabecalhoCartorioDesistenciaProtestoConversor;
 import br.com.ieptbto.cra.conversor.arquivo.CabecalhoConversor;
 import br.com.ieptbto.cra.conversor.arquivo.RegistroDesistenciaProtestoConversor;
-import br.com.ieptbto.cra.conversor.arquivo.RodapeArquivoDeistenciaProtestoVOConversor;
+import br.com.ieptbto.cra.conversor.arquivo.RodapeArquivoDesistenciaProtestoVOConversor;
 import br.com.ieptbto.cra.conversor.arquivo.RodapeCartorioDesistenciaProtestoConversor;
 import br.com.ieptbto.cra.conversor.arquivo.RodapeConversor;
 import br.com.ieptbto.cra.conversor.arquivo.TituloConversor;
@@ -42,7 +42,7 @@ public class FabricaDeRegistroTXT extends Processador {
 		map.put(TipoRegistroDesistenciaProtesto.HEADER_CARTORIO.getConstante(), CabecalhoCartorioDesistenciaProtestoConversor.class);
 		map.put(TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA.getConstante(), RegistroDesistenciaProtestoConversor.class);
 		map.put(TipoRegistroDesistenciaProtesto.TRAILLER_CARTORIO.getConstante(), RodapeCartorioDesistenciaProtestoConversor.class);
-		map.put(TipoRegistroDesistenciaProtesto.TRAILLER_APRESENTANTE.getConstante(), RodapeArquivoDeistenciaProtestoVOConversor.class);
+		map.put(TipoRegistroDesistenciaProtesto.TRAILLER_APRESENTANTE.getConstante(), RodapeArquivoDesistenciaProtestoVOConversor.class);
 
 		TIPOS_ARQUIVO_DP = Collections.unmodifiableMap(map);
 	}

@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "erro")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Erro {
-	
+
 	@XmlAttribute(name = "descricao")
 	private String descricao;
 
@@ -22,7 +22,7 @@ public class Erro {
 
 	@XmlAttribute(name = "municipio")
 	private String municipio;
-	
+
 	public String getCodigo() {
 		return codigo;
 	}
@@ -30,7 +30,7 @@ public class Erro {
 	public String getDescricao() {
 		return descricao;
 	}
-	
+
 	public String getMunicipio() {
 		return municipio;
 	}

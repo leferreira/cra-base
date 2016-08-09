@@ -11,8 +11,8 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
-import br.com.ieptbto.cra.conversor.arquivo.BigDecimalConversor;
-import br.com.ieptbto.cra.conversor.arquivo.CampoArquivo;
+import br.com.ieptbto.cra.conversor.BigDecimalConversor;
+import br.com.ieptbto.cra.conversor.CampoArquivo;
 import br.com.ieptbto.cra.conversor.arquivo.FabricaConversor;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Retorno;

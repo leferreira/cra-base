@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.conversor.ConversorArquivoVO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Confirmacao;
@@ -21,6 +20,7 @@ import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
+import br.com.ieptbto.cra.fabrica.FabricaDeArquivo;
 
 /**
  * 
@@ -74,14 +74,6 @@ public class ConversorRemessaArquivo {
 		CabecalhoVO cabecalhoVO = CabecalhoVO.parseCabecalho(cabecalho);
 		cabecalhos.add(cabecalhoVO);
 		return cabecalhos;
-	}
-
-	public Arquivo converter(ArquivoVO arquivoVO, Arquivo arquivo, List<Exception> erros) {
-		List<RemessaVO> remessas = ConversorArquivoVO.converterParaRemessaVO(arquivoVO);
-		arquivo.setRemessas(new ArrayList<Remessa>());
-
-		fabricaDeArquivo.processarArquivoXML(remessas, arquivo.getUsuarioEnvio(), arquivo.getNomeArquivo(), arquivo, erros);
-		return arquivo;
 	}
 
 	public List<RemessaVO> converter(List<Arquivo> arquivos) {
