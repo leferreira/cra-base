@@ -89,14 +89,14 @@ public class ProcessadorArquivo extends Processador {
 		this.arquivo = arquivo;
 		this.erros = erros;
 
-		logger.info("Início processamento arquivo via ws " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
+		logger.info("Início processamento arquivo via WS " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
 
 		verificaDiretorio();
 		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + arquivo.getNomeArquivo()));
 		setArquivo(fabricaDeArquivo.fabricaWS(arquivoRecebido, arquivo, erros));
 		validarArquivo();
 
-		logger.info("Início processamento arquivo via ws " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
+		logger.info("Início processamento arquivo via WS " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
 		return getArquivo();
 	}
 
@@ -104,83 +104,103 @@ public class ProcessadorArquivo extends Processador {
 		fabricaRegraValidacaoArquivo.validar(getFile(), getArquivo(), getUsuario(), getErros());
 	}
 
-	public File processarArquivoTXT(Remessa remessa) {
+	/**
+	 * Métódos de download B,C,R TXT Para Instituicao e Convênios
+	 * 
+	 * @param arquivo
+	 * @param remessas
+	 * @return
+	 */
+	public File baixarRemessaConfirmacaoRetornoTXT(Arquivo arquivo, List<Remessa> remessas) {
+		this.file = null;
+		this.arquivo = arquivo;
+		this.usuario = arquivo.getUsuarioEnvio();
+
+		logger.info("Início do criação de Arquivo TXT " + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+
+		verificaDiretorio();
+		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + arquivo.getId()));
+		return fabricaDeArquivo.baixarRemessaConfirmacaoRetornoTXT(remessas, getFile());
+	}
+
+	/**
+	 * Métódos de download B,C,R TXT Para Cartórios
+	 * 
+	 * @param remessa
+	 * @return
+	 */
+	public File baixarRemessaConfirmacaoRetornoTXT(Remessa remessa) {
 		this.file = null;
 		this.arquivo = remessa.getArquivo();
 		this.usuario = remessa.getArquivo().getUsuarioEnvio();
 
-		logger.info("Início do criação de Arquivo TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+		logger.info("Início do criação de Arquivo TXT " + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 
 		verificaDiretorio();
 		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + remessa.getId()));
-		fabricaDeArquivo.processarArquivoPersistente(remessa, getFile(), getErros());
-
-		logger.info("Fim da criação de Arquivo TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
-
-		return getFile();
+		return fabricaDeArquivo.baixarRemessaConfirmacaoRetornoTXT(remessa, getFile());
 	}
 
-	public File processarRemessaDesistenciaProtestoTXT(RemessaDesistenciaProtesto remessa, Usuario usuario) {
+	/**
+	 * Métódos de download TXT
+	 * 
+	 * @param arquivo
+	 * @param remessas
+	 * @return
+	 */
+	public File baixarDesistenciaTXT(RemessaDesistenciaProtesto remessa) {
+		this.file = null;
 		this.arquivo = remessa.getArquivo();
-		this.usuario = usuario;
+		this.usuario = remessa.getArquivo().getUsuarioEnvio();
 
-		logger.info("Início do criação de Arquivo DP TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+		logger.info("Início do criação de Arquivo TXT " + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+
 		verificaDiretorio();
 		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + remessa.getId()));
-		fabricaDeArquivo.processarArquivoPersistenteDesistenciaProtesto(remessa, getFile(), getErros());
-
-		logger.info("Fim da criação de Arquivo DP TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
-
-		return getFile();
+		return fabricaDeArquivo.baixarDesistenciaTXT(remessa, getFile());
 	}
 
-	public File processarRemessaCancelamentoProtestoTXT(RemessaCancelamentoProtesto remessa, Usuario usuario) {
+	/**
+	 * Métódos de download TXT
+	 * 
+	 * @param arquivo
+	 * @param remessas
+	 * @return
+	 */
+	public File baixarCancelamentoTXT(RemessaCancelamentoProtesto remessa) {
+		this.file = null;
 		this.arquivo = remessa.getArquivo();
-		this.usuario = usuario;
+		this.usuario = remessa.getArquivo().getUsuarioEnvio();
 
-		logger.info("Início do criação de Arquivo CP TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+		logger.info("Início do criação de Arquivo TXT " + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+
 		verificaDiretorio();
 		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + remessa.getId()));
-		fabricaDeArquivo.processarArquivoPersistenteCancelamentoProtesto(remessa, getFile(), getErros());
-
-		logger.info("Fim da criação de Arquivo CP TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
-
-		return getFile();
+		return fabricaDeArquivo.baixarCancelamentoTXT(remessa, getFile());
 	}
 
-	public File processarRemessaAutorizacaoCancelamentoTXT(RemessaAutorizacaoCancelamento remessa, Usuario usuario) {
+	/**
+	 * Métódos de download TXT
+	 * 
+	 * @param arquivo
+	 * @param remessas
+	 * @return
+	 */
+	public File baixarAutorizacaoCancelamentoTXT(RemessaAutorizacaoCancelamento remessa) {
+		this.file = null;
 		this.arquivo = remessa.getArquivo();
-		this.usuario = usuario;
+		this.usuario = remessa.getArquivo().getUsuarioEnvio();
 
-		logger.info("Início do criação de Arquivo AC TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+		logger.info("Início do criação de Arquivo TXT " + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+
 		verificaDiretorio();
 		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + remessa.getId()));
-		fabricaDeArquivo.processarArquivoPersistenteAutorizacaoCancelamentoProtesto(remessa, getFile(), getErros());
-
-		logger.info("Fim da criação de Arquivo AC TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
-
-		return getFile();
-	}
-
-	public File processarArquivoTXT(Arquivo arquivo, List<Remessa> remessas) {
-		this.arquivo = arquivo;
-		this.usuario = getArquivo().getUsuarioEnvio();
-
-		logger.info("Início do criação de Arquivo TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
-
-		verificaDiretorio();
-		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + getArquivo().getId()));
-		fabricaDeArquivo.processarArquivoPersistente(remessas, getFile(), getErros());
-
-		logger.info("Fim da criação de Arquivo TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
-
-		return getFile();
+		return fabricaDeArquivo.baixarAutorizacaoCancelamentoTXT(remessa, getFile());
 	}
 
 	private void copiarArquivoEapagarTemporario() {
 		try {
 			if (getFile().renameTo(new File(getPathUsuario() + ConfiguracaoBase.BARRA + getArquivo().getId()))) {
-				logger.info("Arquivo " + getFile().getName() + " movido para pasta do usuário.");
 				return;
 			}
 			new InfraException("Não foi possível mover o arquivo temporário para o diretório do usuário.");
@@ -228,7 +248,6 @@ public class ProcessadorArquivo extends Processador {
 		if (!diretorioUsuarioTemp.exists()) {
 			diretorioUsuarioTemp.mkdirs();
 		}
-
 	}
 
 	public FileUpload getFileUpload() {
@@ -282,6 +301,9 @@ public class ProcessadorArquivo extends Processador {
 	}
 
 	public List<Exception> getErros() {
+		if (erros == null) {
+			erros = new ArrayList<Exception>();
+		}
 		return erros;
 	}
 

@@ -9,7 +9,6 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.BancoAgenciaCentralizadoraCodigoCartorio;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.CabecalhoMediator;
@@ -50,14 +49,6 @@ public class ValidarAgenciaCentralizadora extends RegraValidacao {
 
 	private void verificarAgencia() {
 		for (Remessa remessa : arquivo.getRemessas()) {
-			BancoAgenciaCentralizadoraCodigoCartorio agencia =
-					BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(remessa.getCabecalho().getNumeroCodigoPortador());
-			if (agencia != null) {
-				if (agencia.getAgenciaCentralizadora() != null) {
-					remessa.getCabecalho().setAgenciaCentralizadora(agencia.getAgenciaCentralizadora());
-				}
-			}
-
 			CabecalhoRemessa ultimoCabecalhoRemessa = cabecalhoMediator.buscarUltimoCabecalhoRemessa(remessa.getCabecalho());
 			if (ultimoCabecalhoRemessa != null) {
 				if (ultimoCabecalhoRemessa.getAgenciaCentralizadora() != null) {

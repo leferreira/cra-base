@@ -19,26 +19,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.conversor.arquivo.ConversorRemessaArquivo;
 import br.com.ieptbto.cra.dao.ArquivoDAO;
-import br.com.ieptbto.cra.dao.AutorizacaoCancelamentoDAO;
-import br.com.ieptbto.cra.dao.CancelamentoDAO;
-import br.com.ieptbto.cra.dao.DesistenciaDAO;
-import br.com.ieptbto.cra.dao.MunicipioDAO;
 import br.com.ieptbto.cra.dao.RemessaDAO;
 import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
-import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
-import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
-import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Rodape;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
@@ -48,6 +37,7 @@ import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.fabrica.FabricaDeArquivo;
 import br.com.ieptbto.cra.util.DecoderString;
 
 /**
@@ -66,15 +56,7 @@ public class RemessaMediator extends BaseMediator {
 	@Autowired
 	private TituloDAO tituloDAO;
 	@Autowired
-	private DesistenciaDAO desistenciaDAO;
-	@Autowired
-	private CancelamentoDAO cancelamentoDAO;
-	@Autowired
-	private MunicipioDAO municipioDAO;
-	@Autowired
-	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
-	@Autowired
-	private ConversorRemessaArquivo conversorRemessaArquivo;
+	private FabricaDeArquivo fabricaDeArquivo;
 
 	@Transactional
 	public CabecalhoRemessa carregarCabecalhoRemessaPorId(CabecalhoRemessa cabecalhoRemessa) {
@@ -96,6 +78,17 @@ public class RemessaMediator extends BaseMediator {
 		return remessaDAO.buscarRemessaAvancado(arquivo, municipio, dataInicio, dataFim, usuario, tiposArquivo, situacoes);
 	}
 
+	public int getNumeroSequencialConvenio(Instituicao convenio, Instituicao instituicaoDestino) {
+		return remessaDAO.getNumeroSequencialConvenio(convenio, instituicaoDestino);
+	}
+
+	/**
+	 * Remessa XML para cartórios via ws
+	 * 
+	 * @param usuario
+	 * @param nomeArquivo
+	 * @return
+	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public RemessaVO buscarRemessaParaCartorio(Usuario usuario, String nomeArquivo) {
 		Remessa remessa = null;
@@ -114,40 +107,18 @@ public class RemessaMediator extends BaseMediator {
 		arquivos.add(remessa.getArquivo());
 		logger.info("O Usuario " + usuario.getLogin() + " da instituição " + usuario.getInstituicao().getNomeFantasia()
 				+ " fez o download do arquivo " + nomeArquivo + " que foi enviado para " + remessa.getInstituicaoDestino().getNomeFantasia() + ".");
-		return conversorRemessaArquivo.converterRemessaVO(remessa);
-	}
-
-	public int getNumeroSequencialConvenio(Instituicao convenio, Instituicao instituicaoDestino) {
-		return remessaDAO.getNumeroSequencialConvenio(convenio, instituicaoDestino);
-	}
-
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public Arquivo arquivosPendentes(Instituicao instituicao) {
-		instituicao.setMunicipio(municipioDAO.buscarPorPK(instituicao.getMunicipio(), Municipio.class));
-
-		List<Remessa> remessas = remessaDAO.confirmacoesPendentes(instituicao);
-		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
-		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
-		List<AutorizacaoCancelamento> autorizacaoCancelamento =
-				autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
-		Arquivo arquivo = new Arquivo();
-		arquivo.setRemessas(remessas);
-		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
-		remessaDesistenciaProtesto.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>(desistenciasProtesto));
-		arquivo.setRemessaDesistenciaProtesto(remessaDesistenciaProtesto);
-		RemessaAutorizacaoCancelamento remessaAutorizacaoCancelamento = new RemessaAutorizacaoCancelamento();
-		remessaAutorizacaoCancelamento.setAutorizacaoCancelamento(autorizacaoCancelamento);
-		arquivo.setRemessaAutorizacao(remessaAutorizacaoCancelamento);
-		RemessaCancelamentoProtesto remessaCancelamento = new RemessaCancelamentoProtesto();
-		remessaCancelamento.setCancelamentoProtesto(cancelamentoProtesto);
-		arquivo.setRemessaCancelamentoProtesto(remessaCancelamento);
-		return arquivo;
+		return fabricaDeArquivo.
 	}
 
 	public List<Remessa> confirmacoesPendentesRelatorio(Instituicao instituicao) {
 		return remessaDAO.confirmacoesPendentes(instituicao);
 	}
 
+	/**
+	 * @param nomeArquivo
+	 * @param instituicao
+	 * @return
+	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public List<RemessaVO> buscarArquivos(String nomeArquivo, Instituicao instituicao) {
 		Arquivo arquivo = null;

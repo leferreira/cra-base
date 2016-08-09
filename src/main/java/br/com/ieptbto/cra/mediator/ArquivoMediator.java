@@ -20,12 +20,23 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.dao.ArquivoDAO;
+import br.com.ieptbto.cra.dao.AutorizacaoCancelamentoDAO;
+import br.com.ieptbto.cra.dao.CancelamentoDAO;
+import br.com.ieptbto.cra.dao.DesistenciaDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
+import br.com.ieptbto.cra.dao.MunicipioDAO;
+import br.com.ieptbto.cra.dao.RemessaDAO;
 import br.com.ieptbto.cra.dao.TipoArquivoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
+import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
+import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
+import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
+import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -48,9 +59,19 @@ public class ArquivoMediator extends BaseMediator {
 	@Autowired
 	private ArquivoDAO arquivoDAO;
 	@Autowired
+	private RemessaDAO remessaDAO;
+	@Autowired
 	private TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
 	private InstituicaoDAO instituicaoDAO;
+	@Autowired
+	private DesistenciaDAO desistenciaDAO;
+	@Autowired
+	private CancelamentoDAO cancelamentoDAO;
+	@Autowired
+	private MunicipioDAO municipioDAO;
+	@Autowired
+	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
 	@Autowired
 	private ProcessadorArquivo processadorArquivo;
 
@@ -69,6 +90,35 @@ public class ArquivoMediator extends BaseMediator {
 
 	public Arquivo buscarArquivoEnviado(Usuario usuario, String nomeArquivo) {
 		return arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(usuario.getInstituicao(), nomeArquivo);
+	}
+
+	/**
+	 * Arquivos de Remessa pendentes de confirmação dos cartórios
+	 * 
+	 * @param instituicao
+	 * @return
+	 */
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public Arquivo arquivosPendentes(Instituicao instituicao) {
+		instituicao.setMunicipio(municipioDAO.buscarPorPK(instituicao.getMunicipio(), Municipio.class));
+
+		List<Remessa> remessas = remessaDAO.confirmacoesPendentes(instituicao);
+		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
+		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
+		List<AutorizacaoCancelamento> autorizacaoCancelamento =
+				autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
+		Arquivo arquivo = new Arquivo();
+		arquivo.setRemessas(remessas);
+		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
+		remessaDesistenciaProtesto.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>(desistenciasProtesto));
+		arquivo.setRemessaDesistenciaProtesto(remessaDesistenciaProtesto);
+		RemessaAutorizacaoCancelamento remessaAutorizacaoCancelamento = new RemessaAutorizacaoCancelamento();
+		remessaAutorizacaoCancelamento.setAutorizacaoCancelamento(autorizacaoCancelamento);
+		arquivo.setRemessaAutorizacao(remessaAutorizacaoCancelamento);
+		RemessaCancelamentoProtesto remessaCancelamento = new RemessaCancelamentoProtesto();
+		remessaCancelamento.setCancelamentoProtesto(cancelamentoProtesto);
+		arquivo.setRemessaCancelamentoProtesto(remessaCancelamento);
+		return arquivo;
 	}
 
 	/**

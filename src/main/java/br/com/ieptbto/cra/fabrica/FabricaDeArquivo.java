@@ -80,27 +80,30 @@ public class FabricaDeArquivo {
 	 * @return
 	 */
 	public Arquivo fabricaWS(List<RemessaVO> arquivoRecebido, Arquivo arquivo, List<Exception> erros) {
+		return fabricaDeArquivoXML.converterWS(arquivoRecebido, arquivo, erros);
+	}
+
+	public File baixarRemessaConfirmacaoRetornoTXT(Remessa remessa, File file) {
 		return null;
 	}
 
-	public void processarArquivoPersistente(Remessa remessa, File remessaTXT, List<Exception> erros) {
-		fabricaDeArquivoTXT.fabricaTXT(remessaTXT, remessa, erros).converterParaTXT();
+	public File baixarRemessaConfirmacaoRetornoTXT(List<Remessa> remessas, File file) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public void processarArquivoPersistente(List<Remessa> remessas, File arquivoTXT, List<Exception> erros) {
-		fabricaDeArquivoTXT.fabricaArquivoTXT(arquivoTXT, remessas, erros).converterParaArquivoTXT();
+	public File baixarDesistenciaTXT(RemessaDesistenciaProtesto remessa, File file) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public File processarArquivoPersistenteDesistenciaProtesto(RemessaDesistenciaProtesto remessa, File arquivoFisico, List<Exception> erros) {
-		return fabricaDeArquivoTXT.fabricaArquivoDesistenciaProtestoTXT(arquivoFisico, remessa, erros);
+	public File baixarCancelamentoTXT(RemessaCancelamentoProtesto remessa, File file) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public File processarArquivoPersistenteCancelamentoProtesto(RemessaCancelamentoProtesto remessa, File arquivoFisico, List<Exception> erros) {
-		return fabricaDeArquivoTXT.fabricaArquivoCancelamentoProtestoTXT(arquivoFisico, remessa, erros);
-	}
-
-	public File processarArquivoPersistenteAutorizacaoCancelamentoProtesto(RemessaAutorizacaoCancelamento remessa, File arquivoFisico,
-			List<Exception> erros) {
-		return fabricaDeArquivoTXT.fabricaArquivoAutorizacaoCancelamentoTXT(arquivoFisico, remessa, erros);
+	public File baixarAutorizacaoCancelamentoTXT(RemessaAutorizacaoCancelamento remessa, File file) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

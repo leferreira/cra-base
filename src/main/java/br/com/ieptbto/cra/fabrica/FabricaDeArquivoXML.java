@@ -22,6 +22,7 @@ import br.com.ieptbto.cra.conversor.arquivo.ConversorRemessaArquivo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.vo.ArquivoDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
+import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -42,6 +43,12 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 	@Autowired
 	private ConversorDesistenciaProtesto conversorDesistenciaProtesto;
 
+	/**
+	 * @param arquivoFisico
+	 * @param arquivo
+	 * @param erros
+	 * @return
+	 */
 	public Arquivo converter(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
 		if (TipoArquivoEnum.REMESSA.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
 			return converterRemessa(arquivoFisico, arquivo, erros);
@@ -57,6 +64,16 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 
 		}
 		return null;
+	}
+
+	/**
+	 * @param arquivoRecebido
+	 * @param arquivo
+	 * @param erros
+	 * @return
+	 */
+	public Arquivo converterWS(List<RemessaVO> arquivoRecebido, Arquivo arquivo, List<Exception> erros) {
+		return conversorRemessaArquivo.converterParaArquivo(arquivoRecebido, arquivo, erros);
 	}
 
 	private Arquivo converterDesistenciaProtesto(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {

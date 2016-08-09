@@ -40,7 +40,7 @@ public class ConversorRemessaArquivo {
 	protected static final Logger logger = Logger.getLogger(ConversorRemessaArquivo.class);
 
 	@SpringBean
-	InstituicaoMediator instituicaoMediator;
+	private InstituicaoMediator instituicaoMediator;
 
 	private Arquivo arquivo;
 	private List<Exception> erros;
@@ -50,6 +50,17 @@ public class ConversorRemessaArquivo {
 		this.erros = erros;
 
 		List<RemessaVO> remessasVO = ConversorArquivoVO.converterParaRemessaVO(arquivoVO);
+		return converter(remessasVO);
+	}
+
+	public Arquivo converterParaArquivo(List<RemessaVO> remessasVO, Arquivo arquivo, List<Exception> erros) {
+		this.arquivo = arquivo;
+		this.erros = erros;
+
+		return converter(remessasVO);
+	}
+
+	private Arquivo converter(List<RemessaVO> remessasVO) {
 		for (RemessaVO remessaVO : remessasVO) {
 			Remessa remessa = new Remessa();
 			remessa.setArquivo(arquivo);
@@ -97,7 +108,6 @@ public class ConversorRemessaArquivo {
 			} else if (TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
 				titulo = Retorno.parseTituloVO(tituloVO);
 			}
-
 			titulo.setRemessa(remessa);
 			titulos.add(titulo);
 		}

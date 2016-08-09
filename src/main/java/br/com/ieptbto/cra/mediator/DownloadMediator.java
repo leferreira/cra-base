@@ -77,7 +77,7 @@ public class DownloadMediator extends BaseMediator {
 		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
 			remessas = arquivoDAO.baixarArquivoInstituicaoRetorno(arquivo);
 		}
-		return processadorArquivo.processarArquivoTXT(arquivo, remessas);
+		return processadorArquivo.baixarRemessaConfirmacaoRetornoTXT(arquivo, remessas);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class DownloadMediator extends BaseMediator {
 		} else if (tipoArquivo.equals(TipoArquivoEnum.RETORNO)) {
 			remessa = remessaDAO.baixarArquivoCartorioRetorno(remessa);
 		}
-		return processadorArquivo.processarArquivoTXT(remessa);
+		return processadorArquivo.baixarRemessaConfirmacaoRetornoTXT(remessa);
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class DownloadMediator extends BaseMediator {
 			remessa.getRodape().setQuantidadeDesistencia(1);
 			remessa.getRodape().setSomatorioValorTitulo(valorTotal);
 			remessa.setArquivo(desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo());
-			file = processadorArquivo.processarRemessaDesistenciaProtestoTXT(remessa, usuario);
+			file = processadorArquivo.baixarDesistenciaTXT(remessa);
 
 			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 				loggerCra.sucess(usuario, CraAcao.DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO,
@@ -194,7 +194,7 @@ public class DownloadMediator extends BaseMediator {
 			remessa.getRodape().setQuantidadeDesistencia(1);
 			remessa.getRodape().setSomatorioValorTitulo(valorTotal);
 			remessa.setArquivo(cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo());
-			file = processadorArquivo.processarRemessaCancelamentoProtestoTXT(remessa, usuario);
+			file = processadorArquivo.baixarCancelamentoTXT(remessa);
 
 			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 				loggerCra.sucess(usuario, CraAcao.DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO,
@@ -243,7 +243,7 @@ public class DownloadMediator extends BaseMediator {
 			remessa.getRodape().setQuantidadeDesistencia(1);
 			remessa.getRodape().setSomatorioValorTitulo(valorTotal);
 			remessa.setArquivo(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo());
-			file = processadorArquivo.processarRemessaAutorizacaoCancelamentoTXT(remessa, usuario);
+			file = processadorArquivo.baixarAutorizacaoCancelamentoTXT(remessa);
 
 			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 				loggerCra.sucess(usuario, CraAcao.DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO,
