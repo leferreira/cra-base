@@ -83,7 +83,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 		List<Arquivo> arquivos = new ArrayList<Arquivo>();
 		arquivos.add(getArquivo());
-		return geradorDeArquivosTXT.gerar(conversorDesistenciaProtesto.converter(this.remessaDesistenciaProtesto), getFile());
+		return geradorDeArquivosTXT.gerar(conversorDesistenciaProtesto.converterParaVO(this.remessaDesistenciaProtesto), getFile());
 	}
 
 	public File fabricaArquivoCancelamentoProtestoTXT(File arquivoFisico, RemessaCancelamentoProtesto remessa, List<Exception> erros) {

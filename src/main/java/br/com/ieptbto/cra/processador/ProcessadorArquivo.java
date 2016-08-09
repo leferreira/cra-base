@@ -1,19 +1,9 @@
 package br.com.ieptbto.cra.processador;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.namespace.QName;
 
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +16,6 @@ import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
-import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.exception.ValidacaoErroException;
 import br.com.ieptbto.cra.fabrica.FabricaDeArquivo;
@@ -75,10 +64,9 @@ public class ProcessadorArquivo extends Processador {
 
 			verificaDiretorio();
 			copiarArquivoParaDiretorioDoUsuarioTemporario(getFileUpload().getClientFileName());
-			converterArquivo();
+			setArquivo(fabricaDeArquivo.fabricaAplicacao(getFile(), getArquivo(), getErros()));
 			validarArquivo();
 			copiarArquivoEapagarTemporario();
-			getArquivo().setNomeArquivo(getFileUpload().getClientFileName());
 
 			logger.info(
 					"Início processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
@@ -105,16 +93,11 @@ public class ProcessadorArquivo extends Processador {
 
 		verificaDiretorio();
 		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + arquivo.getNomeArquivo()));
-		salvarXMLTemporario(arquivoRecebido);
+		setArquivo(fabricaDeArquivo.fabricaWS(arquivoRecebido, arquivo, erros));
 		validarArquivo();
-		fabricaDeArquivo.processarArquivoXML(arquivoRecebido, getUsuario(), arquivo.getNomeArquivo(), getArquivo(), getErros());
 
 		logger.info("Início processamento arquivo via ws " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
 		return getArquivo();
-	}
-
-	private void converterArquivo() {
-		setArquivo(fabricaDeArquivo.salvarArquivoFisico(getFile(), getArquivo(), getErros()));
 	}
 
 	private void validarArquivo() {
@@ -192,43 +175,6 @@ public class ProcessadorArquivo extends Processador {
 		logger.info("Fim da criação de Arquivo TXT" + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 
 		return getFile();
-	}
-
-	private void salvarXMLTemporario(List<RemessaVO> arquivoRecebido) {
-		try {
-			FileWriter fw = new FileWriter(getFile());
-			BufferedWriter bw = new BufferedWriter(fw);
-
-			for (RemessaVO remessaVO : arquivoRecebido) {
-				bw.write(gerarXML(remessaVO));
-			}
-
-			bw.close();
-			fw.close();
-		} catch (IOException e) {
-			logger.error(e.getMessage(), e.getCause());
-			new InfraException(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao(), e.getCause());
-		}
-	}
-
-	private String gerarXML(RemessaVO mensagem) {
-		Writer writer = new StringWriter();
-		JAXBContext context;
-		try {
-			context = JAXBContext.newInstance(mensagem.getClass());
-
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			marshaller.setProperty("jaxb.encoding", "ISO-8859-1");
-			JAXBElement<Object> element = new JAXBElement<Object>(new QName("remessa"), Object.class, mensagem);
-			marshaller.marshal(element, writer);
-			return writer.toString();
-
-		} catch (JAXBException e) {
-			logger.error(e.getMessage(), e.getCause());
-			new InfraException(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao(), e.getCause());
-		}
-		return null;
 	}
 
 	private void copiarArquivoEapagarTemporario() {

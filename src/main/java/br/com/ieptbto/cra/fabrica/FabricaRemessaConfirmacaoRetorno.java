@@ -92,6 +92,7 @@ public class FabricaRemessaConfirmacaoRetorno {
 	private void setRegistro(String linha, Remessa remessa) {
 		AbstractArquivoVO registro = FabricaRegistro.getInstance(linha).criarRegistro();
 
+		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(remessa.getArquivo());
 		if (TipoRegistro.CABECALHO.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			CabecalhoVO cabecalhoVO = CabecalhoVO.class.cast(registro);
 			CabecalhoRemessa cabecalho = new CabecalhoConversor().converter(CabecalhoRemessa.class, cabecalhoVO);
@@ -103,15 +104,17 @@ public class FabricaRemessaConfirmacaoRetorno {
 		} else if (TipoRegistro.TITULO.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			TituloVO tituloVO = TituloVO.class.cast(registro);
 			Titulo titulo = null;
-			if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
-				titulo = new ConfirmacaoConversor().converter(Confirmacao.class, tituloVO);
-			} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-				titulo = new RetornoConversor().converter(Retorno.class, tituloVO);
-			} else {
+			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
 				titulo = new TituloConversor().converter(TituloRemessa.class, tituloVO);
+			} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)) {
+				titulo = new ConfirmacaoConversor().converter(Confirmacao.class, tituloVO);
+			} else if (TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
+				titulo = new RetornoConversor().converter(Retorno.class, tituloVO);
 			}
-			titulo.setRemessa(remessa);
-			remessa.getTitulos().add(titulo);
+			if (titulo != null) {
+				titulo.setRemessa(remessa);
+				remessa.getTitulos().add(titulo);
+			}
 
 		} else if (TipoRegistro.RODAPE.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			RodapeVO rodapeVO = RodapeVO.class.cast(registro);
@@ -120,11 +123,9 @@ public class FabricaRemessaConfirmacaoRetorno {
 			rodape.setRemessa(remessa);
 
 		} else {
-			getErros().add(new InfraException("O Tipo do registro não foi encontrado: [" + registro.getIdentificacaoRegistro() + " ]"));
-			new InfraException("O Tipo do registro não foi encontrado: [" + registro.getIdentificacaoRegistro() + " ]");
 			logger.error("O Tipo do registro não foi encontrado: [" + registro.getIdentificacaoRegistro() + " ]");
+			throw new InfraException("O Tipo do registro não foi encontrado: [" + registro.getIdentificacaoRegistro() + " ]");
 		}
-
 	}
 
 	private Instituicao getInstituicaoDeDestino(CabecalhoRemessa cabecalho) {

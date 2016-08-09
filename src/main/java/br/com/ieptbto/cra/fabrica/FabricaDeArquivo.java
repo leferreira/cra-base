@@ -13,6 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
+import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
+import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
+import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.enumeration.LayoutArquivo;
 import br.com.ieptbto.cra.exception.InfraException;
 
@@ -39,7 +44,7 @@ public class FabricaDeArquivo {
 	 * @param erros
 	 * @return
 	 */
-	public Arquivo salvarArquivoFisico(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
+	public Arquivo fabricaAplicacao(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
 		String linha = getLinhaArquivo(arquivoFisico);
 
 		if (LayoutArquivo.TXT.equals(LayoutArquivo.get(linha))) {
@@ -60,48 +65,42 @@ public class FabricaDeArquivo {
 			reader.close();
 			return linha;
 		} catch (FileNotFoundException e) {
-			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException("arquivoFisico não encontrado");
+			logger.error(e.getMessage(), e);
+			throw new InfraException("Arquivo não encontrado!");
 		} catch (IOException e) {
-			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException("arquivoFisico não encontrado");
+			logger.error(e.getMessage(), e);
+			throw new InfraException("Arquivo não encontrado!");
 		}
 	}
 
-	// public void processarArquivoPersistente(Remessa remessa, File remessaTXT,
-	// List<Exception> erros) {
-	// fabricaDeArquivoTXT.fabricaTXT(remessaTXT, remessa,
-	// erros).converterParaTXT();
-	// }
-	//
-	// public void processarArquivoPersistente(List<Remessa> remessas, File
-	// arquivoTXT, List<Exception> erros) {
-	// fabricaDeArquivoTXT.fabricaArquivoTXT(arquivoTXT, remessas,
-	// erros).converterParaArquivoTXT();
-	// }
-	//
-	// public File
-	// processarArquivoPersistenteDesistenciaProtesto(RemessaDesistenciaProtesto
-	// remessa, File arquivoFisico, List<Exception> erros) {
-	// return
-	// fabricaDeArquivoTXT.fabricaArquivoDesistenciaProtestoTXT(arquivoFisico,
-	// remessa, erros);
-	// }
-	//
-	// public File
-	// processarArquivoPersistenteCancelamentoProtesto(RemessaCancelamentoProtesto
-	// remessa, File arquivoFisico, List<Exception> erros) {
-	// return
-	// fabricaDeArquivoTXT.fabricaArquivoCancelamentoProtestoTXT(arquivoFisico,
-	// remessa, erros);
-	// }
-	//
-	// public File
-	// processarArquivoPersistenteAutorizacaoCancelamentoProtesto(RemessaAutorizacaoCancelamento
-	// remessa, File arquivoFisico,
-	// List<Exception> erros) {
-	// return
-	// fabricaDeArquivoTXT.fabricaArquivoAutorizacaoCancelamentoTXT(arquivoFisico,
-	// remessa, erros);
-	// }
+	/**
+	 * @param arquivoRecebido
+	 * @param arquivo
+	 * @param erros
+	 * @return
+	 */
+	public Arquivo fabricaWS(List<RemessaVO> arquivoRecebido, Arquivo arquivo, List<Exception> erros) {
+		return null;
+	}
+
+	public void processarArquivoPersistente(Remessa remessa, File remessaTXT, List<Exception> erros) {
+		fabricaDeArquivoTXT.fabricaTXT(remessaTXT, remessa, erros).converterParaTXT();
+	}
+
+	public void processarArquivoPersistente(List<Remessa> remessas, File arquivoTXT, List<Exception> erros) {
+		fabricaDeArquivoTXT.fabricaArquivoTXT(arquivoTXT, remessas, erros).converterParaArquivoTXT();
+	}
+
+	public File processarArquivoPersistenteDesistenciaProtesto(RemessaDesistenciaProtesto remessa, File arquivoFisico, List<Exception> erros) {
+		return fabricaDeArquivoTXT.fabricaArquivoDesistenciaProtestoTXT(arquivoFisico, remessa, erros);
+	}
+
+	public File processarArquivoPersistenteCancelamentoProtesto(RemessaCancelamentoProtesto remessa, File arquivoFisico, List<Exception> erros) {
+		return fabricaDeArquivoTXT.fabricaArquivoCancelamentoProtestoTXT(arquivoFisico, remessa, erros);
+	}
+
+	public File processarArquivoPersistenteAutorizacaoCancelamentoProtesto(RemessaAutorizacaoCancelamento remessa, File arquivoFisico,
+			List<Exception> erros) {
+		return fabricaDeArquivoTXT.fabricaArquivoAutorizacaoCancelamentoTXT(arquivoFisico, remessa, erros);
+	}
 }

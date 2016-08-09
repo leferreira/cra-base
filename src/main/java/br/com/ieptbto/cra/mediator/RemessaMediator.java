@@ -168,7 +168,7 @@ public class RemessaMediator extends BaseMediator {
 		arquivoDAO.alterarStatusArquivo(arquivo);
 
 		arquivos.add(arquivo);
-		return conversorRemessaArquivo.converter(arquivos);
+		return conversorRemessaArquivo.converterParaVO(arquivos);
 	}
 
 	public void alterarParaDevolvidoPelaCRA(Remessa remessa) {

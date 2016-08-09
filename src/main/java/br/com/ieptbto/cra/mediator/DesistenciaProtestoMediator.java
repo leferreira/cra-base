@@ -344,7 +344,7 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 			remessaDesistencia.getDesistenciaProtesto().add(desistencia);
 			remessaDesistencia.setRodape(desistencia.getRemessaDesistenciaProtesto().getRodape());
 			remessaDesistencia.setArquivo(desistencia.getRemessaDesistenciaProtesto().getArquivo());
-			return new ConversorDesistenciaProtesto().converter(remessaDesistencia);
+			return new ConversorDesistenciaProtesto().converterParaVO(remessaDesistencia);
 
 		} else if (nomeArquivo.contains(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.getConstante())) {
 			CancelamentoProtesto cancelamento = cancelamentoDAO.buscarCancelamentoProtesto(cartorio, nomeArquivo);

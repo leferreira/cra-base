@@ -3,12 +3,17 @@ package br.com.ieptbto.cra.conversor.arquivo;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.joda.time.LocalDate;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Confirmacao;
+import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Rodape;
@@ -17,8 +22,11 @@ import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
-import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
+import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.TipoCampo51;
+import br.com.ieptbto.cra.mediator.InstituicaoMediator;
+import br.com.ieptbto.cra.util.DataUtil;
 
 /**
  * 
@@ -31,75 +39,89 @@ public class ConversorRemessaArquivo {
 
 	protected static final Logger logger = Logger.getLogger(ConversorRemessaArquivo.class);
 
-	public ArquivoVO converter(Remessa remessa) {
-		ArquivoVO arquivo = new ArquivoVO();
-		arquivo.setCabecalhos(converterCabecalho(remessa.getCabecalho()));
-		arquivo.setRodapes(converterRodape(remessa.getRodape()));
-		arquivo.setTitulos(converterTitulos(remessa.getTitulos()));
-		arquivo.setIdentificacaoRegistro("0");
-		arquivo.setTipoArquivo(remessa.getArquivo().getTipoArquivo());
+	@SpringBean
+	InstituicaoMediator instituicaoMediator;
 
+	private Arquivo arquivo;
+	private List<Exception> erros;
+
+	public Arquivo converterParaArquivo(ArquivoVO arquivoVO, Arquivo arquivo, List<Exception> erros) {
+		this.arquivo = arquivo;
+		this.erros = erros;
+
+		List<RemessaVO> remessasVO = ConversorArquivoVO.converterParaRemessaVO(arquivoVO);
+		for (RemessaVO remessaVO : remessasVO) {
+			Remessa remessa = new Remessa();
+			remessa.setArquivo(arquivo);
+			remessa.setCabecalho(CabecalhoRemessa.parseCabecalhoVO(remessaVO.getCabecalho()));
+			remessa.getCabecalho().setRemessa(remessa);
+			remessa.setRodape(Rodape.parseRodapeVO(remessaVO.getRodape()));
+			remessa.getRodape().setRemessa(remessa);
+
+			remessa.setArquivo(arquivo);
+			remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho()));
+			remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
+			remessa.setDataRecebimento(getDataRecebimento(remessaVO.getCabecalho().getDataMovimento()));
+			remessa.setTitulos(getTitulos(remessaVO.getTitulos(), remessa));
+			arquivo.getRemessas().add(remessa);
+		}
 		return arquivo;
 	}
 
-	private List<TituloVO> converterTitulos(List<Titulo> titulos) {
-		List<TituloVO> titulosVO = new ArrayList<TituloVO>();
-		TituloVO tituloVO = null;
-		for (Titulo titulo : titulos) {
-			if (titulo instanceof TituloRemessa) {
-				tituloVO = TituloVO.parseTitulo(TituloRemessa.class.cast(titulo));
-			} else if (titulo instanceof Confirmacao) {
-				tituloVO = TituloVO.parseTitulo(Confirmacao.class.cast(titulo));
-			} else if (titulo instanceof Retorno) {
-				tituloVO = TituloVO.parseTitulo(Retorno.class.cast(titulo));
+	private LocalDate getDataRecebimento(String dataMovimento) {
+		if (dataMovimento.equals("00000000") || dataMovimento == null) {
+			return new LocalDate();
+		}
+		return DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, dataMovimento);
+	}
+
+	private Instituicao getInstituicaoDestino(CabecalhoVO cabecalho) {
+		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo);
+		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
+			return instituicaoMediator.getCartorioPorCodigoIBGE(cabecalho.getCodigoMunicipio());
+		} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
+			return instituicaoMediator.getInstituicaoPorCodigoPortador(cabecalho.getNumeroCodigoPortador());
+		}
+		return null;
+	}
+
+	private List<Titulo> getTitulos(List<TituloVO> titulosVO, Remessa remessa) {
+		List<Titulo> titulos = new ArrayList<Titulo>();
+		Titulo titulo = null;
+		for (TituloVO tituloVO : titulosVO) {
+			if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				titulo = TituloRemessa.parseTituloVO(tituloVO);
+				verificarAnexoComplementoRegistro(remessa.getInstituicaoOrigem(), TituloRemessa.class.cast(titulo), tituloVO);
+			} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				titulo = Confirmacao.parseTituloVO(tituloVO);
+			} else if (TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				titulo = Retorno.parseTituloVO(tituloVO);
 			}
-			titulosVO.add(tituloVO);
+
+			titulo.setRemessa(remessa);
+			titulos.add(titulo);
 		}
-		return titulosVO;
+		return titulos;
 	}
 
-	private List<RodapeVO> converterRodape(Rodape rodape) {
-		List<RodapeVO> rodapes = new ArrayList<RodapeVO>();
-		RodapeVO rodapeVO = RodapeVO.parseRodape(rodape, rodape.getRemessa().getCabecalho());
-		rodapes.add(rodapeVO);
-		return rodapes;
-	}
+	private void verificarAnexoComplementoRegistro(Instituicao instituicaoEnvio, TituloRemessa titulo, TituloVO tituloVO) {
+		if (instituicaoEnvio.getTipoCampo51().equals(TipoCampo51.DOCUMENTOS_COMPACTADOS)) {
+			if (tituloVO.getComplementoRegistro() != null) {
+				if (!tituloVO.getComplementoRegistro().trim().equals(StringUtils.EMPTY)) {
+					titulo.setComplementoRegistro(tituloVO.getComplementoRegistro());
 
-	private List<CabecalhoVO> converterCabecalho(CabecalhoRemessa cabecalho) {
-		List<CabecalhoVO> cabecalhos = new ArrayList<CabecalhoVO>();
-		CabecalhoVO cabecalhoVO = CabecalhoVO.parseCabecalho(cabecalho);
-		cabecalhos.add(cabecalhoVO);
-		return cabecalhos;
-	}
+					Anexo anexoArquivo = new Anexo();
+					anexoArquivo.setTitulo(titulo);
+					anexoArquivo.setDocumentoAnexo(tituloVO.getComplementoRegistro());
 
-	public List<RemessaVO> converter(List<Arquivo> arquivos) {
-		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
-
-		for (Arquivo arquivo : arquivos) {
-			remessasVO = converterRemessa(arquivo.getRemessaBanco());
+					titulo.setAnexo(anexoArquivo);
+					titulo.setComplementoRegistro(StringUtils.EMPTY);
+				}
+			}
 		}
-		return remessasVO;
 	}
 
-	public List<RemessaVO> converterRemessa(List<Remessa> remessas) {
-		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
-		for (Remessa remessa : remessas) {
-			RemessaVO remessaVO = new RemessaVO();
-			remessaVO.setTitulos(new ArrayList<TituloVO>());
-			remessaVO.setCabecalho(CabecalhoVO.parseCabecalho(remessa.getCabecalho()));
-			remessaVO.getTitulos().addAll(converterTitulos(remessa.getTitulos()));
-			remessaVO.setRodapes(RodapeVO.parseRodape(remessa.getRodape(), remessa.getCabecalho()));
-			remessasVO.add(remessaVO);
-		}
-		return remessasVO;
-	}
-
-	public RemessaVO converterRemessaVO(Remessa remessa) {
-		RemessaVO remessaVO = new RemessaVO();
-		remessaVO.setTitulos(new ArrayList<TituloVO>());
-		remessaVO.setCabecalho(CabecalhoVO.parseCabecalho(remessa.getCabecalho()));
-		remessaVO.getTitulos().addAll(converterTitulos(remessa.getTitulos()));
-		remessaVO.setRodapes(RodapeVO.parseRodape(remessa.getRodape(), remessa.getCabecalho()));
-		return remessaVO;
+	public List<Exception> getErros() {
+		return erros;
 	}
 }
