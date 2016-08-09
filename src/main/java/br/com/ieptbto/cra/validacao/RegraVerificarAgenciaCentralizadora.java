@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
-import br.com.ieptbto.cra.enumeration.BancoAgenciaCentralizadoraCodigoCartorio;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.CabecalhoMediator;
@@ -46,14 +45,6 @@ public class RegraVerificarAgenciaCentralizadora extends RegraCabecalho {
 	}
 
 	private void verificarAgencia() {
-		BancoAgenciaCentralizadoraCodigoCartorio agencia =
-				BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(getCabecalhoRemessa().getNumeroCodigoPortador());
-		if (agencia != null) {
-			if (agencia.getAgenciaCentralizadora() != null) {
-				getCabecalhoRemessa().setAgenciaCentralizadora(agencia.getAgenciaCentralizadora());
-			}
-		}
-
 		CabecalhoRemessa ultimoCabecalhoRemessa = cabecalhoMediator.buscarUltimoCabecalhoRemessa(getCabecalhoRemessa());
 		if (ultimoCabecalhoRemessa != null) {
 			if (ultimoCabecalhoRemessa.getAgenciaCentralizadora() != null) {
