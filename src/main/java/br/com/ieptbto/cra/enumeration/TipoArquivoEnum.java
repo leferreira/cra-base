@@ -2,64 +2,74 @@ package br.com.ieptbto.cra.enumeration;
 
 import javax.persistence.Entity;
 
+import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
 
 @Entity
-public enum TipoArquivoEnum implements AbstractCraEnum {
+public enum TipoArquivoEnum
+		implements AbstractCraEnum {
 
-    REMESSA("B", "TPR", "Remessa"), CONFIRMACAO("C", "CRT", "Confirmação"), RETORNO("R", "RTP", "Retorno"), CANCELAMENTO_DE_PROTESTO("CP",
-            "", "Cancelamento"), DEVOLUCAO_DE_PROTESTO("DP", "", "Desistência"), AUTORIZACAO_DE_CANCELAMENTO("AC", "", "Autorização");
+	REMESSA("B", "TPR", "Remessa"),
+	CONFIRMACAO("C", "CRT", "Confirmação"),
+	RETORNO("R", "RTP", "Retorno"),
+	CANCELAMENTO_DE_PROTESTO("CP", "", "Cancelamento"),
+	DEVOLUCAO_DE_PROTESTO("DP", "", "Desistência"),
+	AUTORIZACAO_DE_CANCELAMENTO("AC", "", "Autorização");
 
-    public String constante;
-    public String identificacaoTransacaoCabecalho;
-    public String label;
+	public String constante;
+	public String identificacaoTransacaoCabecalho;
+	public String label;
 
-    TipoArquivoEnum(String constante, String identificacaoTransacaoCabecalho, String label) {
-        this.constante = constante;
-        this.identificacaoTransacaoCabecalho = identificacaoTransacaoCabecalho;
-        this.label = label;
-    }
+	TipoArquivoEnum(String constante, String identificacaoTransacaoCabecalho, String label) {
+		this.constante = constante;
+		this.identificacaoTransacaoCabecalho = identificacaoTransacaoCabecalho;
+		this.label = label;
+	}
 
-    /**
-     * retorna o tipo de arquivo dependendo do tipo informado
-     * 
-     * @param valor
-     * @return tipo arquivo
-     */
-    public static TipoArquivoEnum getTipoArquivoEnum(String valor) {
-        TipoArquivoEnum[] values = TipoArquivoEnum.values();
-        for (TipoArquivoEnum tipoArquivo : values) {
-            if (valor.startsWith(tipoArquivo.getConstante())) {
-                return tipoArquivo;
-            }
-        }
-        throw new InfraException(Erro.TIPO_DE_ARQUIVO_NAO_ENCONTRADO.getMensagemErro() + valor);
-    }
+	/**
+	 * retorna o tipo de arquivo dependendo do tipo informado
+	 * 
+	 * @param valor
+	 * @return tipo arquivo
+	 */
+	public static TipoArquivoEnum getTipoArquivoEnum(String valor) {
+		TipoArquivoEnum[] values = TipoArquivoEnum.values();
+		for (TipoArquivoEnum tipoArquivo : values) {
+			if (valor.startsWith(tipoArquivo.getConstante())) {
+				return tipoArquivo;
+			}
+		}
+		throw new InfraException(Erro.TIPO_DE_ARQUIVO_NAO_ENCONTRADO.getMensagemErro() + valor);
+	}
 
-    @Override
-    public String getConstante() {
-        return constante;
-    }
+	public static TipoArquivoEnum getTipoArquivoEnum(Arquivo arquivo) {
+		return arquivo.getTipoArquivo().getTipoArquivo();
+	}
 
-    @Override
-    public String getLabel() {
-        return this.label;
-    }
+	@Override
+	public String getConstante() {
+		return constante;
+	}
 
-    public String getIdentificacaoTransacaoCabecalho() {
-        return identificacaoTransacaoCabecalho;
-    }
+	@Override
+	public String getLabel() {
+		return this.label;
+	}
 
-    @Override
-    public String toString() {
-        return constante + " - " + label.toUpperCase();
-    }
+	public String getIdentificacaoTransacaoCabecalho() {
+		return identificacaoTransacaoCabecalho;
+	}
 
-    public boolean equals(TipoArquivoEnum tipoArquivo) {
-        if (this.getConstante().equals(tipoArquivo.getConstante())) {
-            return true;
-        }
-        return false;
-    }
+	@Override
+	public String toString() {
+		return constante + " - " + label.toUpperCase();
+	}
+
+	public boolean equals(TipoArquivoEnum tipoArquivo) {
+		if (this.getConstante().equals(tipoArquivo.getConstante())) {
+			return true;
+		}
+		return false;
+	}
 }
