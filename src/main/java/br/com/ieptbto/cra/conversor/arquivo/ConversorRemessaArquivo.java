@@ -22,6 +22,7 @@ import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoCampo51;
@@ -129,6 +130,56 @@ public class ConversorRemessaArquivo {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Conversor de Arquivo(Entidade) para ArquivoVO de Instituicoes e Convênios
+	 * 
+	 * @param remessas
+	 * @return
+	 */
+	public List<RemessaVO> converterArquivoVO(List<Remessa> remessas) {
+		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
+		for (Remessa remessa : remessas) {
+			RemessaVO remessaVO = new RemessaVO();
+			remessaVO.setTitulos(new ArrayList<TituloVO>());
+			remessaVO.setCabecalho(CabecalhoVO.parseCabecalho(remessa.getCabecalho()));
+			remessaVO.getTitulos().addAll(converterTitulos(remessa.getTitulos()));
+			remessaVO.setRodapes(RodapeVO.parseRodape(remessa.getRodape(), remessa.getCabecalho()));
+			remessasVO.add(remessaVO);
+		}
+		return remessasVO;
+	}
+
+	/**
+	 * Conversor de Remessa(Entidade) para RemessaVO de Cartórios
+	 * 
+	 * @param remessa
+	 * @return
+	 */
+	public RemessaVO converterRemessaVO(Remessa remessa) {
+		RemessaVO remessaVO = new RemessaVO();
+		remessaVO.setTitulos(new ArrayList<TituloVO>());
+		remessaVO.setCabecalho(CabecalhoVO.parseCabecalho(remessa.getCabecalho()));
+		remessaVO.getTitulos().addAll(converterTitulos(remessa.getTitulos()));
+		remessaVO.setRodapes(RodapeVO.parseRodape(remessa.getRodape(), remessa.getCabecalho()));
+		return remessaVO;
+	}
+
+	private List<TituloVO> converterTitulos(List<Titulo> titulos) {
+		List<TituloVO> titulosVO = new ArrayList<TituloVO>();
+		TituloVO tituloVO = null;
+		for (Titulo titulo : titulos) {
+			if (titulo instanceof TituloRemessa) {
+				tituloVO = TituloVO.parseTitulo(TituloRemessa.class.cast(titulo));
+			} else if (titulo instanceof Confirmacao) {
+				tituloVO = TituloVO.parseTitulo(Confirmacao.class.cast(titulo));
+			} else if (titulo instanceof Retorno) {
+				tituloVO = TituloVO.parseTitulo(Retorno.class.cast(titulo));
+			}
+			titulosVO.add(tituloVO);
+		}
+		return titulosVO;
 	}
 
 	public List<Exception> getErros() {

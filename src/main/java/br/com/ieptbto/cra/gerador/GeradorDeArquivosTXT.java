@@ -28,7 +28,7 @@ import br.com.ieptbto.cra.processador.FabricaDeRegistroTXT;
  */
 @Service
 public class GeradorDeArquivosTXT extends Gerador {
-	
+
 	public File gerar(RemessaDesistenciaProtestoVO remessaVO, File arquivoFisico) {
 		try {
 			BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivoFisico));
@@ -79,7 +79,7 @@ public class GeradorDeArquivosTXT extends Gerador {
 		try {
 			Map<Integer, String> titulos = new HashMap<Integer, String>();
 			BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivoTXT));
-			
+
 			bWrite.write(gerarLinha(remessaVO.getCabecalho()));
 			bWrite.write(NEW_LINE);
 			for (TituloVO tituloVO : remessaVO.getTitulos()) {
@@ -93,7 +93,7 @@ public class GeradorDeArquivosTXT extends Gerador {
 
 			bWrite.write(gerarLinhaRodape(remessaVO.getRodape()));
 			bWrite.write(NEW_LINE);
-			
+
 			bWrite.flush();
 			bWrite.close();
 
@@ -101,7 +101,6 @@ public class GeradorDeArquivosTXT extends Gerador {
 			logger.error(e);
 			new InfraException("Não foi possível gerar o arquivo TXT físico");
 		}
-
 	}
 
 	public void gerar(List<RemessaVO> remessasVO, File arquivoTXT) {

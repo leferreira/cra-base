@@ -30,6 +30,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class FabricaDeArquivo {
 
 	private static final Logger logger = Logger.getLogger(FabricaDeArquivo.class);
+
 	@Autowired
 	private FabricaDeArquivoTXT fabricaDeArquivoTXT;
 	@Autowired
@@ -74,6 +75,8 @@ public class FabricaDeArquivo {
 	}
 
 	/**
+	 * Método responsável em receber os arquivos pelo ws
+	 * 
 	 * @param arquivoRecebido
 	 * @param arquivo
 	 * @param erros
@@ -84,26 +87,22 @@ public class FabricaDeArquivo {
 	}
 
 	public File baixarRemessaConfirmacaoRetornoTXT(Remessa remessa, File file) {
-		return null;
+		return fabricaDeArquivoTXT.fabricaArquivoCartorioTXT(file, remessa);
 	}
 
 	public File baixarRemessaConfirmacaoRetornoTXT(List<Remessa> remessas, File file) {
-		// TODO Auto-generated method stub
-		return null;
+		return fabricaDeArquivoTXT.fabricaArquivoInstituicaoConvenioTXT(file, remessas);
 	}
 
 	public File baixarDesistenciaTXT(RemessaDesistenciaProtesto remessa, File file) {
-		// TODO Auto-generated method stub
-		return null;
+		return fabricaDeArquivoTXT.fabricaArquivoDesistenciaProtestoTXT(file, remessa);
 	}
 
 	public File baixarCancelamentoTXT(RemessaCancelamentoProtesto remessa, File file) {
-		// TODO Auto-generated method stub
-		return null;
+		return fabricaDeArquivoTXT.fabricaArquivoCancelamentoProtestoTXT(file, remessa);
 	}
 
 	public File baixarAutorizacaoCancelamentoTXT(RemessaAutorizacaoCancelamento remessa, File file) {
-		// TODO Auto-generated method stub
-		return null;
+		return fabricaDeArquivoTXT.fabricaArquivoAutorizacaoCancelamentoTXT(file, remessa);
 	}
 }

@@ -13,13 +13,10 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.RemessaDAO;
 import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Anexo;
@@ -29,15 +26,11 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Rodape;
-import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.entidade.vo.RemessaVO;
-import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.fabrica.FabricaDeArquivo;
 import br.com.ieptbto.cra.util.DecoderString;
 
 /**
@@ -52,11 +45,7 @@ public class RemessaMediator extends BaseMediator {
 	@Autowired
 	private RemessaDAO remessaDAO;
 	@Autowired
-	private ArquivoDAO arquivoDAO;
-	@Autowired
 	private TituloDAO tituloDAO;
-	@Autowired
-	private FabricaDeArquivo fabricaDeArquivo;
 
 	@Transactional
 	public CabecalhoRemessa carregarCabecalhoRemessaPorId(CabecalhoRemessa cabecalhoRemessa) {
@@ -82,71 +71,11 @@ public class RemessaMediator extends BaseMediator {
 		return remessaDAO.getNumeroSequencialConvenio(convenio, instituicaoDestino);
 	}
 
-	/**
-	 * Remessa XML para cartórios via ws
-	 * 
-	 * @param usuario
-	 * @param nomeArquivo
-	 * @return
-	 */
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public RemessaVO buscarRemessaParaCartorio(Usuario usuario, String nomeArquivo) {
-		Remessa remessa = null;
-		logger.info("Usuario " + usuario.getLogin() + " está buscando a remessa " + nomeArquivo + " na CRA.");
-		if (nomeArquivo.startsWith(TipoArquivoEnum.REMESSA.getConstante())) {
-			remessa = remessaDAO.baixarArquivoCartorioRemessa(usuario.getInstituicao(), nomeArquivo);
-		}
-
-		if (remessa == null) {
-			return null;
-		}
-		remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
-		remessaDAO.alterarSituacaoRemessa(remessa);
-
-		ArrayList<Arquivo> arquivos = new ArrayList<>();
-		arquivos.add(remessa.getArquivo());
-		logger.info("O Usuario " + usuario.getLogin() + " da instituição " + usuario.getInstituicao().getNomeFantasia()
-				+ " fez o download do arquivo " + nomeArquivo + " que foi enviado para " + remessa.getInstituicaoDestino().getNomeFantasia() + ".");
-		return fabricaDeArquivo.
-	}
-
-	public List<Remessa> confirmacoesPendentesRelatorio(Instituicao instituicao) {
-		return remessaDAO.confirmacoesPendentes(instituicao);
-	}
-
-	/**
-	 * @param nomeArquivo
-	 * @param instituicao
-	 * @return
-	 */
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public List<RemessaVO> buscarArquivos(String nomeArquivo, Instituicao instituicao) {
-		Arquivo arquivo = null;
-		List<Arquivo> arquivos = new ArrayList<Arquivo>();
-
-		if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
-			arquivo = arquivoDAO.buscarArquivoInstituicaoConfirmacao(nomeArquivo, instituicao);
-		} else if (nomeArquivo.startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
-			arquivo = arquivoDAO.buscarArquivoInstituicaoRetorno(nomeArquivo, instituicao);
-		}
-		if (arquivo == null) {
-			return new ArrayList<RemessaVO>();
-		}
-		StatusArquivo statusArquivo = new StatusArquivo();
-		statusArquivo.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
-		statusArquivo.setData(new LocalDateTime());
-		arquivo.setStatusArquivo(statusArquivo);
-		arquivoDAO.alterarStatusArquivo(arquivo);
-
-		arquivos.add(arquivo);
-		return conversorRemessaArquivo.converterParaVO(arquivos);
-	}
-
-	public void alterarParaDevolvidoPelaCRA(Remessa remessa) {
+	public Remessa alterarParaDevolvidoPelaCRA(Remessa remessa) {
 		remessa = carregarRemessaPorId(remessa);
 		remessa.setDevolvidoPelaCRA(true);
 		remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
-		remessaDAO.update(remessa);
+		return remessaDAO.update(remessa);
 	}
 
 	@SuppressWarnings("resource")

@@ -31,7 +31,6 @@ import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.gerador.GeradorDeArquivosTXT;
 
 @SuppressWarnings("rawtypes")
@@ -49,12 +48,6 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	private ConversorDesistenciaProtesto conversorDesistenciaProtesto;
 	@Autowired
 	private ConversorCancelamentoProtesto conversorCancelamentoProtesto;
-
-	private Remessa remessa;
-	private List<Remessa> remessas;
-	private RemessaDesistenciaProtesto remessaDesistenciaProtesto;
-	private RemessaCancelamentoProtesto remessaCancelamentoProtesto;
-	private RemessaAutorizacaoCancelamento remessaAutorizacaoCancelamento;
 
 	public Arquivo converter(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
 		this.file = arquivoFisico;
@@ -76,63 +69,27 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		}
 	}
 
-	public File fabricaArquivoDesistenciaProtestoTXT(File arquivoFisico, RemessaDesistenciaProtesto remessa, List<Exception> erros) {
-		this.file = arquivoFisico;
-		this.erros = erros;
-		this.remessaDesistenciaProtesto = remessa;
+	public File fabricaArquivoCartorioTXT(File file, Remessa remessa) {
+		this.file = file;
+		this.arquivo = remessa.getArquivo();
 
-		List<Arquivo> arquivos = new ArrayList<Arquivo>();
-		arquivos.add(getArquivo());
-		return geradorDeArquivosTXT.gerar(conversorDesistenciaProtesto.converterParaVO(this.remessaDesistenciaProtesto), getFile());
-	}
+		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(remessa.getArquivo());
 
-	public File fabricaArquivoCancelamentoProtestoTXT(File arquivoFisico, RemessaCancelamentoProtesto remessa, List<Exception> erros) {
-		this.file = arquivoFisico;
-		this.erros = erros;
-		this.remessaCancelamentoProtesto = remessa;
-
-		List<Arquivo> arquivos = new ArrayList<Arquivo>();
-		arquivos.add(getArquivo());
-		return geradorDeArquivosTXT.gerar(conversorCancelamentoProtesto.converter(this.remessaCancelamentoProtesto), getFile());
-	}
-
-	public File fabricaArquivoAutorizacaoCancelamentoTXT(File arquivoFisico, RemessaAutorizacaoCancelamento remessa, List<Exception> erros) {
-		this.file = arquivoFisico;
-		this.erros = erros;
-		this.remessaAutorizacaoCancelamento = remessa;
-
-		List<Arquivo> arquivos = new ArrayList<Arquivo>();
-		arquivos.add(getArquivo());
-		return geradorDeArquivosTXT.gerar(conversorCancelamentoProtesto.converter(this.remessaAutorizacaoCancelamento), getFile());
-	}
-
-	public FabricaDeArquivoTXT fabricaArquivoTXT(File arquivoTXT, List<Remessa> remessas, List<Exception> erros) {
-		this.file = arquivoTXT;
-		this.erros = erros;
-		this.remessas = remessas;
-
-		return this;
-	}
-
-	public void converterParaTXT() {
 		RemessaVO remessaVO = new RemessaVO();
 		remessaVO.setTitulos(new ArrayList<TituloVO>());
 		BigDecimal valorTotalTitulos = BigDecimal.ZERO;
-
-		remessaVO.setCabecalho(new CabecalhoConversor().converter(getRemessa().getCabecalho(), CabecalhoVO.class));
-		remessaVO.setRodapes(new RodapeConversor().converter(getRemessa().getRodape(), RodapeVO.class));
+		remessaVO.setCabecalho(new CabecalhoConversor().converter(remessa.getCabecalho(), CabecalhoVO.class));
+		remessaVO.setRodapes(new RodapeConversor().converter(remessa.getRodape(), RodapeVO.class));
 
 		int contSequencial = 2;
-		for (Titulo titulo : getRemessa().getTitulos()) {
+		for (Titulo titulo : remessa.getTitulos()) {
 			TituloVO tituloVO = new TituloVO();
-			if (TipoArquivoEnum.REMESSA.equals(getRemessa().getArquivo().getTipoArquivo().getTipoArquivo())) {
+			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
 				tituloVO = new TituloConversor().converter(TituloRemessa.class.cast(titulo), TituloVO.class);
-			} else if (TipoArquivoEnum.CONFIRMACAO.equals(getRemessa().getArquivo().getTipoArquivo().getTipoArquivo())) {
+			} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)) {
 				tituloVO = new ConfirmacaoConversor().converter(Confirmacao.class.cast(titulo), TituloVO.class);
-			} else if (TipoArquivoEnum.RETORNO.equals(getRemessa().getArquivo().getTipoArquivo().getTipoArquivo())) {
+			} else if (TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
 				tituloVO = new RetornoConversor().converter(Retorno.class.cast(titulo), TituloVO.class);
-			} else {
-				throw new InfraException("Tipo de Arquivo não identificado");
 			}
 			tituloVO.setNumeroSequencialArquivo(String.valueOf(contSequencial));
 			valorTotalTitulos = valorTotalTitulos.add(titulo.getSaldoTitulo());
@@ -142,18 +99,21 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		remessaVO.getCabecalho().setQtdTitulosRemessa(String.valueOf(remessaVO.getTitulos().size()));
 		remessaVO.getRodape().setSomatorioQtdRemessa(somatorioSegurancaQuantidadeRemessa(remessaVO));
 		remessaVO.getRodape().setSomatorioValorRemessa(new BigDecimalConversor().getValorConvertidoParaString(valorTotalTitulos));
-		remessaVO.setIdentificacaoRegistro(getRemessa().getCabecalho().getIdentificacaoRegistro().getConstante());
-		remessaVO.setTipoArquivo(getRemessa().getArquivo().getTipoArquivo());
+		remessaVO.setIdentificacaoRegistro(remessa.getCabecalho().getIdentificacaoRegistro().getConstante());
+		remessaVO.setTipoArquivo(remessa.getArquivo().getTipoArquivo());
 		remessaVO.getRodape().setNumeroSequencialRegistroArquivo(String.valueOf(contSequencial));
 
-		gerarTXT(remessaVO);
+		gerarTXT(file, remessaVO);
+		return file;
 	}
 
-	public void converterParaArquivoTXT() {
-		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
+	public File fabricaArquivoInstituicaoConvenioTXT(File file, List<Remessa> remessas) {
+		this.file = file;
 
-		for (Remessa remessa : getRemessas()) {
-			this.arquivo = remessa.getArquivo();
+		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
+		for (Remessa remessa : remessas) {
+			TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(remessa.getArquivo());
+
 			RemessaVO remessaVO = new RemessaVO();
 			remessaVO.setTitulos(new ArrayList<TituloVO>());
 			BigDecimal valorTotalTitulos = BigDecimal.ZERO;
@@ -164,14 +124,12 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 			int contSequencial = 2;
 			for (Titulo titulo : remessa.getTitulos()) {
 				TituloVO tituloVO = new TituloVO();
-				if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
 					tituloVO = new TituloConversor().converter(TituloRemessa.class.cast(titulo), TituloVO.class);
-				} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)) {
 					tituloVO = new ConfirmacaoConversor().converter(Confirmacao.class.cast(titulo), TituloVO.class);
-				} else if (TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				} else if (TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
 					tituloVO = new RetornoConversor().converter(Retorno.class.cast(titulo), TituloVO.class);
-				} else {
-					throw new InfraException("Tipo de Arquivo não identificado");
 				}
 				tituloVO.setNumeroSequencialArquivo(String.valueOf(contSequencial));
 				valorTotalTitulos = valorTotalTitulos.add(titulo.getSaldoTitulo());
@@ -188,7 +146,20 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 			remessasVO.add(remessaVO);
 		}
 
-		gerarTXT(remessasVO);
+		gerarTXT(file, remessasVO);
+		return file;
+	}
+
+	public File fabricaArquivoDesistenciaProtestoTXT(File file, RemessaDesistenciaProtesto remessa) {
+		return geradorDeArquivosTXT.gerar(conversorDesistenciaProtesto.converterParaVO(remessa), file);
+	}
+
+	public File fabricaArquivoCancelamentoProtestoTXT(File file, RemessaCancelamentoProtesto remessa) {
+		return geradorDeArquivosTXT.gerar(conversorCancelamentoProtesto.converter(remessa), file);
+	}
+
+	public File fabricaArquivoAutorizacaoCancelamentoTXT(File file, RemessaAutorizacaoCancelamento remessa) {
+		return geradorDeArquivosTXT.gerar(conversorCancelamentoProtesto.converter(remessa), file);
 	}
 
 	private String somatorioSegurancaQuantidadeRemessa(RemessaVO remessaVO) {
@@ -202,23 +173,11 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		return Integer.toString(somatorioQtdRemessa);
 	}
 
-	private void gerarTXT(RemessaVO remessaVO) {
-		geradorDeArquivosTXT.gerar(remessaVO, getFile());
+	private void gerarTXT(File file, RemessaVO remessaVO) {
+		geradorDeArquivosTXT.gerar(remessaVO, file);
 	}
 
-	private void gerarTXT(List<RemessaVO> remessasVO) {
-		geradorDeArquivosTXT.gerar(remessasVO, getFile());
-	}
-
-	public Remessa getRemessa() {
-		return remessa;
-	}
-
-	public void setRemessa(Remessa remessa) {
-		this.remessa = remessa;
-	}
-
-	public List<Remessa> getRemessas() {
-		return remessas;
+	private void gerarTXT(File file, List<RemessaVO> remessasVO) {
+		geradorDeArquivosTXT.gerar(remessasVO, file);
 	}
 }

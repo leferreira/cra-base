@@ -90,4 +90,34 @@ public class ConversorDesistenciaProtesto {
 		return remessaVO;
 	}
 
+	public RemessaDesistenciaProtestoVO converter(RemessaDesistenciaProtesto remessaDesistenciaProtesto) {
+		RemessaDesistenciaProtestoVO remessaVO = new RemessaDesistenciaProtestoVO();
+		remessaVO.setPedidoDesistencias(new ArrayList<DesistenciaProtestoVO>());
+
+		remessaVO.setCabecalhoArquivo(new CabecalhoArquivoDesistenciaProtestoConversor().converter(remessaDesistenciaProtesto.getCabecalho(),
+				CabecalhoArquivoDesistenciaProtestoVO.class));
+
+		remessaVO.setRodapeArquivo(new RodapeArquivoDesistenciaProtestoVOConversor().converter(remessaDesistenciaProtesto.getRodape(),
+				RodapeArquivoDesistenciaProtestoVO.class));
+
+		for (DesistenciaProtesto desistencia : remessaDesistenciaProtesto.getDesistenciaProtesto()) {
+			DesistenciaProtestoVO desistenciaVO = new DesistenciaProtestoVO();
+			desistenciaVO.setRegistroDesistenciaProtesto(new ArrayList<RegistroDesistenciaProtestoVO>());
+			desistenciaVO.setRegistroDesistenciaProtesto(new ArrayList<RegistroDesistenciaProtestoVO>());
+			desistenciaVO.setCabecalhoCartorio(new CabecalhoCartorioDesistenciaProtestoConversor().converter(desistencia.getCabecalhoCartorio(),
+					CabecalhoCartorioDesistenciaProtestoVO.class));
+
+			for (PedidoDesistencia pedido : desistencia.getDesistencias()) {
+				RegistroDesistenciaProtestoVO registro =
+						new RegistroDesistenciaProtestoConversor().converter(pedido, RegistroDesistenciaProtestoVO.class);
+				desistenciaVO.getRegistroDesistenciaProtesto().add(registro);
+			}
+
+			desistenciaVO.setRodapeCartorio(new RodapeCartorioDesistenciaProtestoConversor().converter(desistencia.getRodapeCartorio(),
+					RodapeCartorioDesistenciaProtestoVO.class));
+			remessaVO.getPedidoDesistencias().add(desistenciaVO);
+		}
+		return remessaVO;
+	}
+
 }

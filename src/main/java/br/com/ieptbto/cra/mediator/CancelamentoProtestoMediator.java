@@ -111,7 +111,7 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 
 			return cancelamentoDAO.salvarCancelamento(arquivo, usuario, erros);
 		}
-		arquivo = conversorArquivoDesistenciaProtesto.converter(converterStringParaVO(dados), erros);
+		arquivo = conversorArquivoDesistenciaProtesto.converterParaArquivo(converterStringParaVO(dados), arquivo, erros);
 		return arquivoDAO.salvar(arquivo, usuario, erros);
 	}
 

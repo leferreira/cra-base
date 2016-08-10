@@ -125,7 +125,7 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 		Arquivo arquivo = new Arquivo();
 
 		if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.CRA_NACIONAL)) {
-			arquivo = conversorArquivoDesistenciaProtesto.converter(converterStringParaVO(dados), erros);
+			arquivo = conversorArquivoDesistenciaProtesto.converterParaArquivo(converterStringParaVO(dados), arquivo, erros);
 		} else if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.SERPRO)) {
 			DesistenciaSerproVO desistenciaCancelamentoSerpro = converterStringParaDesistenciaCancelamentoSerproVO(dados);
 			RemessaDesistenciaProtesto remessaDesistencia =
