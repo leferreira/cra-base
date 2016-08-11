@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
+import br.com.ieptbto.cra.enumeration.BancoAgenciaCentralizadoraCodigoCartorio;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.CabecalhoMediator;
@@ -46,9 +47,16 @@ public class RegraVerificarAgenciaCentralizadora extends RegraCabecalho {
 
 	private void verificarAgencia() {
 		CabecalhoRemessa ultimoCabecalhoRemessa = cabecalhoMediator.buscarUltimoCabecalhoRemessa(getCabecalhoRemessa());
+		BancoAgenciaCentralizadoraCodigoCartorio agencia =
+				BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(getCabecalhoRemessa().getNumeroCodigoPortador());
 		if (ultimoCabecalhoRemessa != null) {
 			if (ultimoCabecalhoRemessa.getAgenciaCentralizadora() != null) {
 				getCabecalhoRemessa().setAgenciaCentralizadora(ultimoCabecalhoRemessa.getAgenciaCentralizadora());
+			}
+			if (agencia != null) {
+				if (agencia.getAgenciaCentralizadora() != null) {
+					getCabecalhoRemessa().setAgenciaCentralizadora(agencia.getAgenciaCentralizadora());
+				}
 			}
 			if (getCabecalhoRemessa().getAgenciaCentralizadora().trim().equals(AGENCIA_PALMAS)
 					&& !getCabecalhoRemessa().getCodigoMunicipio().trim().equals(CODIGO_MUNICIPIO_PALMAS)) {

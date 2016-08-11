@@ -16,21 +16,6 @@ import br.com.ieptbto.cra.util.DataUtil;
 public class ValidarRegistroCnp {
 
 	public boolean validarProtesto(RegistroCnp registro) {
-		if (registro.getNumeroDocumentoCredor() == null) {
-			return false;
-		}
-		registro.setNumeroDocumentoCredor(registro.getNumeroDocumentoCredor().replace(" ", ""));
-		if (registro.getNumeroDocumentoCredor().trim().isEmpty()) {
-			return false;
-		}
-		if (Integer.valueOf(registro.getNumeroDocumentoCredor()) == 0) {
-			return false;
-		}
-		String numeroDocumentoCredor = registro.getNumeroDocumentoCredor().trim() + registro.getComplementoDocumentoCredor().trim()
-				+ registro.getDigitoControleDocumentoCredor().trim();
-		if (!CpfCnpjUtil.isValidCNPJ(numeroDocumentoCredor) && !CpfCnpjUtil.isValidCPF(numeroDocumentoCredor)) {
-			return false;
-		}
 		if (registro.getNumeroDocumentoDevedor() == null) {
 			return false;
 		}
@@ -68,21 +53,6 @@ public class ValidarRegistroCnp {
 	}
 
 	public boolean validarCancelamento(RegistroCnp registro) {
-		if (registro.getNumeroDocumentoCredor() == null) {
-			return false;
-		}
-		registro.setNumeroDocumentoCredor(registro.getNumeroDocumentoCredor().replace(" ", ""));
-		if (registro.getNumeroDocumentoCredor().trim().isEmpty()) {
-			return false;
-		}
-		if (Integer.valueOf(registro.getNumeroDocumentoCredor()) == 0) {
-			return false;
-		}
-		String numeroDocumentoCredor = registro.getNumeroDocumentoCredor().trim() + registro.getComplementoDocumentoCredor().trim()
-				+ registro.getDigitoControleDocumentoCredor().trim();
-		if (!CpfCnpjUtil.isValidCNPJ(numeroDocumentoCredor) && !CpfCnpjUtil.isValidCPF(numeroDocumentoCredor)) {
-			return false;
-		}
 		if (registro.getNumeroDocumentoDevedor() == null) {
 			return false;
 		}
