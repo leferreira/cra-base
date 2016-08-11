@@ -14,7 +14,6 @@ import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.LayoutArquivo;
 import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.exception.ValidacaoErroException;
 import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 
 /**
@@ -40,7 +39,7 @@ public class RegraTipoArquivoTXT extends RegraEntrada {
 
 	protected void executar() {
 		try {
-			if (file != null) {
+			if (this.file != null) {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 				linha = reader.readLine();
 				reader.close();
@@ -53,7 +52,6 @@ public class RegraTipoArquivoTXT extends RegraEntrada {
 
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			getErros().add(new ValidacaoErroException(file.getName(), e.getMessage(), e.getCause()));
 			throw new InfraException(Erro.NAO_FOI_POSSIVEL_VERIFICAR_A_PRIMEIRA_LINHA_DO_ARQUIVO.getMensagemErro());
 		}
 	}
@@ -67,11 +65,10 @@ public class RegraTipoArquivoTXT extends RegraEntrada {
 	private void validaTamanhoLinha(String linha, File arquivo) {
 		if (!arquivo.getName().contains("DP") && linha.length() != ConfiguracaoBase.TAMANHO_PADRAO_LINHA) {
 			logger.error(Erro.O_ARQUIVO_NAO_E_UM_TIPO_TXT_VALIDO.getMensagemErro());
-			getErros().add(new ValidacaoErroException(arquivo.getName(), Erro.TAMANHO_LINHA_FORA_DO_PADRAO, getNumeroLinha()));
+			throw new InfraException(Erro.TAMANHO_LINHA_FORA_DO_PADRAO.getMensagemErro() + " Tamanho recebido [ " + getNumeroLinha() + " ]");
 		} else if (arquivo.getName().contains("DP") && linha.length() != ConfiguracaoBase.TAMANHO_PADRAO_LINHA_DESISTENCIA_PROTESTO) {
-			System.out.println(linha.length());
 			logger.error(Erro.O_ARQUIVO_NAO_E_UM_TIPO_TXT_VALIDO.getMensagemErro());
-			getErros().add(new ValidacaoErroException(arquivo.getName(), Erro.TAMANHO_LINHA_FORA_DO_PADRAO, getNumeroLinha()));
+			throw new InfraException(Erro.TAMANHO_LINHA_FORA_DO_PADRAO.getMensagemErro() + " Tamanho recebido [ " + getNumeroLinha() + " ]");
 		}
 
 	}

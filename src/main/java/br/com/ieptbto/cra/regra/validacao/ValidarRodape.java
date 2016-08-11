@@ -8,8 +8,8 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.exception.Erro;
-import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.error.CodigoErro;
+import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 
 @Service
 public class ValidarRodape extends RegraValidacao {
@@ -39,15 +39,13 @@ public class ValidarRodape extends RegraValidacao {
 		for (Remessa remessa : arquivo.getRemessas()) {
 			if (remessa.getRodape().getNumeroCodigoPortador() != null) {
 				if (remessa.getRodape().getNumeroCodigoPortador().trim().isEmpty()) {
-					logger.error(Erro.CODIGO_PORTADOR_RODAPE_INVALIDO.getMensagemErro());
-					throw new InfraException(Erro.CODIGO_PORTADOR_RODAPE_INVALIDO.getMensagemErro());
+					addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_PORTADOR_RODAPE_INVALIDO));
 				}
 			}
 
 			if (remessa.getRodape().getNomePortador() != null) {
 				if (remessa.getRodape().getNomePortador().trim().isEmpty()) {
-					logger.error(Erro.NOME_APRESENTANTE_RODAPE_INVALIDO.getMensagemErro());
-					throw new InfraException(Erro.NOME_APRESENTANTE_RODAPE_INVALIDO.getMensagemErro());
+					addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_PORTADOR_RODAPE_INVALIDO));
 				}
 			}
 		}

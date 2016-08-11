@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.dao;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -195,6 +196,9 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 
 	public Instituicao getInstituicaoPorCodigo(String codigoCompensacao) {
 		Criteria criteria = getCriteria(Instituicao.class);
+		if (StringUtils.isBlank(codigoCompensacao) || StringUtils.isEmpty(codigoCompensacao.trim())) {
+			return null;
+		}
 		criteria.add(Restrictions.eq("codigoCompensacao", codigoCompensacao));
 
 		return Instituicao.class.cast(criteria.uniqueResult());

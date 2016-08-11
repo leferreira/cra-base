@@ -17,7 +17,6 @@ import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.exception.ValidacaoErroException;
 import br.com.ieptbto.cra.fabrica.FabricaDeArquivo;
 import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 import br.com.ieptbto.cra.regra.FabricaRegraEntradaValidacao;
@@ -66,7 +65,6 @@ public class ProcessadorArquivo extends Processador {
 			copiarArquivoParaDiretorioDoUsuarioTemporario(getFileUpload().getClientFileName());
 			setArquivo(fabricaDeArquivo.fabricaAplicacao(getFile(), getArquivo(), getErros()));
 			validarArquivo();
-			copiarArquivoEapagarTemporario();
 
 			logger.info(
 					"Início processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
@@ -198,26 +196,12 @@ public class ProcessadorArquivo extends Processador {
 		return fabricaDeArquivo.baixarAutorizacaoCancelamentoTXT(remessa, getFile());
 	}
 
-	private void copiarArquivoEapagarTemporario() {
-		try {
-			if (getFile().renameTo(new File(getPathUsuario() + ConfiguracaoBase.BARRA + getArquivo().getId()))) {
-				return;
-			}
-			new InfraException("Não foi possível mover o arquivo temporário para o diretório do usuário.");
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex.getCause());
-			getErros().add(ex);
-			new InfraException("Não foi possível mover o arquivo temporário para o diretório do usuário.");
-		}
-	}
-
 	private void copiarArquivoParaDiretorioDoUsuarioTemporario(String nomeArquivo) {
 		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + nomeArquivo));
 		try {
 			getFileUpload().writeTo(getFile());
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e.getCause());
-			getErros().add(new ValidacaoErroException(e.getMessage(), e.getCause()));
 			throw new InfraException("Não foi possível criar arquivo Físico temporário para o arquivo " + getFileUpload().getClientFileName());
 		}
 	}
@@ -272,7 +256,6 @@ public class ProcessadorArquivo extends Processador {
 				file.createNewFile();
 			} catch (IOException e) {
 				logger.error(e.getMessage(), e.getCause());
-				getErros().add(new ValidacaoErroException(e.getMessage(), e.getCause()));
 				throw new InfraException("Não foi possível criar arquivo Físico temporário para o arquivo " + file.getName());
 			}
 		}

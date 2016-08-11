@@ -10,7 +10,9 @@ import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.error.CodigoErro;
+import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 import br.com.ieptbto.cra.mediator.MunicipioMediator;
 
 @Service
@@ -45,13 +47,15 @@ public class ValidarCidadeCodigoIBGE extends RegraValidacao {
 
 			Municipio municipio = municipioMediator.buscaMunicipioPorCodigoIBGE(remessa.getCabecalho().getCodigoMunicipio());
 			if (municipio == null) {
-				throw new InfraException("Código do Município " + remessa.getCabecalho().getCodigoMunicipio() + " não encontrado ou inválido!");
+				addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO));
 			}
 
-			if (!TipoArquivoEnum.REMESSA.equals(getTipoArquivo(arquivo))) {
-				Municipio municipioEnvio = municipioMediator.carregarMunicipio(remessa.getInstituicaoOrigem().getMunicipio());
-				if (!municipio.equals(municipioEnvio)) {
-					throw new InfraException("Código do Município no cabeçalho não pertence a instituição que está enviando o arquivo!");
+			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+				if (!TipoArquivoEnum.REMESSA.equals(getTipoArquivo(arquivo))) {
+					Municipio municipioEnvio = municipioMediator.carregarMunicipio(remessa.getInstituicaoOrigem().getMunicipio());
+					if (!municipio.equals(municipioEnvio)) {
+						addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO));
+					}
 				}
 			}
 		}

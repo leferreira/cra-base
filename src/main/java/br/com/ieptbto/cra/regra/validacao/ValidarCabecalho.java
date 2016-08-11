@@ -8,8 +8,8 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.exception.Erro;
-import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.error.CodigoErro;
+import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 
 /**
  * @author Thasso Araújo
@@ -44,14 +44,12 @@ public class ValidarCabecalho extends RegraValidacao {
 
 			if (remessa.getCabecalho().getNumeroCodigoPortador() != null) {
 				if (remessa.getCabecalho().getNumeroCodigoPortador().trim().isEmpty()) {
-					logger.error(Erro.CODIGO_PORTADOR_CABECALHO_INVALIDO.getMensagemErro());
-					throw new InfraException(Erro.CODIGO_PORTADOR_CABECALHO_INVALIDO.getMensagemErro());
+					addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_PORTADOR_CABECALHO_INVALIDO));
 				}
 			}
 			if (remessa.getCabecalho().getNomePortador() != null) {
 				if (remessa.getCabecalho().getNomePortador().trim().isEmpty()) {
-					logger.error(Erro.NOME_APRESENTANTE_CABECALHO_INVALIDO.getMensagemErro());
-					throw new InfraException(Erro.NOME_APRESENTANTE_CABECALHO_INVALIDO.getMensagemErro());
+					addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_PORTADOR_CABECALHO_INVALIDO));
 				}
 			}
 		}

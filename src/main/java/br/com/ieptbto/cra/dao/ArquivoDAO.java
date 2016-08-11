@@ -172,20 +172,20 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					}
 				}
 
-				if (!erros.isEmpty()) {
-					/**
-					 * Caso haja algum erro no processamento será retornado o
-					 * arquivo sem finalizar a transação!
-					 */
-					return arquivo;
-				}
-				// transaction.commit();
-
 			} else if (TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
 				new InfraException("Não foi possivel enviar o Cancelamento de Protesto! Entre em contato com a CRA!");
 			} else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
 				new InfraException("Não foi possivel enviar a Autorização de Cancelamento! Entre em contato com a CRA!");
 			}
+
+			if (!erros.isEmpty()) {
+				/**
+				 * Caso haja algum erro no processamento será retornado o
+				 * arquivo sem finalizar a transação!
+				 */
+				return arquivo;
+			}
+			// transaction.commit();
 			logger.info("O arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
 					+ " salvo com sucesso.");
 

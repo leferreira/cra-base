@@ -44,18 +44,21 @@ public class RegraDuplicidade extends RegraEntrada {
 	}
 
 	private void verificarDuplicidade() {
-		TipoArquivoEnum tipoArquivo = null;
+		if (this.file != null) {
 
-		if (arquivo.getNomeArquivo().length() == 12) {
-			tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo.getNomeArquivo().substring(0, 1));
-		} else if (arquivo.getNomeArquivo().length() == 13) {
-			tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo.getNomeArquivo().substring(0, 2));
-		} else {
-			throw new InfraException("Não foi possível identificar o tipo do arquivo ! Verifique o nome do arquivo !");
+			TipoArquivoEnum tipoArquivo = null;
+
+			if (arquivo.getNomeArquivo().length() == 12) {
+				tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo.getNomeArquivo().substring(0, 1));
+			} else if (arquivo.getNomeArquivo().length() == 13) {
+				tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo.getNomeArquivo().substring(0, 2));
+			} else {
+				throw new InfraException("Não foi possível identificar o tipo do arquivo ! Verifique o nome do arquivo !");
+			}
+
+			this.instituicaoEnvio = buscarInstituicaoEnvioArquivo(tipoArquivo);
+			verificarExistencia();
 		}
-
-		this.instituicaoEnvio = buscarInstituicaoEnvioArquivo(tipoArquivo);
-		verificarExistencia();
 	}
 
 	private Instituicao buscarInstituicaoEnvioArquivo(TipoArquivoEnum tipoArquivo) {

@@ -9,8 +9,10 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.BancoAgenciaCentralizadoraCodigoCartorio;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.error.CodigoErro;
+import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 import br.com.ieptbto.cra.mediator.CabecalhoMediator;
 
 /**
@@ -50,16 +52,23 @@ public class ValidarAgenciaCentralizadora extends RegraValidacao {
 	private void verificarAgencia() {
 		for (Remessa remessa : arquivo.getRemessas()) {
 			CabecalhoRemessa ultimoCabecalhoRemessa = cabecalhoMediator.buscarUltimoCabecalhoRemessa(remessa.getCabecalho());
+			BancoAgenciaCentralizadoraCodigoCartorio agencia =
+					BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(remessa.getCabecalho().getNumeroCodigoPortador());
 			if (ultimoCabecalhoRemessa != null) {
 				if (ultimoCabecalhoRemessa.getAgenciaCentralizadora() != null) {
 					remessa.getCabecalho().setAgenciaCentralizadora(ultimoCabecalhoRemessa.getAgenciaCentralizadora());
 				}
+				if (agencia != null) {
+					if (agencia.getAgenciaCentralizadora() != null) {
+						remessa.getCabecalho().setAgenciaCentralizadora(agencia.getAgenciaCentralizadora());
+					}
+				}
 				if (remessa.getCabecalho().getAgenciaCentralizadora().trim().equals(AGENCIA_PALMAS)
 						&& !remessa.getCabecalho().getCodigoMunicipio().trim().equals(CODIGO_MUNICIPIO_PALMAS)) {
-					throw new InfraException("Não foi possível identificar a agência centralizadora. Entre em contato com a CRA!");
+					addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_AGÊNCIA_CENTRALIZADORA_INVALIDA));
 				}
 			} else {
-				throw new InfraException("Não foi possível identificar a agência centralizadora. Entre em contato com a CRA!");
+				addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_AGÊNCIA_CENTRALIZADORA_INVALIDA));
 			}
 		}
 	}

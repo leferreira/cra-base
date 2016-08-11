@@ -83,7 +83,16 @@ public enum CodigoErro {
 	CNP_ARQUIVO_CNP_JA_ENVIADO_HOJE("9999", "Arquivo CNP já enviado hoje."),
 
 	CARTORIO_ARQUIVO_NAO_EXISTE("9999", "Não foi localizado este arquivo na CRA."),
-	CARTORIO_RECEBIMENTO_DESISTENCIA_CANCELAMENTO_COM_SUCESSO("0000", "Arquivo de Desistência/Cancelamento confirmado o recebimento com sucesso.");
+	CARTORIO_RECEBIMENTO_DESISTENCIA_CANCELAMENTO_COM_SUCESSO("0000", "Arquivo de Desistência/Cancelamento confirmado o recebimento com sucesso."),
+	CARTORIO_CODIGO_PORTADOR_CABECALHO_INVALIDO("001", "Número do Código Portador inválido"),
+	CARTORIO_NOME_PORTADOR_CABECALHO_INVALIDO("002", "Nome do Portador inválido"),
+	CARTORIO_IDENTIFICACAO_TRANSACAO_INVALIDO("003", "Identificação de Transação inválido"),
+	CARTORIO_SEQUENCIAL_REMESSA_INVALIDO("004", "Sequencial da Remessa inválido"),
+	CARTORIO_QUANTIDADE_REGISTROS_INVALIDO("005", "Quantidade de Registros inválido"),
+	CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO("006", "Código do Município inválido ou difere da instituição do usuário"),
+	CARTORIO_AGÊNCIA_CENTRALIZADORA_INVALIDA("007", "Agência Centralizadora ou é inválida para este apresentante"),
+	CARTORIO_CODIGO_PORTADOR_RODAPE_INVALIDO("901", "Número do Código Portador do rodapé inválido"),
+	CARTORIO_NOME_PORTADOR_RODAPE_INVALIDO("902", "Nome do Portador do rodapé inválido");
 
 	private String codigo;
 	private String descricao;
