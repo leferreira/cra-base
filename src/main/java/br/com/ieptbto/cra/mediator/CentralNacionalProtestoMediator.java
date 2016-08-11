@@ -281,6 +281,9 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 				numeroLinha++;
 			}
 			reader.close();
+			if (loteCnp.getRegistrosCnp().isEmpty()) {
+				throw new InfraException("O arquivo não pode ser importado, verifique as informações dos títulos se estão válidas!");
+			}
 			centralNancionalProtestoDAO.salvarLote(loteCnp);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
@@ -307,7 +310,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 			String linha;
 			while ((linha = reader.readLine()) != null) {
 
-				if (linha.substring(0, 1) == TipoRegistro.TITULO.getConstante()) {
+				if (linha.substring(0, 1).trim().equals(TipoRegistro.TITULO.getConstante())) {
 					RegistroCnp registro = RegistroCnpConversor.converterLinhaSerasa(linha);
 					if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
 						if (validarRegistroCnp.validarProtesto(registro)) {
@@ -322,6 +325,9 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 				numeroLinha++;
 			}
 			reader.close();
+			if (loteCnp.getRegistrosCnp().isEmpty()) {
+				throw new InfraException("O arquivo não pode ser importado, verifique as informações dos títulos se estão válidas!");
+			}
 			centralNancionalProtestoDAO.salvarLote(loteCnp);
 		} catch (IOException e) {
 			logger.error(e.getMessage());

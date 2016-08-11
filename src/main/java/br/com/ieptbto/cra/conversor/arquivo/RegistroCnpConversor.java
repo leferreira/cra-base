@@ -372,7 +372,7 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		}
 		if (linha.substring(260, 268) != null) {
 			try {
-				registro.setDataProtesto(DataUtil.stringToLocalDate(linha.substring(260, 268)).toDate());
+				registro.setDataProtesto(DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, linha.substring(260, 268)).toDate());
 
 			} catch (Exception ex) {
 				registro.setDataProtesto(null);
@@ -421,7 +421,8 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		registro.setNumeroProtocoloCartorio(RemoverAcentosUtil.removeAcentos(linha.substring(447, 457)));
 		if (linha.substring(477, 485) != null) {
 			try {
-				registro.setDataCancelamentoProtesto(DataUtil.stringToLocalDate(linha.substring(477, 485)).toDate());
+				registro.setDataCancelamentoProtesto(
+						DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, linha.substring(477, 485)).toDate());
 
 			} catch (Exception ex) {
 				registro.setDataCancelamentoProtesto(null);
