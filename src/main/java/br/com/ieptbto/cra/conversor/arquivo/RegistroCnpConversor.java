@@ -286,7 +286,11 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		} else {
 			registro.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(dados[15]));
 		}
-		registro.setCepDevedor(RemoverAcentosUtil.removeAcentos(dados[16]));
+		if (dados[16].length() > 8) {
+			registro.setCepDevedor(RemoverAcentosUtil.removeAcentos(dados[16].substring(0, 7)));
+		} else {
+			registro.setCepDevedor(RemoverAcentosUtil.removeAcentos(dados[16]));
+		}
 		if (dados[17].length() > 20) {
 			registro.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(dados[17].substring(0, 19)));
 		} else {

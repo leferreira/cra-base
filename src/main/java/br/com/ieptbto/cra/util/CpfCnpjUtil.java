@@ -44,11 +44,7 @@ public class CpfCnpjUtil {
 	}
 
 	public static void main(String[] args) {
-		if (!CpfCnpjUtil.isValidCNPJ("00000032456166") && !CpfCnpjUtil.isValidCPF("00000032456166")) {
-			System.out.println("invalido");
-		} else {
-			System.out.println("valido");
-		}
+		System.out.println(CpfCnpjUtil.isValidCNPJ("000901864000850"));
 	}
 
 	public static String buscarComplementoDocumento(String numeroDocumento) {
@@ -75,7 +71,9 @@ public class CpfCnpjUtil {
 			if (numeroDocumento.length() > 11) {
 				return numeroDocumento.substring(0, 8);
 			} else {
-				return numeroDocumento.substring(0, 9);
+				if (numeroDocumento.length() > 9) {
+					return numeroDocumento.substring(0, 9);
+				}
 			}
 		}
 		return digitoControle;
