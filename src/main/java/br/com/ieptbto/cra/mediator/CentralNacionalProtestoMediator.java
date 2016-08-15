@@ -333,8 +333,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 			logger.error(e.getMessage());
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e.getCause());
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 			throw new InfraException(
 					"Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do arquivo da cnp!");
 		}
