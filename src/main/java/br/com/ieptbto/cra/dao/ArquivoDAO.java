@@ -89,7 +89,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 								}
 								Retorno.class.cast(titulo).setCabecalho(remessa.getCabecalho());
 							}
-							TituloRemessa tituloSalvo = tituloDAO.salvar(titulo, transaction);
+							TituloRemessa tituloSalvo = tituloDAO.salvar(titulo, erros, transaction);
 							if (TituloRemessa.class.isInstance(titulo)) {
 								if (TituloRemessa.class.cast(titulo).getAnexo() != null) {
 									Anexo anexo = TituloRemessa.class.cast(titulo).getAnexo();
@@ -183,9 +183,10 @@ public class ArquivoDAO extends AbstractBaseDAO {
 				 * Caso haja algum erro no processamento será retornado o
 				 * arquivo sem finalizar a transação!
 				 */
+				transaction.rollback();
 				return arquivo;
 			}
-			// transaction.commit();
+			transaction.commit();
 			logger.info("O arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
 					+ " salvo com sucesso.");
 

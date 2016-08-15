@@ -10,7 +10,6 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
-import org.postgresql.util.PSQLException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +30,9 @@ import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
+import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.exception.TituloException;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -147,23 +148,23 @@ public class TituloDAO extends AbstractBaseDAO {
 		return criteriaTitulo.list();
 	}
 
-	public TituloRemessa salvar(Titulo titulo, Transaction transaction) {
+	public TituloRemessa salvar(Titulo titulo, List<Exception> erros, Transaction transaction) {
 		if (TituloRemessa.class.isInstance(titulo)) {
 			TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
-			return salvarTituloRemessa(tituloRemessa, transaction);
+			return salvarTituloRemessa(tituloRemessa, erros);
 		}
 		if (Confirmacao.class.isInstance(titulo)) {
 			Confirmacao tituloConfirmacao = Confirmacao.class.cast(titulo);
-			return salvarTituloConfirmacao(tituloConfirmacao);
+			return salvarTituloConfirmacao(tituloConfirmacao, erros);
 		}
 		if (Retorno.class.isInstance(titulo)) {
 			Retorno tituloConfirmacao = Retorno.class.cast(titulo);
-			return salvarTituloRetorno(tituloConfirmacao, transaction);
+			return salvarTituloRetorno(tituloConfirmacao, erros);
 		}
 		return null;
 	}
 
-	private TituloRemessa salvarTituloRetorno(Retorno tituloRetorno, Transaction transaction) {
+	private TituloRemessa salvarTituloRetorno(Retorno tituloRetorno, List<Exception> erros) {
 		TituloRemessa titulo = buscaTituloRetornoSalvo(tituloRetorno);
 
 		if (titulo == null) {
@@ -247,18 +248,18 @@ public class TituloDAO extends AbstractBaseDAO {
 		return null;
 	}
 
-	private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao) {
-		TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao);
+	private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao, List<Exception> erros) {
+		TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao, erros);
 
 		if (titulo == null) {
-			throw new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
-					+ " não foi localizado na CRA. Verifique os dados do arquivo ou se já foi enviado anteriormente...");
+			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_NAO_ENCONTRADO, tituloConfirmacao.getNossoNumero(),
+					tituloConfirmacao.getNumeroSequencialArquivo()));
 		}
 		if (tituloConfirmacao.getTipoOcorrencia() != null) {
 			if (tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())
 					&& tituloConfirmacao.getCodigoIrregularidade().equals("00")) {
-				throw new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
-						+ " foi devolvido e não contém o código de irregularidade! Favor informe a irregularidade...");
+				erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE, tituloConfirmacao.getNossoNumero(),
+						tituloConfirmacao.getNumeroSequencialArquivo()));
 			}
 			if (tituloConfirmacao.getNumeroProtocoloCartorio() != null) {
 				if (!StringUtils.isBlank(tituloConfirmacao.getNumeroProtocoloCartorio().trim())) {
@@ -266,14 +267,14 @@ public class TituloDAO extends AbstractBaseDAO {
 					tituloConfirmacao.setNumeroProtocoloCartorio(numeroProtocolo.toString());
 					if (numeroProtocolo.equals(0)) {
 						if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-							throw new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
-									+ " está com o número de protocolo vazio ou zerado e não está com a ocorrência de devolução! Verifique os dados do título...");
+							erros.add(new TituloException(CodigoErro.CARTORIO_PROTOCOLO_VAZIO_SEM_OCORRENCIA_DE_DEVOLUCAO,
+									tituloConfirmacao.getNossoNumero(), tituloConfirmacao.getNumeroSequencialArquivo()));
 						}
 						if (tituloConfirmacao.getCodigoIrregularidade() != null) {
 							if (StringUtils.isBlank(tituloConfirmacao.getCodigoIrregularidade().trim())
 									|| tituloConfirmacao.getCodigoIrregularidade().equals("00")) {
-								throw new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
-										+ " foi devolvido e não contém o código de irregularidade! Favor informe a irregularidade...");
+								erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE,
+										tituloConfirmacao.getNossoNumero(), tituloConfirmacao.getNumeroSequencialArquivo()));
 							}
 						}
 					}
@@ -281,10 +282,9 @@ public class TituloDAO extends AbstractBaseDAO {
 			}
 			if (tituloConfirmacao.getTipoOcorrencia().trim().isEmpty() && tituloConfirmacao.getNumeroProtocoloCartorio().trim().isEmpty()
 					&& tituloConfirmacao.getCodigoIrregularidade().trim().isEmpty()) {
-				throw new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
-						+ " está com o protocolo, tipo ocorrência e código irregularidade em branco! Favor verifique os dados do arquivo...");
+				erros.add(new TituloException(CodigoErro.CARTORIO_PROTOCOLO_TIPO_OCORRENCIA_CODIGO_IRREGULARIDADE_VAZIOS_INVALIDOS,
+						tituloConfirmacao.getNossoNumero(), tituloConfirmacao.getNumeroSequencialArquivo()));
 			}
-
 			if (!tituloConfirmacao.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
 				tituloConfirmacao.setValorGravacaoEletronica(titulo.getRemessa().getInstituicaoOrigem().getValorConfirmacao());
 			}
@@ -302,14 +302,13 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex.getCause());
-			new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
-					+ " não foi encontrado em nossa base de dados. Verifique os dados do título...");
+			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_NAO_ENCONTRADO, tituloConfirmacao.getNossoNumero(),
+					tituloConfirmacao.getNumeroSequencialArquivo()));
 		}
-
 		return titulo;
 	}
 
-	public TituloRemessa buscaTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao) {
+	public TituloRemessa buscaTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao, List<Exception> erros) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("remessa.cabecalho", "cabecalho");
@@ -326,13 +325,13 @@ public class TituloDAO extends AbstractBaseDAO {
 			}
 		}
 		if (!titulos.isEmpty()) {
-			throw new InfraException("Título com o nosso número " + tituloConfirmacao.getNossoNumero()
-					+ ", já foi enviado anteriormente em outro arquivo de confirmação...");
+			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_CONFIRMACAO_JA_ENVIADO, tituloConfirmacao.getNossoNumero(),
+					tituloConfirmacao.getNumeroSequencialArquivo()));
 		}
 		return null;
 	}
 
-	private TituloRemessa salvarTituloRemessa(TituloRemessa tituloRemessa, Transaction transaction) {
+	private TituloRemessa salvarTituloRemessa(TituloRemessa tituloRemessa, List<Exception> erros) {
 
 		try {
 			tituloRemessa.setDataCadastro(tituloRemessa.getRemessa().getCabecalho().getDataMovimento().toDate());
@@ -344,17 +343,9 @@ public class TituloDAO extends AbstractBaseDAO {
 			}
 			return save(tituloRemessa);
 		} catch (Exception ex) {
-			if (PSQLException.class.isInstance(ex)) {
-				logger.error(ex.getMessage(), ex.getCause());
-				new InfraException("O Título número: " + tituloRemessa.getNumeroTitulo() + " já existe na base de dados.");
-				return null;
-			} else {
-				transaction.rollback();
-				logger.error(ex.getMessage(), ex.getCause());
-				throw new InfraException("O Título número: " + tituloRemessa.getNumeroTitulo()
-						+ " não pode ser inserido ! O Título já existe na base ou está duplicado no arquivo !");
-			}
+			logger.error(ex.getMessage(), ex);
 		}
+		return null;
 	}
 
 	@Transactional

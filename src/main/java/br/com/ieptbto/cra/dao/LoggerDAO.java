@@ -9,6 +9,8 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.LogCra;
@@ -22,6 +24,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class LoggerDAO extends AbstractBaseDAO {
 
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = false)
 	public LogCra salvar(LogCra logCra) {
 		Transaction transaction = getBeginTransation();
 		LogCra novaLog = null;

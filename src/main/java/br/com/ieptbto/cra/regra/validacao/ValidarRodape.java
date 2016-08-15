@@ -45,7 +45,7 @@ public class ValidarRodape extends RegraValidacao {
 
 			if (remessa.getRodape().getNomePortador() != null) {
 				if (remessa.getRodape().getNomePortador().trim().isEmpty()) {
-					addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_PORTADOR_RODAPE_INVALIDO));
+					addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_NOME_PORTADOR_RODAPE_INVALIDO));
 				}
 			}
 		}

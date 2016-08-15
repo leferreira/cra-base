@@ -91,6 +91,12 @@ public enum CodigoErro {
 	CARTORIO_QUANTIDADE_REGISTROS_INVALIDO("005", "Quantidade de Registros inválido"),
 	CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO("006", "Código do Município inválido ou difere da instituição do usuário"),
 	CARTORIO_AGÊNCIA_CENTRALIZADORA_INVALIDA("007", "Agência Centralizadora ou é inválida para este apresentante"),
+	CARTORIO_TITULO_NAO_ENCONTRADO("101", "Título não encontrado ou informações inválidas"),
+	CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE("102", "Título devolvido sem Código Irregularidade"),
+	CARTORIO_PROTOCOLO_VAZIO_SEM_OCORRENCIA_DE_DEVOLUCAO("103", "Protocolo vazio ou zerado e sem Tipo Ocorrência de Devolução"),
+	CARTORIO_PROTOCOLO_TIPO_OCORRENCIA_CODIGO_IRREGULARIDADE_VAZIOS_INVALIDOS("104", "Protocolo, Tipo Ocorrência e Código Irregularidade vazios ou inválidos"),
+	CARTORIO_TITULO_CONFIRMACAO_JA_ENVIADO("105", "Título já enviado em outro arquivo de confirmação"),
+
 	CARTORIO_CODIGO_PORTADOR_RODAPE_INVALIDO("901", "Número do Código Portador do rodapé inválido"),
 	CARTORIO_NOME_PORTADOR_RODAPE_INVALIDO("902", "Nome do Portador do rodapé inválido");
 

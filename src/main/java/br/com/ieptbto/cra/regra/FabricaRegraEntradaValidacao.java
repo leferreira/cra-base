@@ -36,6 +36,7 @@ public class FabricaRegraEntradaValidacao {
 		this.arquivo = arquivo;
 		this.usuario = usuario;
 		this.erros = erros;
+		this.file = file;
 
 		logger.info("Iniciando validações do arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + usuario.getLogin());
 

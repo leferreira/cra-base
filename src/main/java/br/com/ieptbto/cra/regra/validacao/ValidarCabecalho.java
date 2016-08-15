@@ -49,7 +49,7 @@ public class ValidarCabecalho extends RegraValidacao {
 			}
 			if (remessa.getCabecalho().getNomePortador() != null) {
 				if (remessa.getCabecalho().getNomePortador().trim().isEmpty()) {
-					addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_PORTADOR_CABECALHO_INVALIDO));
+					addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_NOME_PORTADOR_CABECALHO_INVALIDO));
 				}
 			}
 		}

@@ -65,6 +65,7 @@ public class ProcessadorArquivo extends Processador {
 			copiarArquivoParaDiretorioDoUsuarioTemporario(getFileUpload().getClientFileName());
 			setArquivo(fabricaDeArquivo.fabricaAplicacao(getFile(), getArquivo(), getErros()));
 			validarArquivo();
+			copiarArquivoEapagarTemporario();
 
 			logger.info(
 					"Início processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
@@ -203,6 +204,20 @@ public class ProcessadorArquivo extends Processador {
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e.getCause());
 			throw new InfraException("Não foi possível criar arquivo Físico temporário para o arquivo " + getFileUpload().getClientFileName());
+		}
+	}
+
+	private void copiarArquivoEapagarTemporario() {
+		try {
+			if (getFile().renameTo(new File(getPathUsuario() + ConfiguracaoBase.BARRA + getArquivo().getId()))) {
+				logger.info("Arquivo " + getFileUpload().getClientFileName() + " movido para pasta do usuário.");
+				return;
+			}
+			new InfraException("Não foi possível mover o arquivo temporário para o diretório do usuário.");
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex.getCause());
+			getErros().add(ex);
+			new InfraException("Não foi possível mover o arquivo temporário para o diretório do usuário.");
 		}
 	}
 

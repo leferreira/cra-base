@@ -14,16 +14,16 @@ public class TituloException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	private String nossoNumero;
-	private int numeroSequencialRegistro;
+	private String numeroSequencialRegistro;
 	private CodigoErro codigoErro;
 	private String descricao;
 
-	public TituloException(String message, CodigoErro codigoErro, String nossoNumero, int numeroSequencialRegistro) {
-		super(message);
-		this.descricao = message;
+	public TituloException(CodigoErro codigoErro, String nossoNumero, String sequencialRegistro) {
+		super(codigoErro.getDescricao());
+		this.descricao = codigoErro.getDescricao();
 		this.nossoNumero = nossoNumero;
 		this.codigoErro = codigoErro;
-		this.numeroSequencialRegistro = numeroSequencialRegistro;
+		this.numeroSequencialRegistro = sequencialRegistro;
 	}
 
 	public String getDescricao() {
@@ -47,7 +47,7 @@ public class TituloException extends RuntimeException {
 		return codigoErro;
 	}
 
-	public int getNumeroSequencialRegistro() {
+	public String getNumeroSequencialRegistro() {
 		return numeroSequencialRegistro;
 	}
 }
