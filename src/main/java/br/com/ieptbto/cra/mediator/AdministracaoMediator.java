@@ -85,8 +85,9 @@ public class AdministracaoMediator extends BaseMediator {
 		List<Instituicao> cartorios = instituicaoDAO.getCartorios();
 		for (final Instituicao cartorio : cartorios) {
 
-			if (cartorio.getId() == 24 || cartorio.getId() == 18 || cartorio.getId() == 14 || cartorio.getId() == 13 || cartorio.getId() == 2
-					|| cartorio.getId() == 82 || cartorio.getId() == 43) {
+			if (cartorio.getId() == 21 || cartorio.getId() == 114 || cartorio.getId() == 20 || cartorio.getId() == 18 || cartorio.getId() == 14
+					|| cartorio.getId() == 13 || cartorio.getId() == 43 || cartorio.getId() == 82 || cartorio.getId() == 2
+					|| cartorio.getId() == 24) {
 				logger.info("==========================================================");
 				logger.info(cartorio.getMunicipio().getNomeMunicipio() + " => [id=" + cartorio.getId() + "] [codigoIbge="
 						+ cartorio.getMunicipio().getCodigoIBGE() + "]  deverá ser processado separadamente...");
