@@ -11,11 +11,8 @@ import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.conversor.ConversorCnpVO;
-import br.com.ieptbto.cra.conversor.arquivo.RegistroCnpConversor;
+import br.com.ieptbto.cra.conversor.cnp.ConversorCnpVO;
 import br.com.ieptbto.cra.dao.CentralNancionalProtestoDAO;
 import br.com.ieptbto.cra.dao.MunicipioDAO;
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -29,9 +26,9 @@ import br.com.ieptbto.cra.entidade.vo.RodapeCnpVO;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.regra.FabricaRegraValidacaoCNP;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
-import br.com.ieptbto.cra.validacao.ValidarRegistroCnp;
 
 /**
  * @author Thasso Araújo
@@ -41,13 +38,12 @@ import br.com.ieptbto.cra.validacao.ValidarRegistroCnp;
 public class CentralNacionalProtestoMediator extends BaseMediator {
 
 	@Autowired
-	ValidarRegistroCnp validarRegistroCnp;
+	private FabricaRegraValidacaoCNP validarRegistroCnp;
 	@Autowired
-	CentralNancionalProtestoDAO centralNancionalProtestoDAO;
+	private CentralNancionalProtestoDAO centralNancionalProtestoDAO;
 	@Autowired
-	MunicipioDAO municipioDAO;
+	private MunicipioDAO municipioDAO;
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<Instituicao> consultarCartoriosCentralNacionalProtesto() {
 		return centralNancionalProtestoDAO.consultarCartoriosCentralNacionalProtesto();
 	}
@@ -250,7 +246,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 		return cartorios;
 	}
 
-	public void importarBase5anosCSV(Instituicao instituicao, FileUpload uploadedFile) {
+	public void importarCSVCnp(Instituicao instituicao, FileUpload uploadedFile) {
 		int numeroLinha = 2;
 
 		try {
@@ -268,7 +264,8 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 				linha = RemoverAcentosUtil.removeAcentos(linha);
 				String dados[] = linha.split(Pattern.quote(";"));
 
-				RegistroCnp registro = RegistroCnpConversor.converterLinhaCSV(dados);
+				RegistroCnp registro = new RegistroCnp();
+				registro.carregar(dados);
 				if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
 					if (validarRegistroCnp.validarProtesto(registro)) {
 						loteCnp.getRegistrosCnp().add(registro);
@@ -281,52 +278,6 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 				numeroLinha++;
 			}
 			reader.close();
-			if (loteCnp.getRegistrosCnp().isEmpty()) {
-				throw new InfraException("O arquivo não pode ser importado, verifique as informações dos títulos se estão válidas!");
-			}
-			centralNancionalProtestoDAO.salvarLote(loteCnp);
-		} catch (IOException e) {
-			logger.error(e.getMessage(), e);
-			throw new InfraException("Não foi possível abrir o arquivo enviado.");
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			throw new InfraException(
-					"Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do arquivo da cnp!");
-		}
-	}
-
-	public void processarCnpCartorioTXTSerasa(Instituicao instituicao, FileUpload uploadedFile) {
-		int numeroLinha = 1;
-
-		try {
-			LoteCnp loteCnp = new LoteCnp();
-			loteCnp.setDataRecebimento(new LocalDate().toDate());
-			loteCnp.setInstituicaoOrigem(instituicao);
-			loteCnp.setStatus(false);
-			loteCnp.setRegistrosCnp(new ArrayList<RegistroCnp>());
-
-			BufferedReader reader = new BufferedReader(new InputStreamReader(uploadedFile.getInputStream()));
-			String linha;
-			while ((linha = reader.readLine()) != null) {
-
-				if (linha.substring(0, 1).trim().equals(TipoRegistro.TITULO.getConstante())) {
-					RegistroCnp registro = RegistroCnpConversor.converterLinhaSerasa(linha);
-					if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
-						if (validarRegistroCnp.validarProtesto(registro)) {
-							loteCnp.getRegistrosCnp().add(registro);
-						}
-					} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
-						if (validarRegistroCnp.validarCancelamento(registro)) {
-							loteCnp.getRegistrosCnp().add(registro);
-						}
-					}
-				}
-				numeroLinha++;
-			}
-			reader.close();
-			if (loteCnp.getRegistrosCnp().isEmpty()) {
-				throw new InfraException("O arquivo não pode ser importado, verifique as informações dos títulos se estão válidas!");
-			}
 			centralNancionalProtestoDAO.salvarLote(loteCnp);
 		} catch (IOException e) {
 			logger.error(e.getMessage());

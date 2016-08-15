@@ -65,11 +65,4 @@ public enum TipoArquivoEnum
 	public String toString() {
 		return constante + " - " + label.toUpperCase();
 	}
-
-	public boolean equals(TipoArquivoEnum tipoArquivo) {
-		if (this.getConstante().equals(tipoArquivo.getConstante())) {
-			return true;
-		}
-		return false;
-	}
 }
