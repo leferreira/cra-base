@@ -84,7 +84,6 @@ public class AdministracaoMediator extends BaseMediator {
 
 		List<Instituicao> cartorios = instituicaoDAO.getCartorios();
 		for (final Instituicao cartorio : cartorios) {
-
 			if (cartorio.getId() == 21 || cartorio.getId() == 114 || cartorio.getId() == 20 || cartorio.getId() == 18 || cartorio.getId() == 14
 					|| cartorio.getId() == 13 || cartorio.getId() == 43 || cartorio.getId() == 82 || cartorio.getId() == 2
 					|| cartorio.getId() == 24) {
@@ -134,7 +133,6 @@ public class AdministracaoMediator extends BaseMediator {
 							writer.flush();
 							writer.close();
 							BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivo));
-							logger.info("Escrevendo os dados no arquivo...");
 							bWrite.write(msg);
 							bWrite.flush();
 							bWrite.close();

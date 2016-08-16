@@ -18,10 +18,7 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
-import br.com.ieptbto.cra.util.CpfCnpjUtil;
-import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
@@ -428,121 +425,5 @@ public class RegistroCnp extends AbstractEntidade<RegistroCnp> {
 	@Override
 	public int compareTo(RegistroCnp entidade) {
 		return 0;
-	}
-
-	public void carregar(String[] dados) {
-		this.setCodigoRegistro(TipoRegistro.TITULO.getConstante());
-		this.setTipoInformacao(RemoverAcentosUtil.removeAcentos(dados[0].replace("\"", "")));
-		if (this.getTipoInformacao().trim().equals("P")) {
-			this.setTipoRegistroCnp(TipoRegistroCnp.PROTESTO);
-			this.setCodigoOperacao(TipoRegistroCnp.PROTESTO.getCodigoOperacao());
-		} else {
-			this.setTipoRegistroCnp(TipoRegistroCnp.CANCELAMENTO);
-			this.setCodigoOperacao(TipoRegistroCnp.CANCELAMENTO.getCodigoOperacao());
-		}
-		this.setCodigoUnidadeFederativa("17");
-		this.setCodigoPracaEmbratel("63");
-		if (dados[2].length() > 45) {
-			this.setNomeCredor(RemoverAcentosUtil.removeAcentos(dados[2].substring(0, 44)));
-		} else {
-			this.setNomeCredor(RemoverAcentosUtil.removeAcentos(dados[2]));
-		}
-		if (dados[3] != null) {
-			this.setNumeroDocumentoCredor(CpfCnpjUtil.buscarNumeroDocumento(dados[3].replace(".", "").replace("-", "").replace("/", "")));
-			this.setComplementoDocumentoCredor(CpfCnpjUtil.buscarComplementoDocumento(dados[3].replace(".", "").replace("-", "").replace("/", "")));
-			this.setDigitoControleDocumentoCredor(CpfCnpjUtil.calcularDigitoControle(dados[3].replace(".", "").replace("-", "").replace("/", "")));
-		} else {
-			this.setNumeroDocumentoCredor("");
-			this.setComplementoDocumentoCredor("");
-			this.setDigitoControleDocumentoCredor("");
-		}
-		if (dados[4].length() > 45) {
-			this.setEnderecoCredor(RemoverAcentosUtil.removeAcentos(dados[4].substring(0, 44)));
-		} else {
-			this.setEnderecoCredor(RemoverAcentosUtil.removeAcentos(dados[4]));
-		}
-		this.setCepCredor(RemoverAcentosUtil.removeAcentos(dados[5]));
-		if (dados[6].length() > 20) {
-			this.setCidadeCredor(RemoverAcentosUtil.removeAcentos(dados[6].substring(0, 19)));
-			this.setMunicipioEnderecoCredor(RemoverAcentosUtil.removeAcentos(dados[6].substring(0, 19)));
-		} else {
-			this.setCidadeCredor(RemoverAcentosUtil.removeAcentos(dados[6]));
-			this.setMunicipioEnderecoCredor(RemoverAcentosUtil.removeAcentos(dados[6]));
-		}
-		this.setUfCredor(RemoverAcentosUtil.removeAcentos(dados[7]));
-		if (dados[3] != null) {
-			if (dados[3].replace(" ", "").trim().length() > 11) {
-				this.setTipoPessoaCredor("J");
-				this.setTipoDocumentoCredor("1");
-			} else {
-				this.setTipoPessoaCredor("F");
-				this.setTipoDocumentoCredor("2");
-			}
-		}
-		if (dados[23] != null) {
-			try {
-				this.setValorProtesto(new BigDecimal(dados[23].trim().replace("\"", "")));
-
-			} catch (Exception ex) {
-				this.setValorProtesto(BigDecimal.ZERO);
-			}
-		}
-		if (dados[22] != null) {
-			try {
-				this.setDataProtesto(DataUtil.stringToLocalDate(dados[22]).toDate());
-
-			} catch (Exception ex) {
-				this.setDataProtesto(null);
-			}
-		}
-		if (dados[14] != null) {
-			if (dados[14].replace(" ", "").trim().length() > 11) {
-				this.setTipoPessoaDevedor("J");
-				this.setTipoDocumentoDevedor("1");
-			} else {
-				this.setTipoPessoaDevedor("F");
-				this.setTipoDocumentoDevedor("2");
-			}
-		}
-		this.setNumeroCoResponsavel("01");
-		if (dados[13].length() > 45) {
-			this.setNomeDevedor(RemoverAcentosUtil.removeAcentos(dados[13].substring(0, 44)));
-		} else {
-			this.setNomeDevedor(RemoverAcentosUtil.removeAcentos(dados[13]));
-		}
-		if (dados[14] != null) {
-			this.setNumeroDocumentoDevedor(CpfCnpjUtil.buscarNumeroDocumento(dados[14].replace(".", "").replace("-", "").replace("/", "")));
-			this.setComplementoDocumentoDevedor(CpfCnpjUtil.buscarComplementoDocumento(dados[14].replace(".", "").replace("-", "").replace("/", "")));
-			this.setDigitoControleDocumentoDevedor(CpfCnpjUtil.calcularDigitoControle(dados[14].replace(".", "").replace("-", "").replace("/", "")));
-		} else {
-			this.setNumeroDocumentoDevedor("");
-			this.setComplementoDocumentoDevedor("");
-			this.setDigitoControleDocumentoDevedor("");
-		}
-		if (dados[15].length() > 45) {
-			this.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(dados[15].substring(0, 44)));
-		} else {
-			this.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(dados[15]));
-		}
-		this.setCepDevedor(RemoverAcentosUtil.removeAcentos(dados[16]));
-		if (dados[17].length() > 20) {
-			this.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(dados[17].substring(0, 19)));
-		} else {
-			this.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(dados[17]));
-		}
-		this.setUfDevedor(RemoverAcentosUtil.removeAcentos(dados[18]));
-		this.setNumeroCartorio("01");
-		this.setNumeroProtocoloCartorio(RemoverAcentosUtil.removeAcentos(dados[19]));
-		if (dados[20] != null) {
-			try {
-				this.setDataCancelamentoProtesto(DataUtil.stringToLocalDate(dados[20]).toDate());
-
-			} catch (Exception ex) {
-				this.setDataCancelamentoProtesto(null);
-			}
-		}
-		this.setEspecieProtesto("1");
-		this.setCodigoErro3Posicoes("");
-		this.setSequenciaRegistro("1");
 	}
 }

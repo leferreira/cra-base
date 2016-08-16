@@ -60,7 +60,6 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível salvar o lote de registros cnp na dados na base.");
 		}
 		return loteCnp;
 	}

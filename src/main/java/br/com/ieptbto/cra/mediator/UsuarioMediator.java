@@ -34,7 +34,7 @@ public class UsuarioMediator extends BaseMediator {
 		if (usuario != null && usuario.isSenha(senha)) {
 			if (instituicaoDao.isInstituicaoAtiva(usuario.getInstituicao())) {
 				if (usuario.isStatus() == true) {
-					logger.info("O usuário <<" + usuario.getLogin() + ">> entrou na CRA.");
+					logger.info("O usuário <<" + usuario.getLogin() + ">> acessou o WS.");
 					return usuario;
 				} else {
 					logger.error(Erro.USUARIO_INATIVO.getMensagemErro());

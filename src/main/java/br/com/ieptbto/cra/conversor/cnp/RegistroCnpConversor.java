@@ -189,4 +189,256 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		tituloVO.setEspecieProtesto(entidade.getEspecieProtesto());
 		return tituloVO;
 	}
+
+	public static RegistroCnp converterLinhaCSV(String[] dados) {
+		RegistroCnp registro = new RegistroCnp();
+		registro.setCodigoRegistro(TipoRegistro.TITULO.getConstante());
+		registro.setTipoInformacao(RemoverAcentosUtil.removeAcentos(dados[0].replace("\"", "")));
+		if (registro.getTipoInformacao().trim().equals("P")) {
+			registro.setTipoRegistroCnp(TipoRegistroCnp.PROTESTO);
+			registro.setCodigoOperacao(TipoRegistroCnp.PROTESTO.getCodigoOperacao());
+		} else {
+			registro.setTipoRegistroCnp(TipoRegistroCnp.CANCELAMENTO);
+			registro.setCodigoOperacao(TipoRegistroCnp.CANCELAMENTO.getCodigoOperacao());
+		}
+		registro.setCodigoUnidadeFederativa("17");
+		registro.setCodigoPracaEmbratel("63");
+		if (dados[2].length() > 45) {
+			registro.setNomeCredor(RemoverAcentosUtil.removeAcentos(dados[2].substring(0, 44)));
+		} else {
+			registro.setNomeCredor(RemoverAcentosUtil.removeAcentos(dados[2]));
+		}
+		if (dados[3] != null) {
+			registro.setNumeroDocumentoCredor(CpfCnpjUtil.buscarNumeroDocumento(dados[3].replace(".", "").replace("-", "").replace("/", "")));
+			registro.setComplementoDocumentoCredor(
+					CpfCnpjUtil.buscarComplementoDocumento(dados[3].replace(".", "").replace("-", "").replace("/", "")));
+			registro.setDigitoControleDocumentoCredor(
+					CpfCnpjUtil.calcularDigitoControle(dados[3].replace(".", "").replace("-", "").replace("/", "")));
+		} else {
+			registro.setNumeroDocumentoCredor("");
+			registro.setComplementoDocumentoCredor("");
+			registro.setDigitoControleDocumentoCredor("");
+		}
+		if (dados[4].length() > 45) {
+			registro.setEnderecoCredor(RemoverAcentosUtil.removeAcentos(dados[4].substring(0, 44)));
+		} else {
+			registro.setEnderecoCredor(RemoverAcentosUtil.removeAcentos(dados[4]));
+		}
+		registro.setCepCredor(RemoverAcentosUtil.removeAcentos(dados[5]));
+		if (dados[6].length() > 20) {
+			registro.setCidadeCredor(RemoverAcentosUtil.removeAcentos(dados[6].substring(0, 19)));
+			registro.setMunicipioEnderecoCredor(RemoverAcentosUtil.removeAcentos(dados[6].substring(0, 19)));
+		} else {
+			registro.setCidadeCredor(RemoverAcentosUtil.removeAcentos(dados[6]));
+			registro.setMunicipioEnderecoCredor(RemoverAcentosUtil.removeAcentos(dados[6]));
+		}
+		registro.setUfCredor(RemoverAcentosUtil.removeAcentos(dados[7]));
+		if (dados[3] != null) {
+			if (dados[3].replace(" ", "").trim().length() > 11) {
+				registro.setTipoPessoaCredor("J");
+				registro.setTipoDocumentoCredor("1");
+			} else {
+				registro.setTipoPessoaCredor("F");
+				registro.setTipoDocumentoCredor("2");
+			}
+		}
+		if (dados[23] != null) {
+			try {
+				registro.setValorProtesto(new BigDecimal(dados[23].trim().replace("\"", "")));
+
+			} catch (Exception ex) {
+				registro.setValorProtesto(BigDecimal.ZERO);
+			}
+		}
+		if (dados[22] != null) {
+			try {
+				registro.setDataProtesto(DataUtil.stringToLocalDate(dados[22]).toDate());
+
+			} catch (Exception ex) {
+				registro.setDataProtesto(null);
+			}
+		}
+		if (dados[14] != null) {
+			if (dados[14].replace(" ", "").trim().length() > 11) {
+				registro.setTipoPessoaDevedor("J");
+				registro.setTipoDocumentoDevedor("1");
+			} else {
+				registro.setTipoPessoaDevedor("F");
+				registro.setTipoDocumentoDevedor("2");
+			}
+		}
+		registro.setNumeroCoResponsavel("01");
+		if (dados[13].length() > 45) {
+			registro.setNomeDevedor(RemoverAcentosUtil.removeAcentos(dados[13].substring(0, 44)));
+		} else {
+			registro.setNomeDevedor(RemoverAcentosUtil.removeAcentos(dados[13]));
+		}
+		if (dados[14] != null) {
+			registro.setNumeroDocumentoDevedor(CpfCnpjUtil.buscarNumeroDocumento(dados[14].replace(".", "").replace("-", "").replace("/", "")));
+			registro.setComplementoDocumentoDevedor(
+					CpfCnpjUtil.buscarComplementoDocumento(dados[14].replace(".", "").replace("-", "").replace("/", "")));
+			registro.setDigitoControleDocumentoDevedor(
+					CpfCnpjUtil.calcularDigitoControle(dados[14].replace(".", "").replace("-", "").replace("/", "")));
+		} else {
+			registro.setNumeroDocumentoDevedor("");
+			registro.setComplementoDocumentoDevedor("");
+			registro.setDigitoControleDocumentoDevedor("");
+		}
+		if (dados[15].length() > 45) {
+			registro.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(dados[15].substring(0, 44)));
+		} else {
+			registro.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(dados[15]));
+		}
+		if (dados[16].length() > 8) {
+			registro.setCepDevedor(RemoverAcentosUtil.removeAcentos(dados[16].substring(0, 7)));
+		} else {
+			registro.setCepDevedor(RemoverAcentosUtil.removeAcentos(dados[16]));
+		}
+		if (dados[17].length() > 20) {
+			registro.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(dados[17].substring(0, 19)));
+		} else {
+			registro.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(dados[17]));
+		}
+		registro.setUfDevedor(RemoverAcentosUtil.removeAcentos(dados[18]));
+		registro.setNumeroCartorio("01");
+		registro.setNumeroProtocoloCartorio(RemoverAcentosUtil.removeAcentos(dados[19]));
+		if (dados[20] != null) {
+			try {
+				registro.setDataCancelamentoProtesto(DataUtil.stringToLocalDate(dados[20]).toDate());
+
+			} catch (Exception ex) {
+				registro.setDataCancelamentoProtesto(null);
+			}
+		}
+		registro.setEspecieProtesto("1");
+		registro.setCodigoErro3Posicoes("");
+		registro.setSequenciaRegistro("1");
+		return registro;
+	}
+
+	public static RegistroCnp converterLinhaSerasa(String linha) {
+		RegistroCnp registro = new RegistroCnp();
+		registro.setCodigoRegistro(TipoRegistro.TITULO.getConstante());
+		registro.setTipoInformacao(RemoverAcentosUtil.removeAcentos(linha.substring(1, 2).replace("\"", "")));
+		if (registro.getTipoInformacao().trim().equals("P")) {
+			registro.setTipoRegistroCnp(TipoRegistroCnp.PROTESTO);
+			registro.setCodigoOperacao(TipoRegistroCnp.PROTESTO.getCodigoOperacao());
+		} else {
+			registro.setTipoRegistroCnp(TipoRegistroCnp.CANCELAMENTO);
+			registro.setCodigoOperacao(TipoRegistroCnp.CANCELAMENTO.getCodigoOperacao());
+		}
+		registro.setCodigoUnidadeFederativa("17");
+		registro.setCodigoPracaEmbratel("63");
+		if (linha.substring(64, 109).length() > 45) {
+			registro.setNomeCredor(RemoverAcentosUtil.removeAcentos(linha.substring(64, 109).substring(0, 44)));
+		} else {
+			registro.setNomeCredor(RemoverAcentosUtil.removeAcentos(linha.substring(64, 109)));
+		}
+		if (linha.substring(109, 122) != null) {
+			registro.setNumeroDocumentoCredor(
+					CpfCnpjUtil.buscarNumeroDocumento(linha.substring(109, 122).replace(".", "").replace("-", "").replace("/", "")));
+			registro.setComplementoDocumentoCredor(
+					CpfCnpjUtil.buscarComplementoDocumento(linha.substring(109, 122).replace(".", "").replace("-", "").replace("/", "")));
+			registro.setDigitoControleDocumentoCredor(
+					CpfCnpjUtil.calcularDigitoControle(linha.substring(109, 122).replace(".", "").replace("-", "").replace("/", "")));
+		} else {
+			registro.setNumeroDocumentoCredor("");
+			registro.setComplementoDocumentoCredor("");
+			registro.setDigitoControleDocumentoCredor("");
+		}
+		if (linha.substring(124, 168).length() > 45) {
+			registro.setEnderecoCredor(RemoverAcentosUtil.removeAcentos(linha.substring(124, 168).substring(0, 44)));
+		} else {
+			registro.setEnderecoCredor(RemoverAcentosUtil.removeAcentos(linha.substring(124, 168)));
+		}
+		registro.setCepCredor(RemoverAcentosUtil.removeAcentos(linha.substring(168, 176)));
+		if (linha.substring(176, 196).length() > 20) {
+			registro.setCidadeCredor(RemoverAcentosUtil.removeAcentos(linha.substring(176, 196).substring(0, 19)));
+			registro.setMunicipioEnderecoCredor(RemoverAcentosUtil.removeAcentos(linha.substring(176, 196).substring(0, 19)));
+		} else {
+			registro.setCidadeCredor(RemoverAcentosUtil.removeAcentos(linha.substring(176, 196)));
+			registro.setMunicipioEnderecoCredor(RemoverAcentosUtil.removeAcentos(linha.substring(176, 196)));
+		}
+		registro.setUfCredor(RemoverAcentosUtil.removeAcentos(linha.substring(196, 198)));
+		if (linha.substring(109, 122) != null) {
+			if (linha.substring(109, 122).replace(" ", "").trim().length() > 11) {
+				registro.setTipoPessoaCredor("J");
+				registro.setTipoDocumentoCredor("1");
+			} else {
+				registro.setTipoPessoaCredor("F");
+				registro.setTipoDocumentoCredor("2");
+			}
+		}
+		if (linha.substring(246, 260) != null) {
+			try {
+				registro.setValorProtesto(new BigDecimal(linha.substring(246, 260).trim().replace("\"", "")));
+
+			} catch (Exception ex) {
+				registro.setValorProtesto(BigDecimal.ZERO);
+			}
+		}
+		if (linha.substring(260, 268) != null) {
+			try {
+				registro.setDataProtesto(DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, linha.substring(260, 268)).toDate());
+
+			} catch (Exception ex) {
+				registro.setDataProtesto(null);
+			}
+		}
+		if (linha.substring(345, 358) != null) {
+			if (linha.substring(345, 358).replace(" ", "").trim().length() > 11) {
+				registro.setTipoPessoaDevedor("J");
+				registro.setTipoDocumentoDevedor("1");
+			} else {
+				registro.setTipoPessoaDevedor("F");
+				registro.setTipoDocumentoDevedor("2");
+			}
+		}
+		registro.setNumeroCoResponsavel("01");
+		if (linha.substring(297, 342).length() > 45) {
+			registro.setNomeDevedor(RemoverAcentosUtil.removeAcentos(linha.substring(297, 342).substring(0, 44)));
+		} else {
+			registro.setNomeDevedor(RemoverAcentosUtil.removeAcentos(linha.substring(297, 342)));
+		}
+		if (linha.substring(345, 358) != null) {
+			registro.setNumeroDocumentoDevedor(
+					CpfCnpjUtil.buscarNumeroDocumento(linha.substring(345, 358).replace(".", "").replace("-", "").replace("/", "")));
+			registro.setComplementoDocumentoDevedor(
+					CpfCnpjUtil.buscarComplementoDocumento(linha.substring(345, 358).replace(".", "").replace("-", "").replace("/", "")));
+			registro.setDigitoControleDocumentoDevedor(
+					CpfCnpjUtil.calcularDigitoControle(linha.substring(345, 358).replace(".", "").replace("-", "").replace("/", "")));
+		} else {
+			registro.setNumeroDocumentoDevedor("");
+			registro.setComplementoDocumentoDevedor("");
+			registro.setDigitoControleDocumentoDevedor("");
+		}
+		if (linha.substring(370, 415).length() > 45) {
+			registro.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(linha.substring(370, 415).substring(0, 44)));
+		} else {
+			registro.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(linha.substring(370, 415)));
+		}
+		registro.setCepDevedor(RemoverAcentosUtil.removeAcentos(linha.substring(415, 423)));
+		if (linha.substring(423, 443).length() > 20) {
+			registro.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(linha.substring(423, 443).substring(0, 19)));
+		} else {
+			registro.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(linha.substring(423, 443)));
+		}
+		registro.setUfDevedor(RemoverAcentosUtil.removeAcentos(linha.substring(443, 445)));
+		registro.setNumeroCartorio("01");
+		registro.setNumeroProtocoloCartorio(RemoverAcentosUtil.removeAcentos(linha.substring(447, 457)));
+		if (linha.substring(477, 485) != null) {
+			try {
+				registro.setDataCancelamentoProtesto(
+						DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, linha.substring(477, 485)).toDate());
+
+			} catch (Exception ex) {
+				registro.setDataCancelamentoProtesto(null);
+			}
+		}
+		registro.setEspecieProtesto("1");
+		registro.setCodigoErro3Posicoes("");
+		registro.setSequenciaRegistro("1");
+
+		return registro;
+	}
 }
