@@ -71,6 +71,11 @@ public class ZipFile {
      * @throws IOException
      */
     public static byte[] zipFile(String fileName, String dados) throws IOException {
+
+        if (org.apache.commons.lang.StringUtils.isEmpty(dados)) {
+            return null;
+        }
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ZipOutputStream zos = new ZipOutputStream(baos);
         byte bytes[] = new byte[2048];

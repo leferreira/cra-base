@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.entidade;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -36,6 +39,7 @@ public class DadosArquivoRecebido extends AbstractEntidade<DadosArquivoRecebido>
     private String senha;
     private String servico;
     private byte[] dados;
+    private Date dataRecebimento;
 
     @Override
     @Id
@@ -68,6 +72,16 @@ public class DadosArquivoRecebido extends AbstractEntidade<DadosArquivoRecebido>
     @Column(name = "SERVICO")
     public String getServico() {
         return servico;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "DATA_RECEBIMENTO")
+    public Date getDataRecebimento() {
+        return dataRecebimento;
+    }
+
+    public void setDataRecebimento(Date dataRecebimento) {
+        this.dataRecebimento = dataRecebimento;
     }
 
     public void setServico(String servico) {
@@ -112,7 +126,7 @@ public class DadosArquivoRecebido extends AbstractEntidade<DadosArquivoRecebido>
         return false;
     }
 
-    public static DadosArquivoRecebido set(String login, String senha, String nomeArquivo, String dados, String servico)
+    public static DadosArquivoRecebido set(String login, String senha, String nomeArquivo, String dados, String servico, Date data)
             throws IOException {
         DadosArquivoRecebido dadosArquivoRecebido = new DadosArquivoRecebido();
         dadosArquivoRecebido.setLogin(login);
@@ -120,8 +134,14 @@ public class DadosArquivoRecebido extends AbstractEntidade<DadosArquivoRecebido>
         dadosArquivoRecebido.setNomeArquivo(nomeArquivo);
         dadosArquivoRecebido.setDados(ZipFile.zipFile(nomeArquivo, dados));
         dadosArquivoRecebido.setServico(servico);
+        dadosArquivoRecebido.setDataRecebimento(data);
 
         return dadosArquivoRecebido;
+    }
+
+    public static DadosArquivoRecebido set(String login, String senha, String nomeArquivo, String dados, String servico)
+            throws IOException {
+        return set(login, senha, nomeArquivo, dados, servico, new Date());
     }
 
 }
