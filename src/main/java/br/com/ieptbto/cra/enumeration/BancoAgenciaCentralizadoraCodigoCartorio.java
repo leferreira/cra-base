@@ -31,7 +31,7 @@ public enum BancoAgenciaCentralizadoraCodigoCartorio {
 		return codigoCartorio;
 	}
 
-	public static BancoAgenciaCentralizadoraCodigoCartorio getBancoAgenciaCodigoCartorio(String numeroCodigoPortador) {
+	public static BancoAgenciaCentralizadoraCodigoCartorio getBanco(String numeroCodigoPortador) {
 		BancoAgenciaCentralizadoraCodigoCartorio[] values = BancoAgenciaCentralizadoraCodigoCartorio.values();
 		for (BancoAgenciaCentralizadoraCodigoCartorio bancoAgencia : values) {
 			if (numeroCodigoPortador.startsWith(bancoAgencia.getCodigoPortador())) {

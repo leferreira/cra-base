@@ -93,9 +93,8 @@ public class FabricaRegistroDesistenciaProtesto extends Processador {
 	private void validarTamanhoLinha(String linha) {
 		int tamLinha = linha.length();
 		if (tamLinha != ConfiguracaoBase.TAMANHO_PADRAO_LINHA_DESISTENCIA_PROTESTO) {
-			throw new InfraException("tamanho inválido de linha do arquivo. Esperado: ["
-			        + ConfiguracaoBase.TAMANHO_PADRAO_LINHA_DESISTENCIA_PROTESTO + "], Recebido:[" + tamLinha
-			        + ConfiguracaoBase.FECHA_CHAVE);
+			throw new InfraException("Tamanho inválido de linha do arquivo. Esperado: [" + ConfiguracaoBase.TAMANHO_PADRAO_LINHA_DESISTENCIA_PROTESTO
+					+ "], Recebido:[" + tamLinha + "]");
 		}
 	}
 

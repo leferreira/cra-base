@@ -9,6 +9,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
@@ -18,7 +20,7 @@ import br.com.ieptbto.cra.enumeration.TipoRegistro;
  * @author Lefer
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "rawtypes" })
 @MappedSuperclass
 public abstract class Titulo<T> extends AbstractEntidade<T> {
 
@@ -110,6 +112,8 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 		if (numeroProtocoloCartorio != null) {
 			if (!numeroProtocoloCartorio.trim().equals("")) {
 				numeroProtocoloCartorio = String.valueOf(Integer.parseInt(numeroProtocoloCartorio.trim()));
+			} else if (StringUtils.isEmpty(numeroProtocoloCartorio.trim())) {
+				numeroProtocoloCartorio = "0";
 			}
 		}
 		return numeroProtocoloCartorio;
@@ -274,7 +278,40 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 
 	@Override
 	public int compareTo(T entidade) {
-		return 0;
-	};
+		Titulo titulo = Titulo.class.cast(entidade);
+		CompareToBuilder compareTo = new CompareToBuilder();
+		compareTo.append(this.getNossoNumero(), titulo.getNossoNumero());
+		compareTo.append(this.getNumeroTitulo(), titulo.getNumeroTitulo());
+		compareTo.append(this.getNumeroProtocoloCartorio(), titulo.getNumeroProtocoloCartorio());
+		return compareTo.toComparison();
+	}
 
+	@Override
+	public boolean equals(Object obj) {
+		EqualsBuilder equalsBuilder = new EqualsBuilder();
+
+		if (obj instanceof Titulo) {
+			Titulo modalidade = Titulo.class.cast(obj);
+			if (TituloRemessa.class.isInstance(modalidade)) {
+				TituloRemessa tituloRemessa = TituloRemessa.class.cast(modalidade);
+				equalsBuilder.append(this.getCodigoPortador(), tituloRemessa.getCodigoPortador());
+				equalsBuilder.append(this.getAgenciaCodigoCedente(), tituloRemessa.getAgenciaCodigoCedente());
+				equalsBuilder.append(this.getNossoNumero(), tituloRemessa.getNossoNumero());
+				equalsBuilder.append(this.getNumeroTitulo(), tituloRemessa.getNumeroTitulo());
+			} else if (Confirmacao.class.isInstance(modalidade)) {
+				Confirmacao confirmacao = Confirmacao.class.cast(modalidade);
+				equalsBuilder.append(this.getCodigoPortador(), confirmacao.getCodigoPortador());
+				equalsBuilder.append(this.getAgenciaCodigoCedente(), confirmacao.getAgenciaCodigoCedente());
+				equalsBuilder.append(this.getNossoNumero(), confirmacao.getNossoNumero());
+				equalsBuilder.append(this.getNumeroProtocoloCartorio(), confirmacao.getNumeroProtocoloCartorio());
+			} else if (Retorno.class.isInstance(modalidade)) {
+				Retorno retorno = Retorno.class.cast(modalidade);
+				equalsBuilder.append(this.getCodigoPortador(), retorno.getCodigoPortador());
+				equalsBuilder.append(this.getNossoNumero(), retorno.getNossoNumero());
+				equalsBuilder.append(this.getNumeroProtocoloCartorio(), retorno.getNumeroProtocoloCartorio());
+			}
+			return equalsBuilder.isEquals();
+		}
+		return false;
+	};
 }

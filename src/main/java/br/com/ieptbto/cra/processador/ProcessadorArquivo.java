@@ -67,8 +67,7 @@ public class ProcessadorArquivo extends Processador {
 			validarArquivo();
 			copiarArquivoEapagarTemporario();
 
-			logger.info(
-					"Início processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
+			logger.info("Fim processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
 			return getArquivo();
 		} else {
 			throw new InfraException("O arquivo " + getFileUpload().getClientFileName() + " enviado não pode ser processado!");
@@ -95,7 +94,7 @@ public class ProcessadorArquivo extends Processador {
 		setArquivo(fabricaDeArquivo.fabricaWS(arquivoRecebido, arquivo, erros));
 		validarArquivo();
 
-		logger.info("Início processamento arquivo via WS " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
+		logger.info("Fim processamento arquivo via WS " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
 		return getArquivo();
 	}
 

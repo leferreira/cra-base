@@ -14,9 +14,6 @@ import org.hibernate.bytecode.internal.javassist.FieldHandled;
 import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.conversor.arquivo.ConfirmacaoConversor;
-import br.com.ieptbto.cra.entidade.vo.TituloVO;
-
 /**
  * 
  * @author Lefer
@@ -90,11 +87,6 @@ public class Confirmacao extends Titulo<Confirmacao> implements FieldHandled {
 
 	public void setIdentificacaoTransacaoTipo(String identificacaoTransacaoTipo) {
 		this.identificacaoTransacaoTipo = identificacaoTransacaoTipo;
-	}
-
-	public static Confirmacao parseTituloVO(TituloVO tituloVO) {
-		Confirmacao titulo = new ConfirmacaoConversor().converter(Confirmacao.class, tituloVO);
-		return titulo;
 	}
 
 	@Override

@@ -53,7 +53,7 @@ public class ValidarAgenciaCentralizadora extends RegraValidacao {
 		for (Remessa remessa : arquivo.getRemessas()) {
 			CabecalhoRemessa ultimoCabecalhoRemessa = cabecalhoMediator.buscarUltimoCabecalhoRemessa(remessa.getCabecalho());
 			BancoAgenciaCentralizadoraCodigoCartorio agencia =
-					BancoAgenciaCentralizadoraCodigoCartorio.getBancoAgenciaCodigoCartorio(remessa.getCabecalho().getNumeroCodigoPortador());
+					BancoAgenciaCentralizadoraCodigoCartorio.getBanco(remessa.getCabecalho().getNumeroCodigoPortador());
 			if (ultimoCabecalhoRemessa != null) {
 				if (ultimoCabecalhoRemessa.getAgenciaCentralizadora() != null) {
 					remessa.getCabecalho().setAgenciaCentralizadora(ultimoCabecalhoRemessa.getAgenciaCentralizadora());

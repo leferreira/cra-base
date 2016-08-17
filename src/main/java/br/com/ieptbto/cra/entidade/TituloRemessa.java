@@ -28,8 +28,6 @@ import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
-import br.com.ieptbto.cra.conversor.arquivo.TituloConversor;
-import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
 import br.com.ieptbto.cra.enumeration.StatusSolicitacaoCancelamento;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
@@ -138,8 +136,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public PedidoAutorizacaoCancelamento getPedidoAutorizacaoCancelamento() {
 		if (this.handler != null) {
-			return (PedidoAutorizacaoCancelamento) this.handler.readObject(this, "pedidoAutorizacaoCancelamento",
-					pedidoAutorizacaoCancelamento);
+			return (PedidoAutorizacaoCancelamento) this.handler.readObject(this, "pedidoAutorizacaoCancelamento", pedidoAutorizacaoCancelamento);
 		}
 		return pedidoAutorizacaoCancelamento;
 	}
@@ -350,8 +347,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 
 	public void setPedidoAutorizacaoCancelamento(PedidoAutorizacaoCancelamento pedidoAutorizacaoCancelamento) {
 		if (this.handler != null) {
-			this.pedidoAutorizacaoCancelamento = (PedidoAutorizacaoCancelamento) this.handler.writeObject(this,
-					"pedidoAutorizacaoCancelamento", this.pedidoAutorizacaoCancelamento, pedidoAutorizacaoCancelamento);
+			this.pedidoAutorizacaoCancelamento = (PedidoAutorizacaoCancelamento) this.handler.writeObject(this, "pedidoAutorizacaoCancelamento",
+					this.pedidoAutorizacaoCancelamento, pedidoAutorizacaoCancelamento);
 		}
 		this.pedidoAutorizacaoCancelamento = pedidoAutorizacaoCancelamento;
 	}
@@ -538,11 +535,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		return situacaoTitulo;
 	}
 
-	public static TituloRemessa parseTituloVO(TituloVO tituloVO) {
-		TituloRemessa titulo = new TituloConversor().converter(TituloRemessa.class, tituloVO);
-		return titulo;
-	}
-
 	public void parseTituloFiliado(TituloFiliado tituloFiliado) {
 		this.setIdentificacaoRegistro(TipoRegistro.TITULO);
 		this.setAgenciaCodigoCedente(tituloFiliado.getFiliado().getCodigoFiliado());
@@ -552,11 +544,9 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setDocumentoSacador(tituloFiliado.getFiliado().getCnpjCpf());
 		this.setEnderecoSacadorVendedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getEndereco()));
 		this.setCepSacadorVendedor(tituloFiliado.getFiliado().getCep());
-		this.setCidadeSacadorVendedor(
-				RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
+		this.setCidadeSacadorVendedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
 		this.setUfSacadorVendedor(tituloFiliado.getFiliado().getUf());
-		this.setNossoNumero(
-				gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId()));
+		this.setNossoNumero(gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId()));
 		this.setEspecieTitulo(tituloFiliado.getEspecieTitulo().getConstante());
 		this.setNumeroTitulo(tituloFiliado.getNumeroTitulo());
 		this.setDataEmissaoTitulo(new LocalDate(tituloFiliado.getDataEmissao()));

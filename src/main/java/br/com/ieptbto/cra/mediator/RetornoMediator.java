@@ -13,7 +13,6 @@ import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.BatimentoDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.dao.RetornoDAO;
@@ -30,7 +29,6 @@ import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.fabrica.FabricaDeArquivoXML;
 
 /**
  * @author Thasso Araújo
@@ -49,12 +47,6 @@ public class RetornoMediator extends BaseMediator {
 	private RetornoDAO retornoDAO;
 	@Autowired
 	private BatimentoDAO batimentoDAO;
-	@Autowired
-	private TipoArquivoMediator tipoArquivoMediator;
-	@Autowired
-	private FabricaDeArquivoXML fabricaDeArquivosXML;
-	@Autowired
-	private ArquivoDAO arquivoDAO;
 
 	private Instituicao cra;
 	private TipoArquivo tipoArquivo;

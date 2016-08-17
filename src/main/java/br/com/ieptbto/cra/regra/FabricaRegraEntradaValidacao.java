@@ -27,6 +27,9 @@ public class FabricaRegraEntradaValidacao {
 	private FabricaRegrasDeEntrada fabricaRegrasDeEntrada;
 	@Autowired
 	private FabricaRegrasDeValidacao fabricaRegrasValidacao;
+	@Autowired
+	private FabricaValidacaoTitulo fabricaValidacaoTitulo;
+
 	private File file;
 	private Arquivo arquivo;
 	private Usuario usuario;
@@ -42,6 +45,7 @@ public class FabricaRegraEntradaValidacao {
 
 		fabricaRegrasDeEntrada.validar(getFile(), getArquivo(), getUsuario(), getErros());
 		fabricaRegrasValidacao.validar(getArquivo(), getUsuario(), getErros());
+		fabricaValidacaoTitulo.validar(getArquivo(), getUsuario(), getErros());
 
 		logger.info("Fim de validações do arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + usuario.getLogin());
 	}

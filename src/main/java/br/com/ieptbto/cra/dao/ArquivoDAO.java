@@ -30,6 +30,7 @@ import br.com.ieptbto.cra.entidade.TipoInstituicao;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
@@ -55,7 +56,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	@Autowired
 	InstituicaoDAO instituicaoDAO;
 
-	public Arquivo salvar(Arquivo arquivo, Usuario usuarioAcao, List<Exception> erros) {
+	public Arquivo salvar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		Arquivo arquivoSalvo = new Arquivo();
 		Transaction transaction = getSession().beginTransaction();
 		BigDecimal valorTotalSaldo = BigDecimal.ZERO;
@@ -69,136 +70,146 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo) || TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)
 					|| TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
-				if (arquivo.getRemessas() != null) {
-					for (Remessa remessa : arquivo.getRemessas()) {
-						remessa.setArquivo(arquivoSalvo);
-						remessa.setCabecalho(save(remessa.getCabecalho()));
-						remessa.setRodape(save(remessa.getRodape()));
-						remessa.setArquivoGeradoProBanco(arquivoSalvo);
-						remessa.setDataRecebimento(remessa.getCabecalho().getDataMovimento());
-						remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
-						setDevolvidoPelaCRA(remessa);
-						setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
-						setSituacaoLiberadoProBancoEBatimentoRetorno(arquivo, remessa);
-						save(remessa);
-						for (Titulo titulo : remessa.getTitulos()) {
-							titulo.setRemessa(remessa);
-							if (Retorno.class.isInstance(titulo)) {
-								if (titulo.getTipoOcorrencia().equals(TipoOcorrencia.PAGO.getConstante())) {
-									retornoContemTituloPago = true;
-								}
-								Retorno.class.cast(titulo).setCabecalho(remessa.getCabecalho());
+				for (Remessa remessa : arquivo.getRemessas()) {
+					remessa.setArquivo(arquivoSalvo);
+					remessa.setCabecalho(save(remessa.getCabecalho()));
+					remessa.setRodape(save(remessa.getRodape()));
+					remessa.setArquivoGeradoProBanco(arquivoSalvo);
+					remessa.setDataRecebimento(remessa.getCabecalho().getDataMovimento());
+					remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
+					setDevolvidoPelaCRA(remessa);
+					setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
+					setSituacaoLiberadoProBancoEBatimentoRetorno(arquivo, remessa);
+					save(remessa);
+					for (Titulo titulo : remessa.getTitulos()) {
+						titulo.setRemessa(remessa);
+						if (Retorno.class.isInstance(titulo)) {
+							if (titulo.getTipoOcorrencia().equals(TipoOcorrencia.PAGO.getConstante())) {
+								retornoContemTituloPago = true;
 							}
-							TituloRemessa tituloSalvo = tituloDAO.salvar(titulo, erros, transaction);
-							if (TituloRemessa.class.isInstance(titulo)) {
-								if (TituloRemessa.class.cast(titulo).getAnexo() != null) {
-									Anexo anexo = TituloRemessa.class.cast(titulo).getAnexo();
-									tituloSalvo.setAnexo(anexo);
-									anexo.setTitulo(tituloSalvo);
-									save(anexo);
-								}
-							}
-							valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
+							Retorno.class.cast(titulo).setCabecalho(remessa.getCabecalho());
 						}
-						if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-							if (retornoContemTituloPago.equals(false) || remessa.getInstituicaoDestino().getTipoBatimento()
-									.equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
-								remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
-								update(remessa);
+						TituloRemessa tituloSalvo = tituloDAO.salvar(titulo, erros, transaction);
+						if (TituloRemessa.class.isInstance(titulo)) {
+							if (TituloRemessa.class.cast(titulo).getAnexo() != null) {
+								Anexo anexo = TituloRemessa.class.cast(titulo).getAnexo();
+								tituloSalvo.setAnexo(anexo);
+								anexo.setTitulo(tituloSalvo);
+								save(anexo);
 							}
 						}
-						remessa.getCabecalho().setQtdTitulosRemessa(remessa.getTitulos().size());
-						remessa.getRodape().setSomatorioValorRemessa(valorTotalSaldo);
-						remessa.setCabecalho(save(remessa.getCabecalho()));
-						remessa.setRodape(save(remessa.getRodape()));
+						valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
 					}
+					if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+						if (retornoContemTituloPago.equals(false)
+								|| remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
+							remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
+							update(remessa);
+						}
+					}
+					remessa.getCabecalho().setQtdTitulosRemessa(remessa.getTitulos().size());
+					remessa.getRodape().setSomatorioValorRemessa(valorTotalSaldo);
+					remessa.setCabecalho(save(remessa.getCabecalho()));
+					remessa.setRodape(save(remessa.getRodape()));
 				}
 			} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
-				if (arquivo.getRemessaDesistenciaProtesto() != null) {
-					List<DesistenciaProtesto> desistenciasProtesto = new ArrayList<DesistenciaProtesto>();
-					BigDecimal valorTotalDesistenciaArquivo = BigDecimal.ZERO;
-					int quantidadeDesistenciasArquivo = 0;
-					for (DesistenciaProtesto desistenciaProtestos : arquivo.getRemessaDesistenciaProtesto().getDesistenciaProtesto()) {
-						List<PedidoDesistencia> pedidosDesistenciaComErro = new ArrayList<PedidoDesistencia>();
-						List<PedidoDesistencia> pedidosProcessados = new ArrayList<PedidoDesistencia>();
-						int quantidadeDesistenciasCartorio = 0;
-						desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
-						desistenciaProtestos.setDownload(false);
-						for (PedidoDesistencia pedido : desistenciaProtestos.getDesistencias()) {
-							pedido.setDesistenciaProtesto(desistenciaProtestos);
-							pedido.setTitulo(tituloDAO.buscarTituloDesistenciaProtesto(pedido));
-							if (pedido.getTitulo() != null) {
-								pedidosProcessados.add(pedido);
-								quantidadeDesistenciasCartorio = quantidadeDesistenciasCartorio + 1;
-								valorTotalDesistenciaArquivo = valorTotalDesistenciaArquivo.add(pedido.getValorTitulo());
-								quantidadeDesistenciasArquivo = quantidadeDesistenciasArquivo + 1;
-							} else {
-								pedidosDesistenciaComErro.add(pedido);
-							}
-						}
-						if (pedidosDesistenciaComErro.isEmpty()) {
-							desistenciaProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(quantidadeDesistenciasCartorio);
-							desistenciaProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(quantidadeDesistenciasCartorio * 2);
-							desistenciaProtestos.setDesistencias(pedidosProcessados);
-							desistenciasProtesto.add(desistenciaProtestos);
+				List<DesistenciaProtesto> desistenciasProtesto = new ArrayList<DesistenciaProtesto>();
+				BigDecimal valorTotalDesistenciaArquivo = BigDecimal.ZERO;
+				int quantidadeDesistenciasArquivo = 0;
+				for (DesistenciaProtesto desistenciaProtestos : arquivo.getRemessaDesistenciaProtesto().getDesistenciaProtesto()) {
+					List<PedidoDesistencia> pedidosDesistenciaComErro = new ArrayList<PedidoDesistencia>();
+					List<PedidoDesistencia> pedidosProcessados = new ArrayList<PedidoDesistencia>();
+					int quantidadeDesistenciasCartorio = 0;
+					desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
+					desistenciaProtestos.setDownload(false);
+					for (PedidoDesistencia pedido : desistenciaProtestos.getDesistencias()) {
+						pedido.setDesistenciaProtesto(desistenciaProtestos);
+						pedido.setTitulo(tituloDAO.buscarTituloDesistenciaProtesto(pedido));
+						if (pedido.getTitulo() != null) {
+							pedidosProcessados.add(pedido);
+							quantidadeDesistenciasCartorio = quantidadeDesistenciasCartorio + 1;
+							valorTotalDesistenciaArquivo = valorTotalDesistenciaArquivo.add(pedido.getValorTitulo());
+							quantidadeDesistenciasArquivo = quantidadeDesistenciasArquivo + 1;
 						} else {
-							String descricao = StringUtils.EMPTY;
-							String codigoMunicipio = StringUtils.EMPTY;
-							for (PedidoDesistencia pedidoDesistencia : pedidosDesistenciaComErro) {
-								descricao = descricao + "Protocolo Inválido (" + pedidoDesistencia.getNumeroProtocolo() + ").";
-								codigoMunicipio = pedidoDesistencia.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio();
-							}
-							erros.add(new DesistenciaCancelamentoException(descricao, codigoMunicipio, CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
-							pedidosDesistenciaComErro.clear();
+							pedidosDesistenciaComErro.add(pedido);
 						}
 					}
-					arquivo.getRemessaDesistenciaProtesto().getCabecalho().setQuantidadeDesistencia(quantidadeDesistenciasArquivo);
-					arquivo.getRemessaDesistenciaProtesto().getCabecalho().setQuantidadeRegistro(quantidadeDesistenciasArquivo);
-					arquivo.getRemessaDesistenciaProtesto().getRodape().setQuantidadeDesistencia((quantidadeDesistenciasArquivo * 2));
-					arquivo.getRemessaDesistenciaProtesto().getRodape().setSomatorioValorTitulo(valorTotalDesistenciaArquivo);
-					arquivo.getRemessaDesistenciaProtesto().setDesistenciaProtesto(desistenciasProtesto);
-					arquivo.getRemessaDesistenciaProtesto().setCabecalho(save(arquivo.getRemessaDesistenciaProtesto().getCabecalho()));
-					arquivo.getRemessaDesistenciaProtesto().setRodape(save(arquivo.getRemessaDesistenciaProtesto().getRodape()));
-					save(arquivo.getRemessaDesistenciaProtesto());
-
-					for (DesistenciaProtesto desistenciaProtestos : desistenciasProtesto) {
-						desistenciaProtestos.setCabecalhoCartorio(save(desistenciaProtestos.getCabecalhoCartorio()));
-						desistenciaProtestos.setRodapeCartorio(save(desistenciaProtestos.getRodapeCartorio()));
-						desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
-						save(desistenciaProtestos);
-						for (PedidoDesistencia pedido : desistenciaProtestos.getDesistencias()) {
-							save(pedido);
+					if (pedidosDesistenciaComErro.isEmpty()) {
+						desistenciaProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(quantidadeDesistenciasCartorio);
+						desistenciaProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(quantidadeDesistenciasCartorio * 2);
+						desistenciaProtestos.setDesistencias(pedidosProcessados);
+						desistenciasProtesto.add(desistenciaProtestos);
+					} else {
+						String descricao = StringUtils.EMPTY;
+						String codigoMunicipio = StringUtils.EMPTY;
+						for (PedidoDesistencia pedidoDesistencia : pedidosDesistenciaComErro) {
+							descricao = descricao + "Protocolo Inválido (" + pedidoDesistencia.getNumeroProtocolo() + ").";
+							codigoMunicipio = pedidoDesistencia.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio();
 						}
+						erros.add(new DesistenciaCancelamentoException(descricao, codigoMunicipio, CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
+						pedidosDesistenciaComErro.clear();
+					}
+				}
+				arquivo.getRemessaDesistenciaProtesto().getCabecalho().setQuantidadeDesistencia(quantidadeDesistenciasArquivo);
+				arquivo.getRemessaDesistenciaProtesto().getCabecalho().setQuantidadeRegistro(quantidadeDesistenciasArquivo);
+				arquivo.getRemessaDesistenciaProtesto().getRodape().setQuantidadeDesistencia((quantidadeDesistenciasArquivo * 2));
+				arquivo.getRemessaDesistenciaProtesto().getRodape().setSomatorioValorTitulo(valorTotalDesistenciaArquivo);
+				arquivo.getRemessaDesistenciaProtesto().setDesistenciaProtesto(desistenciasProtesto);
+				arquivo.getRemessaDesistenciaProtesto().setCabecalho(save(arquivo.getRemessaDesistenciaProtesto().getCabecalho()));
+				arquivo.getRemessaDesistenciaProtesto().setRodape(save(arquivo.getRemessaDesistenciaProtesto().getRodape()));
+				save(arquivo.getRemessaDesistenciaProtesto());
+
+				for (DesistenciaProtesto desistenciaProtestos : desistenciasProtesto) {
+					desistenciaProtestos.setCabecalhoCartorio(save(desistenciaProtestos.getCabecalhoCartorio()));
+					desistenciaProtestos.setRodapeCartorio(save(desistenciaProtestos.getRodapeCartorio()));
+					desistenciaProtestos.setRemessaDesistenciaProtesto(arquivo.getRemessaDesistenciaProtesto());
+					save(desistenciaProtestos);
+					for (PedidoDesistencia pedido : desistenciaProtestos.getDesistencias()) {
+						save(pedido);
 					}
 				}
 
 			} else if (TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
-				new InfraException("Não foi possivel enviar o Cancelamento de Protesto! Entre em contato com a CRA!");
+				throw new InfraException("Não foi possivel enviar o Cancelamento de Protesto! Entre em contato com a CRA!");
 			} else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
-				new InfraException("Não foi possivel enviar a Autorização de Cancelamento! Entre em contato com a CRA!");
+				throw new InfraException("Não foi possivel enviar a Autorização de Cancelamento! Entre em contato com a CRA!");
 			}
 
 			if (!erros.isEmpty()) {
-				/**
-				 * Caso haja algum erro no processamento será retornado o
-				 * arquivo sem finalizar a transação!
-				 */
 				transaction.rollback();
 				return arquivo;
 			}
 			transaction.commit();
-			logger.info("O arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
-					+ " salvo com sucesso.");
+			loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, getTipoAcaoEnvio(arquivo), "Arquivo " + arquivo.getNomeArquivo()
+					+ ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso via aplicação.");
 
 		} catch (InfraException ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
-			throw new InfraException(ex.getMessage());
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
 			transaction.rollback();
 		}
 		return arquivoSalvo;
+	}
+
+	private CraAcao getTipoAcaoEnvio(Arquivo arquivo) {
+		CraAcao tipoAcao = null;
+		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo);
+		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA)) {
+			tipoAcao = CraAcao.ENVIO_ARQUIVO_REMESSA;
+		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO)) {
+			tipoAcao = CraAcao.ENVIO_ARQUIVO_CONFIRMACAO;
+		} else if (tipoArquivo.equals(TipoArquivoEnum.RETORNO)) {
+			tipoAcao = CraAcao.ENVIO_ARQUIVO_RETORNO;
+		} else if (tipoArquivo.equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
+			tipoAcao = CraAcao.ENVIO_ARQUIVO_DESISTENCIA_PROTESTO;
+		} else if (tipoArquivo.equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)) {
+			tipoAcao = CraAcao.ENVIO_ARQUIVO_CANCELAMENTO_PROTESTO;
+		} else if (tipoArquivo.equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
+			tipoAcao = CraAcao.ENVIO_ARQUIVO_AUTORIZACAO_CANCELAMENTO;
+		}
+		return tipoAcao;
 	}
 
 	public Arquivo alterarStatusArquivo(Arquivo arquivo) {

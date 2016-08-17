@@ -46,8 +46,8 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio,
-			LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<DesistenciaProtesto> buscarDesistenciaProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
+			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(DesistenciaProtesto.class);
 		criteria.createAlias("remessaDesistenciaProtesto", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");

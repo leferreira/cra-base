@@ -13,9 +13,6 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.conversor.arquivo.RetornoConversor;
-import br.com.ieptbto.cra.entidade.vo.TituloVO;
-
 /**
  * 
  * @author Lefer
@@ -65,11 +62,6 @@ public class Retorno extends Titulo<Retorno> {
 
 	public void setTitulo(TituloRemessa titulo) {
 		this.titulo = titulo;
-	}
-
-	public static Retorno parseTituloVO(TituloVO tituloVO) {
-		Retorno titulo = new RetornoConversor().converter(Retorno.class, tituloVO);
-		return titulo;
 	}
 
 	@Override

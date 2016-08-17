@@ -1,53 +1,51 @@
 package br.com.ieptbto.cra.exception;
 
-import org.apache.commons.lang.StringUtils;
-
 import br.com.ieptbto.cra.error.CodigoErro;
 
 /**
- * @author Thasso Araújo
+ * @author Thasso Aráujo
  *
  */
 public class DesistenciaCancelamentoException extends RuntimeException {
 
-	/***/
+	/** **/
 	private static final long serialVersionUID = 1L;
-	private String codigoMunicipio;
+	private String municipio;
 	private CodigoErro codigoErro;
 	private String descricao;
 
-	public DesistenciaCancelamentoException(String message, String codigoMunicipio, CodigoErro codigoErro) {
+	/**
+	 * @param message
+	 * @param municipio
+	 * @param codigoErro
+	 */
+	public DesistenciaCancelamentoException(String message, String municipio, CodigoErro erro) {
 		super(message);
+		this.municipio = municipio;
+		this.codigoErro = erro;
 		this.descricao = message;
-		this.codigoMunicipio = codigoMunicipio;
-		this.codigoErro = codigoErro;
 	}
 
-	public DesistenciaCancelamentoException(String message, String codigoMunicipio) {
-		super(message);
-		this.descricao = message;
-		this.codigoMunicipio = codigoMunicipio;
-		this.codigoErro = CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO;
+	/**
+	 * @return the municipio
+	 */
+	public String getMunicipio() {
+		return municipio;
+	}
+
+	/**
+	 * @return the codigoErro
+	 */
+	public CodigoErro getCodigoErro() {
+		return codigoErro;
 	}
 
 	public String getDescricao() {
-		if (descricao == null) {
-			descricao = StringUtils.EMPTY;
-		}
 		return descricao;
 	}
 
-	public String getCodigoMunicipio() {
-		if (codigoMunicipio == null) {
-			codigoMunicipio = StringUtils.EMPTY;
-		}
-		return codigoMunicipio;
-	}
-
-	public CodigoErro getCodigoErro() {
-		if (codigoErro == null) {
-			codigoErro = CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO;
-		}
-		return codigoErro;
+	@Override
+	public String toString() {
+		return "COMARCA " + getMunicipio() + " REJEITADA. " + getMessage() + "";
 	}
 }

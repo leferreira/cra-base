@@ -66,7 +66,7 @@ public class InstituicaoMediator {
 	public Instituicao getCartorioPorCodigoIBGE(String codigoMunicipio) {
 		Instituicao instituicao = instituicaoDAO.getCartorioPeloCodigoMunicipio(codigoMunicipio);
 		if (instituicao == null) {
-			throw new InfraException("Instituição não cadastrada com o código IBGE [" + codigoMunicipio + "]");
+			throw new InfraException("Instituição não cadastrada com o Código do Município [" + codigoMunicipio + "]");
 		}
 
 		return instituicao;
@@ -74,9 +74,15 @@ public class InstituicaoMediator {
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = false)
 	public Instituicao getInstituicaoPorCodigoPortador(String codigoPortador) {
+		if (codigoPortador == null) {
+			throw new InfraException("Código do Portador do cabeçalho vazio ou inválido");
+		}
+		if (codigoPortador.trim().isEmpty()) {
+			throw new InfraException("Código do Portador do cabeçalho vazio ou inválido");
+		}
 		Instituicao instituicao = instituicaoDAO.getInstituicaoPorCodigo(codigoPortador);
 		if (instituicao == null) {
-			throw new InfraException("Instituição não cadastrada com o código de compesação [" + codigoPortador + "]");
+			throw new InfraException("Instituição não cadastrada com o Código de Portador [" + codigoPortador + "]");
 		}
 
 		return instituicao;
@@ -85,7 +91,7 @@ public class InstituicaoMediator {
 	public Instituicao buscarBancoPorCodigoPortador(String codigoPortador) {
 		Instituicao instituicao = instituicaoDAO.getInstituicaoPorCodigo(codigoPortador);
 		if (instituicao == null) {
-			throw new InfraException("Instituição não cadastrada com o código de compesação [" + codigoPortador + "]");
+			throw new InfraException("Instituição não cadastrada com o Código de Portador [" + codigoPortador + "]");
 		}
 
 		return instituicao;

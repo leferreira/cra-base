@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.AbstractEntidade;
+import br.com.ieptbto.cra.logger.LoggerCra;
 
 /**
  * 
@@ -23,6 +24,9 @@ import br.com.ieptbto.cra.entidade.AbstractEntidade;
 public class AbstractBaseDAO {
 
 	protected static final Logger logger = Logger.getLogger(AbstractBaseDAO.class);
+
+	@Autowired
+	protected LoggerCra loggerCra;
 
 	@Autowired
 	private SessionFactory sessionFactory;

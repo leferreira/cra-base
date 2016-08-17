@@ -16,6 +16,7 @@ import org.joda.time.LocalTime;
 import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoLog;
+import br.com.ieptbto.cra.util.DataUtil;
 
 /**
  * @author Thasso Aráujo
@@ -150,6 +151,7 @@ public class LogCra extends AbstractEntidade<LogCra> {
 
 	@Override
 	public String toString() {
-		return "CraLog Registrado: [" + tipoLog.getLabel() + "] " + descricao;
+		return "CraLog Registrado [ " + DataUtil.localDateToString(data) + DataUtil.localTimeToString(hora) + " ] : [" + tipoLog.getLabel() + "] "
+				+ descricao;
 	}
 }

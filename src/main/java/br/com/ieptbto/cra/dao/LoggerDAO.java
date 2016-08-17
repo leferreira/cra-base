@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.LogCra;
 import br.com.ieptbto.cra.enumeration.TipoLog;
-import br.com.ieptbto.cra.exception.InfraException;
 
 /**
  * @author Thasso Aráujo
@@ -36,8 +35,7 @@ public class LoggerDAO extends AbstractBaseDAO {
 			logger.info(logCra.toString());
 		} catch (Exception ex) {
 			transaction.rollback();
-			logger.info(ex.getMessage(), ex.getCause());
-			new InfraException("Não foi possível registrar o log da ação!");
+			logger.info(ex.getMessage(), ex);
 		}
 		return novaLog;
 	}

@@ -102,12 +102,12 @@ public class ConversorRemessaArquivo {
 		Titulo titulo = null;
 		for (TituloVO tituloVO : titulosVO) {
 			if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-				titulo = TituloRemessa.parseTituloVO(tituloVO);
+				titulo = new TituloConversor().converter(TituloRemessa.class, tituloVO);
 				verificarAnexoComplementoRegistro(remessa.getInstituicaoOrigem(), TituloRemessa.class.cast(titulo), tituloVO);
 			} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-				titulo = Confirmacao.parseTituloVO(tituloVO);
+				titulo = new ConfirmacaoConversor().converter(Confirmacao.class, tituloVO);
 			} else if (TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-				titulo = Retorno.parseTituloVO(tituloVO);
+				titulo = new RetornoConversor().converter(Retorno.class, tituloVO);
 			}
 			titulo.setRemessa(remessa);
 			titulos.add(titulo);

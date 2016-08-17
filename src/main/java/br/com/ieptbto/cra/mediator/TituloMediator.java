@@ -63,4 +63,8 @@ public class TituloMediator {
 	public TituloRemessa buscarTituloPorChave(TituloRemessa titulo) {
 		return tituloDAO.buscarTituloPorChave(titulo);
 	}
+
+	public TituloRemessa buscarTituloRemessaPorDadosRetorno(Retorno tituloRetorno) {
+		return tituloDAO.buscarTituloRemessaPorDadosRetorno(tituloRetorno);
+	}
 }
