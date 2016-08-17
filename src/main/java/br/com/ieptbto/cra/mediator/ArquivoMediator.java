@@ -273,8 +273,10 @@ public class ArquivoMediator extends BaseMediator {
 		if (remessa == null) {
 			return null;
 		}
-		remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
-		remessaDAO.alterarSituacaoRemessa(remessa);
+		if (!StatusRemessa.RECEBIDO.equals(remessa.getStatusRemessa())) {
+			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
+			remessaDAO.alterarSituacaoRemessa(remessa);
+		}
 
 		ArrayList<Arquivo> arquivos = new ArrayList<>();
 		arquivos.add(remessa.getArquivo());
@@ -302,11 +304,15 @@ public class ArquivoMediator extends BaseMediator {
 		if (arquivo == null) {
 			return new ArrayList<RemessaVO>();
 		}
-		StatusArquivo statusArquivo = new StatusArquivo();
-		statusArquivo.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
-		statusArquivo.setData(new LocalDateTime());
-		arquivo.setStatusArquivo(statusArquivo);
-		arquivoDAO.alterarStatusArquivo(arquivo);
+		if (arquivo.getStatusArquivo() != null) {
+			if (!SituacaoArquivo.RECEBIDO.equals(arquivo.getStatusArquivo().getSituacaoArquivo())) {
+				StatusArquivo statusArquivo = new StatusArquivo();
+				statusArquivo.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
+				statusArquivo.setData(new LocalDateTime());
+				arquivo.setStatusArquivo(statusArquivo);
+				arquivoDAO.alterarStatusArquivo(arquivo);
+			}
+		}
 		return conversorRemessaArquivo.converterArquivoVO(arquivo.getRemessaBanco());
 	}
 

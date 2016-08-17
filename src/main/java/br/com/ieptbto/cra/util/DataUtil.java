@@ -127,6 +127,13 @@ public class DataUtil implements Serializable {
 		return localTime.toString(getDateTimeFormatter(PADRAO_FORMATACAO_HORA));
 	}
 
+	public static String localTimeToString(String format, LocalTime localTime) {
+		if (localTime == null) {
+			return null;
+		}
+		return localTime.toString(getDateTimeFormatter(format));
+	}
+
 	/**
 	 * Converte {@link LocalDate} para {@link Date} no formato
 	 * {@link #PADRAO_FORMATACAO_DATA}.

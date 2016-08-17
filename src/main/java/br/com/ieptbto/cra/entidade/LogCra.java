@@ -151,7 +151,7 @@ public class LogCra extends AbstractEntidade<LogCra> {
 
 	@Override
 	public String toString() {
-		return "CraLog Registrado [ " + DataUtil.localDateToString(data) + DataUtil.localTimeToString(hora) + " ] : [" + tipoLog.getLabel() + "] "
-				+ descricao;
+		return "CraLog Registrado [ " + DataUtil.localDateToString(data) + "  " + DataUtil.localTimeToString("hh:mm:ss", hora) + " ] : ["
+				+ tipoLog.getLabel() + "] " + descricao;
 	}
 }
