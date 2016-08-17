@@ -87,14 +87,14 @@ public class ProcessadorArquivo extends Processador {
 		this.arquivo = arquivo;
 		this.erros = erros;
 
-		logger.info("Início processamento arquivo via WS " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
+		logger.info("Início processamento arquivo via WS " + arquivo.getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 
 		verificaDiretorio();
 		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + arquivo.getNomeArquivo()));
 		setArquivo(fabricaDeArquivo.fabricaWS(arquivoRecebido, arquivo, erros));
 		validarArquivo();
 
-		logger.info("Fim processamento arquivo via WS " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
+		logger.info("Fim processamento arquivo via WS " + arquivo.getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 		return getArquivo();
 	}
 

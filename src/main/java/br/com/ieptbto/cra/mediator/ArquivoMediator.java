@@ -166,6 +166,7 @@ public class ArquivoMediator extends BaseMediator {
 
 		this.arquivo = new Arquivo();
 		this.arquivo.setNomeArquivo(nomeArquivo);
+		this.arquivo.setTipoArquivo(tipoArquivoDAO.buscarTipoArquivo(nomeArquivo));
 		this.arquivo.setUsuarioEnvio(usuario);
 		this.arquivo.setRemessas(new ArrayList<Remessa>());
 		this.arquivo.setHoraEnvio(new LocalTime());
@@ -174,8 +175,9 @@ public class ArquivoMediator extends BaseMediator {
 		this.arquivo.setInstituicaoEnvio(usuario.getInstituicao());
 
 		this.arquivo = processadorArquivo.processarArquivoWS(arquivoRecebido, arquivo, getErros());
-		this.arquivo = arquivoDAO.salvar(arquivo, usuario, getErros());
-
+		if (getErros().isEmpty()) {
+			this.arquivo = arquivoDAO.salvar(arquivo, usuario, getErros());
+		}
 		return this;
 	}
 

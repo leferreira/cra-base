@@ -179,7 +179,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 				transaction.rollback();
 				return arquivo;
 			}
-			transaction.commit();
+			// transaction.commit();
 			loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, getTipoAcaoEnvio(arquivo), "Arquivo " + arquivo.getNomeArquivo()
 					+ ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso via aplicação.");
 

@@ -44,7 +44,7 @@ public class CpfCnpjUtil {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(CpfCnpjUtil.isValidCNPJ("000901864000850"));
+		System.out.println(CpfCnpjUtil.isValidCNPJ("04185356000106"));
 	}
 
 	public static String buscarComplementoDocumento(String numeroDocumento) {
