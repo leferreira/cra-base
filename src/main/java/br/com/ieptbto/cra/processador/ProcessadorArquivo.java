@@ -90,7 +90,6 @@ public class ProcessadorArquivo extends Processador {
 		logger.info("Início processamento arquivo via WS " + arquivo.getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 
 		verificaDiretorio();
-		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + arquivo.getNomeArquivo()));
 		setArquivo(fabricaDeArquivo.fabricaWS(arquivoRecebido, arquivo, erros));
 		validarArquivo();
 
@@ -209,7 +208,6 @@ public class ProcessadorArquivo extends Processador {
 	private void copiarArquivoEapagarTemporario() {
 		try {
 			if (getFile().renameTo(new File(getPathUsuario() + ConfiguracaoBase.BARRA + getArquivo().getId()))) {
-				logger.info("Arquivo " + getFileUpload().getClientFileName() + " movido para pasta do usuário.");
 				return;
 			}
 			new InfraException("Não foi possível mover o arquivo temporário para o diretório do usuário.");

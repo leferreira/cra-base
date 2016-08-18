@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.Anexo;
@@ -40,7 +40,7 @@ public class ConversorRemessaArquivo {
 
 	protected static final Logger logger = Logger.getLogger(ConversorRemessaArquivo.class);
 
-	@SpringBean
+	@Autowired
 	private InstituicaoMediator instituicaoMediator;
 
 	private Arquivo arquivo;

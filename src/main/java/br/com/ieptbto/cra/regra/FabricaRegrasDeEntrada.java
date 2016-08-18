@@ -1,6 +1,10 @@
 package br.com.ieptbto.cra.regra;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +43,20 @@ public class FabricaRegrasDeEntrada {
 	@Autowired
 	private RegraTipoArquivoTXT regraTipoArquivoTXT;
 
+	@SuppressWarnings("unused")
 	public void validar(File file, Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+
+		BufferedReader reader;
+		try {
+			String conteudo;
+			reader = new BufferedReader(new FileReader(file));
+			if ((conteudo = reader.readLine()) == null) {
+				return;
+			}
+		} catch (FileNotFoundException e) {
+		} catch (IOException ex) {
+		}
+
 		regraValidarDuplicidade.validar(file, arquivo, usuario, erros);
 		regraHoraEnvio.validar(file, arquivo, usuario, erros);
 		regraValidarInstituicaoEnvio.validar(file, arquivo, usuario, erros);
