@@ -22,6 +22,7 @@ public class DadosArquivoRecebidoMediator {
      * 
      * @param dadosArquivoRecebido
      */
+
     public DadosArquivoRecebido salvarDados(DadosArquivoRecebido dadosArquivoRecebido) {
         return dadosArquivoRecebidoDao.salvar(dadosArquivoRecebido);
 

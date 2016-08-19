@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.dao;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.DadosArquivoRecebido;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -20,6 +21,7 @@ public class DadosArquivoRecebidoDao extends AbstractBaseDAO {
      * @param dadosArquivoRecebido
      * @return
      */
+    @Transactional
     public DadosArquivoRecebido salvar(DadosArquivoRecebido dadosArquivoRecebido) {
         try {
 
