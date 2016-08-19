@@ -49,6 +49,19 @@ public class FabricaRegraEntradaValidacao {
 
 		logger.info("Fim de validações do arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + usuario.getLogin());
 	}
+	
+	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+		this.arquivo = arquivo;
+		this.usuario = usuario;
+		this.erros = erros;
+
+		logger.info("Iniciando validações do arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + usuario.getLogin());
+
+		fabricaRegrasValidacao.validar(getArquivo(), getUsuario(), getErros());
+		fabricaValidacaoTitulo.validar(getArquivo(), getUsuario(), getErros());
+
+		logger.info("Fim de validações do arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + usuario.getLogin());
+	}
 
 	public Usuario getUsuario() {
 		return usuario;

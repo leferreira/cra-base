@@ -18,8 +18,8 @@ import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivoVO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.entidade.vo.ArquivoConfirmacaoVO;
 import br.com.ieptbto.cra.entidade.vo.ConfirmacaoVO;
+import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.exception.TituloException;
@@ -41,22 +41,23 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 
 	@Override
 	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {
-		ArquivoConfirmacaoVO arquivoConfirmacaoVO = converterStringArquivoVO(dados);
-		ConfirmacaoVO confirmacaoVO = ConversorArquivoVO.converterParaRemessaVO(arquivoConfirmacaoVO);
+		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
+		ConfirmacaoVO confirmacaoVO = converterStringArquivoVO(dados);
+		remessasVO.add(ConversorArquivoVO.converterConfirmacaoParaRemessaVO(confirmacaoVO));
 
-		ArquivoMediator arquivoRetorno = arquivoMediator.salvarWS(null, usuario, nomeArquivo);
+		ArquivoMediator arquivoRetorno = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo);
 		if (!arquivoRetorno.getErros().isEmpty()) {
 			return gerarRespostaErrosConfirmacao(arquivoRetorno.getArquivo(), usuario, arquivoRetorno.getErros());
 		}
 		return gerarRespostaSucesso(arquivoRetorno.getArquivo(), usuario);
 	}
 
-	private ArquivoConfirmacaoVO converterStringArquivoVO(String dados) {
+	private ConfirmacaoVO converterStringArquivoVO(String dados) {
 		JAXBContext context;
-		ArquivoConfirmacaoVO arquivo = null;
+		ConfirmacaoVO arquivo = null;
 
 		try {
-			context = JAXBContext.newInstance(ArquivoConfirmacaoVO.class);
+			context = JAXBContext.newInstance(ConfirmacaoVO.class);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			String xmlRecebido = "";
 
@@ -70,7 +71,7 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 			scanner.close();
 
 			InputStream xml = new ByteArrayInputStream(xmlRecebido.getBytes());
-			arquivo = (ArquivoConfirmacaoVO) unmarshaller.unmarshal(new InputSource(xml));
+			arquivo = (ConfirmacaoVO) unmarshaller.unmarshal(new InputSource(xml));
 		} catch (JAXBException e) {
 			logger.error(e.getMessage(), e);
 			throw new InfraException("Erro ao ler o arquivo recebido. " + e.getMessage());

@@ -57,7 +57,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	InstituicaoDAO instituicaoDAO;
 
 	public Arquivo salvar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
-		Arquivo arquivoSalvo = new Arquivo();
+		Arquivo arquivoSalvo = new Arquivo(); 
 		Transaction transaction = getSession().beginTransaction();
 		BigDecimal valorTotalSaldo = BigDecimal.ZERO;
 		TipoArquivoEnum tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
@@ -65,7 +65,6 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 		try {
 			arquivo.setStatusArquivo(save(arquivo.getStatusArquivo()));
-			arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
 			arquivoSalvo = save(arquivo);
 
 			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo) || TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)
@@ -179,7 +178,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 				transaction.rollback();
 				return arquivo;
 			}
-			// transaction.commit();
+			transaction.commit();
 			loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, getTipoAcaoEnvio(arquivo), "Arquivo " + arquivo.getNomeArquivo()
 					+ ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso via aplicação.");
 

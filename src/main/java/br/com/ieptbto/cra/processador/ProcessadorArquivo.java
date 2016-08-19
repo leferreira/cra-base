@@ -64,7 +64,7 @@ public class ProcessadorArquivo extends Processador {
 			verificaDiretorio();
 			copiarArquivoParaDiretorioDoUsuarioTemporario(getFileUpload().getClientFileName());
 			setArquivo(fabricaDeArquivo.fabricaAplicacao(getFile(), getArquivo(), getErros()));
-			validarArquivo();
+			fabricaRegraValidacaoArquivo.validar(getFile(), getArquivo(), getUsuario(), getErros());
 			copiarArquivoEapagarTemporario();
 
 			logger.info("Fim processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
@@ -89,16 +89,11 @@ public class ProcessadorArquivo extends Processador {
 
 		logger.info("Início processamento arquivo via WS " + arquivo.getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 
-		verificaDiretorio();
 		setArquivo(fabricaDeArquivo.fabricaWS(arquivoRecebido, arquivo, erros));
-		validarArquivo();
+		fabricaRegraValidacaoArquivo.validar(getArquivo(), getUsuario(), getErros());
 
 		logger.info("Fim processamento arquivo via WS " + arquivo.getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 		return getArquivo();
-	}
-
-	private void validarArquivo() {
-		fabricaRegraValidacaoArquivo.validar(getFile(), getArquivo(), getUsuario(), getErros());
 	}
 
 	/**

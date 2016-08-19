@@ -18,7 +18,7 @@ import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivoVO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.entidade.vo.ArquivoRetornoVO;
+import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RetornoVO;
 import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.error.CodigoErro;
@@ -42,22 +42,23 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 
 	@Override
 	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {
-		ArquivoRetornoVO arquivoRetornoVO = converterStringArquivoVO(dados);
-		RetornoVO retornoVO = ConversorArquivoVO.converterParaRemessaVO(arquivoRetornoVO);
+		RetornoVO retornoVO = converterStringArquivoVO(dados);
+		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
+		remessasVO.add(ConversorArquivoVO.converterRetornoParaRemessaVO(retornoVO));
 
-		ArquivoMediator arquivoRetorno = arquivoMediator.salvarWS(null, usuario, nomeArquivo);
+		ArquivoMediator arquivoRetorno = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo);
 		if (!arquivoRetorno.getErros().isEmpty()) {
 			return gerarRespostaErrosRetorno(arquivoRetorno.getArquivo(), usuario, arquivoRetorno.getErros());
 		}
 		return gerarResposta(arquivoRetorno.getArquivo(), usuario);
 	}
 
-	private ArquivoRetornoVO converterStringArquivoVO(String dados) {
+	private RetornoVO converterStringArquivoVO(String dados) {
 		JAXBContext context;
-		ArquivoRetornoVO arquivo = null;
+		RetornoVO arquivo = null;
 
 		try {
-			context = JAXBContext.newInstance(ArquivoRetornoVO.class);
+			context = JAXBContext.newInstance(RetornoVO.class);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			String xmlRecebido = "";
 
@@ -71,7 +72,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 			scanner.close();
 
 			InputStream xml = new ByteArrayInputStream(xmlRecebido.getBytes());
-			arquivo = (ArquivoRetornoVO) unmarshaller.unmarshal(new InputSource(xml));
+			arquivo = (RetornoVO) unmarshaller.unmarshal(new InputSource(xml));
 
 		} catch (JAXBException e) {
 			logger.error(e.getMessage(), e.getCause());

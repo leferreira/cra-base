@@ -167,7 +167,9 @@ public class ArquivoMediator extends BaseMediator {
 		this.arquivo = new Arquivo();
 		this.arquivo.setNomeArquivo(nomeArquivo);
 		this.arquivo.setTipoArquivo(tipoArquivoDAO.buscarTipoArquivo(nomeArquivo));
+		this.arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
 		this.arquivo.setUsuarioEnvio(usuario);
+		this.arquivo.setStatusArquivo(setStatusArquivo());
 		this.arquivo.setRemessas(new ArrayList<Remessa>());
 		this.arquivo.setHoraEnvio(new LocalTime());
 		this.arquivo.setDataEnvio(new LocalDate());
