@@ -8,6 +8,7 @@ import br.com.ieptbto.cra.exception.InfraException;
  */
 public enum PadraoArquivoDePara {
 
+									ARQUIVO_DE_PARA_ATUALIZACAO("De/Para", "txt"), //
 									CAF("CAF", "txt"), //
 									BRADESCO("BRADESCO", "xls"), //
 									BANCO_DO_BRASIL("CBR", "txt");
