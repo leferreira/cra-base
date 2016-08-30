@@ -67,7 +67,12 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 				}
 			} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
 				if (validarRegistroCnp.validarCancelamento(registro)) {
-					loteCnp.getRegistrosCnp().add(registro);
+					RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarProtestoDoCancelamento(instituicao, registro);
+					if (registroProtesto != null) {
+						registro.setDataProtesto(registroProtesto.getDataProtesto());
+						registro.setValorProtesto(registroProtesto.getValorProtesto());
+						loteCnp.getRegistrosCnp().add(registro);
+					}
 				}
 			}
 		}
@@ -223,7 +228,8 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 		List<RegistroCnp> protestos = centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
 
 		for (RegistroCnp titulo : protestos) {
-			RegistroCnp cancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
+			RegistroCnp cancelamento =
+					centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
 			if (cancelamento == null) {
 				Municipio municipio = municipioDAO.carregarMunicipio(titulo.getLoteCnp().getInstituicaoOrigem().getMunicipio());
 				if (!pracasComProtesto.contains(municipio.getNomeMunicipio().toUpperCase())) {
@@ -239,7 +245,8 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 		List<RegistroCnp> protestos = centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
 
 		for (RegistroCnp titulo : protestos) {
-			RegistroCnp cancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
+			RegistroCnp cancelamento =
+					centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
 
 			if (cancelamento == null) {
 				if (!cartorios.contains(titulo.getLoteCnp().getInstituicaoOrigem())) {
@@ -275,7 +282,12 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 					}
 				} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
 					if (validarRegistroCnp.validarCancelamento(registro)) {
-						loteCnp.getRegistrosCnp().add(registro);
+						RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarProtestoDoCancelamento(instituicao, registro);
+						if (registroProtesto != null) {
+							registro.setDataProtesto(registroProtesto.getDataProtesto());
+							registro.setValorProtesto(registroProtesto.getValorProtesto());
+							loteCnp.getRegistrosCnp().add(registro);
+						}
 					}
 				}
 				numeroLinha++;
@@ -286,11 +298,10 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 			}
 			centralNancionalProtestoDAO.salvarLote(loteCnp);
 		} catch (IOException e) {
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(), e);
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e.getCause());
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 			throw new InfraException(
 					"Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do arquivo da cnp!");
 		}
@@ -318,7 +329,12 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 						}
 					} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
 						if (validarRegistroCnp.validarCancelamento(registro)) {
-							loteCnp.getRegistrosCnp().add(registro);
+							RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarProtestoDoCancelamento(instituicao, registro);
+							if (registroProtesto != null) {
+								registro.setDataProtesto(registroProtesto.getDataProtesto());
+								registro.setValorProtesto(registroProtesto.getValorProtesto());
+								loteCnp.getRegistrosCnp().add(registro);
+							}
 						}
 					}
 				}
@@ -330,7 +346,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 			}
 			centralNancionalProtestoDAO.salvarLote(loteCnp);
 		} catch (IOException e) {
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(), e);
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
