@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.ieptbto.cra.conversor.arquivo.RegistroCnpConversor;
 import br.com.ieptbto.cra.conversor.cnp.ConversorCnpVO;
-import br.com.ieptbto.cra.conversor.cnp.RegistroCnpConversor;
 import br.com.ieptbto.cra.dao.CentralNancionalProtestoDAO;
 import br.com.ieptbto.cra.dao.MunicipioDAO;
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -41,11 +41,11 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 public class CentralNacionalProtestoMediator extends BaseMediator {
 
 	@Autowired
-	FabricaRegraValidacaoCNP validarRegistroCnp;
+	private FabricaRegraValidacaoCNP validarRegistroCnp;
 	@Autowired
-	CentralNancionalProtestoDAO centralNancionalProtestoDAO;
+	private CentralNancionalProtestoDAO centralNancionalProtestoDAO;
 	@Autowired
-	MunicipioDAO municipioDAO;
+	private MunicipioDAO municipioDAO;
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<Instituicao> consultarCartoriosCentralNacionalProtesto() {
@@ -67,7 +67,10 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 				}
 			} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
 				if (validarRegistroCnp.validarCancelamento(registro)) {
-					loteCnp.getRegistrosCnp().add(registro);
+					RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarProtestoDoCancelamento(instituicao, registro);
+					if (registroProtesto != null) {
+						loteCnp.getRegistrosCnp().add(registro);
+					}
 				}
 			}
 		}
@@ -275,7 +278,10 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 					}
 				} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
 					if (validarRegistroCnp.validarCancelamento(registro)) {
-						loteCnp.getRegistrosCnp().add(registro);
+						RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarProtestoDoCancelamento(instituicao, registro);
+						if (registroProtesto != null) {
+							loteCnp.getRegistrosCnp().add(registro);
+						}
 					}
 				}
 				numeroLinha++;
@@ -286,13 +292,11 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 			}
 			centralNancionalProtestoDAO.salvarLote(loteCnp);
 		} catch (IOException e) {
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(), e);
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e.getCause());
-			e.printStackTrace();
-			throw new InfraException(
-					"Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do arquivo da cnp!");
+			logger.error(e.getMessage(), e);
+			throw new InfraException("Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do arquivo da cnp!");
 		}
 	}
 
@@ -318,7 +322,10 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 						}
 					} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
 						if (validarRegistroCnp.validarCancelamento(registro)) {
-							loteCnp.getRegistrosCnp().add(registro);
+							RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarProtestoDoCancelamento(instituicao, registro);
+							if (registroProtesto != null) {
+								loteCnp.getRegistrosCnp().add(registro);
+							}
 						}
 					}
 				}
@@ -330,12 +337,11 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 			}
 			centralNancionalProtestoDAO.salvarLote(loteCnp);
 		} catch (IOException e) {
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(), e);
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-			throw new InfraException(
-					"Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do arquivo da cnp!");
+			throw new InfraException("Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do arquivo da cnp!");
 		}
 	}
 }

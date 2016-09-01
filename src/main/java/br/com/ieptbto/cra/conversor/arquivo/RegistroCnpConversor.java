@@ -77,8 +77,12 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		}
 		if (entidadeVO.getValorProtesto() != null) {
 			try {
-				registro.setValorProtesto(
-						new BigDecimal(entidadeVO.getValorProtesto().trim().replace("\"", "").replace(".", "").replace(",", ".")));
+				String valorRecebido = entidadeVO.getValorProtesto().trim().replace("\"", "").replace(".", "").replace(",", ".");
+				if (valorRecebido.contains("E")) {
+					valorRecebido = valorRecebido.replaceAll("E[0-9]*", "");
+				}
+				BigDecimal valorProtesto = new BigDecimal(valorRecebido);
+				registro.setValorProtesto(valorProtesto.divide(new BigDecimal("100")));
 			} catch (Exception ex) {
 				registro.setValorProtesto(BigDecimal.ZERO);
 			}

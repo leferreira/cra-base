@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -154,7 +153,7 @@ public class PedidoCancelamento extends AbstractEntidade<PedidoCancelamento> {
 		return cancelamentoProtesto;
 	}
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "TITULO_ID", nullable = true, columnDefinition = "integer")
 	public TituloRemessa getTitulo() {
 		return titulo;

@@ -35,15 +35,15 @@ import br.com.ieptbto.cra.util.XlsUtil;
 public class RelatorioMediator extends BaseMediator {
 
 	@Autowired
-	RelatorioDAO relatorioDAO;
+	private RelatorioDAO relatorioDAO;
 	@Autowired
-	TaxaCraDAO taxaCraDAO;
+	private TaxaCraDAO taxaCraDAO;
 
 	private File arquivoFisico;
 	private FileUpload file;
 
-	public List<TituloRemessa> relatorioTitulosPorSituacao(SituacaoTituloRelatorio situacaoTitulo, TipoInstituicaoCRA tipoInstituicao,
-			Instituicao instituicao, Instituicao cartorio, LocalDate dataInicio, LocalDate dataFim) {
+	public List<TituloRemessa> relatorioTitulosPorSituacao(SituacaoTituloRelatorio situacaoTitulo, TipoInstituicaoCRA tipoInstituicao, Instituicao instituicao,
+			Instituicao cartorio, LocalDate dataInicio, LocalDate dataFim) {
 
 		if (situacaoTitulo.equals(SituacaoTituloRelatorio.GERAL)) {
 			return relatorioDAO.relatorioTitulosGeral(dataInicio, dataFim, tipoInstituicao, instituicao, cartorio);

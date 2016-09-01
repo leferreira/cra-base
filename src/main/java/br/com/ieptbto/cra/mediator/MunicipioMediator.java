@@ -14,9 +14,9 @@ import br.com.ieptbto.cra.entidade.Municipio;
 public class MunicipioMediator {
 
 	@Autowired
-	MunicipioDAO municipioDao;
+	private MunicipioDAO municipioDao;
 	@Autowired
-	InstituicaoDAO instituicaoDao;
+	private InstituicaoDAO instituicaoDao;
 
 	public Municipio carregarMunicipio(Municipio municipio) {
 		return municipioDao.carregarMunicipio(municipio);

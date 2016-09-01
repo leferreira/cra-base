@@ -57,7 +57,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	InstituicaoDAO instituicaoDAO;
 
 	public Arquivo salvar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
-		Arquivo arquivoSalvo = new Arquivo(); 
+		Arquivo arquivoSalvo = new Arquivo();
 		Transaction transaction = getSession().beginTransaction();
 		BigDecimal valorTotalSaldo = BigDecimal.ZERO;
 		TipoArquivoEnum tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
@@ -100,8 +100,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 						valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
 					}
 					if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-						if (retornoContemTituloPago.equals(false)
-								|| remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
+						if (retornoContemTituloPago.equals(false) || remessa.getInstituicaoDestino().getTipoBatimento()
+								.equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
 							remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
 							update(remessa);
 						}
@@ -145,7 +145,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 							descricao = descricao + "Protocolo Inválido (" + pedidoDesistencia.getNumeroProtocolo() + ").";
 							codigoMunicipio = pedidoDesistencia.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio();
 						}
-						erros.add(new DesistenciaCancelamentoException(descricao, codigoMunicipio, CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
+						erros.add(new DesistenciaCancelamentoException(descricao, codigoMunicipio,
+								CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
 						pedidosDesistenciaComErro.clear();
 					}
 				}
@@ -364,8 +365,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return arquivo;
 	}
 
-	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos, Municipio municipio,
-			LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
+	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos,
+			Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.createAlias("instituicaoEnvio", "instituicaoEnvio");
 		criteria.createAlias("tipoArquivo", "tipoArquivo");

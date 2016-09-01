@@ -12,12 +12,12 @@ import br.com.ieptbto.cra.entidade.GrupoUsuario;
 public class GrupoUsuarioMediator {
 
 	@Autowired
-	GrupoUsuarioDAO grupoUsuarioDAO;
+	private GrupoUsuarioDAO grupoUsuarioDAO;
 
 	public GrupoUsuario buscarGrupoInicial(String grupo) {
 		return grupoUsuarioDAO.buscarGrupoInicial(grupo);
 	}
-	
+
 	public GrupoUsuario buscarGrupo(String grupo) {
 		return grupoUsuarioDAO.buscarGrupo(grupo);
 	}

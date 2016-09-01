@@ -18,7 +18,7 @@ import br.com.ieptbto.cra.entidade.LayoutFiliado;
 public class LayoutFiliadoMediator {
 
 	@Autowired
-	LayoutFiliadoDAO layoutFiliadoDAO;
+	private LayoutFiliadoDAO layoutFiliadoDAO;
 
 	public void salvar(List<LayoutFiliado> listaCampos) {
 		layoutFiliadoDAO.salvar(listaCampos);

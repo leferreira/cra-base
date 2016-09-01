@@ -28,6 +28,8 @@ import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
+import br.com.ieptbto.cra.conversor.arquivo.TituloConversor;
+import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
 import br.com.ieptbto.cra.enumeration.StatusSolicitacaoCancelamento;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
@@ -53,8 +55,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	private Confirmacao confirmacao;
 	private Retorno retorno;
 	private List<PedidoDesistencia> pedidosDesistencia;
-	private PedidoCancelamento pedidoCancelamento;
-	private PedidoAutorizacaoCancelamento pedidoAutorizacaoCancelamento;
+	private List<PedidoCancelamento> pedidosCancelamento;
+	private List<PedidoAutorizacaoCancelamento> pedidosAutorizacaoCancelamento;
 
 	private String nomeCedenteFavorecido;
 	private String nomeSacadorVendedor;
@@ -123,22 +125,14 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		return pedidosDesistencia;
 	}
 
-	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
-	@LazyToOne(LazyToOneOption.NO_PROXY)
-	public PedidoCancelamento getPedidoCancelamento() {
-		if (this.handler != null) {
-			return (PedidoCancelamento) this.handler.readObject(this, "pedidoCancelamento", pedidoCancelamento);
-		}
-		return pedidoCancelamento;
+	@OneToMany(mappedBy = "titulo", fetch = FetchType.LAZY)
+	public List<PedidoCancelamento> getPedidosCancelamento() {
+		return pedidosCancelamento;
 	}
 
-	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
-	@LazyToOne(LazyToOneOption.NO_PROXY)
-	public PedidoAutorizacaoCancelamento getPedidoAutorizacaoCancelamento() {
-		if (this.handler != null) {
-			return (PedidoAutorizacaoCancelamento) this.handler.readObject(this, "pedidoAutorizacaoCancelamento", pedidoAutorizacaoCancelamento);
-		}
-		return pedidoAutorizacaoCancelamento;
+	@OneToMany(mappedBy = "titulo", fetch = FetchType.LAZY)
+	public List<PedidoAutorizacaoCancelamento> getPedidosAutorizacaoCancelamento() {
+		return pedidosAutorizacaoCancelamento;
 	}
 
 	@Column(name = "NOME_CEDENTE_FAVORECIDO")
@@ -337,20 +331,12 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.pedidosDesistencia = pedidosDesistencia;
 	}
 
-	public void setPedidoCancelamento(PedidoCancelamento pedidoCancelamento) {
-		if (this.handler != null) {
-			this.pedidoCancelamento =
-					(PedidoCancelamento) this.handler.writeObject(this, "pedidoCancelamento", this.pedidoCancelamento, pedidoCancelamento);
-		}
-		this.pedidoCancelamento = pedidoCancelamento;
+	public void setPedidosCancelamento(List<PedidoCancelamento> pedidosCancelamento) {
+		this.pedidosCancelamento = pedidosCancelamento;
 	}
 
-	public void setPedidoAutorizacaoCancelamento(PedidoAutorizacaoCancelamento pedidoAutorizacaoCancelamento) {
-		if (this.handler != null) {
-			this.pedidoAutorizacaoCancelamento = (PedidoAutorizacaoCancelamento) this.handler.writeObject(this, "pedidoAutorizacaoCancelamento",
-					this.pedidoAutorizacaoCancelamento, pedidoAutorizacaoCancelamento);
-		}
-		this.pedidoAutorizacaoCancelamento = pedidoAutorizacaoCancelamento;
+	public void setPedidosAutorizacaoCancelamento(List<PedidoAutorizacaoCancelamento> pedidosAutorizacaoCancelamento) {
+		this.pedidosAutorizacaoCancelamento = pedidosAutorizacaoCancelamento;
 	}
 
 	public void setStatusSolicitacaoCancelamento(StatusSolicitacaoCancelamento statusSolicitacaoCancelamento) {
@@ -535,6 +521,11 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		return situacaoTitulo;
 	}
 
+	public static TituloRemessa parseTituloVO(TituloVO tituloVO) {
+		TituloRemessa titulo = new TituloConversor().converter(TituloRemessa.class, tituloVO);
+		return titulo;
+	}
+
 	public void parseTituloFiliado(TituloFiliado tituloFiliado) {
 		this.setIdentificacaoRegistro(TipoRegistro.TITULO);
 		this.setAgenciaCodigoCedente(tituloFiliado.getFiliado().getCodigoFiliado());
@@ -544,9 +535,11 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setDocumentoSacador(tituloFiliado.getFiliado().getCnpjCpf());
 		this.setEnderecoSacadorVendedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getEndereco()));
 		this.setCepSacadorVendedor(tituloFiliado.getFiliado().getCep());
-		this.setCidadeSacadorVendedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
+		this.setCidadeSacadorVendedor(
+				RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
 		this.setUfSacadorVendedor(tituloFiliado.getFiliado().getUf());
-		this.setNossoNumero(gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId()));
+		this.setNossoNumero(
+				gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId()));
 		this.setEspecieTitulo(tituloFiliado.getEspecieTitulo().getConstante());
 		this.setNumeroTitulo(tituloFiliado.getNumeroTitulo());
 		this.setDataEmissaoTitulo(new LocalDate(tituloFiliado.getDataEmissao()));

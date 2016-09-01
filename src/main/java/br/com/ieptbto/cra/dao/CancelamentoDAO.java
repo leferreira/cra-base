@@ -25,6 +25,7 @@ import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoCancelamento;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.StatusSolicitacaoCancelamento;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -67,89 +68,85 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 			arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
 
 			arquivoSalvo = save(arquivo);
-			if (arquivo.getRemessaCancelamentoProtesto() != null) {
-				List<PedidoCancelamento> pedidosCancelamentoErros = new ArrayList<PedidoCancelamento>();
-				List<CancelamentoProtesto> cancelamentosProtesto = new ArrayList<CancelamentoProtesto>();
-				BigDecimal valorTotalCancelamentoProtesto = BigDecimal.ZERO;
-				int totalCancelamentoProtestoArquivo = 0;
-				for (CancelamentoProtesto cancelamento : arquivo.getRemessaCancelamentoProtesto().getCancelamentoProtesto()) {
-					List<PedidoCancelamento> pedidosProcessados = new ArrayList<PedidoCancelamento>();
-					int quantidadeCancelamentoCartorio = 0;
-					cancelamento.setRemessaCancelamentoProtesto(arquivo.getRemessaCancelamentoProtesto());
-					cancelamento.setDownload(false);
+			List<PedidoCancelamento> pedidosCancelamentoErros = new ArrayList<PedidoCancelamento>();
+			List<CancelamentoProtesto> cancelamentosProtesto = new ArrayList<CancelamentoProtesto>();
+			BigDecimal valorTotalCancelamentoProtesto = BigDecimal.ZERO;
+			int totalCancelamentoProtestoArquivo = 0;
+			for (CancelamentoProtesto cancelamento : arquivo.getRemessaCancelamentoProtesto().getCancelamentoProtesto()) {
+				List<PedidoCancelamento> pedidosProcessados = new ArrayList<PedidoCancelamento>();
+				int quantidadeCancelamentoCartorio = 0;
+				cancelamento.setRemessaCancelamentoProtesto(arquivo.getRemessaCancelamentoProtesto());
+				cancelamento.setDownload(false);
 
-					for (PedidoCancelamento pedido : cancelamento.getCancelamentos()) {
-						pedido.setCancelamentoProtesto(cancelamento);
-						pedido.setTitulo(tituloDAO.buscarTituloCancelamentoProtesto(pedido));
+				for (PedidoCancelamento pedido : cancelamento.getCancelamentos()) {
+					pedido.setCancelamentoProtesto(cancelamento);
+					pedido.setTitulo(tituloDAO.buscarTituloCancelamentoProtesto(pedido));
 
-						if (pedido.getTitulo() != null) {
-							pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO);
-							pedidosProcessados.add(pedido);
-							quantidadeCancelamentoCartorio = quantidadeCancelamentoCartorio + 1;
-							valorTotalCancelamentoProtesto = valorTotalCancelamentoProtesto.add(pedido.getValorTitulo());
-							totalCancelamentoProtestoArquivo = totalCancelamentoProtestoArquivo + 1;
-						} else if (pedido.getDataProtocolagem().isAfter(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))
-								|| pedido.getDataProtocolagem().equals(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))) {
-							pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO);
-							pedidosCancelamentoErros.add(pedido);
-						} else {
-							pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO);
-							pedidosProcessados.add(pedido);
-							quantidadeCancelamentoCartorio = quantidadeCancelamentoCartorio + 1;
-							valorTotalCancelamentoProtesto = valorTotalCancelamentoProtesto.add(pedido.getValorTitulo());
-							totalCancelamentoProtestoArquivo = totalCancelamentoProtestoArquivo + 1;
-						}
-					}
-
-					if (pedidosCancelamentoErros.isEmpty()) {
-						cancelamento.getCabecalhoCartorio().setQuantidadeDesistencia(quantidadeCancelamentoCartorio);
-						cancelamento.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(quantidadeCancelamentoCartorio * 2);
-						cancelamento.setCancelamentos(pedidosProcessados);
-						cancelamentosProtesto.add(cancelamento);
+					if (pedido.getTitulo() != null) {
+						pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO);
+						pedidosProcessados.add(pedido);
+						quantidadeCancelamentoCartorio = quantidadeCancelamentoCartorio + 1;
+						valorTotalCancelamentoProtesto = valorTotalCancelamentoProtesto.add(pedido.getValorTitulo());
+						totalCancelamentoProtestoArquivo = totalCancelamentoProtestoArquivo + 1;
+					} else if (pedido.getDataProtocolagem().isAfter(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))
+							|| pedido.getDataProtocolagem().equals(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))) {
+						pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO);
+						pedidosCancelamentoErros.add(pedido);
 					} else {
-						String descricao = StringUtils.EMPTY;
-						String codigoMunicipio = StringUtils.EMPTY;
-						for (PedidoCancelamento pedidoCancelamento : pedidosCancelamentoErros) {
-							descricao = descricao + "Protocolo Inválido (" + pedidoCancelamento.getNumeroProtocolo() + ").";
-							codigoMunicipio = pedidoCancelamento.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio();
-						}
-						erros.add(new DesistenciaCancelamentoException(descricao, codigoMunicipio, CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
-						pedidosCancelamentoErros.clear();
+						pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO);
+						pedidosProcessados.add(pedido);
+						quantidadeCancelamentoCartorio = quantidadeCancelamentoCartorio + 1;
+						valorTotalCancelamentoProtesto = valorTotalCancelamentoProtesto.add(pedido.getValorTitulo());
+						totalCancelamentoProtestoArquivo = totalCancelamentoProtestoArquivo + 1;
 					}
 				}
-				arquivo.getRemessaCancelamentoProtesto().getCabecalho().setQuantidadeDesistencia(totalCancelamentoProtestoArquivo);
-				arquivo.getRemessaCancelamentoProtesto().getCabecalho().setQuantidadeRegistro(totalCancelamentoProtestoArquivo);
-				arquivo.getRemessaCancelamentoProtesto().getRodape().setQuantidadeDesistencia(totalCancelamentoProtestoArquivo);
-				arquivo.getRemessaCancelamentoProtesto().getRodape().setSomatorioValorTitulo(valorTotalCancelamentoProtesto);
-				arquivo.getRemessaCancelamentoProtesto().setCancelamentoProtesto(cancelamentosProtesto);
-				arquivo.getRemessaCancelamentoProtesto().setCabecalho(save(arquivo.getRemessaCancelamentoProtesto().getCabecalho()));
-				arquivo.getRemessaCancelamentoProtesto().setRodape(save(arquivo.getRemessaCancelamentoProtesto().getRodape()));
-				save(arquivo.getRemessaCancelamentoProtesto());
 
-				for (CancelamentoProtesto cancelamentoProtestos : cancelamentosProtesto) {
-					cancelamentoProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(cancelamentoProtestos.getCancelamentos().size());
-					cancelamentoProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(totalCancelamentoProtestoArquivo);
-					cancelamentoProtestos.setCabecalhoCartorio(save(cancelamentoProtestos.getCabecalhoCartorio()));
-					cancelamentoProtestos.setRodapeCartorio(save(cancelamentoProtestos.getRodapeCartorio()));
-					cancelamentoProtestos.setRemessaCancelamentoProtesto(arquivo.getRemessaCancelamentoProtesto());
-					save(cancelamentoProtestos);
-					for (PedidoCancelamento pedido : cancelamentoProtestos.getCancelamentos()) {
-						save(pedido);
+				if (pedidosCancelamentoErros.isEmpty()) {
+					cancelamento.getCabecalhoCartorio().setQuantidadeDesistencia(quantidadeCancelamentoCartorio);
+					cancelamento.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(quantidadeCancelamentoCartorio * 2);
+					cancelamento.setCancelamentos(pedidosProcessados);
+					cancelamentosProtesto.add(cancelamento);
+				} else {
+					String descricao = StringUtils.EMPTY;
+					String codigoMunicipio = StringUtils.EMPTY;
+					for (PedidoCancelamento pedidoCancelamento : pedidosCancelamentoErros) {
+						descricao = descricao + "Protocolo Inválido (" + pedidoCancelamento.getNumeroProtocolo() + ").";
+						codigoMunicipio = pedidoCancelamento.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio();
 					}
+					erros.add(new DesistenciaCancelamentoException(descricao, codigoMunicipio, CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
+					pedidosCancelamentoErros.clear();
 				}
-				transaction.commit();
 			}
-			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
-					+ " foi inserido na base ");
+			arquivo.getRemessaCancelamentoProtesto().getCabecalho().setQuantidadeDesistencia(totalCancelamentoProtestoArquivo);
+			arquivo.getRemessaCancelamentoProtesto().getCabecalho().setQuantidadeRegistro(totalCancelamentoProtestoArquivo);
+			arquivo.getRemessaCancelamentoProtesto().getRodape().setQuantidadeDesistencia(totalCancelamentoProtestoArquivo);
+			arquivo.getRemessaCancelamentoProtesto().getRodape().setSomatorioValorTitulo(valorTotalCancelamentoProtesto);
+			arquivo.getRemessaCancelamentoProtesto().setCancelamentoProtesto(cancelamentosProtesto);
+			arquivo.getRemessaCancelamentoProtesto().setCabecalho(save(arquivo.getRemessaCancelamentoProtesto().getCabecalho()));
+			arquivo.getRemessaCancelamentoProtesto().setRodape(save(arquivo.getRemessaCancelamentoProtesto().getRodape()));
+			save(arquivo.getRemessaCancelamentoProtesto());
+
+			for (CancelamentoProtesto cancelamentoProtestos : cancelamentosProtesto) {
+				cancelamentoProtestos.getCabecalhoCartorio().setQuantidadeDesistencia(cancelamentoProtestos.getCancelamentos().size());
+				cancelamentoProtestos.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(totalCancelamentoProtestoArquivo);
+				cancelamentoProtestos.setCabecalhoCartorio(save(cancelamentoProtestos.getCabecalhoCartorio()));
+				cancelamentoProtestos.setRodapeCartorio(save(cancelamentoProtestos.getRodapeCartorio()));
+				cancelamentoProtestos.setRemessaCancelamentoProtesto(arquivo.getRemessaCancelamentoProtesto());
+				save(cancelamentoProtestos);
+				for (PedidoCancelamento pedido : cancelamentoProtestos.getCancelamentos()) {
+					save(pedido);
+				}
+			}
+			transaction.commit();
+			loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, CraAcao.ENVIO_ARQUIVO_CANCELAMENTO_PROTESTO, "Arquivo " + arquivo.getNomeArquivo()
+					+ ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso via aplicação.");
 
 		} catch (InfraException ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage());
-			throw new InfraException(ex.getMessage());
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
 			transaction.rollback();
-			throw new InfraException("Não foi possível inserir esse arquivo na base de dados.");
 		}
 		return arquivoSalvo;
 	}

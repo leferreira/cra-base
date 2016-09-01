@@ -21,6 +21,7 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.error.CodigoErro;
@@ -49,97 +50,93 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 			arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
 
 			arquivoSalvo = save(arquivo);
-			if (arquivo.getRemessaAutorizacao() != null) {
-				List<PedidoAutorizacaoCancelamento> pedidosAutorizacaoErros = new ArrayList<PedidoAutorizacaoCancelamento>();
-				List<AutorizacaoCancelamento> autorizacoesCancelamentos = new ArrayList<AutorizacaoCancelamento>();
-				BigDecimal valorTotalAutorizacao = BigDecimal.ZERO;
-				int totalAutorizacaoArquivo = 0;
+			List<PedidoAutorizacaoCancelamento> pedidosAutorizacaoErros = new ArrayList<PedidoAutorizacaoCancelamento>();
+			List<AutorizacaoCancelamento> autorizacoesCancelamentos = new ArrayList<AutorizacaoCancelamento>();
+			BigDecimal valorTotalAutorizacao = BigDecimal.ZERO;
+			int totalAutorizacaoArquivo = 0;
 
-				for (AutorizacaoCancelamento ac : arquivo.getRemessaAutorizacao().getAutorizacaoCancelamento()) {
-					List<PedidoAutorizacaoCancelamento> pedidosAutorizacao = new ArrayList<PedidoAutorizacaoCancelamento>();
-					int quantidadeAutorizacaoCartorio = 0;
-					ac.setRemessaAutorizacaoCancelamento(arquivo.getRemessaAutorizacao());
-					ac.setDownload(false);
+			for (AutorizacaoCancelamento ac : arquivo.getRemessaAutorizacao().getAutorizacaoCancelamento()) {
+				List<PedidoAutorizacaoCancelamento> pedidosAutorizacao = new ArrayList<PedidoAutorizacaoCancelamento>();
+				int quantidadeAutorizacaoCartorio = 0;
+				ac.setRemessaAutorizacaoCancelamento(arquivo.getRemessaAutorizacao());
+				ac.setDownload(false);
 
-					for (PedidoAutorizacaoCancelamento pedido : ac.getAutorizacoesCancelamentos()) {
-						pedido.setAutorizacaoCancelamento(ac);
-						pedido.setTitulo(tituloDAO.buscarTituloAutorizacaoCancelamento(pedido));
+				for (PedidoAutorizacaoCancelamento pedido : ac.getAutorizacoesCancelamentos()) {
+					pedido.setAutorizacaoCancelamento(ac);
+					pedido.setTitulo(tituloDAO.buscarTituloAutorizacaoCancelamento(pedido));
 
-						if (pedido.getTitulo() != null) {
-							pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO);
-							pedidosAutorizacao.add(pedido);
-							quantidadeAutorizacaoCartorio = quantidadeAutorizacaoCartorio + 1;
-							valorTotalAutorizacao = valorTotalAutorizacao.add(pedido.getValorTitulo());
-							totalAutorizacaoArquivo = totalAutorizacaoArquivo + 1;
-						} else if (pedido.getDataProtocolagem().isAfter(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))
-								|| pedido.getDataProtocolagem().equals(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))) {
-							pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO);
-							pedidosAutorizacaoErros.add(pedido);
-						} else {
-							pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO);
-							pedidosAutorizacao.add(pedido);
-							quantidadeAutorizacaoCartorio = quantidadeAutorizacaoCartorio + 1;
-							valorTotalAutorizacao = valorTotalAutorizacao.add(pedido.getValorTitulo());
-							totalAutorizacaoArquivo = totalAutorizacaoArquivo + 1;
-						}
-					}
-
-					if (pedidosAutorizacaoErros.isEmpty()) {
-						ac.getCabecalhoCartorio().setQuantidadeDesistencia(quantidadeAutorizacaoCartorio);
-						ac.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(quantidadeAutorizacaoCartorio * 2);
-						ac.setAutorizacoesCancelamentos(pedidosAutorizacao);
-						autorizacoesCancelamentos.add(ac);
+					if (pedido.getTitulo() != null) {
+						pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO);
+						pedidosAutorizacao.add(pedido);
+						quantidadeAutorizacaoCartorio = quantidadeAutorizacaoCartorio + 1;
+						valorTotalAutorizacao = valorTotalAutorizacao.add(pedido.getValorTitulo());
+						totalAutorizacaoArquivo = totalAutorizacaoArquivo + 1;
+					} else if (pedido.getDataProtocolagem().isAfter(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))
+							|| pedido.getDataProtocolagem().equals(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))) {
+						pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO);
+						pedidosAutorizacaoErros.add(pedido);
 					} else {
-						String descricao = StringUtils.EMPTY;
-						String codigoMunicipio = StringUtils.EMPTY;
-						for (PedidoAutorizacaoCancelamento pedidoAutorizacao : pedidosAutorizacaoErros) {
-							descricao = descricao + "Protocolo Inválido (" + pedidoAutorizacao.getNumeroProtocolo() + ").";
-							codigoMunicipio = pedidoAutorizacao.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio();
-						}
-						erros.add(new DesistenciaCancelamentoException(descricao, codigoMunicipio, CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
-						pedidosAutorizacaoErros.clear();
+						pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO);
+						pedidosAutorizacao.add(pedido);
+						quantidadeAutorizacaoCartorio = quantidadeAutorizacaoCartorio + 1;
+						valorTotalAutorizacao = valorTotalAutorizacao.add(pedido.getValorTitulo());
+						totalAutorizacaoArquivo = totalAutorizacaoArquivo + 1;
 					}
 				}
-				arquivo.getRemessaAutorizacao().getCabecalho().setQuantidadeDesistencia(totalAutorizacaoArquivo);
-				arquivo.getRemessaAutorizacao().getCabecalho().setQuantidadeRegistro(totalAutorizacaoArquivo);
-				arquivo.getRemessaAutorizacao().getRodape().setQuantidadeDesistencia(totalAutorizacaoArquivo);
-				arquivo.getRemessaAutorizacao().getRodape().setSomatorioValorTitulo(valorTotalAutorizacao);
-				arquivo.getRemessaAutorizacao().setAutorizacaoCancelamento(autorizacoesCancelamentos);
-				arquivo.getRemessaAutorizacao().setCabecalho(save(arquivo.getRemessaAutorizacao().getCabecalho()));
-				arquivo.getRemessaAutorizacao().setRodape(save(arquivo.getRemessaAutorizacao().getRodape()));
-				save(arquivo.getRemessaAutorizacao());
 
-				for (AutorizacaoCancelamento ac : autorizacoesCancelamentos) {
-					ac.getCabecalhoCartorio().setQuantidadeDesistencia(ac.getAutorizacoesCancelamentos().size());
-					ac.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(totalAutorizacaoArquivo);
-					ac.setCabecalhoCartorio(save(ac.getCabecalhoCartorio()));
-					ac.setRodapeCartorio(save(ac.getRodapeCartorio()));
-					ac.setRemessaAutorizacaoCancelamento(ac.getRemessaAutorizacaoCancelamento());
-					save(ac);
-					for (PedidoAutorizacaoCancelamento pedido : ac.getAutorizacoesCancelamentos()) {
-						save(pedido);
+				if (pedidosAutorizacaoErros.isEmpty()) {
+					ac.getCabecalhoCartorio().setQuantidadeDesistencia(quantidadeAutorizacaoCartorio);
+					ac.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(quantidadeAutorizacaoCartorio * 2);
+					ac.setAutorizacoesCancelamentos(pedidosAutorizacao);
+					autorizacoesCancelamentos.add(ac);
+				} else {
+					String descricao = StringUtils.EMPTY;
+					String codigoMunicipio = StringUtils.EMPTY;
+					for (PedidoAutorizacaoCancelamento pedidoAutorizacao : pedidosAutorizacaoErros) {
+						descricao = descricao + "Protocolo Inválido (" + pedidoAutorizacao.getNumeroProtocolo() + ").";
+						codigoMunicipio = pedidoAutorizacao.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio();
 					}
+					erros.add(new DesistenciaCancelamentoException(descricao, codigoMunicipio, CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
+					pedidosAutorizacaoErros.clear();
 				}
-				transaction.commit();
 			}
-			logger.info("O arquivo " + arquivo.getNomeArquivo() + "enviado pelo usuário " + arquivo.getUsuarioEnvio().getLogin()
-					+ " foi inserido na base ");
+			arquivo.getRemessaAutorizacao().getCabecalho().setQuantidadeDesistencia(totalAutorizacaoArquivo);
+			arquivo.getRemessaAutorizacao().getCabecalho().setQuantidadeRegistro(totalAutorizacaoArquivo);
+			arquivo.getRemessaAutorizacao().getRodape().setQuantidadeDesistencia(totalAutorizacaoArquivo);
+			arquivo.getRemessaAutorizacao().getRodape().setSomatorioValorTitulo(valorTotalAutorizacao);
+			arquivo.getRemessaAutorizacao().setAutorizacaoCancelamento(autorizacoesCancelamentos);
+			arquivo.getRemessaAutorizacao().setCabecalho(save(arquivo.getRemessaAutorizacao().getCabecalho()));
+			arquivo.getRemessaAutorizacao().setRodape(save(arquivo.getRemessaAutorizacao().getRodape()));
+			save(arquivo.getRemessaAutorizacao());
+
+			for (AutorizacaoCancelamento ac : autorizacoesCancelamentos) {
+				ac.getCabecalhoCartorio().setQuantidadeDesistencia(ac.getAutorizacoesCancelamentos().size());
+				ac.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(totalAutorizacaoArquivo);
+				ac.setCabecalhoCartorio(save(ac.getCabecalhoCartorio()));
+				ac.setRodapeCartorio(save(ac.getRodapeCartorio()));
+				ac.setRemessaAutorizacaoCancelamento(ac.getRemessaAutorizacaoCancelamento());
+				save(ac);
+				for (PedidoAutorizacaoCancelamento pedido : ac.getAutorizacoesCancelamentos()) {
+					save(pedido);
+				}
+			}
+			transaction.commit();
+			loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, CraAcao.ENVIO_ARQUIVO_AUTORIZACAO_CANCELAMENTO, "Arquivo " + arquivo.getNomeArquivo()
+					+ ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso via aplicação.");
 
 		} catch (InfraException ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage());
-			throw new InfraException(ex.getMessage());
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
 			transaction.rollback();
-			throw new InfraException("Não foi possível inserir esse arquivo na base de dados.");
 		}
 		return arquivoSalvo;
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador, Municipio municipio,
-			LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
+			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(AutorizacaoCancelamento.class);
 		criteria.createAlias("remessaAutorizacaoCancelamento", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");

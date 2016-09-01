@@ -24,13 +24,15 @@ import br.com.ieptbto.cra.slip.ArquivoCAF;
 public class ArquivoDeParaMediator {
 
 	@Autowired
-	private ArquivoDeParaDAO deParaDAO;
+	ArquivoDeParaDAO deParaDAO;
 	@Autowired
-	private ProcessadorArquivoDeParaBB processadorArquivoDeParaBB;
+	ProcessadorArquivoDeParaBB processadorArquivoDeParaBB;
 
 	public void processarArquivo(FileUpload uploadedFile) {
 
-		if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.CAF.getModelo())) {
+		if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.ARQUIVO_DE_PARA_ATUALIZACAO.getModelo())) {
+
+		} else if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.CAF.getModelo())) {
 			deParaDAO.salvarArquivoCAF(new ArquivoCAF().processar(uploadedFile));
 		} else if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.BANCO_DO_BRASIL.getModelo())) {
 			processadorArquivoDeParaBB.iniciarProcessamento(uploadedFile);

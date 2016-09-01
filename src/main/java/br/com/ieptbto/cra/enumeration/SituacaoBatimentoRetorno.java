@@ -6,7 +6,7 @@ package br.com.ieptbto.cra.enumeration;
  */
 public enum SituacaoBatimentoRetorno {
 
-	NAO_CONFIRMADO,
-	AGUARDANDO_LIBERACAO,
-	CONFIRMADO;
+										NAO_CONFIRMADO,
+										AGUARDANDO_LIBERACAO,
+										CONFIRMADO;
 }

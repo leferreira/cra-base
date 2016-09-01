@@ -31,11 +31,11 @@ import br.com.ieptbto.cra.slip.regra.RegraAgenciaDestino;
 public class InstrumentoProtestoMediator extends BaseMediator {
 
 	@Autowired
-	TituloDAO tituloDao;
+	private TituloDAO tituloDao;
 	@Autowired
-	InstrumentoProtestoDAO instrumentoDao;
+	private InstrumentoProtestoDAO instrumentoDao;
 	@Autowired
-	RegraAgenciaDestino regraAgenciaDestino;
+	private RegraAgenciaDestino regraAgenciaDestino;
 
 	private List<Retorno> titulosProtestados;
 	private List<EtiquetaSLIP> etiquetas;
@@ -102,11 +102,9 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 
 		for (EtiquetaSLIP etiqueta : getEtiquetas()) {
 			if (mapaEnvelopes.containsKey(Integer.parseInt(
-					new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino())
-							.toString()))) {
+					new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino()).toString()))) {
 				EnvelopeSLIP envelope = mapaEnvelopes.get(Integer.parseInt(
-						new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino())
-								.toString()));
+						new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino()).toString()));
 				envelope.setQuantidadeInstrumentos(envelope.getQuantidadeInstrumentos() + 1);
 				envelope.getEtiquetas().add(etiqueta);
 			} else {
@@ -127,8 +125,7 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 				envelope.getEtiquetas().add(etiqueta);
 
 				mapaEnvelopes.put(Integer.parseInt(
-						new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino())
-								.toString()),
+						new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino()).toString()),
 						envelope);
 				getEnvelopes().add(envelope);
 			}
