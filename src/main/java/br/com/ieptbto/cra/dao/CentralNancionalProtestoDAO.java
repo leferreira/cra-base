@@ -234,6 +234,8 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("tipoRegistroCnp", TipoRegistroCnp.PROTESTO));
 		criteria.add(Restrictions.eq("numeroDocumentoDevedor", registro.getNumeroDocumentoDevedor()));
 		criteria.add(Restrictions.eq("digitoControleDocumentoDevedor", registro.getDigitoControleDocumentoDevedor()));
+		criteria.add(Restrictions.eq("dataProtesto", registro.getDataProtesto()));
+		criteria.add(Restrictions.eq("valorProtesto", registro.getValorProtesto()));
 		criteria.add(Restrictions.eq("loteCnp.instituicaoOrigem", instituicao));
 		criteria.setMaxResults(1);
 		return RegistroCnp.class.cast(criteria.uniqueResult());
