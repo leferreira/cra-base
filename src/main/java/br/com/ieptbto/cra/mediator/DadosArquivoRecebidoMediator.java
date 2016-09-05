@@ -14,18 +14,16 @@ import br.com.ieptbto.cra.entidade.DadosArquivoRecebido;
 @Service
 public class DadosArquivoRecebidoMediator {
 
-    @Autowired
-    private DadosArquivoRecebidoDao dadosArquivoRecebidoDao;
+	@Autowired
+	private DadosArquivoRecebidoDao dadosArquivoRecebidoDao;
 
-    /**
-     * Método responsável por salvar os dados recebido pelo WS
-     * 
-     * @param dadosArquivoRecebido
-     */
+	/**
+	 * Método responsável por salvar os dados recebido pelo WS
+	 * 
+	 * @param dadosArquivoRecebido
+	 */
 
-    public DadosArquivoRecebido salvarDados(DadosArquivoRecebido dadosArquivoRecebido) {
-        return dadosArquivoRecebidoDao.salvar(dadosArquivoRecebido);
-
-    }
-
+	public DadosArquivoRecebido salvarDados(DadosArquivoRecebido dadosArquivoRecebido) {
+		return dadosArquivoRecebidoDao.salvar(dadosArquivoRecebido);
+	}
 }

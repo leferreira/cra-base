@@ -42,7 +42,7 @@ public class ValidarTituloRetorno extends RegraTitulo {
 		this.arquivo = arquivo;
 		this.usuario = usuario;
 		this.erros = erros;
-		this.titulosProcessados = new ArrayList<Titulo>();
+		this.titulosProcessados = null;
 
 		executar();
 	}
@@ -56,6 +56,7 @@ public class ValidarTituloRetorno extends RegraTitulo {
 				return;
 			}
 
+			this.titulosProcessados = new ArrayList<Titulo>();
 			for (Titulo titulo : remessa.getTitulos()) {
 				Retorno tituloRetorno = Retorno.class.cast(titulo);
 

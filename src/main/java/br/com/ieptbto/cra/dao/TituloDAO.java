@@ -195,31 +195,26 @@ public class TituloDAO extends AbstractBaseDAO {
 	private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao, List<Exception> erros) {
 		TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao, erros);
 
-		BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBanco(tituloConfirmacao.getCodigoPortador());
-		if (banco != null) {
-			tituloConfirmacao.setCodigoCartorio(banco.getCodigoCartorio());
-		}
-		if (tituloConfirmacao.getNumeroProtocoloCartorio() != null) {
-			Integer numeroProtocoloCartorio = Integer.valueOf(tituloConfirmacao.getNumeroProtocoloCartorio().trim());
-			titulo.setNumeroProtocoloCartorio(numeroProtocoloCartorio.toString());
-		}
-		TipoOcorrencia tipoOcorrencia = null;
-		if (tituloConfirmacao.getTipoOcorrencia() != null) {
-			tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloConfirmacao.getTipoOcorrencia());
-			if (!TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.equals(tipoOcorrencia)) {
-				tituloConfirmacao.setValorGravacaoEletronica(titulo.getRemessa().getInstituicaoOrigem().getValorConfirmacao());
-			}
-		}
-
 		try {
-			if (titulo != null) {
-				tituloConfirmacao.setTitulo(titulo);
-				titulo.setConfirmacao(save(tituloConfirmacao));
-				save(titulo);
-			} else {
-				erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_NAO_ENCONTRADO, tituloConfirmacao.getNossoNumero(),
-						tituloConfirmacao.getNumeroSequencialArquivo()));
+			BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBanco(tituloConfirmacao.getCodigoPortador());
+			if (banco != null) {
+				tituloConfirmacao.setCodigoCartorio(banco.getCodigoCartorio());
 			}
+			if (tituloConfirmacao.getNumeroProtocoloCartorio() != null) {
+				Integer numeroProtocoloCartorio = Integer.valueOf(tituloConfirmacao.getNumeroProtocoloCartorio().trim());
+				titulo.setNumeroProtocoloCartorio(numeroProtocoloCartorio.toString());
+			}
+			TipoOcorrencia tipoOcorrencia = null;
+			if (tituloConfirmacao.getTipoOcorrencia() != null) {
+				tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloConfirmacao.getTipoOcorrencia());
+				if (!TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.equals(tipoOcorrencia)) {
+					tituloConfirmacao.setValorGravacaoEletronica(titulo.getRemessa().getInstituicaoOrigem().getValorConfirmacao());
+				}
+			}
+
+			tituloConfirmacao.setTitulo(titulo);
+			titulo.setConfirmacao(save(tituloConfirmacao));
+			save(titulo);
 
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
@@ -243,14 +238,9 @@ public class TituloDAO extends AbstractBaseDAO {
 		}
 
 		try {
-			if (titulo != null) {
-				tituloRetorno.setTitulo(titulo);
-				titulo.setRetorno(save(tituloRetorno));
-				save(titulo);
-			} else {
-				erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_NAO_ENCONTRADO, tituloRetorno.getNossoNumero(),
-						tituloRetorno.getNumeroSequencialArquivo()));
-			}
+			tituloRetorno.setTitulo(titulo);
+			titulo.setRetorno(save(tituloRetorno));
+			save(titulo);
 
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
@@ -283,6 +273,9 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (!titulos.isEmpty()) {
 			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_CONFIRMACAO_JA_ENVIADO, tituloConfirmacao.getNossoNumero(),
 					tituloConfirmacao.getNumeroSequencialArquivo()));
+		} else {
+			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_NAO_ENCONTRADO, tituloConfirmacao.getNossoNumero(),
+					tituloConfirmacao.getNumeroSequencialArquivo()));
 		}
 		return null;
 	}
@@ -314,6 +307,9 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (!titulos.isEmpty()) {
 			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_RETORNO_JA_ENVIADO, tituloRetorno.getNossoNumero(),
 					tituloRetorno.getNumeroSequencialArquivo()));
+		} else {
+			erros.add(
+					new TituloException(CodigoErro.CARTORIO_TITULO_NAO_ENCONTRADO, tituloRetorno.getNossoNumero(), tituloRetorno.getNumeroSequencialArquivo()));
 		}
 		return null;
 	}

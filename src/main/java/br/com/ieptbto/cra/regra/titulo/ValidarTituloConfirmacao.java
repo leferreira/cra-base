@@ -31,7 +31,7 @@ public class ValidarTituloConfirmacao extends RegraTitulo {
 		this.arquivo = arquivo;
 		this.usuario = usuario;
 		this.erros = erros;
-		this.titulosProcessados = new ArrayList<Titulo>();
+		this.titulosProcessados = null;
 
 		executar();
 	}
@@ -45,6 +45,7 @@ public class ValidarTituloConfirmacao extends RegraTitulo {
 				return;
 			}
 
+			this.titulosProcessados = new ArrayList<Titulo>();
 			for (Titulo titulo : remessa.getTitulos()) {
 				Confirmacao tituloConfirmacao = Confirmacao.class.cast(titulo);
 
@@ -77,8 +78,8 @@ public class ValidarTituloConfirmacao extends RegraTitulo {
 			if (tipoOcorrencia != null) {
 				if (TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.equals(tipoOcorrencia)) {
 					if (codigoIrregularidade == null || codigoIrregularidade == CodigoIrregularidade.IRREGULARIDADE_0) {
-						erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE,
-								tituloConfirmacao.getNossoNumero(), tituloConfirmacao.getNumeroSequencialArquivo()));
+						erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE, tituloConfirmacao.getNossoNumero(),
+								tituloConfirmacao.getNumeroSequencialArquivo()));
 					}
 				}
 			} else if (numeroProtocoloCartorio.equals(ZERO)) {

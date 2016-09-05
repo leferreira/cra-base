@@ -46,4 +46,26 @@ public class Mensagem extends MensagemCra {
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
+
+	@XmlAttribute(name = "nosso_numero")
+	private String nossoNumero;
+
+	@XmlAttribute(name = "numero_sequencial_registro")
+	private int numeroSequencialRegistro;
+
+	public String getNossoNumero() {
+		return nossoNumero;
+	}
+
+	public int getNumeroSequencialRegistro() {
+		return numeroSequencialRegistro;
+	}
+
+	public void setNossoNumero(String nossoNumero) {
+		this.nossoNumero = nossoNumero;
+	}
+
+	public void setNumeroSequencialRegistro(int numeroSequencialRegistro) {
+		this.numeroSequencialRegistro = numeroSequencialRegistro;
+	}
 }

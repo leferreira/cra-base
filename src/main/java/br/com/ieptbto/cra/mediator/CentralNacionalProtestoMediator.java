@@ -69,6 +69,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 				if (validarRegistroCnp.validarCancelamento(registro)) {
 					RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarProtestoDoCancelamento(instituicao, registro);
 					if (registroProtesto != null) {
+						registro.setValorProtesto(registroProtesto.getValorProtesto());
 						loteCnp.getRegistrosCnp().add(registro);
 					}
 				}
@@ -280,6 +281,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 					if (validarRegistroCnp.validarCancelamento(registro)) {
 						RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarProtestoDoCancelamento(instituicao, registro);
 						if (registroProtesto != null) {
+							registro.setValorProtesto(registroProtesto.getValorProtesto());
 							loteCnp.getRegistrosCnp().add(registro);
 						}
 					}
@@ -324,6 +326,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 						if (validarRegistroCnp.validarCancelamento(registro)) {
 							RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarProtestoDoCancelamento(instituicao, registro);
 							if (registroProtesto != null) {
+								registro.setValorProtesto(registroProtesto.getValorProtesto());
 								loteCnp.getRegistrosCnp().add(registro);
 							}
 						}

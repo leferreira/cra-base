@@ -108,8 +108,7 @@ public class ArquivoMediator extends BaseMediator {
 		List<Remessa> remessas = remessaDAO.confirmacoesPendentes(instituicao);
 		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
 		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
-		List<AutorizacaoCancelamento> autorizacaoCancelamento =
-				autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
+		List<AutorizacaoCancelamento> autorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
 		Arquivo arquivo = new Arquivo();
 		arquivo.setRemessas(remessas);
 		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
@@ -133,8 +132,10 @@ public class ArquivoMediator extends BaseMediator {
 	 * @return
 	 */
 	public ArquivoMediator salvar(Arquivo arquivo, FileUpload uploadedFile, Usuario usuario) {
+		this.erros = null;
 		this.erros = new ArrayList<Exception>();
 
+		this.arquivo = null;
 		this.arquivo = arquivo;
 		this.arquivo.setNomeArquivo(uploadedFile.getClientFileName());
 		this.arquivo.setTipoArquivo(getTipoArquivo(arquivo));
@@ -162,8 +163,10 @@ public class ArquivoMediator extends BaseMediator {
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public ArquivoMediator salvarWS(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
+		this.erros = null;
 		this.erros = new ArrayList<Exception>();
 
+		this.arquivo = null;
 		this.arquivo = new Arquivo();
 		this.arquivo.setNomeArquivo(nomeArquivo);
 		this.arquivo.setTipoArquivo(tipoArquivoDAO.buscarTipoArquivo(nomeArquivo));
@@ -284,8 +287,8 @@ public class ArquivoMediator extends BaseMediator {
 
 		ArrayList<Arquivo> arquivos = new ArrayList<>();
 		arquivos.add(remessa.getArquivo());
-		logger.info("O Usuario " + usuario.getLogin() + " da instituição " + usuario.getInstituicao().getNomeFantasia()
-				+ " fez o download do arquivo " + nomeArquivo + " que foi enviado para " + remessa.getInstituicaoDestino().getNomeFantasia() + ".");
+		logger.info("O Usuario " + usuario.getLogin() + " da instituição " + usuario.getInstituicao().getNomeFantasia() + " fez o download do arquivo "
+				+ nomeArquivo + " que foi enviado para " + remessa.getInstituicaoDestino().getNomeFantasia() + ".");
 		return conversorRemessaArquivo.converterRemessaVO(remessa);
 	}
 

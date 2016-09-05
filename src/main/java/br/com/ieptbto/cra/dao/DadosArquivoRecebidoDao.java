@@ -14,26 +14,23 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class DadosArquivoRecebidoDao extends AbstractBaseDAO {
 
-    /**
-     * Método responsável por persistir os dadosRecebidos pelo WS na base de
-     * dados
-     * 
-     * @param dadosArquivoRecebido
-     * @return
-     */
-    @Transactional
-    public DadosArquivoRecebido salvar(DadosArquivoRecebido dadosArquivoRecebido) {
-        try {
+	/**
+	 * Método responsável por persistir os dadosRecebidos pelo WS na base de
+	 * dados
+	 * 
+	 * @param dadosArquivoRecebido
+	 * @return
+	 */
+	@Transactional
+	public DadosArquivoRecebido salvar(DadosArquivoRecebido dadosArquivoRecebido) {
+		try {
 
-            return save(dadosArquivoRecebido);
+			return save(dadosArquivoRecebido);
 
-        } catch (Exception ex) {
-            new InfraException("Não foi possível inserir os dados recebidos pelo WS na base de dados");
-            logger.error(ex.getMessage(), ex);
-        }
-
-        return null;
-
-    }
-
+		} catch (Exception ex) {
+			new InfraException("Não foi possível inserir os dados recebidos pelo WS na base de dados");
+			logger.error(ex.getMessage(), ex);
+		}
+		return null;
+	}
 }

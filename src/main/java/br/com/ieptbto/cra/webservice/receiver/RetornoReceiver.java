@@ -30,7 +30,6 @@ import br.com.ieptbto.cra.webservice.VO.Descricao;
 import br.com.ieptbto.cra.webservice.VO.Detalhamento;
 import br.com.ieptbto.cra.webservice.VO.Mensagem;
 import br.com.ieptbto.cra.webservice.VO.MensagemCra;
-import br.com.ieptbto.cra.webservice.VO.MensagemErroCartorio;
 import br.com.ieptbto.cra.webservice.VO.MensagemXml;
 
 /**
@@ -103,8 +102,8 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 			Mensagem mensagem = new Mensagem();
 			mensagem.setCodigo(CodigoErro.CRA_SUCESSO.getCodigo());
 			mensagem.setMunicipio(remessa.getCabecalho().getCodigoMunicipio());
-			mensagem.setDescricao("Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
-					+ remessa.getCabecalho().getQtdTitulosRemessa() + " títulos receberam retorno.");
+			mensagem.setDescricao("Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - " + remessa.getCabecalho().getQtdTitulosRemessa()
+					+ " títulos receberam retorno.");
 			mensagens.add(mensagem);
 		}
 		return mensagemXml;
@@ -130,7 +129,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 
 		for (Exception ex : erros) {
 			TituloException exception = TituloException.class.cast(ex);
-			MensagemErroCartorio mensagem = new MensagemErroCartorio();
+			Mensagem mensagem = new Mensagem();
 			mensagem.setCodigo(exception.getCodigoErro().getCodigo());
 			mensagem.setDescricao(exception.getDescricao());
 			mensagem.setNossoNumero(exception.getNossoNumero());
