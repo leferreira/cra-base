@@ -15,6 +15,7 @@ import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -151,7 +152,14 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private List<Titulo> setTitulosRemessa(List<Titulo> listaTitulos, TituloFiliado tituloFiliado) {
 		TituloRemessa tituloRemessa = new TituloRemessa();
 		tituloRemessa.parseTituloFiliado(tituloFiliado);
-		tituloRemessa.setNumeroSequencialArquivo(Integer.toString(listaTitulos.size()+2));
+
+		if (tituloFiliado.getAnexo() != null) {
+			Anexo anexo = new Anexo();
+			anexo.setDocumentoAnexo(tituloFiliado.getAnexoAsString());
+			anexo.setTitulo(tituloRemessa);
+			tituloRemessa.setAnexo(anexo);
+		}
+		tituloRemessa.setNumeroSequencialArquivo(Integer.toString(listaTitulos.size() + 2));
 		listaTitulos.add(tituloRemessa);
 		return listaTitulos;
 	}
@@ -165,7 +173,13 @@ public class ProcessadorRemessaConveniada extends Processador {
 
 		TituloRemessa titulo = new TituloRemessa();
 		titulo.parseTituloFiliado(tituloFiliado);
-		titulo.setNumeroSequencialArquivo(Integer.toString(remessa.getTitulos().size()+2));
+		if (tituloFiliado.getAnexo() != null) {
+			Anexo anexo = new Anexo();
+			anexo.setDocumentoAnexo(tituloFiliado.getAnexoAsString());
+			anexo.setTitulo(titulo);
+			titulo.setAnexo(anexo);
+		}
+		titulo.setNumeroSequencialArquivo(Integer.toString(remessa.getTitulos().size() + 2));
 		remessa.getTitulos().add(titulo);
 
 		if (tituloFiliado.getEspecieTitulo().equals(TipoEspecieTitulo.DMI)) {
@@ -177,11 +191,11 @@ public class ProcessadorRemessaConveniada extends Processador {
 		remessa.getCabecalho().setQtdTitulosRemessa(quantidadeTitulos + 1);
 		remessa.getCabecalho().setQtdIndicacoesRemessa(quantidadeIndicacoes);
 		remessa.getCabecalho().setQtdOriginaisRemessa(quantidadeOriginais);
-		BigDecimal somatorioQtdRemessa = new BigDecimal(
-		        quantidadeRegistros + quantidadeTitulos + quantidadeOriginais + quantidadeIndicacoes);
+		BigDecimal somatorioQtdRemessa = new BigDecimal(quantidadeRegistros + quantidadeTitulos + quantidadeOriginais + quantidadeIndicacoes);
 		remessa.getRodape().setSomatorioQtdRemessa(somatorioQtdRemessa);
 		remessa.getRodape().setSomatorioValorRemessa(valorSaldo);
-		remessa.getRodape().setNumeroSequencialRegistroArquivo(Integer.toString(Integer.parseInt(remessa.getRodape().getNumeroSequencialRegistroArquivo())+1));
+		remessa.getRodape()
+				.setNumeroSequencialRegistroArquivo(Integer.toString(Integer.parseInt(remessa.getRodape().getNumeroSequencialRegistroArquivo()) + 1));
 	}
 
 	private Instituicao setInstituicaoDestino(TituloFiliado tituloFiliado) {
@@ -196,7 +210,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		rodape.setNumeroCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
 		rodape.getSomatorioQtdRemessa().add(new BigDecimal(3));
 		rodape.getSomatorioValorRemessa().add(tituloFiliado.getValorSaldoTitulo());
-		rodape.setNumeroSequencialRegistroArquivo(Integer.toString(titulos.size()+2));
+		rodape.setNumeroSequencialRegistroArquivo(Integer.toString(titulos.size() + 2));
 		return rodape;
 	}
 
@@ -229,7 +243,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private void agruparTitulosFiliado() {
 		for (TituloFiliado tituloFiliado : getListTitulosFiliado()) {
 			getMapaTitulos().put(new chaveTitulo(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao(),
-			        tituloFiliado.getPracaProtesto().getCodigoIBGE()), tituloFiliado);
+					tituloFiliado.getPracaProtesto().getCodigoIBGE()), tituloFiliado);
 		}
 	}
 

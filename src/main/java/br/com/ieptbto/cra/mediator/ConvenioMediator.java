@@ -71,7 +71,6 @@ public class ConvenioMediator extends BaseMediator {
 	private TipoArquivoDAO tipoArquivoDAO;
 
 	private Usuario usuario;
-
 	private Map<String, Arquivo> mapaArquivosCP;
 	private Map<String, Arquivo> mapaArquivosAC;
 	private Map<String, CancelamentoProtesto> mapaCancelamentoProtesto;

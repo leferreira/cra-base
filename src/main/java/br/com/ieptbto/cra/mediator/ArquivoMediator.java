@@ -289,7 +289,7 @@ public class ArquivoMediator extends BaseMediator {
 		arquivos.add(remessa.getArquivo());
 		logger.info("O Usuario " + usuario.getLogin() + " da instituição " + usuario.getInstituicao().getNomeFantasia() + " fez o download do arquivo "
 				+ nomeArquivo + " que foi enviado para " + remessa.getInstituicaoDestino().getNomeFantasia() + ".");
-		return conversorRemessaArquivo.converterRemessaVO(remessa);
+		return conversorRemessaArquivo.converterArquivoXMLRemessaVO(remessa);
 	}
 
 	/**

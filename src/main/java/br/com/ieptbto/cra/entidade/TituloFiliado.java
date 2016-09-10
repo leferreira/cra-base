@@ -19,6 +19,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -43,6 +44,12 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
+
+	private Usuario usuarioEntradaManual;
+	private SetorFiliado setor;
+	private Filiado filiado;
+	private byte[] anexo;
+
 	private String numeroTitulo;
 	private Date dataEmissao;
 	private Date dataVencimento;
@@ -59,14 +66,11 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	private String bairroDevedor;
 	private List<Avalista> avalistas;
 	private TipoAlineaCheque alinea;
-	private Filiado filiado;
 	private SituacaoTituloConvenio situacaoTituloConvenio;
 	private Date dataEnvioCRA;
 	private Date dataEntrada;
 	private TipoEspecieTitulo especieTitulo;
 	private String CpfCnpj;
-	private Usuario usuarioEntradaManual;
-	private SetorFiliado setor;
 
 	@Override
 	@Id
@@ -125,12 +129,6 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 		}
 		return enderecoDevedor;
 	}
-
-	// @OneToOne(mappedBy = "tituloFiliado")
-	// public SolicitacaoDesistenciaCancelamentoConvenio
-	// getSolicitacaoDesistenciaCancelamento() {
-	// return solicitacaoDesistenciaCancelamento;
-	// }
 
 	@Column(name = "CIDADE_DEVEDOR", length = 20)
 	public String getCidadeDevedor() {
@@ -209,16 +207,19 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 		return CpfCnpj.replace(".", "").replace("-", "").replace("/", "").trim();
 	}
 
+	@Column(name = "ANEXO")
+	public byte[] getAnexo() {
+		return anexo;
+	}
+
+	@Transient
+	public String getAnexoAsString() {
+		return new String(this.anexo);
+	}
+
 	public void setCpfCnpj(String cpfCnpj) {
 		CpfCnpj = cpfCnpj;
 	}
-
-	// public void
-	// setSolicitacaoDesistenciaCancelamento(SolicitacaoDesistenciaCancelamentoConvenio
-	// solicitacaoDesistenciaCancelamento) {
-	// this.solicitacaoDesistenciaCancelamento =
-	// solicitacaoDesistenciaCancelamento;
-	// }
 
 	public void setDataEnvioCRA(Date dataEnvioCRA) {
 		this.dataEnvioCRA = dataEnvioCRA;
@@ -298,6 +299,10 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 
 	public void setFiliado(Filiado filiado) {
 		this.filiado = filiado;
+	}
+
+	public void setAnexo(byte[] anexo) {
+		this.anexo = anexo;
 	}
 
 	public void setSituacaoTituloConvenio(SituacaoTituloConvenio situacaoTituloConvenio) {

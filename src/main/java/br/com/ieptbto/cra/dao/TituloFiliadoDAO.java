@@ -35,22 +35,30 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 	private AvalistaDAO avalistaDAO;
 
 	public TituloFiliado salvar(TituloFiliado titulo) {
-		TituloFiliado novoTitulo = new TituloFiliado();
 		Transaction transaction = getBeginTransation();
 
 		try {
-			novoTitulo = save(titulo);
+			if (titulo.getId() != 0) {
+				titulo = update(titulo);
+			} else {
+				titulo = save(titulo);
+			}
+
 			for (Avalista avalista : titulo.getAvalistas()) {
-				avalista.setTipoDocumento(verificarTipoDocumento(avalista.getDocumento()));
-				avalista.setTituloFiliado(novoTitulo);
-				avalistaDAO.saveOrUpdate(avalista);
+				if (avalista.getNome() != null && avalista.getDocumento() != null) {
+					if (!avalista.getNome().trim().isEmpty() && !avalista.getDocumento().trim().isEmpty()) {
+						avalista.setTipoDocumento(verificarTipoDocumento(avalista.getDocumento()));
+						avalista.setTituloFiliado(titulo);
+						avalistaDAO.saveOrUpdate(avalista);
+					}
+				}
 			}
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
 		}
-		return novoTitulo;
+		return titulo;
 	}
 
 	private String verificarTipoDocumento(String documento) {
@@ -58,25 +66,6 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 			return "002";
 		}
 		return "001";
-	}
-
-	public TituloFiliado alterar(TituloFiliado titulo) {
-		TituloFiliado alterado = new TituloFiliado();
-		Transaction transaction = getBeginTransation();
-
-		try {
-			alterado = update(titulo);
-			for (Avalista avalista : titulo.getAvalistas()) {
-				avalista.setTipoDocumento(verificarTipoDocumento(avalista.getDocumento()));
-				avalista.setTituloFiliado(alterado);
-				avalistaDAO.saveOrUpdate(avalista);
-			}
-			transaction.commit();
-		} catch (Exception ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage(), ex);
-		}
-		return alterado;
 	}
 
 	public void removerTituloFiliado(TituloFiliado titulo) {
@@ -177,8 +166,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.ilike("documentoDevedor", tituloFiliado.getDocumentoDevedor(), MatchMode.ANYWHERE));
 
 		if (dataInicio != null && dataFim != null)
-			criteria.add(Restrictions.between("dataEnvioCRA", new java.sql.Date(dataInicio.toDate().getTime()),
-					new java.sql.Date(dataFim.toDate().getTime())));
+			criteria.add(Restrictions.between("dataEnvioCRA", new java.sql.Date(dataInicio.toDate().getTime()), new java.sql.Date(dataFim.toDate().getTime())));
 
 		if (pracaProtesto != null)
 			criteria.add(Restrictions.ilike("pracaProtesto", pracaProtesto));
@@ -212,8 +200,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("filiado", filiado));
 
 		if (dataInicio != null && dataFim != null)
-			criteria.add(Restrictions.between("dataEnvioCRA", new java.sql.Date(dataInicio.toDate().getTime()),
-					new java.sql.Date(dataFim.toDate().getTime())));
+			criteria.add(Restrictions.between("dataEnvioCRA", new java.sql.Date(dataInicio.toDate().getTime()), new java.sql.Date(dataFim.toDate().getTime())));
 
 		if (pracaProtesto != null)
 			criteria.add(Restrictions.eq("pracaProtesto", pracaProtesto));
@@ -304,8 +291,8 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<TituloRemessa> buscarListaTitulos(Usuario user, LocalDate dataInicio, Instituicao instiuicaoCartorio, String numeroTitulo,
-			String nomeDevedor, String documentoDevedor, String codigoFiliado) {
+	public List<TituloRemessa> buscarListaTitulos(Usuario user, LocalDate dataInicio, Instituicao instiuicaoCartorio, String numeroTitulo, String nomeDevedor,
+			String documentoDevedor, String codigoFiliado) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 		criteria.add(Restrictions.eq("remessa.instituicaoOrigem", user.getInstituicao()));

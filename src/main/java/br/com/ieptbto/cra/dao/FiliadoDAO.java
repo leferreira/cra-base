@@ -23,107 +23,106 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class FiliadoDAO extends AbstractBaseDAO {
 
-    public Filiado salvar(Filiado filiado) {
-	Filiado novoFiliado = new Filiado();
-	Transaction transaction = getBeginTransation();
+	public Filiado salvar(Filiado filiado) {
+		Filiado novoFiliado = new Filiado();
+		Transaction transaction = getBeginTransation();
 
-	try {
-	    novoFiliado = save(filiado);
-	    novoFiliado.setCodigoFiliado(geradorCodigoCedenteFiliado(novoFiliado));
-	    update(novoFiliado);
+		try {
+			novoFiliado = save(filiado);
+			novoFiliado.setCodigoFiliado(geradorCodigoCedenteFiliado(novoFiliado));
+			update(novoFiliado);
 
-	    for (SetorFiliado setor : filiado.getSetoresFiliado()) {
-		setor.setFiliado(novoFiliado);
-		save(setor);
-	    }
+			for (SetorFiliado setor : filiado.getSetoresFiliado()) {
+				setor.setFiliado(novoFiliado);
+				save(setor);
+			}
 
-	    transaction.commit();
-	} catch (Exception ex) {
-	    transaction.rollback();
-	    logger.error(ex.getMessage(), ex);
-	    throw new InfraException("Não foi possível cadastrar o novo filiado !");
-	}
-	return novoFiliado;
-    }
-
-    public Filiado alterar(Filiado filiado) {
-	Filiado novoFiliado = new Filiado();
-	Transaction transaction = getBeginTransation();
-
-	try {
-	    novoFiliado = update(filiado);
-
-	    for (SetorFiliado setor : filiado.getSetoresFiliado()) {
-		if (setor.getId() == 0) {
-		    setor.setFiliado(novoFiliado);
-		    save(setor);
-		} else {
-		    update(setor);
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível cadastrar o novo filiado !");
 		}
-	    }
-
-	    transaction.commit();
-	} catch (Exception ex) {
-	    transaction.rollback();
-	    logger.error(ex.getMessage(), ex);
-	}
-	return novoFiliado;
-    }
-
-    private String geradorCodigoCedenteFiliado(Filiado novoFiliado) {
-	String codigoCedente = novoFiliado.getId() + novoFiliado.getInstituicaoConvenio().getCodigoCompensacao();
-	while (codigoCedente.length() < 15) {
-	    codigoCedente += "0";
-	}
-	return codigoCedente;
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<Filiado> buscarListaFiliadosPorConvenio(Instituicao instituicao) {
-	Criteria criteria = getCriteria(Filiado.class);
-	criteria.createAlias("municipio", "municipio");
-
-	if (instituicao.getId() == 0) {
-	    return new ArrayList<Filiado>();
+		return novoFiliado;
 	}
 
-	if (instituicao.getTipoInstituicao().getTipoInstituicao() != TipoInstituicaoCRA.CRA) {
-	    criteria.add(Restrictions.eq("instituicaoConvenio", instituicao));
+	public Filiado alterar(Filiado filiado) {
+		Transaction transaction = getBeginTransation();
+
+		try {
+			filiado = update(filiado);
+
+			for (SetorFiliado setor : filiado.getSetoresFiliado()) {
+				if (setor.getId() == 0) {
+					setor.setFiliado(filiado);
+					save(setor);
+				} else {
+					update(setor);
+				}
+			}
+
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+		}
+		return filiado;
 	}
-	criteria.addOrder(Order.asc("razaoSocial"));
-	return criteria.list();
-    }
 
-    @SuppressWarnings("unchecked")
-    public List<SetorFiliado> buscarSetoresFiliado(Filiado filiado) {
-	Criteria criteria = getCriteria(SetorFiliado.class);
-	criteria.add(Restrictions.eq("filiado", filiado));
-	return criteria.list();
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<SetorFiliado> buscarSetoresAtivosFiliado(Filiado filiado) {
-	Criteria criteria = getCriteria(SetorFiliado.class);
-	criteria.add(Restrictions.eq("filiado", filiado));
-	criteria.add(Restrictions.eq("situacaoAtivo", true));
-	return criteria.list();
-    }
-
-    public void removerSertorFiliado(SetorFiliado setor) {
-
-	try {
-	    Query query = createSQLQuery("DELETE FROM tb_setor_filiado WHERE id_setor_filiado=" + setor.getId());
-	    query.executeUpdate();
-
-	} catch (Exception ex) {
-	    logger.error(ex.getMessage(), ex);
+	private String geradorCodigoCedenteFiliado(Filiado novoFiliado) {
+		String codigoCedente = novoFiliado.getId() + novoFiliado.getInstituicaoConvenio().getCodigoCompensacao();
+		while (codigoCedente.length() < 15) {
+			codigoCedente += "0";
+		}
+		return codigoCedente;
 	}
-    }
 
-    public SetorFiliado buscarSetorPadraoFiliado(Filiado filiado) {
-	Criteria criteria = getCriteria(SetorFiliado.class);
-	criteria.add(Restrictions.eq("filiado", filiado));
-	criteria.add(Restrictions.eq("setorPadraoFiliado", true));
-	return SetorFiliado.class.cast(criteria.uniqueResult());
-    }
+	@SuppressWarnings("unchecked")
+	public List<Filiado> buscarListaFiliadosPorConvenio(Instituicao instituicao) {
+		Criteria criteria = getCriteria(Filiado.class);
+		criteria.createAlias("municipio", "municipio");
+
+		if (instituicao.getId() == 0) {
+			return new ArrayList<Filiado>();
+		}
+
+		if (instituicao.getTipoInstituicao().getTipoInstituicao() != TipoInstituicaoCRA.CRA) {
+			criteria.add(Restrictions.eq("instituicaoConvenio", instituicao));
+		}
+		criteria.addOrder(Order.asc("razaoSocial"));
+		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<SetorFiliado> buscarSetoresFiliado(Filiado filiado) {
+		Criteria criteria = getCriteria(SetorFiliado.class);
+		criteria.add(Restrictions.eq("filiado", filiado));
+		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<SetorFiliado> buscarSetoresAtivosFiliado(Filiado filiado) {
+		Criteria criteria = getCriteria(SetorFiliado.class);
+		criteria.add(Restrictions.eq("filiado", filiado));
+		criteria.add(Restrictions.eq("situacaoAtivo", true));
+		return criteria.list();
+	}
+
+	public void removerSertorFiliado(SetorFiliado setor) {
+
+		try {
+			Query query = createSQLQuery("DELETE FROM tb_setor_filiado WHERE id_setor_filiado=" + setor.getId());
+			query.executeUpdate();
+
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+		}
+	}
+
+	public SetorFiliado buscarSetorPadraoFiliado(Filiado filiado) {
+		Criteria criteria = getCriteria(SetorFiliado.class);
+		criteria.add(Restrictions.eq("filiado", filiado));
+		criteria.add(Restrictions.eq("setorPadraoFiliado", true));
+		return SetorFiliado.class.cast(criteria.uniqueResult());
+	}
 }

@@ -166,6 +166,36 @@ public class ConversorRemessaArquivo {
 		return remessaVO;
 	}
 
+	/**
+	 * Conversor de Arquivo de Remessas para Cartórios com documentos anexo
+	 * preenchendo o campo 51.
+	 * 
+	 * @param remessa
+	 * @return
+	 */
+	public RemessaVO converterArquivoXMLRemessaVO(Remessa remessa) {
+		RemessaVO remessaVO = new RemessaVO();
+		remessaVO.setTitulos(new ArrayList<TituloVO>());
+		remessaVO.setCabecalho(CabecalhoVO.parseCabecalho(remessa.getCabecalho()));
+
+		List<TituloVO> titulosVO = new ArrayList<TituloVO>();
+		for (Titulo titulo : remessa.getTitulos()) {
+			TituloVO tituloVO = null;
+			if (titulo instanceof TituloRemessa) {
+				TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
+				tituloVO = TituloVO.parseTitulo(tituloRemessa);
+
+				if (tituloRemessa.getAnexo() != null) {
+					tituloVO.setComplementoRegistro(tituloRemessa.getAnexo().getDocumentoAnexo());
+				}
+			}
+			titulosVO.add(tituloVO);
+		}
+		remessaVO.setTitulos(titulosVO);
+		remessaVO.setRodapes(RodapeVO.parseRodape(remessa.getRodape(), remessa.getCabecalho()));
+		return remessaVO;
+	}
+
 	private List<TituloVO> converterTitulos(List<Titulo> titulos) {
 		List<TituloVO> titulosVO = new ArrayList<TituloVO>();
 		TituloVO tituloVO = null;

@@ -58,8 +58,7 @@ public class ProcessadorArquivo extends Processador {
 		this.erros = erros;
 
 		if (getFileUpload() != null) {
-			logger.info(
-					"Início processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
+			logger.info("Início processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
 
 			verificaDiretorio();
 			copiarArquivoParaDiretorioDoUsuarioTemporario(getFileUpload().getClientFileName());

@@ -73,8 +73,8 @@ public class TituloVO extends AbstractArquivoVO {
 	private String numeroParcelaContrato;
 
 	@XmlAttribute(name = "t44", required = true)
-	@IAtributoArquivo(ordem = 44, posicao = 539, tamanho = 15,
-			descricao = "Identificar o número do contrato - exclusivo para protesto de letra de câmbio.", obrigatoriedade = false)
+	@IAtributoArquivo(ordem = 44, posicao = 539, tamanho = 15, descricao = "Identificar o número do contrato - exclusivo para protesto de letra de câmbio.",
+			obrigatoriedade = false)
 	private String numeroContratoBanco;
 
 	@XmlAttribute(name = "t43", required = true)
@@ -84,9 +84,8 @@ public class TituloVO extends AbstractArquivoVO {
 	private String numeroOperacaoBanco;
 
 	@XmlAttribute(name = "t42", required = true)
-	@IAtributoArquivo(ordem = 42, posicao = 524, tamanho = 10,
-			descricao = "Uso restrito da Centralizadora de Rmessas de Arquivos (CRA). Preencher com zeros.", obrigatoriedade = false,
-			formato = "0000000000")
+	@IAtributoArquivo(ordem = 42, posicao = 524, tamanho = 10, descricao = "Uso restrito da Centralizadora de Rmessas de Arquivos (CRA). Preencher com zeros.",
+			obrigatoriedade = false, formato = "0000000000")
 	private String valorGravacaoEletronica;
 
 	@XmlAttribute(name = "t41", required = true)
@@ -183,8 +182,7 @@ public class TituloVO extends AbstractArquivoVO {
 	private String numeroControleDevedor;
 
 	@XmlAttribute(name = "t21", required = true)
-	@IAtributoArquivo(ordem = 21, posicao = 296, tamanho = 1, descricao = "Informar ao cartótio se o título foi aceito pelo devedor.",
-			obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 21, posicao = 296, tamanho = 1, descricao = "Informar ao cartótio se o título foi aceito pelo devedor.", obrigatoriedade = true)
 	private String informacaoSobreAceite;
 
 	@XmlAttribute(name = "t20", required = true)
@@ -193,8 +191,7 @@ public class TituloVO extends AbstractArquivoVO {
 	private String tipoEndoso;
 
 	@XmlAttribute(name = "t19", required = true)
-	@IAtributoArquivo(ordem = 19, posicao = 275, tamanho = 20, descricao = "Informar a praça em que o título será protestado.",
-			obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 19, posicao = 275, tamanho = 20, descricao = "Informar a praça em que o título será protestado.", obrigatoriedade = true)
 	private String pracaProtesto;
 
 	@XmlAttribute(name = "t18", required = true)
@@ -229,8 +226,7 @@ public class TituloVO extends AbstractArquivoVO {
 	private String numeroTitulo;
 
 	@XmlAttribute(name = "t12", required = true)
-	@IAtributoArquivo(ordem = 12, posicao = 214, tamanho = 3, descricao = "Identificar a sigla de identificação da espécie do título.",
-			obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 12, posicao = 214, tamanho = 3, descricao = "Identificar a sigla de identificação da espécie do título.", obrigatoriedade = true)
 	private String especieTitulo;
 
 	@XmlAttribute(name = "t11", required = true)
@@ -239,8 +235,7 @@ public class TituloVO extends AbstractArquivoVO {
 
 	@XmlAttribute(name = "t10", required = true)
 	@IAtributoArquivo(ordem = 10, posicao = 197, tamanho = 2,
-			descricao = "Identificar a Unidade da Federeção do Sacador/Vendedor. Informar a UF do cedente se não houver sacador.",
-			obrigatoriedade = true)
+			descricao = "Identificar a Unidade da Federeção do Sacador/Vendedor. Informar a UF do cedente se não houver sacador.", obrigatoriedade = true)
 	private String ufSacadorVendedor;
 
 	@XmlAttribute(name = "t09", required = true)
@@ -265,8 +260,8 @@ public class TituloVO extends AbstractArquivoVO {
 	private String documentoSacador;
 
 	@XmlAttribute(name = "t05", required = true)
-	@IAtributoArquivo(ordem = 5, posicao = 65, tamanho = 45,
-			descricao = "Identificar o Sacador/Vendedor. Repetir o nome do cedente se não houver sacador.", obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 5, posicao = 65, tamanho = 45, descricao = "Identificar o Sacador/Vendedor. Repetir o nome do cedente se não houver sacador.",
+			obrigatoriedade = true)
 	private String nomeSacadorVendedor;
 
 	@XmlAttribute(name = "t04", required = true)
@@ -274,8 +269,7 @@ public class TituloVO extends AbstractArquivoVO {
 	private String nomeCedenteFavorecido;
 
 	@XmlAttribute(name = "t03", required = true)
-	@IAtributoArquivo(ordem = 3, posicao = 5, tamanho = 15, descricao = "Identificar a Agência e Código do Cedente do Título/Cliente",
-			obrigatoriedade = true)
+	@IAtributoArquivo(ordem = 3, posicao = 5, tamanho = 15, descricao = "Identificar a Agência e Código do Cedente do Título/Cliente", obrigatoriedade = true)
 	private String agenciaCodigoCedente;
 
 	@XmlAttribute(name = "t02", required = true)
@@ -285,8 +279,8 @@ public class TituloVO extends AbstractArquivoVO {
 	private String codigoPortador;
 
 	@XmlAttribute(name = "t01", required = true)
-	@IAtributoArquivo(ordem = 1, posicao = 1, tamanho = 1, descricao = "Identificar o Registro Transação no arquivo. Constante 1",
-			obrigatoriedade = true, validacao = "1", tipo = Integer.class)
+	@IAtributoArquivo(ordem = 1, posicao = 1, tamanho = 1, descricao = "Identificar o Registro Transação no arquivo. Constante 1", obrigatoriedade = true,
+			validacao = "1", tipo = Integer.class)
 	private String identificacaoRegistro;
 
 	public String getIdentificacaoRegistro() {
@@ -772,8 +766,8 @@ public class TituloVO extends AbstractArquivoVO {
 		}
 
 		if (!titulo.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-			tituloVO.setValorGravacaoEletronica(new BigDecimalConversor()
-					.getValorConvertidoSegundoLayoutFebraban(titulo.getRemessa().getInstituicaoDestino().getValorConfirmacao()));
+			tituloVO.setValorGravacaoEletronica(
+					new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(titulo.getRemessa().getInstituicaoDestino().getValorConfirmacao()));
 		}
 		return tituloVO;
 	}

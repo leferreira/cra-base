@@ -75,7 +75,7 @@ public class UsuarioMediator extends BaseMediator {
 		Usuario usuario = usuarioDao.buscarUsuarioPorLogin(login);
 		if (usuario != null && usuario.isSenha(senha)) {
 			if (!TipoInstituicaoCRA.CONVENIO.equals(usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao())) {
-				throw new InfraException("Este usuário não é de uma conveniada!");
+				throw new InfraException("Este usuário não é de um convênio!");
 			}
 			if (instituicaoDao.isInstituicaoAtiva(usuario.getInstituicao())) {
 				if (usuario.isStatus() == true) {
