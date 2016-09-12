@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,8 +28,6 @@ import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.conversor.arquivo.TituloConversor;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
-import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
-import br.com.ieptbto.cra.enumeration.StatusSolicitacaoCancelamento;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
@@ -90,8 +86,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	private String complementoRegistro;
 	private String situacaoTitulo;
 	private Date dataCadastro;
-	private StatusSolicitacaoCancelamento statusSolicitacaoCancelamento;
-	private CodigoIrregularidade codigoIrregularidadeCancelamento;
 	private FieldHandler handler;
 
 	@Override
@@ -290,21 +284,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		return complementoRegistro;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "STATUS_SOLICITACAO_CANCELAMENTO", length = 50)
-	public StatusSolicitacaoCancelamento getStatusSolicitacaoCancelamento() {
-		if (statusSolicitacaoCancelamento == null) {
-			statusSolicitacaoCancelamento = StatusSolicitacaoCancelamento.NAO_SOLICITADO;
-		}
-		return statusSolicitacaoCancelamento;
-	}
-
-	@Enumerated(EnumType.STRING)
-	@Column(name = "CODIGO_IRREGULARIDADE_CANCELAMENTO", length = 50)
-	public CodigoIrregularidade getCodigoIrregularidadeCancelamento() {
-		return codigoIrregularidadeCancelamento;
-	}
-
 	@Column(name = "DATA_CADASTRO")
 	@Type(type = "date")
 	public Date getDataCadastro() {
@@ -339,10 +318,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.pedidosAutorizacaoCancelamento = pedidosAutorizacaoCancelamento;
 	}
 
-	public void setStatusSolicitacaoCancelamento(StatusSolicitacaoCancelamento statusSolicitacaoCancelamento) {
-		this.statusSolicitacaoCancelamento = statusSolicitacaoCancelamento;
-	}
-
 	public void setNomeCedenteFavorecido(String nomeCedenteFavorecido) {
 		this.nomeCedenteFavorecido = nomeCedenteFavorecido;
 	}
@@ -356,10 +331,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 			this.retorno = (Retorno) this.handler.writeObject(this, "retorno", this.retorno, retorno);
 		}
 		this.retorno = retorno;
-	}
-
-	public void setCodigoIrregularidadeCancelamento(CodigoIrregularidade codigoIrregularidadeCancelamento) {
-		this.codigoIrregularidadeCancelamento = codigoIrregularidadeCancelamento;
 	}
 
 	public void setDocumentoSacador(String documentoSacador) {
@@ -535,11 +506,9 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setDocumentoSacador(tituloFiliado.getFiliado().getCnpjCpf());
 		this.setEnderecoSacadorVendedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getEndereco()));
 		this.setCepSacadorVendedor(tituloFiliado.getFiliado().getCep());
-		this.setCidadeSacadorVendedor(
-				RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
+		this.setCidadeSacadorVendedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
 		this.setUfSacadorVendedor(tituloFiliado.getFiliado().getUf());
-		this.setNossoNumero(
-				gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId()));
+		this.setNossoNumero(gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId()));
 		this.setEspecieTitulo(tituloFiliado.getEspecieTitulo().getConstante());
 		this.setNumeroTitulo(tituloFiliado.getNumeroTitulo());
 		this.setDataEmissaoTitulo(new LocalDate(tituloFiliado.getDataEmissao()));

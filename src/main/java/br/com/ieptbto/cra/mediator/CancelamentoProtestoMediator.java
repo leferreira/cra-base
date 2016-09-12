@@ -38,6 +38,7 @@ import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.RodapeArquivo;
 import br.com.ieptbto.cra.entidade.RodapeCartorio;
+import br.com.ieptbto.cra.entidade.SolicitacaoCancelamento;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
@@ -198,8 +199,7 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 		return remessaCancelamento;
 	}
 
-	private List<CancelamentoProtesto> getCancelamentosProtesto(RemessaCancelamentoProtesto remessaCancelamento,
-			CancelamentoSerproVO cancelamentoSerpro) {
+	private List<CancelamentoProtesto> getCancelamentosProtesto(RemessaCancelamentoProtesto remessaCancelamento, CancelamentoSerproVO cancelamentoSerpro) {
 		List<CancelamentoProtesto> cancelamentos = new ArrayList<CancelamentoProtesto>();
 
 		for (ComarcaDesistenciaCancelamentoSerproVO comarca : cancelamentoSerpro.getComarcaDesistenciaCancelamento()) {
@@ -295,11 +295,15 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 		return cancelamentoDAO.buscarTitulosParaSolicitarCancelamento(tituloRemessa, bancoConvenio, municipio, usuario);
 	}
 
-	public TituloRemessa salvarSolicitacaoCancelamento(TituloRemessa titulo) {
-		return cancelamentoDAO.salvarSolicitacaoCancelamento(titulo);
+	public SolicitacaoCancelamento salvarSolicitacaoCancelamento(SolicitacaoCancelamento solicitacaoCancelamento) {
+		return cancelamentoDAO.salvarSolicitacaoCancelamento(solicitacaoCancelamento);
 	}
 
-	public List<TituloRemessa> buscarCancelamentosSolicitados() {
+	public List<SolicitacaoCancelamento> buscarSolicitacoesCancelamentos() {
 		return cancelamentoDAO.buscarCancelamentosSolicitados();
+	}
+
+	public SolicitacaoCancelamento buscarSolicitacaoCancelamentoPorTitulo(TituloRemessa titulo) {
+		return cancelamentoDAO.buscarSolicitacaoCancelamentoPorTitulo(titulo);
 	}
 }

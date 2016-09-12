@@ -34,6 +34,7 @@ import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.RodapeArquivo;
 import br.com.ieptbto.cra.entidade.RodapeCartorio;
+import br.com.ieptbto.cra.entidade.SolicitacaoCancelamento;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
@@ -88,19 +89,20 @@ public class ConvenioMediator extends BaseMediator {
 		tituloFiliadoDAO.marcarComoEnviadoParaCRA(listaTitulosConvenios);
 	}
 
-	public void gerarCancelamentos(Usuario user, List<TituloRemessa> titulosCancelamento) {
+	public void gerarCancelamentosConvenio(Usuario user, List<SolicitacaoCancelamento> solicitacoesCancelamento) {
 		this.mapaArquivosAC = new HashMap<String, Arquivo>();
 		this.mapaArquivosCP = new HashMap<String, Arquivo>();
 		this.mapaAutorizacaoCancelamento = new HashMap<String, AutorizacaoCancelamento>();
 		this.mapaCancelamentoProtesto = new HashMap<String, CancelamentoProtesto>();
 		this.usuario = user;
 
-		for (TituloRemessa titulo : titulosCancelamento) {
+		for (SolicitacaoCancelamento solicitacaoCancelamento : solicitacoesCancelamento) {
+			TituloRemessa titulo = solicitacaoCancelamento.getTituloRemessa();
 			titulo.setRemessa(remessaDAO.buscarPorPK(titulo.getRemessa(), Remessa.class));
 			String key = new chaveTitulo(titulo.getCodigoPortador(), titulo.getRemessa().getCabecalho().getCodigoMunicipio()).toString();
-			if (titulo.getStatusSolicitacaoCancelamento() == StatusSolicitacaoCancelamento.SOLICITACAO_CANCELAMENTO_PROTESTO) {
-				processarCancelamentoProtesto(key, titulo);
-			} else if (titulo.getStatusSolicitacaoCancelamento() == StatusSolicitacaoCancelamento.SOLICITACAO_AUTORIZACAO_CANCELAMENTO) {
+			if (solicitacaoCancelamento.getStatusSolicitacaoCancelamento() == StatusSolicitacaoCancelamento.SOLICITACAO_CANCELAMENTO_PROTESTO) {
+				processarCancelamentoProtesto(key, titulo, solicitacaoCancelamento);
+			} else if (solicitacaoCancelamento.getStatusSolicitacaoCancelamento() == StatusSolicitacaoCancelamento.SOLICITACAO_AUTORIZACAO_CANCELAMENTO) {
 				processarAutorizacaoCancelamento(key, titulo);
 			}
 		}
@@ -108,7 +110,7 @@ public class ConvenioMediator extends BaseMediator {
 		List<Arquivo> arquivosCancelamento = new ArrayList<Arquivo>(mapaArquivosCP.values());
 		salvarArquivosAutorizacao(arquivosAutorizacao, user);
 		salvarArquivosCancelamento(arquivosCancelamento, user);
-		cancelamentoDAO.marcarCancelamentoEnviado(titulosCancelamento);
+		cancelamentoDAO.marcarCancelamentoEnviado(solicitacoesCancelamento);
 	}
 
 	private void salvarArquivosAutorizacao(List<Arquivo> arquivos, Usuario user) {
@@ -135,14 +137,14 @@ public class ConvenioMediator extends BaseMediator {
 		separarArquivosAC(titulo.getCodigoPortador(), mapaAutorizacaoCancelamento.get(key));
 	}
 
-	private void processarCancelamentoProtesto(String key, TituloRemessa titulo) {
+	private void processarCancelamentoProtesto(String key, TituloRemessa titulo, SolicitacaoCancelamento solicitacaoCancelamento) {
 		if (mapaCancelamentoProtesto.containsKey(key)) {
-			mapaCancelamentoProtesto.get(key).getCancelamentos().add(adicionarRegistroPedidoCancelamento(titulo));
+			mapaCancelamentoProtesto.get(key).getCancelamentos().add(adicionarRegistroPedidoCancelamento(titulo, solicitacaoCancelamento));
 			CancelamentoProtesto cp = mapaCancelamentoProtesto.get(key);
 			cp.getCabecalhoCartorio().setQuantidadeDesistencia(cp.getCabecalhoCartorio().getQuantidadeDesistencia() + 1);
 			cp.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(cp.getCabecalhoCartorio().getQuantidadeDesistencia() * 2);
 		} else {
-			mapaCancelamentoProtesto.put(key, criarCancelamentoProtesto(titulo));
+			mapaCancelamentoProtesto.put(key, criarCancelamentoProtesto(titulo, solicitacaoCancelamento));
 		}
 		separarArquivosCP(titulo.getCodigoPortador(), mapaCancelamentoProtesto.get(key));
 	}
@@ -226,11 +228,11 @@ public class ConvenioMediator extends BaseMediator {
 		return ac;
 	}
 
-	private CancelamentoProtesto criarCancelamentoProtesto(TituloRemessa titulo) {
+	private CancelamentoProtesto criarCancelamentoProtesto(TituloRemessa titulo, SolicitacaoCancelamento solicitacaoCancelamento) {
 		CancelamentoProtesto cp = new CancelamentoProtesto();
 		cp.setCabecalhoCartorio(getCabecalhoCartorio(titulo.getRemessa().getCabecalho().getCodigoMunicipio()));
 		cp.setCancelamentos(new ArrayList<PedidoCancelamento>());
-		cp.getCancelamentos().add(adicionarRegistroPedidoCancelamento(titulo));
+		cp.getCancelamentos().add(adicionarRegistroPedidoCancelamento(titulo, solicitacaoCancelamento));
 		cp.setRodapeCartorio(getRodapeCartorio());
 		cp.setDownload(false);
 		return cp;
@@ -251,7 +253,7 @@ public class ConvenioMediator extends BaseMediator {
 		return pedidoAutorizacaoCancelamento;
 	}
 
-	private PedidoCancelamento adicionarRegistroPedidoCancelamento(TituloRemessa titulo) {
+	private PedidoCancelamento adicionarRegistroPedidoCancelamento(TituloRemessa titulo, SolicitacaoCancelamento solicitacaoCancelamento) {
 		PedidoCancelamento pedidoCancelamento = new PedidoCancelamento();
 		Confirmacao conf = tituloMediator.buscarConfirmacao(titulo);
 		pedidoCancelamento.setNumeroProtocolo(conf.getNumeroProtocoloCartorio());
@@ -263,7 +265,7 @@ public class ConvenioMediator extends BaseMediator {
 		pedidoCancelamento.setAgenciaConta(titulo.getAgenciaCodigoCedente());
 		pedidoCancelamento.setCarteiraNossoNumero(titulo.getNossoNumero());
 		pedidoCancelamento.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA);
-		pedidoCancelamento.setReservado(titulo.getCodigoIrregularidadeCancelamento().getCodigoIrregularidade());
+		pedidoCancelamento.setReservado(solicitacaoCancelamento.getCodigoIrregularidadeCancelamento().getCodigoIrregularidade());
 		return pedidoCancelamento;
 	}
 

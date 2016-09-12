@@ -6,10 +6,9 @@ package br.com.ieptbto.cra.enumeration;
  */
 public enum StatusSolicitacaoCancelamento {
 
-											NAO_SOLICITADO(""),
-											SOLICITACAO_AUTORIZACAO_CANCELAMENTO("AC"),
-											SOLICITACAO_CANCELAMENTO_PROTESTO("CP"),
-											SOLICITACAO_ENVIADA("");
+	SOLICITACAO_AUTORIZACAO_CANCELAMENTO("AC"),
+	SOLICITACAO_CANCELAMENTO_PROTESTO("CP"),
+	SOLICITACAO_ENVIADA("");
 
 	private String label;
 

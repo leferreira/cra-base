@@ -23,6 +23,7 @@ import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoCancelamento;
+import br.com.ieptbto.cra.entidade.SolicitacaoCancelamento;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.CraAcao;
@@ -278,23 +279,24 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public TituloRemessa salvarSolicitacaoCancelamento(TituloRemessa titulo) {
+	public SolicitacaoCancelamento salvarSolicitacaoCancelamento(SolicitacaoCancelamento solicitacaoCancelamento) {
 		Transaction transaction = getBeginTransation();
 
 		try {
-			update(titulo);
+			save(solicitacaoCancelamento);
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
 			throw new InfraException("Não foi possível enviar a solicitação de cancelamento!");
 		}
-		return titulo;
+		return solicitacaoCancelamento;
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<TituloRemessa> buscarCancelamentosSolicitados() {
-		Criteria criteria = getCriteria(TituloRemessa.class);
+	public List<SolicitacaoCancelamento> buscarCancelamentosSolicitados() {
+		Criteria criteria = getCriteria(SolicitacaoCancelamento.class);
+		criteria.createAlias("tituloRemessa", "tituloRemessa");
 		Disjunction disjuntion = Restrictions.disjunction();
 		disjuntion.add(Restrictions.eq("statusSolicitacaoCancelamento", StatusSolicitacaoCancelamento.SOLICITACAO_AUTORIZACAO_CANCELAMENTO));
 		disjuntion.add(Restrictions.eq("statusSolicitacaoCancelamento", StatusSolicitacaoCancelamento.SOLICITACAO_CANCELAMENTO_PROTESTO));
@@ -302,14 +304,12 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public void marcarCancelamentoEnviado(List<TituloRemessa> titulosCancelamento) {
+	public void marcarCancelamentoEnviado(List<SolicitacaoCancelamento> solicitacoesCancelamento) {
 		Transaction transaction = getBeginTransation();
 		try {
-			getSession().flush();
-			getSession().clear();
-			for (TituloRemessa titulo : titulosCancelamento) {
-				titulo.setStatusSolicitacaoCancelamento(StatusSolicitacaoCancelamento.SOLICITACAO_ENVIADA);
-				update(titulo);
+			for (SolicitacaoCancelamento solicitacaoCancelamento : solicitacoesCancelamento) {
+				solicitacaoCancelamento.setStatusSolicitacaoCancelamento(StatusSolicitacaoCancelamento.SOLICITACAO_ENVIADA);
+				update(solicitacaoCancelamento);
 			}
 			transaction.commit();
 		} catch (Exception ex) {
@@ -317,5 +317,11 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 			logger.error(ex.getMessage(), ex);
 			throw new InfraException("Não foi salvar os cancelamentos como enviados mas os arquivos foram gerados !");
 		}
+	}
+
+	public SolicitacaoCancelamento buscarSolicitacaoCancelamentoPorTitulo(TituloRemessa titulo) {
+		Criteria criteria = getCriteria(SolicitacaoCancelamento.class);
+		criteria.add(Restrictions.eq("tituloRemessa", titulo));
+		return SolicitacaoCancelamento.class.cast(criteria.uniqueResult());
 	}
 }
