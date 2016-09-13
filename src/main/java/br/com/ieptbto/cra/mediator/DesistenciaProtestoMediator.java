@@ -328,7 +328,7 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 	 * @param nomeArquivo
 	 * @return
 	 */
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public RemessaDesistenciaProtestoVO buscarDesistenciaCancelamentoCartorio(Instituicao cartorio, String nomeArquivo) {
 		RemessaDesistenciaProtestoVO desistenciaCancelamentoVO = null;
 		cartorio.setMunicipio(desistenciaDAO.buscarPorPK(cartorio.getMunicipio(), Municipio.class));

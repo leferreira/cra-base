@@ -2,7 +2,6 @@ package br.com.ieptbto.cra.dao;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
@@ -25,8 +24,6 @@ import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 
 @Repository
 public class InstrumentoProtestoDAO extends AbstractBaseDAO {
-
-	private static final Logger logger = Logger.getLogger(InstrumentoProtestoDAO.class);
 
 	public void salvarInstrumentoProtesto(InstrumentoProtesto instrumento) {
 		Transaction transaction = getBeginTransation();
@@ -98,17 +95,6 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 		return InstrumentoProtesto.class.cast(criteria.uniqueResult());
 	}
 
-	public String quantidadeEnvelopes() {
-		Criteria criteria = getCriteria(EnvelopeSLIP.class);
-		criteria.setProjection(Projections.max("id"));
-		Integer max = Integer.class.cast(criteria.uniqueResult());
-
-		if (max == null) {
-			max = 1;
-		}
-		return max.toString();
-	}
-
 	@SuppressWarnings("unchecked")
 	public List<EnvelopeSLIP> buscarEnvelopesPendetesLiberacao() {
 		Criteria criteria = getCriteria(EnvelopeSLIP.class);
@@ -140,5 +126,17 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 		} catch (Exception ex) {
 			logger.info(ex.getMessage());
 		}
+	}
+
+	public Long buscarSequencialDiarioEnvelopes() {
+		Criteria criteria = getCriteria(EnvelopeSLIP.class);
+		criteria.add(Restrictions.eq("dataGeracao", new LocalDate()));
+		criteria.setProjection(Projections.count("id"));
+		Long total = Long.class.cast(criteria.uniqueResult());
+
+		if (total == null) {
+			total = new Long(0);
+		}
+		return total;
 	}
 }

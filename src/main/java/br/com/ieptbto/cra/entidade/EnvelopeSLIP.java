@@ -21,7 +21,7 @@ import org.joda.time.LocalDate;
 @Audited
 @Table(name = "TB_ENVELOPE_SLIP")
 @org.hibernate.annotations.Table(appliesTo = "TB_ENVELOPE_SLIP")
-public class EnvelopeSLIP extends AbstractEntidade<EnvelopeSLIP>{
+public class EnvelopeSLIP extends AbstractEntidade<EnvelopeSLIP> {
 
 	/***/
 	private static final long serialVersionUID = 1L;
@@ -32,12 +32,10 @@ public class EnvelopeSLIP extends AbstractEntidade<EnvelopeSLIP>{
 	private String ufAgenciaDestino; //
 	private Integer quantidadeInstrumentos;
 	private String codeBar;
-	private String codigoCRA;
 	private LocalDate dataGeracao;
 	private LocalDate dataLiberacao;
 	private boolean liberado;
 
-	
 	private List<EtiquetaSLIP> etiquetas;
 
 	@Id
@@ -47,17 +45,17 @@ public class EnvelopeSLIP extends AbstractEntidade<EnvelopeSLIP>{
 		return id;
 	}
 
-	@Column(name="BANCO", length=45)
+	@Column(name = "BANCO", length = 45)
 	public String getBanco() {
 		return banco;
 	}
 
-	@Column(name="AGENCIA_DESTINO", length=4)
+	@Column(name = "AGENCIA_DESTINO", length = 4)
 	public String getAgenciaDestino() {
 		return agenciaDestino;
 	}
 
-	@Column(name="MUNICIPIO_AGENCIA_DESTINO", length=45)
+	@Column(name = "MUNICIPIO_AGENCIA_DESTINO", length = 45)
 	public String getMunicipioAgenciaDestino() {
 		if (municipioAgenciaDestino != null) {
 			municipioAgenciaDestino = municipioAgenciaDestino.trim();
@@ -65,37 +63,32 @@ public class EnvelopeSLIP extends AbstractEntidade<EnvelopeSLIP>{
 		return municipioAgenciaDestino;
 	}
 
-	@Column(name="UF_AGENCIA_DESTINO", length=2)
+	@Column(name = "UF_AGENCIA_DESTINO", length = 2)
 	public String getUfAgenciaDestino() {
 		return ufAgenciaDestino;
 	}
 
-	@Column(name="CODIGO_DE_BARRA", length=12)
+	@Column(name = "CODIGO_DE_BARRA", length = 20)
 	public String getCodeBar() {
 		return codeBar;
 	}
 
-	@Column(name="CODIGO_CRA", length=18)
-	public String getCodigoCRA() {
-		return codigoCRA;
-	}
-	
-	@Column(name="DATA_GERACAO")
+	@Column(name = "DATA_GERACAO")
 	public LocalDate getDataGeracao() {
 		return dataGeracao;
 	}
 
-	@Column(name="DATA_LIBERACAO")
+	@Column(name = "DATA_LIBERACAO")
 	public LocalDate getDataLiberacao() {
 		return dataLiberacao;
 	}
 
-	@Column(name="LIBERADO")
+	@Column(name = "LIBERADO")
 	public boolean isLiberado() {
 		return liberado;
 	}
 
-	@OneToMany(mappedBy="envelope")
+	@OneToMany(mappedBy = "envelope")
 	public List<EtiquetaSLIP> getEtiquetas() {
 		return etiquetas;
 	}
@@ -124,10 +117,6 @@ public class EnvelopeSLIP extends AbstractEntidade<EnvelopeSLIP>{
 		this.codeBar = codeBar;
 	}
 
-	public void setCodigoCRA(String codigoCRA) {
-		this.codigoCRA = codigoCRA;
-	}
-
 	public void setDataGeracao(LocalDate dataGeracao) {
 		this.dataGeracao = dataGeracao;
 	}
@@ -144,7 +133,7 @@ public class EnvelopeSLIP extends AbstractEntidade<EnvelopeSLIP>{
 		this.etiquetas = etiquetas;
 	}
 
-	@Column(name="QUANTIDADE_INSTRUMENTOS")
+	@Column(name = "QUANTIDADE_INSTRUMENTOS")
 	public Integer getQuantidadeInstrumentos() {
 		return quantidadeInstrumentos;
 	}

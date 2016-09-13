@@ -30,6 +30,9 @@ import br.com.ieptbto.cra.slip.regra.RegraAgenciaDestino;
 @Service
 public class InstrumentoProtestoMediator extends BaseMediator {
 
+	private static final String SIGLA_ENVELOPE_PT = "PT";
+	private static final String UF_CRA = "TO";
+
 	@Autowired
 	private TituloDAO tituloDao;
 	@Autowired
@@ -40,6 +43,7 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 	private List<Retorno> titulosProtestados;
 	private List<EtiquetaSLIP> etiquetas;
 	private List<EnvelopeSLIP> envelopes;
+	private Long sequencialDiarioEnvelopes;
 	private List<InstrumentoProtesto> instrumentosProtesto;
 
 	/**
@@ -67,10 +71,11 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 	}
 
 	public InstrumentoProtestoMediator processarInstrumentos(List<InstrumentoProtesto> instrumentos, List<Retorno> listaRetorno) {
-		this.setInstrumentosProtesto(instrumentos);
+		this.instrumentosProtesto = instrumentos;
 		this.titulosProtestados = listaRetorno;
 		this.etiquetas = null;
 		this.envelopes = null;
+		this.sequencialDiarioEnvelopes = null;
 
 		gerarSLIP(instrumentos);
 		ordenarEtiquetasInstrumentos();
@@ -115,12 +120,8 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 				envelope.setUfAgenciaDestino(etiqueta.getUfAgenciaDestino());
 				envelope.setQuantidadeInstrumentos(1);
 
-				SimpleDateFormat dataPadraEnvelope = new SimpleDateFormat("ddMMyy");
-				String codeBar = envelope.getAgenciaDestino() + envelope.getUfAgenciaDestino() + dataPadraEnvelope.format(new Date()).toString();
-				String codigoCRA = StringUtils.leftPad(instrumentoDao.quantidadeEnvelopes(), 6, "0") + codeBar;
-
+				String codeBar = gerarCodigoBarraEnvelope(envelope);
 				envelope.setCodeBar(codeBar);
-				envelope.setCodigoCRA(codigoCRA);
 				envelope.setEtiquetas(new ArrayList<EtiquetaSLIP>());
 				envelope.getEtiquetas().add(etiqueta);
 
@@ -130,6 +131,26 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 				getEnvelopes().add(envelope);
 			}
 		}
+	}
+
+	private String gerarCodigoBarraEnvelope(EnvelopeSLIP envelope) {
+		SimpleDateFormat dataPadraEnvelope = new SimpleDateFormat("ddMMyy");
+
+		String codeBar = SIGLA_ENVELOPE_PT;
+		codeBar = codeBar.concat(envelope.getAgenciaDestino());
+		codeBar = codeBar.concat(incrementarSequencialEnvelope());
+		codeBar = codeBar.concat(UF_CRA);
+		codeBar = codeBar.concat(dataPadraEnvelope.format(new Date()).toString());
+		return codeBar;
+	}
+
+	private String incrementarSequencialEnvelope() {
+		if (sequencialDiarioEnvelopes == null) {
+			this.sequencialDiarioEnvelopes = instrumentoDao.buscarSequencialDiarioEnvelopes();
+		}
+
+		this.sequencialDiarioEnvelopes = sequencialDiarioEnvelopes + 1;
+		return StringUtils.leftPad(Long.toString(sequencialDiarioEnvelopes), 4, "0");
 	}
 
 	private void ordenarEtiquetasInstrumentos() {
@@ -180,10 +201,6 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 
 	public List<InstrumentoProtesto> getInstrumentosProtesto() {
 		return instrumentosProtesto;
-	}
-
-	public void setInstrumentosProtesto(List<InstrumentoProtesto> instrumentosProtesto) {
-		this.instrumentosProtesto = instrumentosProtesto;
 	}
 
 	public void alterarInstrumentosParaGerado(List<InstrumentoProtesto> instrumentosProtesto) {
