@@ -11,6 +11,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.joda.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
 
@@ -38,6 +39,9 @@ import br.com.ieptbto.cra.webservice.VO.MensagemXml;
  */
 @Service
 public class RetornoReceiver extends AbstractArquivoReceiver {
+
+	@Autowired
+	private ArquivoMediator arquivoMediator;
 
 	@Override
 	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {
@@ -109,7 +113,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 		return mensagemXml;
 	}
 
-	private MensagemCra gerarRespostaErrosRetorno(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+	private MensagemXml gerarRespostaErrosRetorno(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		List<Mensagem> mensagens = new ArrayList<Mensagem>();
 		MensagemXml mensagemXml = new MensagemXml();
 		Descricao descricao = new Descricao();
@@ -122,7 +126,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 		mensagemXml.setDescricaoFinal(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao());
 
 		descricao.setDataEnvio(LocalDateTime.now().toString(DataUtil.PADRAO_FORMATACAO_DATAHORASEG));
-		descricao.setTipoArquivo(Descricao.XML_UPLOAD_CONFIRMACAO);
+		descricao.setTipoArquivo(Descricao.XML_UPLOAD_RETORNO);
 		descricao.setDataMovimento(arquivo.getDataEnvio().toString(DataUtil.PADRAO_FORMATACAO_DATA));
 		descricao.setPortador(arquivo.getInstituicaoEnvio().getCodigoCompensacao());
 		descricao.setUsuario(usuario.getNome());

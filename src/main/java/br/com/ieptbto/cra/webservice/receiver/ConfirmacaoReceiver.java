@@ -11,6 +11,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.joda.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
 
@@ -37,6 +38,9 @@ import br.com.ieptbto.cra.webservice.VO.MensagemXml;
  */
 @Service
 public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
+
+	@Autowired
+	private ArquivoMediator arquivoMediator;
 
 	@Override
 	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {

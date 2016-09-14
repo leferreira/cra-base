@@ -40,6 +40,7 @@ import br.com.ieptbto.cra.entidade.RodapeArquivo;
 import br.com.ieptbto.cra.entidade.RodapeCartorio;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
+import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.AutorizacaoCancelamentoSerproVO;
@@ -80,12 +81,16 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 	private int quantidadeRegistrosTipo2 = 0;
 	private BigDecimal somatorioValor;
 
+	public List<PedidoAutorizacaoCancelamento> buscarPedidosAutorizacaoCancelamentoPorTitulo(TituloRemessa titulo) {
+		return autorizacaoCancelamentoDAO.buscarPedidosAutorizacaoCancelamentoPorTitulo(titulo);
+	}
+
 	public List<PedidoAutorizacaoCancelamento> buscarPedidosAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento) {
 		return autorizacaoCancelamentoDAO.buscarPedidosAutorizacaoCancelamento(autorizacaoCancelamento);
 	}
 
-	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador, Municipio municipio,
-			LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
+			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		return autorizacaoCancelamentoDAO.buscarAutorizacaoCancelamento(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
@@ -104,8 +109,8 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 		arquivo.setStatusArquivo(getStatusArquivo());
 
 		if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.SERPRO)) {
-			RemessaAutorizacaoCancelamento remessaAC = converterAutorizacaoCancelamentoSerpro(arquivo, usuario.getInstituicao(),
-					converterStringParaAutorizacaoCancelamentoSerproVO(dados), erros);
+			RemessaAutorizacaoCancelamento remessaAC =
+					converterAutorizacaoCancelamentoSerpro(arquivo, usuario.getInstituicao(), converterStringParaAutorizacaoCancelamentoSerproVO(dados), erros);
 			arquivo.setRemessaAutorizacao(remessaAC);
 
 			return autorizacaoCancelamentoDAO.salvarAutorizacao(arquivo, usuario, erros);

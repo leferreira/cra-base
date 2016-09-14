@@ -16,8 +16,12 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  * @author Thasso Araújo
@@ -43,28 +47,33 @@ public class Batimento extends AbstractEntidade<Batimento> {
 	public int getId() {
 		return id;
 	}
-	
-	@Column(name = "DATA_BATIMENTO")	
+
+	@Column(name = "DATA_BATIMENTO")
 	public LocalDateTime getDataBatimento() {
+		if (dataBatimento == null) {
+			DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
+			DateTime dt = formatter.parseDateTime("01/01/2000 00:00:00");
+			dataBatimento = data.toLocalDateTime(new LocalTime(dt));
+		}
 		return dataBatimento;
 	}
-	
-	@OneToOne(fetch=FetchType.EAGER)
+
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "REMESSA_ID")
 	public Remessa getRemessa() {
 		return remessa;
 	}
 
-	@OneToMany(mappedBy = "batimento", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+	@OneToMany(mappedBy = "batimento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	public List<BatimentoDeposito> getDepositosBatimento() {
 		return depositosBatimento;
 	}
-	
-	@Column(name = "DATA")	
+
+	@Column(name = "DATA")
 	public LocalDate getData() {
 		return data;
 	}
-	
+
 	public void setDepositosBatimento(List<BatimentoDeposito> depositosBatimento) {
 		this.depositosBatimento = depositosBatimento;
 	}
@@ -76,7 +85,7 @@ public class Batimento extends AbstractEntidade<Batimento> {
 	public void setData(LocalDate data) {
 		this.data = data;
 	}
-	
+
 	public void setDataBatimento(LocalDateTime dataBatimento) {
 		this.dataBatimento = dataBatimento;
 	}

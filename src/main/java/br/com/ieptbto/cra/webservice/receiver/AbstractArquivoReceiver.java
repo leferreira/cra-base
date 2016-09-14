@@ -1,10 +1,8 @@
 package br.com.ieptbto.cra.webservice.receiver;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.mediator.ArquivoMediator;
 import br.com.ieptbto.cra.webservice.VO.MensagemCra;
 
 /**
@@ -16,9 +14,6 @@ import br.com.ieptbto.cra.webservice.VO.MensagemCra;
 public abstract class AbstractArquivoReceiver {
 
 	protected static final Logger logger = Logger.getLogger(RemessaReceiver.class);
-
-	@Autowired
-	ArquivoMediator arquivoMediator;
 
 	public abstract MensagemCra receber(Usuario usuario, String nomeArquivo, String dados);
 }

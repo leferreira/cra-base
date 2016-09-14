@@ -82,6 +82,10 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 	private int quantidadeRegistrosTipo2 = 0;
 	private BigDecimal somatorioValor;
 
+	public List<PedidoCancelamento> buscarPedidosCancelamentoProtestoPorTitulo(TituloRemessa titulo) {
+		return cancelamentoDAO.buscarPedidosCancelamentoProtestoPorTitulo(titulo);
+	}
+
 	public List<PedidoCancelamento> buscarPedidosCancelamentoProtesto(CancelamentoProtesto cancelamentoProtesto) {
 		return cancelamentoDAO.buscarPedidosCancelamentoProtesto(cancelamentoProtesto);
 	}

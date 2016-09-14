@@ -20,6 +20,7 @@ import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoAutorizacaoCancelamento;
+import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
@@ -40,6 +41,13 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 	private TituloDAO tituloDAO;
 	@Autowired
 	private InstituicaoDAO instituicaoDAO;
+
+	@SuppressWarnings("unchecked")
+	public List<PedidoAutorizacaoCancelamento> buscarPedidosAutorizacaoCancelamentoPorTitulo(TituloRemessa titulo) {
+		Criteria criteria = getCriteria(PedidoAutorizacaoCancelamento.class);
+		criteria.add(Restrictions.eq("titulo", titulo));
+		return criteria.list();
+	}
 
 	public Arquivo salvarAutorizacao(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		Arquivo arquivoSalvo = new Arquivo();

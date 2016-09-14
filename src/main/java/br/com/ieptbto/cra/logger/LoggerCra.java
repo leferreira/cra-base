@@ -20,7 +20,7 @@ import br.com.ieptbto.cra.mediator.LoggerMediator;
 public class LoggerCra {
 
 	@Autowired
-	LoggerMediator loggerMediator;
+	private LoggerMediator loggerMediator;
 
 	public LogCra alert(Usuario user, CraAcao acao, String descricao) {
 		LogCra logCra = new LogCra();

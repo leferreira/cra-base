@@ -12,6 +12,7 @@ import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 /**
  * @author Thasso
@@ -32,6 +33,7 @@ public class EnvelopeSLIP extends AbstractEntidade<EnvelopeSLIP> {
 	private String ufAgenciaDestino; //
 	private Integer quantidadeInstrumentos;
 	private String codeBar;
+	private LocalTime horaGeracao;
 	private LocalDate dataGeracao;
 	private LocalDate dataLiberacao;
 	private boolean liberado;
@@ -78,6 +80,14 @@ public class EnvelopeSLIP extends AbstractEntidade<EnvelopeSLIP> {
 		return dataGeracao;
 	}
 
+	@Column(name = "HORA_GERACAO")
+	public LocalTime getHoraGeracao() {
+		if (horaGeracao == null) {
+			horaGeracao = new LocalTime();
+		}
+		return horaGeracao;
+	}
+
 	@Column(name = "DATA_LIBERACAO")
 	public LocalDate getDataLiberacao() {
 		return dataLiberacao;
@@ -95,6 +105,10 @@ public class EnvelopeSLIP extends AbstractEntidade<EnvelopeSLIP> {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public void setHoraGeracao(LocalTime horaGeracao) {
+		this.horaGeracao = horaGeracao;
 	}
 
 	public void setBanco(String banco) {

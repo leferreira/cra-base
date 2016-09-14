@@ -48,6 +48,13 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 	InstituicaoDAO instituicaoDAO;
 
 	@SuppressWarnings("unchecked")
+	public List<PedidoCancelamento> buscarPedidosCancelamentoProtestoPorTitulo(TituloRemessa titulo) {
+		Criteria criteria = getCriteria(PedidoCancelamento.class);
+		criteria.add(Restrictions.eq("titulo", titulo));
+		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
 	public List<PedidoCancelamento> buscarPedidosCancelamentoProtesto(CancelamentoProtesto cancelamentoProtesto) {
 		Criteria criteria = getCriteria(PedidoCancelamento.class);
 		criteria.createAlias("titulo", "titulo", JoinType.LEFT_OUTER_JOIN);

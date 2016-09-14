@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,6 +96,7 @@ public class RetornoMediator extends BaseMediator {
 		for (Remessa retorno : retornos) {
 			Batimento batimento = new Batimento();
 			batimento.setData(aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
+			batimento.setDataBatimento(new LocalDateTime());
 			batimento.setRemessa(retorno);
 			batimento.setDepositosBatimento(new ArrayList<BatimentoDeposito>());
 
@@ -188,8 +190,7 @@ public class RetornoMediator extends BaseMediator {
 	}
 
 	private String gerarNomeArquivoRetorno(Remessa retorno) {
-		return TipoArquivoEnum.RETORNO.getConstante() + retorno.getCabecalho().getNumeroCodigoPortador() + gerarDataArquivo()
-				+ NUMERO_SEQUENCIAL_RETORNO;
+		return TipoArquivoEnum.RETORNO.getConstante() + retorno.getCabecalho().getNumeroCodigoPortador() + gerarDataArquivo() + NUMERO_SEQUENCIAL_RETORNO;
 	}
 
 	private String gerarDataArquivo() {

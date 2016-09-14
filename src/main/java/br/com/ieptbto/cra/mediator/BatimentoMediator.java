@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -82,6 +83,7 @@ public class BatimentoMediator {
 							if (retorno != null) {
 								Batimento batimento = new Batimento();
 								batimento.setData(retornoMediator.aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
+								batimento.setDataBatimento(new LocalDateTime());
 								batimento.setRemessa(retorno);
 
 								BatimentoDeposito batimentoDeposito = new BatimentoDeposito();
@@ -108,8 +110,7 @@ public class BatimentoMediator {
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException(
-					"Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do depósito!");
+			throw new InfraException("Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do depósito!");
 		}
 	}
 
@@ -138,8 +139,7 @@ public class BatimentoMediator {
 	private boolean verificarLinhaTotalOuVazia(String[] dados) {
 		String campoData = dados[0];
 		if (campoData != null) {
-			if (StringUtils.isBlank(campoData.trim()) || campoData.trim().toUpperCase().contains("TOTAL")
-					|| campoData.trim().toUpperCase().contains("DATA")) {
+			if (StringUtils.isBlank(campoData.trim()) || campoData.trim().toUpperCase().contains("TOTAL") || campoData.trim().toUpperCase().contains("DATA")) {
 				return true;
 			}
 		}

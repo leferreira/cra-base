@@ -52,12 +52,10 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class ArquivoDAO extends AbstractBaseDAO {
 
 	@Autowired
-	TituloDAO tituloDAO;
-	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private TituloDAO tituloDAO;
 
 	public Arquivo salvar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
-		Arquivo arquivoSalvo = new Arquivo();
+		Arquivo arquivoProcessado = arquivo;
 		Transaction transaction = getSession().beginTransaction();
 		BigDecimal valorTotalSaldo = BigDecimal.ZERO;
 		TipoArquivoEnum tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
@@ -65,15 +63,14 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 		try {
 			arquivo.setStatusArquivo(save(arquivo.getStatusArquivo()));
-			arquivoSalvo = save(arquivo);
+			arquivo = save(arquivo);
 
-			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo) || TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)
-					|| TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
+			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo) || TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
 				for (Remessa remessa : arquivo.getRemessas()) {
-					remessa.setArquivo(arquivoSalvo);
+					remessa.setArquivo(arquivo);
 					remessa.setCabecalho(save(remessa.getCabecalho()));
 					remessa.setRodape(save(remessa.getRodape()));
-					remessa.setArquivoGeradoProBanco(arquivoSalvo);
+					remessa.setArquivoGeradoProBanco(arquivo);
 					remessa.setDataRecebimento(remessa.getCabecalho().getDataMovimento());
 					remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
 					setDevolvidoPelaCRA(remessa);
@@ -97,11 +94,13 @@ public class ArquivoDAO extends AbstractBaseDAO {
 								save(anexo);
 							}
 						}
-						valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
+						if (tituloSalvo != null) {
+							valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
+						}
 					}
 					if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-						if (retornoContemTituloPago.equals(false) || remessa.getInstituicaoDestino().getTipoBatimento()
-								.equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
+						if (retornoContemTituloPago.equals(false)
+								|| remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
 							remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
 							update(remessa);
 						}
@@ -145,8 +144,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 							descricao = descricao + "Protocolo Inválido (" + pedidoDesistencia.getNumeroProtocolo() + ").";
 							codigoMunicipio = pedidoDesistencia.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio();
 						}
-						erros.add(new DesistenciaCancelamentoException(descricao, codigoMunicipio,
-								CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
+						erros.add(new DesistenciaCancelamentoException(descricao, codigoMunicipio, CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
 						pedidosDesistenciaComErro.clear();
 					}
 				}
@@ -176,12 +174,13 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			}
 
 			if (!erros.isEmpty()) {
+				flush();
 				transaction.rollback();
-				return arquivo;
+				return arquivoProcessado;
 			}
 			transaction.commit();
-			loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, getTipoAcaoEnvio(arquivo), "Arquivo " + arquivo.getNomeArquivo()
-					+ ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso via aplicação.");
+			loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, getTipoAcaoEnvio(arquivo), "Arquivo " + arquivo.getNomeArquivo() + ", enviado por "
+					+ arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso via aplicação.");
 
 		} catch (InfraException ex) {
 			transaction.rollback();
@@ -190,7 +189,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			logger.error(ex.getMessage(), ex);
 			transaction.rollback();
 		}
-		return arquivoSalvo;
+		return arquivo;
 	}
 
 	private CraAcao getTipoAcaoEnvio(Arquivo arquivo) {
@@ -365,15 +364,15 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return arquivo;
 	}
 
-	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos,
-			Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
+	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos, Municipio municipio,
+			LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.createAlias("instituicaoEnvio", "instituicaoEnvio");
 		criteria.createAlias("tipoArquivo", "tipoArquivo");
 		criteria.createAlias("instituicaoEnvio.tipoInstituicao", "tipoInstituicao");
 		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
-		criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", usuario.getInstituicao()),
-				Restrictions.eq("instituicaoRecebe", usuario.getInstituicao())));
+		criteria.add(
+				Restrictions.or(Restrictions.eq("instituicaoEnvio", usuario.getInstituicao()), Restrictions.eq("instituicaoRecebe", usuario.getInstituicao())));
 
 		if (arquivo.getInstituicaoEnvio() != null) {
 			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", arquivo.getInstituicaoEnvio()),

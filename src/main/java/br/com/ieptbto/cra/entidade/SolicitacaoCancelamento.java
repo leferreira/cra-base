@@ -16,6 +16,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.envers.Audited;
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
 import br.com.ieptbto.cra.enumeration.StatusSolicitacaoCancelamento;
@@ -34,6 +38,7 @@ public class SolicitacaoCancelamento extends AbstractEntidade<SolicitacaoCancela
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private Date dataSolicitacao;
+	private LocalTime horaSolicitacao;
 	private StatusSolicitacaoCancelamento statusSolicitacaoCancelamento;
 	private CodigoIrregularidade codigoIrregularidadeCancelamento;
 	private Usuario usuario;
@@ -65,6 +70,16 @@ public class SolicitacaoCancelamento extends AbstractEntidade<SolicitacaoCancela
 		return dataSolicitacao;
 	}
 
+	@Column(name = "HORA_SOLICITACAO")
+	public LocalTime getHoraSolicitacao() {
+		if (horaSolicitacao == null) {
+			DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
+			DateTime dt = formatter.parseDateTime("01/01/2000 00:00:00");
+			horaSolicitacao = new LocalTime(dt);
+		}
+		return horaSolicitacao;
+	}
+
 	@OneToOne
 	@JoinColumn(name = "USUARIO_ID")
 	public Usuario getUsuario() {
@@ -87,6 +102,10 @@ public class SolicitacaoCancelamento extends AbstractEntidade<SolicitacaoCancela
 
 	public void setDataSolicitacao(Date dataSolicitacao) {
 		this.dataSolicitacao = dataSolicitacao;
+	}
+
+	public void setHoraSolicitacao(LocalTime horaSolicitacao) {
+		this.horaSolicitacao = horaSolicitacao;
 	}
 
 	public void setStatusSolicitacaoCancelamento(StatusSolicitacaoCancelamento statusSolicitacaoCancelamento) {

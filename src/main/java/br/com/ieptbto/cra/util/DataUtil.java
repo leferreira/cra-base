@@ -160,6 +160,13 @@ public class DataUtil implements Serializable {
 		return getDateTimeFormatter(PADRAO_FORMATACAO_DATAHORA).parseDateTime(dataHoraString).toDateTime();
 	}
 
+	public static DateTime stringToDateTime(String dataHoraString, String formato) {
+		if (dataHoraString == null) {
+			return null;
+		}
+		return getDateTimeFormatter(formato).parseDateTime(dataHoraString).toDateTime();
+	}
+
 	/**
 	 * Cria um {@link String} a partir de uma {@link LocalDate} no formato
 	 * {@link #PADRAO_FORMATACAO_DATA_DDMMYYYY}.

@@ -212,9 +212,11 @@ public class TituloDAO extends AbstractBaseDAO {
 				}
 			}
 
-			tituloConfirmacao.setTitulo(titulo);
-			titulo.setConfirmacao(save(tituloConfirmacao));
-			save(titulo);
+			if (titulo != null) {
+				tituloConfirmacao.setTitulo(titulo);
+				titulo.setConfirmacao(save(tituloConfirmacao));
+				save(titulo);
+			}
 
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
@@ -232,15 +234,17 @@ public class TituloDAO extends AbstractBaseDAO {
 	private TituloRemessa salvarTituloRetorno(Retorno tituloRetorno, List<Exception> erros) {
 		TituloRemessa titulo = buscaTituloRetornoSalvo(tituloRetorno, erros);
 
-		BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBanco(tituloRetorno.getCodigoPortador());
-		if (banco != null) {
-			tituloRetorno.setCodigoCartorio(banco.getCodigoCartorio());
-		}
-
 		try {
-			tituloRetorno.setTitulo(titulo);
-			titulo.setRetorno(save(tituloRetorno));
-			save(titulo);
+			BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBanco(tituloRetorno.getCodigoPortador());
+			if (banco != null) {
+				tituloRetorno.setCodigoCartorio(banco.getCodigoCartorio());
+			}
+
+			if (titulo != null) {
+				tituloRetorno.setTitulo(titulo);
+				titulo.setRetorno(save(tituloRetorno));
+				save(titulo);
+			}
 
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);

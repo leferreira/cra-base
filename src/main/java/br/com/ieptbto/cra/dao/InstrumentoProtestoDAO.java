@@ -131,7 +131,7 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 	public Long buscarSequencialDiarioEnvelopes() {
 		Criteria criteria = getCriteria(EnvelopeSLIP.class);
 		criteria.add(Restrictions.eq("dataGeracao", new LocalDate()));
-		criteria.setProjection(Projections.count("id"));
+		criteria.setProjection(Projections.count("id")); 
 		Long total = Long.class.cast(criteria.uniqueResult());
 
 		if (total == null) {

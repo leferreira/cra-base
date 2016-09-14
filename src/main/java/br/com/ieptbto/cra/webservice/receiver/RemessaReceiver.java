@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
 
@@ -42,6 +43,9 @@ import br.com.ieptbto.cra.webservice.VO.MensagemXmlSerpro;
  */
 @Service
 public class RemessaReceiver extends AbstractArquivoReceiver {
+
+	@Autowired
+	private ArquivoMediator arquivoMediator;
 
 	@Override
 	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {
@@ -113,8 +117,7 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 			mensagem.setCodigo(CodigoErro.CRA_SUCESSO.getCodigo());
 			mensagem.setMunicipio(remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE());
 			mensagem.setDescricao("Município: " + remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString() + " - "
-					+ remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - " + remessa.getCabecalho().getQtdTitulosRemessa()
-					+ " Títulos.");
+					+ remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - " + remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.");
 			mensagens.add(mensagem);
 		}
 		return mensagemXml;
