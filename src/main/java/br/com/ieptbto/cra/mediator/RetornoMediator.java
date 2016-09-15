@@ -27,6 +27,7 @@ import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -91,7 +92,7 @@ public class RetornoMediator extends BaseMediator {
 		return retornoDAO.verificarArquivoRetornoGeradoCra(getCra());
 	}
 
-	public void salvarBatimentos(List<Remessa> retornos) {
+	public List<Remessa> salvarBatimentos(List<Remessa> retornos) {
 		Boolean arquivoRetornoGeradoHoje = verificarArquivoRetornoGeradoCra();
 		for (Remessa retorno : retornos) {
 			Batimento batimento = new Batimento();
@@ -107,10 +108,17 @@ public class RetornoMediator extends BaseMediator {
 
 				batimento.getDepositosBatimento().add(depositosBatimento);
 			}
-			retornoDAO.salvarBatimento(batimento);
+			batimentoDAO.salvarBatimento(batimento);
 		}
+		return retornos;
 	}
 
+	/**
+	 * Aplicando a regra de data do batimento
+	 * 
+	 * @param arquivoRetornoGeradoHoje
+	 * @return
+	 */
 	public LocalDate aplicarRegraDataBatimento(Boolean arquivoRetornoGeradoHoje) {
 
 		if (arquivoRetornoGeradoHoje.equals(false)) {
@@ -132,26 +140,16 @@ public class RetornoMediator extends BaseMediator {
 		return null;
 	}
 
-	public void removerBatimento(Remessa retorno) {
-		Batimento batimento = batimentoDAO.buscarBatimentoDoRetorno(retorno);
-
-		for (BatimentoDeposito depositosBatimento : batimento.getDepositosBatimento()) {
-			Deposito deposito = depositosBatimento.getDeposito();
-			List<Batimento> batimentosDoDeposito = batimentoDAO.buscarBatimentosDoDeposito(deposito);
-			if (batimentosDoDeposito.size() > 1) {
-				throw new InfraException("O arquivo de retorno possui um depósito vínculado a mais de um batimento! Não é possível removê-lo...");
-			} else if (!batimentosDoDeposito.isEmpty()) {
-				deposito.setSituacaoDeposito(SituacaoDeposito.NAO_IDENTIFICADO);
-				batimentoDAO.atualizarDeposito(deposito);
-			}
-		}
-		retornoDAO.removerBatimento(retorno, batimento);
+	public List<Remessa> liberarRetornoBatimentoInstituicao(List<Remessa> retornoLiberados) {
+		return retornoDAO.liberarRetornoBatimento(retornoLiberados);
 	}
 
-	public void liberarRetornoBatimentoInstituicao(List<Remessa> retornoLiberados) {
-		retornoDAO.liberarRetornoBatimento(retornoLiberados);
-	}
-
+	/**
+	 * Método para geração de arquivos de retorno para os bancos
+	 * 
+	 * @param usuarioAcao
+	 * @param retornos
+	 */
 	public void gerarRetornos(Usuario usuarioAcao, List<Remessa> retornos) {
 		HashMap<String, Arquivo> arquivosRetorno = new HashMap<String, Arquivo>();
 		this.cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
@@ -204,5 +202,39 @@ public class RetornoMediator extends BaseMediator {
 
 	public TipoArquivo getTipoArquivo() {
 		return tipoArquivo;
+	}
+
+	/**
+	 * Método para retornar a situação do batimento arquivo de retorno
+	 * 
+	 * @param retorno
+	 * @return
+	 */
+	public Remessa retornarArquivoRetornoParaBatimento(Remessa retorno) {
+		Batimento batimento = batimentoDAO.buscarBatimentoDoRetorno(retorno);
+
+		for (BatimentoDeposito depositosBatimento : batimento.getDepositosBatimento()) {
+			Deposito deposito = depositosBatimento.getDeposito();
+			List<Batimento> batimentosDoDeposito = batimentoDAO.buscarBatimentosDoDeposito(deposito);
+			if (batimentosDoDeposito.size() > 1) {
+				throw new InfraException("O arquivo de retorno possui um depósito vínculado a mais de um batimento! Não é possível retorná-lo ao batimento...");
+			}
+
+			deposito.setSituacaoDeposito(SituacaoDeposito.NAO_IDENTIFICADO);
+			batimentoDAO.atualizarDeposito(deposito);
+		}
+		batimentoDAO.removerBatimento(batimento);
+		return batimentoDAO.retornarArquivoRetornoParaBatimento(retorno);
+	}
+
+	/**
+	 * Método para retornar a situação do batimento arquivo de retorno
+	 * 
+	 * @param retorno
+	 * @return
+	 */
+	public Remessa retornarArquivoRetornoParaAguardandoLiberacao(Remessa retorno) {
+		retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);
+		return batimentoDAO.update(retorno);
 	}
 }

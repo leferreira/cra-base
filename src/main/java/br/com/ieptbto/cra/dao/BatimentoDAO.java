@@ -10,6 +10,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Batimento;
@@ -28,6 +29,84 @@ import br.com.ieptbto.cra.exception.InfraException;
  */
 @Repository
 public class BatimentoDAO extends AbstractBaseDAO {
+
+	@Autowired
+	private RemessaDAO remessaDAO;
+
+	public Batimento salvarBatimento(Batimento batimento) {
+		Transaction transaction = getBeginTransation();
+
+		try {
+			Remessa remessa = remessaDAO.buscarPorPK(batimento.getRemessa());
+			remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);
+			if (remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)
+					|| remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
+				remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
+			}
+
+			batimento.setRemessa(update(remessa));
+			batimento = save(batimento);
+			if (batimento.getDepositosBatimento() != null) {
+				for (BatimentoDeposito batimentoDeposito : batimento.getDepositosBatimento()) {
+					Deposito deposito = batimentoDeposito.getDeposito();
+					deposito.setSituacaoDeposito(SituacaoDeposito.IDENTIFICADO);
+					update(deposito);
+
+					batimentoDeposito.setDeposito(update(deposito));
+					batimentoDeposito.setBatimento(batimento);
+					save(batimentoDeposito);
+				}
+			}
+			transaction.commit();
+		} catch (InfraException ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage());
+			throw new InfraException(ex.getMessage());
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+			transaction.rollback();
+			throw new InfraException("Não foi possível salvar o batimento dos arquivos de retorno! Favor entrar em contato com a CRA...");
+		}
+		return batimento;
+	}
+
+	public Batimento removerBatimento(Batimento batimento) {
+
+		try {
+			Query query = createSQLQuery("DELETE FROM tb_batimento_deposito WHERE batimento_id=" + batimento.getId() + ";"
+					+ "DELETE FROM audit_tb_batimento_deposito WHERE batimento_id=" + batimento.getId() + ";"
+					+ "DELETE FROM tb_batimento AS bat WHERE bat.id_batimento=" + batimento.getId() + ";"
+					+ "DELETE FROM audit_tb_batimento AS bat WHERE bat.id_batimento=" + batimento.getId() + ";");
+			query.executeUpdate();
+
+		} catch (InfraException ex) {
+			logger.error(ex.getMessage());
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível remover o batimento do arquivo de retorno! Favor entrar em contato com a CRA...");
+		}
+		return batimento;
+	}
+
+	public Remessa retornarArquivoRetornoParaBatimento(Remessa retorno) {
+		Transaction transaction = getBeginTransation();
+
+		try {
+			Remessa retornoAlterado = buscarPorPK(retorno, Remessa.class);
+			retornoAlterado.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.NAO_CONFIRMADO);
+			update(retornoAlterado);
+			transaction.commit();
+
+		} catch (InfraException ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage());
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível retornar o arquivo para o batimento! Favor entrar em contato com a CRA...");
+		}
+		return retorno;
+	}
 
 	public Deposito salvarDeposito(Deposito deposito) {
 		Transaction transaction = getBeginTransation();
@@ -63,7 +142,7 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível inserir os depósitos na base de dados.");
+			throw new InfraException("Não foi possível inserir os depósitos na base de dados! Favor entrar em contato com a CRA...");
 		}
 		return deposito;
 	}
@@ -72,7 +151,7 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		Transaction transaction = getSession().beginTransaction();
 
 		try {
-			merge(deposito);
+			update(deposito);
 			transaction.commit();
 
 		} catch (InfraException ex) {
@@ -82,7 +161,7 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
 			transaction.rollback();
-			throw new InfraException("Não foi possível atualizar os depósitos na base de dados.");
+			throw new InfraException("Não foi possível atualizar os depósitos na base de dados! Favor entrar em contato com a CRA...");
 		}
 		return deposito;
 	}
@@ -163,24 +242,6 @@ public class BatimentoDAO extends AbstractBaseDAO {
 
 		criteria.addOrder(Order.asc("data"));
 		return criteria.list();
-	}
-
-	public void atualizarInformacoesDeposito(Deposito deposito) {
-		Transaction transaction = getBeginTransation();
-
-		try {
-			update(deposito);
-			transaction.commit();
-
-		} catch (InfraException ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage());
-			throw new InfraException(ex.getMessage());
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex);
-			transaction.rollback();
-			throw new InfraException("Não foi possível atualizar os depósitos na base de dados.");
-		}
 	}
 
 	@SuppressWarnings("unchecked")

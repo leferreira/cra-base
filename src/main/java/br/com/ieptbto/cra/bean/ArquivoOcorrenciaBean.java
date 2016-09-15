@@ -8,6 +8,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
@@ -18,6 +20,7 @@ import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.InstrumentoProtesto;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.SolicitacaoCancelamento;
+import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -42,6 +45,7 @@ public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOc
 	private Batimento batimento;
 	private InstrumentoProtesto instrumentoProtesto;
 	private List<Deposito> depositos;
+	private TituloFiliado tituloFiliado;
 
 	public void parseToRemessa(Remessa remessa) {
 		this.arquivo = remessa.getArquivo();
@@ -126,6 +130,15 @@ public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOc
 		this.hora = solicitacaoCancelamento.getHoraSolicitacao();
 		this.nomeUsuario = solicitacaoCancelamento.getUsuario().getNome();
 		this.mensagem = "Cancelamento solicitado.";
+	}
+
+	public void parseToTituloFiliado(TituloFiliado tituloFiliado) {
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
+		this.tituloFiliado = tituloFiliado;
+		this.data = new LocalDate(tituloFiliado.getDataEntrada());
+		this.hora = new LocalTime(formatter.parseDateTime("01/01/2000 00:00:00"));
+		this.nomeUsuario = tituloFiliado.getUsuarioEntradaManual().getNome();
+		this.mensagem = "Título cadastrado no IEPTB-Convênios.";
 	}
 
 	public Arquivo getArquivo() {
@@ -238,6 +251,14 @@ public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOc
 
 	public void setMensagem(String mensagem) {
 		this.mensagem = mensagem;
+	}
+
+	public TituloFiliado getTituloFiliado() {
+		return tituloFiliado;
+	}
+
+	public void setTituloFiliado(TituloFiliado tituloFiliado) {
+		this.tituloFiliado = tituloFiliado;
 	}
 
 	@Override

@@ -5,20 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Batimento;
 import br.com.ieptbto.cra.entidade.BatimentoDeposito;
-import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
@@ -26,7 +22,6 @@ import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
-import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoBatimento;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
@@ -40,9 +35,6 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class RetornoDAO extends AbstractBaseDAO {
 
 	public static final String CONSTANTE_TIPO_DEPOSITO_CARTORIO = "CARTORIO";
-
-	@Autowired
-	RemessaDAO remessaDAO;
 
 	public Retorno carregarTituloRetornoPorId(Retorno retorno) {
 		Criteria criteria = getCriteria(Retorno.class);
@@ -196,88 +188,6 @@ public class RetornoDAO extends AbstractBaseDAO {
 		return BigDecimal.class.cast(criteria.uniqueResult());
 	}
 
-	public Batimento salvarBatimento(Batimento batimento) {
-		Transaction transaction = getBeginTransation();
-
-		try {
-			Remessa remessa = remessaDAO.buscarPorPK(batimento.getRemessa());
-			remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);
-			if (remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)
-					|| remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
-				remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
-			}
-
-			batimento.setRemessa(update(remessa));
-			batimento = save(batimento);
-			if (batimento.getDepositosBatimento() != null) {
-				for (BatimentoDeposito batimentoDeposito : batimento.getDepositosBatimento()) {
-					Deposito deposito = batimentoDeposito.getDeposito();
-					deposito.setSituacaoDeposito(SituacaoDeposito.IDENTIFICADO);
-					update(deposito);
-
-					batimentoDeposito.setDeposito(update(deposito));
-					batimentoDeposito.setBatimento(batimento);
-					save(batimentoDeposito);
-				}
-			}
-			transaction.commit();
-		} catch (InfraException ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage());
-			throw new InfraException(ex.getMessage());
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex);
-			transaction.rollback();
-			throw new InfraException("Não foi possível inserir os depósitos na base de dados.");
-		}
-		return batimento;
-	}
-
-	public void removerBatimento(Remessa retorno, Batimento batimento) {
-
-		try {
-			StringBuffer sql = new StringBuffer();
-			sql.append("UPDATE tb_remessa ");
-			if (retorno.getSituacaoBatimentoRetorno().equals(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO)) {
-				sql.append("SET situacao_batimento_retorno='" + SituacaoBatimentoRetorno.NAO_CONFIRMADO.toString() + "' ");
-
-			} else if (retorno.getInstituicaoOrigem().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)
-					&& retorno.getSituacaoBatimentoRetorno().equals(SituacaoBatimentoRetorno.CONFIRMADO)) {
-				sql.append("SET situacao_batimento_retorno='" + SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO.toString() + "' ");
-
-			} else if (retorno.getInstituicaoOrigem().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_INSTITUICAO)
-					&& retorno.getSituacaoBatimentoRetorno().equals(SituacaoBatimentoRetorno.CONFIRMADO)) {
-				sql.append("SET situacao_batimento_retorno='" + SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO.toString() + "' ");
-
-			} else if ((retorno.getInstituicaoOrigem().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)
-					&& retorno.getSituacaoBatimentoRetorno().equals(SituacaoBatimentoRetorno.CONFIRMADO))) {
-				sql.append("SET situacao_batimento_retorno='" + SituacaoBatimentoRetorno.NAO_CONFIRMADO.toString() + "' ");
-			}
-			sql.append("WHERE id_remessa=" + retorno.getId() + ";");
-			Query query = createSQLQuery(sql.toString());
-			query.executeUpdate();
-
-			sql = new StringBuffer();
-			sql.append("DELETE FROM tb_batimento_deposito ");
-			sql.append("WHERE batimento_id=" + batimento.getId() + "; ");
-			query = createSQLQuery(sql.toString());
-			query.executeUpdate();
-
-			sql = new StringBuffer();
-			sql.append("DELETE FROM tb_batimento ");
-			sql.append("WHERE id_batimento=" + batimento.getId() + "; ");
-			query = createSQLQuery(sql.toString());
-			query.executeUpdate();
-
-		} catch (InfraException ex) {
-			logger.error(ex.getMessage());
-			throw new InfraException(ex.getMessage());
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível inserir os depósitos na base de dados.");
-		}
-	}
-
 	public void gerarRetornos(Usuario usuarioAcao, List<Arquivo> arquivosDeRetorno) {
 		Transaction transaction = getBeginTransation();
 
@@ -316,7 +226,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public void liberarRetornoBatimento(List<Remessa> arquivosLIberados) {
+	public List<Remessa> liberarRetornoBatimento(List<Remessa> arquivosLIberados) {
 		Transaction transaction = getBeginTransation();
 
 		try {
@@ -334,6 +244,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 			logger.error(ex.getMessage(), ex);
 			throw new InfraException("Não foi possível inserir os depósitos na base de dados.");
 		}
+		return arquivosLIberados;
 	}
 
 	@SuppressWarnings("unchecked")

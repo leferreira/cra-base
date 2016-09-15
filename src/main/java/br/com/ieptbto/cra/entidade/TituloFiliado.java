@@ -144,7 +144,7 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "GRUPO_USUARIO_ID")
+	@JoinColumn(name = "USUARIO_ID")
 	public Usuario getUsuarioEntradaManual() {
 		return usuarioEntradaManual;
 	}

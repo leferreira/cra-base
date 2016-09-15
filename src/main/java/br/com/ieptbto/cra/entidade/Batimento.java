@@ -64,7 +64,7 @@ public class Batimento extends AbstractEntidade<Batimento> {
 		return remessa;
 	}
 
-	@OneToMany(mappedBy = "batimento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "batimento", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	public List<BatimentoDeposito> getDepositosBatimento() {
 		return depositosBatimento;
 	}

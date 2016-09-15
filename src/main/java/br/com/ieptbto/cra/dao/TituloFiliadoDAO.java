@@ -1,9 +1,11 @@
 package br.com.ieptbto.cra.dao;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -318,5 +320,29 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		}
 		criteria.addOrder(Order.asc("nomeDevedor"));
 		return criteria.list();
+	}
+
+	@SuppressWarnings("rawtypes")
+	public TituloFiliado buscarTituloFiliadoProcessadoNaCra(String nossoNumero, String numeroDoTitulo) {
+		Query query = getSession()
+				.createSQLQuery("SELECT tit.id_titulo_filiado FROM tb_titulo_filiado AS tit " + "INNER JOIN tb_filiado AS fil ON tit.filiado_id=fil.id_filiado "
+						+ "INNER JOIN tb_instituicao AS ins ON fil.instituicao_id=ins.id_instituicao "
+						+ "WHERE rpad(concat(ins.codigo_compensacao,tit.id_titulo_filiado,null, null),15,'0' )='" + nossoNumero + "' "
+						+ "AND tit.numero_titulo='" + numeroDoTitulo.trim() + "';");
+
+		List resultQuery = query.list();
+		if (resultQuery.size() > 1) {
+			return null;
+		}
+		int id = 0;
+		Iterator iterator = resultQuery.iterator();
+		while (iterator.hasNext()) {
+			id = (Integer) iterator.next();
+		}
+
+		Criteria criteria = getCriteria(TituloFiliado.class);
+		criteria.createAlias("usuarioEntradaManual", "usuarioEntradaManual");
+		criteria.add(Restrictions.eq("id", id));
+		return TituloFiliado.class.cast(criteria.uniqueResult());
 	}
 }

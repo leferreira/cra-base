@@ -37,6 +37,14 @@ public class TituloFiliadoMediator extends BaseMediator {
 	private String pathInstituicaoTemp;
 	private String pathUsuarioTemp;
 
+	/**
+	 * Salvar título convenio
+	 * 
+	 * @param usuario
+	 * @param titulo
+	 * @param uploadedFile
+	 * @return
+	 */
 	public TituloFiliado salvarTituloConvenio(Usuario usuario, TituloFiliado titulo, FileUpload uploadedFile) {
 		this.fileUpload = uploadedFile;
 		this.pathInstituicaoTemp = null;
@@ -79,6 +87,10 @@ public class TituloFiliadoMediator extends BaseMediator {
 			throw new InfraException("Não foi possível criar arquivo temporário do anexo! Por favor entre em contato com o IEPTB-TO.");
 		}
 		return fileTmp;
+	}
+
+	public TituloFiliado buscarTituloFiliadoProcessadoNaCra(String nossoNumero, String numeroTitulo) {
+		return tituloFiliadoDAO.buscarTituloFiliadoProcessadoNaCra(nossoNumero, numeroTitulo);
 	}
 
 	public TituloRemessa buscarTituloDoConvenioNaCra(TituloFiliado tituloFiliado) {

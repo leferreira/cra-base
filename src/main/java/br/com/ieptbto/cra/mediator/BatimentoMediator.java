@@ -50,7 +50,6 @@ public class BatimentoMediator {
 		this.usuario = user;
 		this.fileUpload = fileUpload;
 
-		logger.info("Iniciando processamento de arquivo de extrato!");
 		converterDepositosExtrato();
 	}
 
@@ -182,15 +181,21 @@ public class BatimentoMediator {
 		return batimentoDAO.consultarDepositos(deposito, dataInicio, dataFim);
 	}
 
-	public void atualizarInformacoesDeposito(Deposito deposito) {
-		batimentoDAO.atualizarInformacoesDeposito(deposito);
-	}
-
 	public List<Deposito> buscarDepositosArquivoRetorno(Batimento batimento) {
 		return batimentoDAO.buscarDepositosArquivoRetorno(batimento);
 	}
 
 	public List<Remessa> carregarRetornosVinculados(Deposito deposito) {
 		return batimentoDAO.carregarRetornosVinculados(deposito);
+	}
+
+	/**
+	 * Método para atualização de Depósitos
+	 * 
+	 * @param deposito
+	 * @return
+	 */
+	public Deposito atualizarDeposito(Deposito deposito) {
+		return batimentoDAO.atualizarDeposito(deposito);
 	}
 }
