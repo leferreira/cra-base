@@ -86,9 +86,9 @@ public class ArquivoMediator extends BaseMediator {
 		return arquivoDAO.buscarPorPK(arquivo, Arquivo.class);
 	}
 
-	public List<Arquivo> buscarArquivosAvancado(Arquivo arquivo, Usuario usuario, ArrayList<TipoArquivoEnum> tipoArquivos, Municipio pracaProtesto,
-			LocalDate dataInicio, LocalDate dataFim, ArrayList<SituacaoArquivo> situacoes) {
-		return arquivoDAO.buscarArquivosAvancado(arquivo, usuario, tipoArquivos, pracaProtesto, dataInicio, dataFim, situacoes);
+	public List<Arquivo> buscarArquivos(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
+			Instituicao bancoConvenio, List<TipoArquivoEnum> tiposArquivo, List<SituacaoArquivo> situacoesArquivos) {
+		return arquivoDAO.buscarArquivos(usuario, nomeArquivo, dataInicio, dataFim, tipoInstituicao, bancoConvenio, tiposArquivo, situacoesArquivos);
 	}
 
 	public Arquivo buscarArquivoEnviado(Usuario usuario, String nomeArquivo) {
@@ -269,7 +269,7 @@ public class ArquivoMediator extends BaseMediator {
 	 * @param nomeArquivo
 	 * @return
 	 */
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public RemessaVO buscarRemessaParaCartorio(Usuario usuario, String nomeArquivo) {
 		Remessa remessa = null;
 		logger.info("Usuario " + usuario.getLogin() + " está buscando a remessa " + nomeArquivo + " na CRA.");

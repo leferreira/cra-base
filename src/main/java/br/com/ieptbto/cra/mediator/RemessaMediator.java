@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -23,13 +22,14 @@ import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Rodape;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DecoderString;
 
@@ -62,9 +62,10 @@ public class RemessaMediator extends BaseMediator {
 		return remessaDAO.buscarPorPK(rodape, Rodape.class);
 	}
 
-	public List<Remessa> buscarRemessas(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
-			ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario, ArrayList<StatusRemessa> situacoes) {
-		return remessaDAO.buscarRemessaAvancado(arquivo, municipio, dataInicio, dataFim, usuario, tiposArquivo, situacoes);
+	public List<Remessa> buscarRemessas(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
+			Instituicao bancoConvenio, Instituicao cartorio, List<TipoArquivoEnum> tiposArquivo, List<SituacaoArquivo> situacoesArquivos) {
+		return remessaDAO.buscarRemessaAvancado(usuario, nomeArquivo, dataInicio, dataFim, tipoInstituicao, bancoConvenio, cartorio, tiposArquivo,
+				situacoesArquivos);
 	}
 
 	public int getNumeroSequencialConvenio(Instituicao convenio, Instituicao instituicaoDestino) {
@@ -112,10 +113,9 @@ public class RemessaMediator extends BaseMediator {
 			if (diretorioRemessa.exists()) {
 				if (!Arrays.asList(diretorioRemessa.listFiles()).isEmpty()) {
 
-					String nomeArquivoZip =
-							remessa.getArquivo().getNomeArquivo().replace(".", "_") + "_" + remessa.getCabecalho().getCodigoMunicipio();
-					FileOutputStream fileOutputStream = new FileOutputStream(
-							pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+					String nomeArquivoZip = remessa.getArquivo().getNomeArquivo().replace(".", "_") + "_" + remessa.getCabecalho().getCodigoMunicipio();
+					FileOutputStream fileOutputStream =
+							new FileOutputStream(pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 					ZipOutputStream zipOut = new ZipOutputStream(fileOutputStream);
 
 					for (File arq : diretorioRemessa.listFiles()) {
