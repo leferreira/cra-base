@@ -38,6 +38,10 @@ public class ValidarTituloConfirmacao extends RegraTitulo {
 
 	@Override
 	protected void executar() {
+		if (arquivo.getRemessas() == null || arquivo.getRemessas().isEmpty()) {
+			erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_ARQUIVO_VAZIO_OU_FORA_DO_LAYOUT_DE_TRANSMISSAO));
+		}
+
 		for (Remessa remessa : arquivo.getRemessas()) {
 
 			if (remessa.getTitulos().isEmpty()) {

@@ -23,6 +23,7 @@ import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RetornoVO;
 import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.error.CodigoErro;
+import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.exception.TituloException;
 import br.com.ieptbto.cra.mediator.ArquivoMediator;
@@ -132,13 +133,22 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 		descricao.setUsuario(usuario.getNome());
 
 		for (Exception ex : erros) {
-			TituloException exception = TituloException.class.cast(ex);
-			Mensagem mensagem = new Mensagem();
-			mensagem.setCodigo(exception.getCodigoErro().getCodigo());
-			mensagem.setDescricao(exception.getDescricao());
-			mensagem.setNossoNumero(exception.getNossoNumero());
-			mensagem.setNumeroSequencialRegistro(Integer.valueOf(exception.getNumeroSequencialRegistro()));
-			mensagens.add(mensagem);
+			if (TituloException.class.isInstance(ex)) {
+				TituloException exception = TituloException.class.cast(ex);
+				Mensagem mensagem = new Mensagem();
+				mensagem.setCodigo(exception.getCodigoErro().getCodigo());
+				mensagem.setDescricao(exception.getDescricao());
+				mensagem.setNossoNumero(exception.getNossoNumero());
+				mensagem.setNumeroSequencialRegistro(Integer.valueOf(exception.getNumeroSequencialRegistro()));
+				mensagens.add(mensagem);
+			}
+			if (CabecalhoRodapeException.class.isInstance(ex)) {
+				CabecalhoRodapeException exception = CabecalhoRodapeException.class.cast(ex);
+				Mensagem mensagem = new Mensagem();
+				mensagem.setCodigo(exception.getCodigoErro().getCodigo());
+				mensagem.setDescricao(exception.getDescricao());
+				mensagens.add(mensagem);
+			}
 		}
 		return mensagemXml;
 	}

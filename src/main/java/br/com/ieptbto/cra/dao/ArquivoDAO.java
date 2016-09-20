@@ -61,7 +61,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		Boolean retornoContemTituloPago = false;
 
 		try {
-			arquivo.setStatusArquivo(save(arquivo.getStatusArquivo()));
+			StatusArquivo statusArquivo = save(arquivo.getStatusArquivo());
+			arquivo.setStatusArquivo(statusArquivo);
 			arquivo = save(arquivo);
 
 			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo) || TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
@@ -173,7 +174,9 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			}
 
 			if (!erros.isEmpty()) {
-				flush();
+				if (arquivo.getId() != 0) {
+					flush();
+				}
 				transaction.rollback();
 				return arquivoProcessado;
 			}

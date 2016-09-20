@@ -126,6 +126,7 @@ public enum CodigoErro {
 	CARTORIO_QUANTIDADE_REGISTROS_INVALIDO("005", "Quantidade de Registros inválido"),
 	CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO("006", "Código do Município inválido ou difere da instituição do usuário"),
 	CARTORIO_AGÊNCIA_CENTRALIZADORA_INVALIDA("007", "Agência Centralizadora ou é inválida para este apresentante"),
+	CARTORIO_ARQUIVO_VAZIO_OU_FORA_DO_LAYOUT_DE_TRANSMISSAO("010", "Arquivo vazio ou fora do layout de transmissão"),
 	CARTORIO_ARQUIVO_ENVIADO_SEM_TITULOS("100", "Arquivo enviado vazio ou não contém títulos"),
 	CARTORIO_TITULO_NAO_ENCONTRADO("101", "Título não encontrado ou informações inválidas"),
 	CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE("102", "Título devolvido sem Código Irregularidade"),

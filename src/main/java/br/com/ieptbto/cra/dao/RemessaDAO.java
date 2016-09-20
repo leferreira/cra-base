@@ -51,10 +51,10 @@ public class RemessaDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.ilike("a.nomeArquivo", nomeArquivo, MatchMode.ANYWHERE));
 		}
 		if (!tiposArquivo.isEmpty()) {
-			criteria.createAlias("a.tipoArquivo", "tipoArquivo");
+			criteria.createAlias("a.tipoArquivo", "tipo");
 			Disjunction disjunction = Restrictions.disjunction();
 			for (TipoArquivoEnum tipo : tiposArquivo) {
-				disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipo));
+				disjunction.add(Restrictions.eq("tipo.tipoArquivo", tipo));
 			}
 			criteria.add(disjunction);
 		}
@@ -71,10 +71,10 @@ public class RemessaDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
 		}
 		if (bancoConvenio != null) {
-			criteria.add(Restrictions.eq("instituicaoOrigem", bancoConvenio));
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", bancoConvenio), Restrictions.eq("instituicaoOrigem", bancoConvenio)));
 		}
 		if (cartorio != null) {
-			criteria.add(Restrictions.eq("instituicaoDestino", cartorio));
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", cartorio), Restrictions.eq("instituicaoOrigem", cartorio)));
 		}
 		if (dataInicio != null) {
 			criteria.add(Restrictions.between("a.dataEnvio", dataInicio, dataFim));

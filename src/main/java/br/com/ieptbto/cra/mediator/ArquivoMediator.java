@@ -161,7 +161,7 @@ public class ArquivoMediator extends BaseMediator {
 	 * @param nomeArquivo
 	 * @return MensagemCra
 	 */
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public ArquivoMediator salvarWS(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
 		this.erros = null;
 		this.erros = new ArrayList<Exception>();
