@@ -11,6 +11,7 @@ import br.com.ieptbto.cra.dao.UsuarioDAO;
 import br.com.ieptbto.cra.dao.UsuarioFiliadoDAO;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.UsuarioFiliado;
+import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -55,7 +56,9 @@ public class UsuarioMediator extends BaseMediator {
 			if (instituicaoDao.isInstituicaoAtiva(usuario.getInstituicao())) {
 				if (usuario.isStatus() == true) {
 					if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
-						new InfraException(Erro.USUARIO_CONVENIO.getMensagemErro());
+						if (!usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.LAYOUT_PERSONALIZADO_CONVENIOS)) {
+							new InfraException(Erro.USUARIO_CONVENIO.getMensagemErro());
+						}
 					}
 					logger.info("O usuário <<" + usuario.getLogin() + ">> entrou na CRA.");
 					return usuario;
@@ -75,7 +78,9 @@ public class UsuarioMediator extends BaseMediator {
 		Usuario usuario = usuarioDao.buscarUsuarioPorLogin(login);
 		if (usuario != null && usuario.isSenha(senha)) {
 			if (!TipoInstituicaoCRA.CONVENIO.equals(usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao())) {
-				throw new InfraException("Este usuário não é de um convênio!");
+				if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.LAYOUT_PERSONALIZADO_CONVENIOS)) {
+					throw new InfraException("Este usuário não é de um convênio!");
+				}
 			}
 			if (instituicaoDao.isInstituicaoAtiva(usuario.getInstituicao())) {
 				if (usuario.isStatus() == true) {

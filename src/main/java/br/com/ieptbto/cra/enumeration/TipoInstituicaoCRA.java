@@ -4,9 +4,9 @@ import br.com.ieptbto.cra.exception.InfraException;
 
 public enum TipoInstituicaoCRA implements AbstractCraEnum {
 
-	CRA("1", "Central de Remessa de Arquivos"), 
-	CARTORIO("2", "Cartório de Protesto"), 
-	INSTITUICAO_FINANCEIRA("3", "Instituicão Financeira"), 
+	CRA("1", "Central de Remessa de Arquivos"),
+	CARTORIO("2", "Cartório de Protesto"),
+	INSTITUICAO_FINANCEIRA("3", "Instituicão Financeira"),
 	CONVENIO("4", "Convênio");
 
 	private String constante;

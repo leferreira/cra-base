@@ -29,7 +29,7 @@ import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
 import br.com.ieptbto.cra.enumeration.TipoAlineaCheque;
-import br.com.ieptbto.cra.enumeration.TipoEspecieTitulo;
+import br.com.ieptbto.cra.enumeration.EspecieTituloEntradaManual;
 
 /**
  * @author Thasso Araújo
@@ -69,7 +69,7 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 	private SituacaoTituloConvenio situacaoTituloConvenio;
 	private Date dataEnvioCRA;
 	private Date dataEntrada;
-	private TipoEspecieTitulo especieTitulo;
+	private EspecieTituloEntradaManual especieTitulo;
 	private String CpfCnpj;
 
 	@Override
@@ -180,7 +180,7 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 
 	@Column(name = "ESPECIE_TITULO")
 	@Enumerated(EnumType.STRING)
-	public TipoEspecieTitulo getEspecieTitulo() {
+	public EspecieTituloEntradaManual getEspecieTitulo() {
 		return especieTitulo;
 	}
 
@@ -281,7 +281,7 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 		this.cidadeDevedor = cidadeDevedor;
 	}
 
-	public void setEspecieTitulo(TipoEspecieTitulo especieTitulo) {
+	public void setEspecieTitulo(EspecieTituloEntradaManual especieTitulo) {
 		this.especieTitulo = especieTitulo;
 	}
 

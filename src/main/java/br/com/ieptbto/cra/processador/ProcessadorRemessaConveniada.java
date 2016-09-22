@@ -29,7 +29,7 @@ import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.enumeration.TipoEspecieTitulo;
+import br.com.ieptbto.cra.enumeration.EspecieTituloEntradaManual;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.mediator.RemessaMediator;
@@ -182,7 +182,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		titulo.setNumeroSequencialArquivo(Integer.toString(remessa.getTitulos().size() + 2));
 		remessa.getTitulos().add(titulo);
 
-		if (tituloFiliado.getEspecieTitulo().equals(TipoEspecieTitulo.DMI)) {
+		if (tituloFiliado.getEspecieTitulo().equals(EspecieTituloEntradaManual.DMI)) {
 			quantidadeIndicacoes = quantidadeIndicacoes + 1;
 		} else {
 			quantidadeOriginais = quantidadeOriginais + 1;
@@ -230,7 +230,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		cabecalho.setVersaoLayout("043");
 		cabecalho.setQtdTitulosRemessa(1);
 		cabecalho.setQtdRegistrosRemessa(1);
-		if (tituloFiliado.getEspecieTitulo().equals(TipoEspecieTitulo.DMI)) {
+		if (tituloFiliado.getEspecieTitulo().equals(EspecieTituloEntradaManual.DMI)) {
 			cabecalho.setQtdIndicacoesRemessa(1);
 			cabecalho.setQtdOriginaisRemessa(0);
 		} else {

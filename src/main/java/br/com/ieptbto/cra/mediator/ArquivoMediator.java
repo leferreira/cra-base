@@ -101,7 +101,7 @@ public class ArquivoMediator extends BaseMediator {
 	 * @param instituicao
 	 * @return
 	 */
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public Arquivo arquivosPendentes(Instituicao instituicao) {
 		instituicao.setMunicipio(municipioDAO.buscarPorPK(instituicao.getMunicipio(), Municipio.class));
 
@@ -131,6 +131,7 @@ public class ArquivoMediator extends BaseMediator {
 	 * @param usuario
 	 * @return
 	 */
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public ArquivoMediator salvar(Arquivo arquivo, FileUpload uploadedFile, Usuario usuario) {
 		this.erros = null;
 		this.erros = new ArrayList<Exception>();

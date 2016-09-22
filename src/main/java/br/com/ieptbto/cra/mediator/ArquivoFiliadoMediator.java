@@ -14,9 +14,11 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.conversor.convenio.ConversorArquivoFiliado;
 import br.com.ieptbto.cra.dao.ArquivoDAO;
+import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.dao.LayoutFiliadoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
@@ -39,6 +41,8 @@ public class ArquivoFiliadoMediator {
 	private ConversorArquivoFiliado conversorArquivoFiliado;
 	@Autowired
 	private ArquivoDAO arquivoDAO;
+	@Autowired
+	private InstituicaoDAO instituicaoDAO;
 	@Autowired
 	private LayoutFiliadoDAO layoutFiliadoDao;
 
@@ -64,11 +68,13 @@ public class ArquivoFiliadoMediator {
 		setArquivo(new Arquivo());
 		getArquivo().setNomeArquivo(getNomeArquivo());
 		getArquivo().setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.REMESSA));
-		getArquivo().setInstituicaoEnvio(getUsuario().getInstituicao());
-		getArquivo().setUsuarioEnvio(getUsuario());
-		getArquivo().setDataEnvio(new LocalDate());
-		getArquivo().setDataRecebimento(new LocalDate().toDate());
-		getArquivo().setHoraEnvio(new LocalTime());
+		this.arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
+		this.arquivo.setUsuarioEnvio(usuario);
+		this.arquivo.setRemessas(new ArrayList<Remessa>());
+		this.arquivo.setHoraEnvio(new LocalTime());
+		this.arquivo.setDataEnvio(new LocalDate());
+		this.arquivo.setDataRecebimento(new LocalDate().toDate());
+		this.arquivo.setInstituicaoEnvio(usuario.getInstituicao());
 		getArquivo().setStatusArquivo(getStatusArquivoEnviado());
 
 		if (verificarSeArquivoJaEnviado(getArquivo())) {

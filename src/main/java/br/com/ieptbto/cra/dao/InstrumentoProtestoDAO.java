@@ -82,6 +82,7 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(InstrumentoProtesto.class);
 		criteria.createAlias("tituloRetorno", "tituloRetorno");
 		criteria.createAlias("tituloRetorno.titulo", "titulo");
+		criteria.add(Restrictions.isNull("etiquetaSlip"));
 		criteria.add(Restrictions.eq("gerado", false));
 		criteria.addOrder(Order.asc("titulo.codigoPortador")).addOrder(Order.asc("titulo.pracaProtesto"))
 				.addOrder(Order.asc("tituloRetorno.numeroProtocoloCartorio"));
@@ -131,7 +132,7 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 	public Long buscarSequencialDiarioEnvelopes() {
 		Criteria criteria = getCriteria(EnvelopeSLIP.class);
 		criteria.add(Restrictions.eq("dataGeracao", new LocalDate()));
-		criteria.setProjection(Projections.count("id")); 
+		criteria.setProjection(Projections.count("id"));
 		Long total = Long.class.cast(criteria.uniqueResult());
 
 		if (total == null) {

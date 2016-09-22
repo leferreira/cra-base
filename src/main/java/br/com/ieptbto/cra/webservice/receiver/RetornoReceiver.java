@@ -132,6 +132,8 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 		descricao.setPortador(arquivo.getInstituicaoEnvio().getCodigoCompensacao());
 		descricao.setUsuario(usuario.getNome());
 
+		String descricaoLog = "Ocorrência(s) e(ou) erros encontrado(s) no arquivo " + arquivo.getNomeArquivo() + " enviado:</span>";
+		descricaoLog = descricaoLog + "<ul>";
 		for (Exception ex : erros) {
 			if (TituloException.class.isInstance(ex)) {
 				TituloException exception = TituloException.class.cast(ex);
@@ -141,6 +143,9 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 				mensagem.setNossoNumero(exception.getNossoNumero());
 				mensagem.setNumeroSequencialRegistro(Integer.valueOf(exception.getNumeroSequencialRegistro()));
 				mensagens.add(mensagem);
+
+				descricaoLog = descricaoLog + "<li><span class=\"alert-link\">Linha " + exception.getNumeroSequencialRegistro() + ": </span> [ Nosso Número = "
+						+ exception.getNossoNumero() + " ] " + exception.getDescricao() + ";</li>";
 			}
 			if (CabecalhoRodapeException.class.isInstance(ex)) {
 				CabecalhoRodapeException exception = CabecalhoRodapeException.class.cast(ex);
@@ -148,7 +153,13 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 				mensagem.setCodigo(exception.getCodigoErro().getCodigo());
 				mensagem.setDescricao(exception.getDescricao());
 				mensagens.add(mensagem);
+
+				descricaoLog = descricaoLog + "<li>" + exception.getDescricao() + ";</li>";
 			}
+			descricaoLog = descricaoLog + "</ul>";
+		}
+		if (!erros.isEmpty()) {
+			loggerCra.error(usuario, CraAcao.ENVIO_ARQUIVO_RETORNO, descricaoLog);
 		}
 		return mensagemXml;
 	}

@@ -59,6 +59,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 	InstituicaoMediator instituicaoMediator;
 	@Autowired
 	MunicipioMediator municipioMediator;
+
 	private Instituicao instituicao;
 	private List<LayoutFiliado> layoutfiliado;
 	private FileUploadField file;
@@ -147,9 +148,8 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 			reader.close();
 
 		} catch (IOException e) {
-			logger.error(e.getMessage());
+			logger.info(e.getMessage(), e);
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
-
 		}
 
 		converterTemplate(listaCampos, arquivo);
@@ -181,8 +181,8 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 						for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
 							String propertyName = propertyDescriptor.getName();
 							if (propertyName.equals(templateLayoutEmpresa.getCampo().getLabel())) {
-								propertyAccessTitulo.setPropertyValue(propertyName, getValorConvertido(templateLayoutEmpresa.getValor(),
-								        propertyAccessTitulo.getPropertyType(propertyName), propertyName));
+								propertyAccessTitulo.setPropertyValue(propertyName,
+										getValorConvertido(templateLayoutEmpresa.getValor(), propertyAccessTitulo.getPropertyType(propertyName), propertyName));
 								break;
 							}
 
@@ -242,18 +242,24 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 	}
 
 	private TituloRemessa preencherTitulo(TituloRemessa titulo, Remessa remessa) {
+		Municipio municipioInstituicao = municipioMediator.carregarMunicipio(remessa.getInstituicaoOrigem().getMunicipio());
+		remessa.getInstituicaoOrigem().setMunicipio(municipioInstituicao);
+
 		titulo.setIdentificacaoRegistro(TipoRegistro.TITULO);
 		titulo.setCodigoPortador(getInstituicao().getCodigoCompensacao());
-		titulo.setAgenciaCodigoCedente(StringUtils
-		        .leftPad(getInstituicao().getCodigoCompensacao() + DataUtil.getDataAtual(new SimpleDateFormat("MMyyyy")), 15, "0"));
+		titulo.setAgenciaCodigoCedente(
+				StringUtils.leftPad(getInstituicao().getCodigoCompensacao() + DataUtil.getDataAtual(new SimpleDateFormat("MMyyyy")), 15, "0"));
 		titulo.setNomeCedenteFavorecido(RemoverAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getRazaoSocial()).toUpperCase());
 		titulo.setNomeSacadorVendedor(RemoverAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getRazaoSocial()).toUpperCase());
 		titulo.setDocumentoSacador(remessa.getInstituicaoOrigem().getCnpj());
 		titulo.setEnderecoSacadorVendedor(RemoverAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getEndereco()).toUpperCase());
-		titulo.setCidadeSacadorVendedor(
-		        RemoverAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getMunicipio().getNomeMunicipio().toUpperCase()));
+		titulo.setCidadeSacadorVendedor(RemoverAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getMunicipio().getNomeMunicipio().toUpperCase()));
 		titulo.setUfSacadorVendedor(remessa.getInstituicaoOrigem().getMunicipio().getUf());
+		titulo.setEnderecoSacadorVendedor(remessa.getInstituicaoOrigem().getEndereco());
+		titulo.setCepSacadorVendedor("77000000");
+
 		titulo.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(titulo.getEnderecoDevedor()));
+		titulo.setUfDevedor("TO");
 
 		titulo.setDataCadastro(new Date());
 		titulo.setEspecieTitulo("CDA");
