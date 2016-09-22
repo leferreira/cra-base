@@ -47,7 +47,7 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 	@Override
 	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {
 		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
-		ConfirmacaoVO confirmacaoVO = converterStringArquivoVO(dados);
+		ConfirmacaoVO confirmacaoVO = converterStringArquivoVO(dados, nomeArquivo);
 		remessasVO.add(ConversorArquivoVO.converterConfirmacaoParaRemessaVO(confirmacaoVO));
 
 		ArquivoMediator arquivoRetorno = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo);
@@ -57,7 +57,7 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 		return gerarRespostaSucesso(arquivoRetorno.getArquivo(), usuario);
 	}
 
-	private ConfirmacaoVO converterStringArquivoVO(String dados) {
+	private ConfirmacaoVO converterStringArquivoVO(String dados, String nomeArquivo) {
 		JAXBContext context;
 		ConfirmacaoVO arquivo = null;
 
@@ -79,7 +79,7 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 			arquivo = (ConfirmacaoVO) unmarshaller.unmarshal(new InputSource(xml));
 		} catch (JAXBException e) {
 			logger.error(e.getMessage(), e);
-			throw new InfraException("Erro ao ler o arquivo recebido. " + e.getMessage());
+			throw new InfraException("Erro ao converter o contéudo xml do arquivo " + nomeArquivo + ".");
 		}
 		return arquivo;
 	}
@@ -155,8 +155,8 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 
 				descricaoLog = descricaoLog + "<li>" + exception.getDescricao() + ";</li>";
 			}
-			descricaoLog = descricaoLog + "</ul>";
 		}
+		descricaoLog = descricaoLog + "</ul>";
 		if (!erros.isEmpty()) {
 			loggerCra.error(usuario, CraAcao.ENVIO_ARQUIVO_CONFIRMACAO, descricaoLog);
 		}

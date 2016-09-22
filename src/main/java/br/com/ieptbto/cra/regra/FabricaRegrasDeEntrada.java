@@ -51,7 +51,7 @@ public class FabricaRegrasDeEntrada {
 			String conteudo;
 			reader = new BufferedReader(new FileReader(file));
 			if ((conteudo = reader.readLine()) == null) {
-				return;
+
 			}
 		} catch (FileNotFoundException e) {
 		} catch (IOException ex) {

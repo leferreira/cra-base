@@ -46,7 +46,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 
 	@Override
 	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {
-		RetornoVO retornoVO = converterStringArquivoVO(dados);
+		RetornoVO retornoVO = converterStringArquivoVO(dados, nomeArquivo);
 		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
 		remessasVO.add(ConversorArquivoVO.converterRetornoParaRemessaVO(retornoVO));
 
@@ -57,7 +57,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 		return gerarResposta(arquivoRetorno.getArquivo(), usuario);
 	}
 
-	private RetornoVO converterStringArquivoVO(String dados) {
+	private RetornoVO converterStringArquivoVO(String dados, String nomeArquivo) {
 		JAXBContext context;
 		RetornoVO arquivo = null;
 
@@ -80,7 +80,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 
 		} catch (JAXBException e) {
 			logger.error(e.getMessage(), e.getCause());
-			new InfraException(e.getMessage(), e.getCause());
+			throw new InfraException("Erro ao converter o contéudo xml do arquivo " + nomeArquivo + ".");
 		}
 		return arquivo;
 	}
@@ -156,8 +156,8 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 
 				descricaoLog = descricaoLog + "<li>" + exception.getDescricao() + ";</li>";
 			}
-			descricaoLog = descricaoLog + "</ul>";
 		}
+		descricaoLog = descricaoLog + "</ul>";
 		if (!erros.isEmpty()) {
 			loggerCra.error(usuario, CraAcao.ENVIO_ARQUIVO_RETORNO, descricaoLog);
 		}
