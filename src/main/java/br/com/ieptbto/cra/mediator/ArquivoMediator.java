@@ -78,7 +78,7 @@ public class ArquivoMediator extends BaseMediator {
 	@Autowired
 	private ConversorRemessaArquivo conversorRemessaArquivo;
 
-	private List<Exception> erros;
+	private static List<Exception> erros;
 	private Arquivo arquivo;
 
 	@Transactional
@@ -133,8 +133,8 @@ public class ArquivoMediator extends BaseMediator {
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public ArquivoMediator salvar(Arquivo arquivo, FileUpload uploadedFile, Usuario usuario) {
-		this.erros = null;
-		this.erros = new ArrayList<Exception>();
+		erros = null;
+		erros = new ArrayList<Exception>();
 
 		this.arquivo = null;
 		this.arquivo = arquivo;
@@ -147,9 +147,9 @@ public class ArquivoMediator extends BaseMediator {
 		this.arquivo.setUsuarioEnvio(usuario);
 		this.arquivo.setInstituicaoEnvio(getInstituicaoEnvioArquivo(usuario, uploadedFile));
 
-		this.arquivo = processadorArquivo.processarArquivo(uploadedFile, arquivo, getErros());
+		arquivo = processadorArquivo.processarArquivo(uploadedFile, arquivo, getErros());
 		if (getErros().isEmpty()) {
-			this.arquivo = arquivoDAO.salvar(arquivo, usuario, getErros());
+			arquivo = arquivoDAO.salvar(arquivo, usuario, getErros());
 		}
 		return this;
 	}
@@ -164,8 +164,8 @@ public class ArquivoMediator extends BaseMediator {
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public ArquivoMediator salvarWS(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
-		this.erros = null;
-		this.erros = new ArrayList<Exception>();
+		erros = null;
+		erros = new ArrayList<Exception>();
 
 		this.arquivo = null;
 		this.arquivo = new Arquivo();
@@ -329,14 +329,6 @@ public class ArquivoMediator extends BaseMediator {
 			erros = new ArrayList<Exception>();
 		}
 		return erros;
-	}
-
-	public void setErros(List<Exception> erros) {
-		this.erros = erros;
-	}
-
-	public void setArquivo(Arquivo arquivo) {
-		this.arquivo = arquivo;
 	}
 
 	public Arquivo getArquivo() {

@@ -45,22 +45,22 @@ public class Avalista extends AbstractEntidade<Avalista> {
 	}
 
 	@ManyToOne
-	@JoinColumn(name="TITULO_FILIADO_ID")
+	@JoinColumn(name = "TITULO_FILIADO_ID")
 	public TituloFiliado getTituloFiliado() {
 		return tituloFiliado;
 	}
 
-	@Column(name="NOME_")
+	@Column(name = "NOME_")
 	public String getNome() {
 		return nome;
 	}
 
-	@Column(name="TIPO_DOCUMENTO_")
+	@Column(name = "TIPO_DOCUMENTO_")
 	public String getTipoDocumento() {
 		return tipoDocumento;
 	}
-	
-	@Column(name="DOCUMENTO_")
+
+	@Column(name = "DOCUMENTO_")
 	public String getDocumento() {
 		if (documento == null) {
 			documento = StringUtils.EMPTY;
@@ -68,7 +68,7 @@ public class Avalista extends AbstractEntidade<Avalista> {
 		return documento.replace(".", "").replace("-", "").replace("/", "").trim();
 	}
 
-	@Column(name="ENDERECO_")
+	@Column(name = "ENDERECO_")
 	public String getEndereco() {
 		if (endereco != null) {
 			return endereco.replaceAll("\n", "").replaceAll("\t", "").replaceAll("\r", "");
@@ -76,12 +76,12 @@ public class Avalista extends AbstractEntidade<Avalista> {
 		return endereco;
 	}
 
-	@Column(name="CIDADE_")
+	@Column(name = "CIDADE_")
 	public String getCidade() {
 		return cidade;
 	}
 
-	@Column(name="CEP")
+	@Column(name = "CEP")
 	public String getCep() {
 		if (cep == null) {
 			cep = StringUtils.EMPTY;
@@ -142,7 +142,7 @@ public class Avalista extends AbstractEntidade<Avalista> {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		if (getId() == 0) {
@@ -150,7 +150,7 @@ public class Avalista extends AbstractEntidade<Avalista> {
 		}
 		return getId();
 	}
-	
+
 	@Override
 	public int compareTo(Avalista entidade) {
 		// TODO Auto-generated method stub

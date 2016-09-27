@@ -40,7 +40,7 @@ public class ValidarSequencialCabecalho extends RegraValidacao {
 		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
 
 		} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)) {
-			verificarSequencialRetorno();
+
 		} else if (TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
 			verificarSequencialRetorno();
 		}

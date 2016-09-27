@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Avalista;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
@@ -26,11 +27,12 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.EspecieTituloEntradaManual;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.StatusRemessa;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.enumeration.EspecieTituloEntradaManual;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.mediator.AvalistaMediator;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.mediator.RemessaMediator;
 import br.com.ieptbto.cra.mediator.TipoArquivoMediator;
@@ -53,6 +55,8 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private TipoArquivoMediator tipoArquivoMediator;
 	@Autowired
 	private RemessaMediator remessaMediator;
+	@Autowired
+	private AvalistaMediator avalistaMediator;
 	private Usuario usuario;
 	private Map<chaveTitulo, TituloFiliado> mapaTitulos;
 	private Map<String, Arquivo> mapaArquivos;
@@ -108,6 +112,16 @@ public class ProcessadorRemessaConveniada extends Processador {
 		remessa.getCabecalho().setRemessa(remessa);
 		remessa.getRodape().setRemessa(remessa);
 		remessa.setStatusRemessa(StatusRemessa.AGUARDANDO);
+
+		int numeroControleDevedor = 2;
+		for (Avalista avalista : avalistaMediator.buscarAvalistasPorTitulo(tituloFiliado)) {
+			if (avalista.getNome() != null) {
+				if (StringUtils.isNotEmpty(avalista.getNome())) {
+					incluirAvalistaNaRemessa(remessa, tituloFiliado, avalista, numeroControleDevedor);
+					numeroControleDevedor = numeroControleDevedor++;
+				}
+			}
+		}
 		return remessa;
 	}
 
@@ -136,7 +150,6 @@ public class ProcessadorRemessaConveniada extends Processador {
 	}
 
 	private String gerarNomeArquivo(Instituicao instituicao) {
-
 		return TipoArquivoEnum.REMESSA.getConstante() + instituicao.getCodigoCompensacao() + gerarDataArquivo() + NUMERO_SEQUENCIAL_REMESSA;
 	}
 
@@ -194,6 +207,34 @@ public class ProcessadorRemessaConveniada extends Processador {
 		BigDecimal somatorioQtdRemessa = new BigDecimal(quantidadeRegistros + quantidadeTitulos + quantidadeOriginais + quantidadeIndicacoes);
 		remessa.getRodape().setSomatorioQtdRemessa(somatorioQtdRemessa);
 		remessa.getRodape().setSomatorioValorRemessa(valorSaldo);
+		remessa.getRodape()
+				.setNumeroSequencialRegistroArquivo(Integer.toString(Integer.parseInt(remessa.getRodape().getNumeroSequencialRegistroArquivo()) + 1));
+
+		int numeroControleDevedor = 2;
+		for (Avalista avalista : avalistaMediator.buscarAvalistasPorTitulo(tituloFiliado)) {
+			if (avalista.getNome() != null) {
+				if (StringUtils.isNotEmpty(avalista.getNome())) {
+					incluirAvalistaNaRemessa(remessa, tituloFiliado, avalista, numeroControleDevedor);
+					numeroControleDevedor = numeroControleDevedor++;
+				}
+			}
+		}
+	}
+
+	private void incluirAvalistaNaRemessa(Remessa remessa, TituloFiliado tituloFiliado, Avalista avalista, int numeroControleDevedor) {
+		int quantidadeRegistros = remessa.getCabecalho().getQtdRegistrosRemessa();
+		int quantidadeTitulos = remessa.getCabecalho().getQtdTitulosRemessa();
+		int quantidadeIndicacoes = remessa.getCabecalho().getQtdIndicacoesRemessa();
+		int quantidadeOriginais = remessa.getCabecalho().getQtdOriginaisRemessa();
+
+		TituloRemessa titulo = new TituloRemessa();
+		titulo.parseAvalista(tituloFiliado, avalista);
+		titulo.setNumeroControleDevedor(numeroControleDevedor);
+		titulo.setNumeroSequencialArquivo(Integer.toString(remessa.getTitulos().size() + 2));
+		remessa.getTitulos().add(titulo);
+
+		BigDecimal somatorioQtdRemessa = new BigDecimal(quantidadeRegistros + quantidadeTitulos + quantidadeOriginais + quantidadeIndicacoes);
+		remessa.getRodape().setSomatorioQtdRemessa(somatorioQtdRemessa);
 		remessa.getRodape()
 				.setNumeroSequencialRegistroArquivo(Integer.toString(Integer.parseInt(remessa.getRodape().getNumeroSequencialRegistroArquivo()) + 1));
 	}

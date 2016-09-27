@@ -79,30 +79,54 @@ public class RemessaMediator extends BaseMediator {
 		return remessaDAO.update(remessa);
 	}
 
+	/**
+	 * Método para download de arquivos anexos do título
+	 * 
+	 * @param user
+	 * @param remessa
+	 * @return
+	 */
+	public File decodificarAnexoTitulo(Usuario user, TituloRemessa tituloRemessa) {
+		String pathDiretorioIdRemessa = criarDiretoriosAnexos(user, tituloRemessa.getRemessa());
+		File diretorioPath = new File(pathDiretorioIdRemessa);
+
+		if (!diretorioPath.exists()) {
+			diretorioPath.mkdirs();
+		}
+
+		String nomeArquivoZip =
+				tituloRemessa.getNomeDevedor().replace(" ", "_").replace("/", "") + "_" + tituloRemessa.getNumeroTitulo().replace("\\", "").replace("/", "");
+		try {
+			if (tituloRemessa.getAnexo() != null) {
+				DecoderString decoderString = new DecoderString();
+				decoderString.decode(tituloRemessa.getAnexo().getDocumentoAnexo(), pathDiretorioIdRemessa,
+						nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+			}
+			return new File(pathDiretorioIdRemessa + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+
+		} catch (FileNotFoundException e) {
+			logger.info(e);
+			throw new InfraException("Não foi possível gerar o arquivo de anexos! Por favor, entre em contato com a CRA...");
+		} catch (IOException e) {
+			logger.info(e);
+			throw new InfraException("Não foi possível gerar o arquivo de anexos! Por favor, entre em contato com a CRA...");
+		}
+	}
+
+	/**
+	 * Método para download de arquivos anexos da remessa
+	 * 
+	 * @param user
+	 * @param remessa
+	 * @return
+	 */
 	@SuppressWarnings("resource")
 	public File processarArquivosAnexos(Usuario user, Remessa remessa) {
-		String pathDiretorioIdInstituicao = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId();
-		String pathDiretorioIdArquivo = pathDiretorioIdInstituicao + ConfiguracaoBase.BARRA + remessa.getArquivo().getId();
-		String pathDiretorioIdRemessa = pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + remessa.getId();
+		String pathDiretorioArquivo =
+				ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA + remessa.getArquivo().getId();
 
-		File diretorioBaseArquivo = new File(ConfiguracaoBase.DIRETORIO_BASE);
-		File diretorioBaseInstituicao = new File(ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO);
-		File diretorioInstituicaoEnvio = new File(pathDiretorioIdInstituicao);
-		File diretorioArquivo = new File(pathDiretorioIdArquivo);
+		String pathDiretorioIdRemessa = criarDiretoriosAnexos(user, remessa);
 		File diretorioRemessa = new File(pathDiretorioIdRemessa);
-
-		if (!diretorioBaseArquivo.exists()) {
-			diretorioBaseArquivo.mkdirs();
-		}
-		if (!diretorioBaseInstituicao.exists()) {
-			diretorioBaseInstituicao.mkdirs();
-		}
-		if (!diretorioInstituicaoEnvio.exists()) {
-			diretorioInstituicaoEnvio.mkdirs();
-		}
-		if (!diretorioArquivo.exists()) {
-			diretorioArquivo.mkdirs();
-		}
 		if (!diretorioRemessa.exists()) {
 			diretorioRemessa.mkdirs();
 
@@ -115,7 +139,7 @@ public class RemessaMediator extends BaseMediator {
 
 					String nomeArquivoZip = remessa.getArquivo().getNomeArquivo().replace(".", "_") + "_" + remessa.getCabecalho().getCodigoMunicipio();
 					FileOutputStream fileOutputStream =
-							new FileOutputStream(pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+							new FileOutputStream(pathDiretorioArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 					ZipOutputStream zipOut = new ZipOutputStream(fileOutputStream);
 
 					for (File arq : diretorioRemessa.listFiles()) {
@@ -129,16 +153,42 @@ public class RemessaMediator extends BaseMediator {
 					}
 					zipOut.close();
 
-					return new File(pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+					return new File(pathDiretorioArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info(e.getMessage(), e);
+			throw new InfraException("Não foi possível fazer o download dos arquivos anexos a remessa! Favor entrar em contato com a CRA...");
 		}
 		return null;
 	}
 
-	private void decodificarArquivosAnexos(Usuario user, String path, Remessa remessa) {
+	private String criarDiretoriosAnexos(Usuario user, Remessa remessa) {
+		String pathDiretorioIdInstituicao = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId();
+		String pathDiretorioIdArquivo = pathDiretorioIdInstituicao + ConfiguracaoBase.BARRA + remessa.getArquivo().getId();
+		String pathDiretorioIdRemessa = pathDiretorioIdArquivo + ConfiguracaoBase.BARRA + remessa.getId();
+
+		File diretorioBaseArquivo = new File(ConfiguracaoBase.DIRETORIO_BASE);
+		File diretorioBaseInstituicao = new File(ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO);
+		File diretorioInstituicaoEnvio = new File(pathDiretorioIdInstituicao);
+		File diretorioArquivo = new File(pathDiretorioIdArquivo);
+
+		if (!diretorioBaseArquivo.exists()) {
+			diretorioBaseArquivo.mkdirs();
+		}
+		if (!diretorioBaseInstituicao.exists()) {
+			diretorioBaseInstituicao.mkdirs();
+		}
+		if (!diretorioInstituicaoEnvio.exists()) {
+			diretorioInstituicaoEnvio.mkdirs();
+		}
+		if (!diretorioArquivo.exists()) {
+			diretorioArquivo.mkdirs();
+		}
+		return pathDiretorioIdRemessa;
+	}
+
+	private void decodificarArquivosAnexos(Usuario user, String pathDiretorioRemessa, Remessa remessa) {
 
 		try {
 			List<TituloRemessa> titulos = tituloDAO.carregarTitulosRemessaComDocumentosAnexos(remessa);
@@ -149,9 +199,7 @@ public class RemessaMediator extends BaseMediator {
 						String nomeArquivoZip = tituloRemessa.getNomeDevedor().replace(" ", "_").replace("/", "") + "_"
 								+ tituloRemessa.getNumeroTitulo().replace("\\", "").replace("/", "");
 
-						decoderString.decode(tituloRemessa.getAnexo().getDocumentoAnexo(),
-								ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA
-										+ remessa.getArquivo().getId() + ConfiguracaoBase.BARRA + remessa.getId() + ConfiguracaoBase.BARRA,
+						decoderString.decode(tituloRemessa.getAnexo().getDocumentoAnexo(), pathDiretorioRemessa + ConfiguracaoBase.BARRA,
 								nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 					}
 				}
@@ -159,12 +207,10 @@ public class RemessaMediator extends BaseMediator {
 
 		} catch (FileNotFoundException e) {
 			logger.info("O arquivo ZIP em anexo não pode ser criado.");
-			e.printStackTrace();
-			throw new InfraException("Não foi possível gerar o arquivo de anexos! Por favor, entre em contato com a CRA...");
+			throw new InfraException("Não foi possível gerar o arquivo de anexos! Favor entrar em contato com a CRA...");
 		} catch (IOException e) {
-			logger.info(e);
-			e.printStackTrace();
-			throw new InfraException("Não foi possível gerar o arquivo de anexos! Por favor, entre em contato com a CRA...");
+			logger.info(e.getMessage(), e);
+			throw new InfraException("Não foi possível gerar o arquivo de anexos! Favor entrar em contato com a CRA...");
 		}
 	}
 

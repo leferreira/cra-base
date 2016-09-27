@@ -12,6 +12,8 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.AutorizacaoCancelamentoDAO;
@@ -81,6 +83,7 @@ public class ConvenioMediator extends BaseMediator {
 		return tituloFiliadoDAO.buscarTitulosConvenios();
 	}
 
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public void gerarRemessas(Usuario usuario, List<TituloFiliado> listaTitulosConvenios) {
 		List<Arquivo> arquivos = processadorRemessaConveniada.processar(listaTitulosConvenios, usuario);
 		for (Arquivo arquivo : arquivos) {

@@ -82,7 +82,6 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(InstrumentoProtesto.class);
 		criteria.createAlias("tituloRetorno", "tituloRetorno");
 		criteria.createAlias("tituloRetorno.titulo", "titulo");
-		criteria.add(Restrictions.isNull("etiquetaSlip"));
 		criteria.add(Restrictions.eq("gerado", false));
 		criteria.addOrder(Order.asc("titulo.codigoPortador")).addOrder(Order.asc("titulo.pracaProtesto"))
 				.addOrder(Order.asc("tituloRetorno.numeroProtocoloCartorio"));
