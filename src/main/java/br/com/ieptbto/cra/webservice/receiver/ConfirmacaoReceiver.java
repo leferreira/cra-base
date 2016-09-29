@@ -50,11 +50,12 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 		ConfirmacaoVO confirmacaoVO = converterStringArquivoVO(dados, nomeArquivo);
 		remessasVO.add(ConversorArquivoVO.converterConfirmacaoParaRemessaVO(confirmacaoVO));
 
-		ArquivoMediator arquivoRetorno = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo);
-		if (!arquivoRetorno.getErros().isEmpty()) {
-			return gerarRespostaErrosConfirmacao(arquivoRetorno.getArquivo(), usuario, arquivoRetorno.getErros());
+		List<Exception> erros = new ArrayList<Exception>();
+		Arquivo arquivo = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo, erros);
+		if (!erros.isEmpty()) {
+			return gerarRespostaErrosConfirmacao(arquivo, usuario, erros);
 		}
-		return gerarRespostaSucesso(arquivoRetorno.getArquivo(), usuario);
+		return gerarRespostaSucesso(arquivo, usuario);
 	}
 
 	private ConfirmacaoVO converterStringArquivoVO(String dados, String nomeArquivo) {

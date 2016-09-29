@@ -78,9 +78,6 @@ public class ArquivoMediator extends BaseMediator {
 	@Autowired
 	private ConversorRemessaArquivo conversorRemessaArquivo;
 
-	private static List<Exception> erros;
-	private Arquivo arquivo;
-
 	@Transactional
 	public Arquivo carregarArquivoPorId(Arquivo arquivo) {
 		return arquivoDAO.buscarPorPK(arquivo, Arquivo.class);
@@ -132,26 +129,21 @@ public class ArquivoMediator extends BaseMediator {
 	 * @return
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
-	public ArquivoMediator salvar(Arquivo arquivo, FileUpload uploadedFile, Usuario usuario) {
-		erros = null;
-		erros = new ArrayList<Exception>();
+	public Arquivo salvar(Arquivo arquivo, FileUpload uploadedFile, Usuario usuario, List<Exception> erros) {
+		arquivo.setNomeArquivo(uploadedFile.getClientFileName());
+		arquivo.setTipoArquivo(getTipoArquivo(arquivo));
+		arquivo.setHoraEnvio(new LocalTime());
+		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setDataRecebimento(new LocalDate().toDate());
+		arquivo.setStatusArquivo(setStatusArquivo());
+		arquivo.setUsuarioEnvio(usuario);
+		arquivo.setInstituicaoEnvio(getInstituicaoEnvioArquivo(usuario, uploadedFile));
 
-		this.arquivo = null;
-		this.arquivo = arquivo;
-		this.arquivo.setNomeArquivo(uploadedFile.getClientFileName());
-		this.arquivo.setTipoArquivo(getTipoArquivo(arquivo));
-		this.arquivo.setHoraEnvio(new LocalTime());
-		this.arquivo.setDataEnvio(new LocalDate());
-		this.arquivo.setDataRecebimento(new LocalDate().toDate());
-		this.arquivo.setStatusArquivo(setStatusArquivo());
-		this.arquivo.setUsuarioEnvio(usuario);
-		this.arquivo.setInstituicaoEnvio(getInstituicaoEnvioArquivo(usuario, uploadedFile));
-
-		arquivo = processadorArquivo.processarArquivo(uploadedFile, arquivo, getErros());
-		if (getErros().isEmpty()) {
-			arquivo = arquivoDAO.salvar(arquivo, usuario, getErros());
+		arquivo = processadorArquivo.processarArquivo(uploadedFile, arquivo, erros);
+		if (erros.isEmpty()) {
+			arquivo = arquivoDAO.salvar(arquivo, usuario, erros);
 		}
-		return this;
+		return arquivo;
 	}
 
 	/**
@@ -163,28 +155,24 @@ public class ArquivoMediator extends BaseMediator {
 	 * @return MensagemCra
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
-	public ArquivoMediator salvarWS(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo) {
-		erros = null;
-		erros = new ArrayList<Exception>();
+	public Arquivo salvarWS(List<RemessaVO> arquivoRecebido, Usuario usuario, String nomeArquivo, List<Exception> erros) {
+		Arquivo arquivo = new Arquivo();
+		arquivo.setNomeArquivo(nomeArquivo);
+		arquivo.setTipoArquivo(tipoArquivoDAO.buscarTipoArquivo(nomeArquivo));
+		arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
+		arquivo.setUsuarioEnvio(usuario);
+		arquivo.setStatusArquivo(setStatusArquivo());
+		arquivo.setRemessas(new ArrayList<Remessa>());
+		arquivo.setHoraEnvio(new LocalTime());
+		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setDataRecebimento(new LocalDate().toDate());
+		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
 
-		this.arquivo = null;
-		this.arquivo = new Arquivo();
-		this.arquivo.setNomeArquivo(nomeArquivo);
-		this.arquivo.setTipoArquivo(tipoArquivoDAO.buscarTipoArquivo(nomeArquivo));
-		this.arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
-		this.arquivo.setUsuarioEnvio(usuario);
-		this.arquivo.setStatusArquivo(setStatusArquivo());
-		this.arquivo.setRemessas(new ArrayList<Remessa>());
-		this.arquivo.setHoraEnvio(new LocalTime());
-		this.arquivo.setDataEnvio(new LocalDate());
-		this.arquivo.setDataRecebimento(new LocalDate().toDate());
-		this.arquivo.setInstituicaoEnvio(usuario.getInstituicao());
-
-		this.arquivo = processadorArquivo.processarArquivoWS(arquivoRecebido, arquivo, getErros());
-		if (getErros().isEmpty()) {
-			this.arquivo = arquivoDAO.salvar(arquivo, usuario, getErros());
+		arquivo = processadorArquivo.processarArquivoWS(arquivoRecebido, arquivo, erros);
+		if (erros.isEmpty()) {
+			arquivo = arquivoDAO.salvar(arquivo, usuario, erros);
 		}
-		return this;
+		return arquivo;
 	}
 
 	private Instituicao getInstituicaoEnvioArquivo(Usuario usuario, FileUpload uploadedFile) {
@@ -322,16 +310,5 @@ public class ArquivoMediator extends BaseMediator {
 			}
 		}
 		return conversorRemessaArquivo.converterArquivoVO(arquivo.getRemessaBanco());
-	}
-
-	public List<Exception> getErros() {
-		if (erros == null) {
-			erros = new ArrayList<Exception>();
-		}
-		return erros;
-	}
-
-	public Arquivo getArquivo() {
-		return arquivo;
 	}
 }

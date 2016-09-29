@@ -50,11 +50,12 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
 		remessasVO.add(ConversorArquivoVO.converterRetornoParaRemessaVO(retornoVO));
 
-		ArquivoMediator arquivoRetorno = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo);
-		if (!arquivoRetorno.getErros().isEmpty()) {
-			return gerarRespostaErrosRetorno(arquivoRetorno.getArquivo(), usuario, arquivoRetorno.getErros());
+		List<Exception> erros = new ArrayList<Exception>();
+		Arquivo arquivo = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo, erros);
+		if (!erros.isEmpty()) {
+			return gerarRespostaErrosRetorno(arquivo, usuario, erros);
 		}
-		return gerarResposta(arquivoRetorno.getArquivo(), usuario);
+		return gerarResposta(arquivo, usuario);
 	}
 
 	private RetornoVO converterStringArquivoVO(String dados, String nomeArquivo) {
@@ -79,7 +80,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 			arquivo = (RetornoVO) unmarshaller.unmarshal(new InputSource(xml));
 
 		} catch (JAXBException e) {
-			logger.error(e.getMessage(), e.getCause());
+			logger.error(e.getMessage(), e);
 			throw new InfraException("Erro ao converter o contéudo xml do arquivo " + nomeArquivo + ".");
 		}
 		return arquivo;

@@ -257,13 +257,14 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		Transaction transaction = getBeginTransation();
 		try {
 			for (TituloFiliado tituloFiliado : listaTitulosConvenios) {
+				tituloFiliado = buscarPorPK(tituloFiliado, TituloFiliado.class);
 				tituloFiliado.setSituacaoTituloConvenio(SituacaoTituloConvenio.EM_PROCESSO);
 				update(tituloFiliado);
 			}
 			transaction.commit();
 		} catch (Exception ex) {
-			logger.error(ex.getMessage());
-			new InfraException(ex.getMessage(), ex.getCause());
+			logger.error(ex.getMessage(), ex);
+			new InfraException("Não foi possível marcar os títulos de convênios como enviados! Favor entrar em contato com a CRA...");
 		}
 	}
 

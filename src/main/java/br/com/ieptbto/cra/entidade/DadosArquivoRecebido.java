@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
@@ -50,6 +51,9 @@ public class DadosArquivoRecebido extends AbstractEntidade<DadosArquivoRecebido>
 
 	@Column(name = "NOME_ARQUIVO", length = 100)
 	public String getNomeArquivo() {
+		if (nomeArquivo == null) {
+			return StringUtils.EMPTY;
+		}
 		return nomeArquivo;
 	}
 

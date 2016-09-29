@@ -258,6 +258,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		titulo.setEnderecoSacadorVendedor(remessa.getInstituicaoOrigem().getEndereco());
 		titulo.setCepSacadorVendedor("77000000");
 
+		titulo.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(titulo.getNumeroIdentificacaoDevedor()));
 		titulo.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(titulo.getEnderecoDevedor()));
 		titulo.setUfDevedor("TO");
 
@@ -269,6 +270,13 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		titulo.setValorTitulo(titulo.getSaldoTitulo());
 		titulo.setRemessa(remessa);
 		return titulo;
+	}
+
+	private String verificarTipoIdentificacaoDevedor(String documentoDevedor) {
+		if (documentoDevedor.length() <= 11) {
+			return "002";
+		}
+		return "001";
 	}
 
 	private Object getValorConvertido(String valor, Class<?> propertyType, String nomeCampo) {

@@ -21,6 +21,7 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -118,7 +119,8 @@ public class ArquivoFiliadoMediator {
 	}
 
 	private boolean verificarPermissaoDeEnvio(Usuario user, Arquivo arquivo) {
-		if (TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA.equals(user.getInstituicao().getTipoInstituicao().getTipoInstituicao())) {
+		if (TipoInstituicaoCRA.CONVENIO.equals(user.getInstituicao().getTipoInstituicao().getTipoInstituicao())
+				&& user.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.LAYOUT_PERSONALIZADO_CONVENIOS)) {
 			return true;
 		}
 

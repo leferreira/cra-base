@@ -51,14 +51,15 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {
 		List<RemessaVO> remessasVO = ConversorArquivoVO.converterParaRemessaVO(converterStringArquivoVO(dados));
 
-		ArquivoMediator arquivoRetorno = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo);
-		if (!arquivoRetorno.getErros().isEmpty()) {
-			return gerarRespostaErrosRemessa(arquivoRetorno.getArquivo(), usuario, arquivoRetorno.getErros());
+		List<Exception> erros = new ArrayList<Exception>();
+		Arquivo arquivo = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo, erros);
+		if (!erros.isEmpty()) {
+			return gerarRespostaErrosRemessa(arquivo, usuario, erros);
 		}
 		if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.SERPRO)) {
-			return gerarRespostaSerproSucesso(arquivoRetorno.getArquivo(), usuario);
+			return gerarRespostaSerproSucesso(arquivo, usuario);
 		}
-		return gerarRespostaSucesso(arquivoRetorno.getArquivo(), usuario);
+		return gerarRespostaSucesso(arquivo, usuario);
 	}
 
 	private ArquivoVO converterStringArquivoVO(String dados) {
@@ -88,8 +89,8 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 			InputStream xml = new ByteArrayInputStream(xmlRecebido.getBytes());
 			arquivo = (ArquivoVO) unmarshaller.unmarshal(new InputSource(xml));
 		} catch (JAXBException e) {
-			logger.error(e.getMessage(), e.getCause());
-			new InfraException(e.getMessage(), e.getCause());
+			logger.error(e.getMessage(), e);
+			throw new InfraException("Erro ao converter o contéudo xml do arquivo.");
 		}
 		return arquivo;
 	}
