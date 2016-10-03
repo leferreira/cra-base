@@ -13,7 +13,7 @@ import br.com.ieptbto.cra.util.DataUtil;
  *         Bean criado para criacao de arquivos csv apartir de uma datatable de
  *         titulo remessa
  */
-public class TituloBean implements Serializable {
+public class TituloRelatorioCSVBean implements Serializable {
 
 	/***/
 	private static final long serialVersionUID = 1L;
@@ -66,11 +66,11 @@ public class TituloBean implements Serializable {
 		this.situacaoTitulo = tituloRemessa.getSituacaoTitulo();
 	}
 
-	public static List<TituloBean> parseToListTituloRemessa(List<TituloRemessa> titulos) {
-		List<TituloBean> titulosBean = new ArrayList<TituloBean>();
+	public static List<TituloRelatorioCSVBean> parseToListTituloRemessa(List<TituloRemessa> titulos) {
+		List<TituloRelatorioCSVBean> titulosBean = new ArrayList<TituloRelatorioCSVBean>();
 
 		for (TituloRemessa tituloRemessa : titulos) {
-			TituloBean titulo = new TituloBean();
+			TituloRelatorioCSVBean titulo = new TituloRelatorioCSVBean();
 			titulo.parseToTituloRemessa(tituloRemessa);
 			titulosBean.add(titulo);
 		}

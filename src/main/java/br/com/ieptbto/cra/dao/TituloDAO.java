@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.PedidoCancelamento;
 import br.com.ieptbto.cra.entidade.PedidoDesistencia;
@@ -53,8 +52,9 @@ public class TituloDAO extends AbstractBaseDAO {
 		return Retorno.class.cast(criteria.uniqueResult());
 	}
 
-	public List<TituloRemessa> buscarListaTitulos(LocalDate dataInicio, LocalDate dataFim, TituloRemessa titulo, Municipio pracaProtesto, Usuario user) {
-		Instituicao instituicaoUsuario = user.getInstituicao();
+	public List<TituloRemessa> buscarTitulos(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
+			Instituicao bancoConvenio, Instituicao cartorio, TituloRemessa titulo) {
+		Instituicao instituicaoUsuario = usuario.getInstituicao();
 
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
@@ -63,10 +63,21 @@ public class TituloDAO extends AbstractBaseDAO {
 					Restrictions.eq("remessa.instituicaoDestino", instituicaoUsuario)));
 		}
 
-		if (titulo.getCodigoPortador() != StringUtils.EMPTY) {
-			criteria.add(Restrictions.ilike("codigoPortador", titulo.getCodigoPortador(), MatchMode.ANYWHERE));
+		if (tipoInstituicao != null && bancoConvenio == null) {
+			criteria.createAlias("remessa.instituicaoOrigem", "apresentante");
+			criteria.createAlias("apresentante.tipoInstituicao", "tipoInstituicao");
+			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
+		}
+		if (bancoConvenio != null) {
+			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
+		}
+		if (cartorio != null) {
+			criteria.add(Restrictions.eq("instituicaoDestino", cartorio));
 		}
 
+		if (titulo.getNossoNumero() != null && titulo.getNossoNumero() != StringUtils.EMPTY) {
+			criteria.add(Restrictions.ilike("nossoNumero", titulo.getNossoNumero(), MatchMode.ANYWHERE));
+		}
 		if (titulo.getNumeroProtocoloCartorio() != null && titulo.getNumeroProtocoloCartorio() != StringUtils.EMPTY) {
 			criteria.createAlias("confirmacao", "confirmacao");
 			criteria.add(Restrictions.eq("confirmacao.numeroProtocoloCartorio", titulo.getNumeroProtocoloCartorio()));
@@ -90,15 +101,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (dataInicio != null) {
 			criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
 		}
-
-		if (titulo.getNossoNumero() != null && titulo.getNossoNumero() != StringUtils.EMPTY)
-			criteria.add(Restrictions.ilike("nossoNumero", titulo.getNossoNumero(), MatchMode.ANYWHERE));
-
-		if (pracaProtesto != null) {
-			criteria.createAlias("remessa.cabecalho", "cabecalho");
-			criteria.add(Restrictions.ilike("cabecalho.codigoMunicipio", pracaProtesto.getCodigoIBGE()));
-		}
-		criteria.addOrder(Order.asc("nomeDevedor"));
+		criteria.addOrder(Order.asc("remessa.dataRecebimento"));
 		return criteria.list();
 	}
 

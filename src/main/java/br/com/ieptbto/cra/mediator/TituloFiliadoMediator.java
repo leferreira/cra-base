@@ -83,7 +83,7 @@ public class TituloFiliadoMediator extends BaseMediator {
 		try {
 			fileUpload.writeTo(fileTmp);
 		} catch (IOException e) {
-			logger.error(e.getMessage(), e.getCause());
+			logger.error(e.getMessage(), e);
 			throw new InfraException("Não foi possível criar arquivo temporário do anexo! Por favor entre em contato com o IEPTB-TO.");
 		}
 		return fileTmp;

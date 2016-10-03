@@ -9,12 +9,13 @@ import org.springframework.stereotype.Service;
 import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
-import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 
 /**
  * @author Thasso Araújo
@@ -50,8 +51,9 @@ public class TituloMediator {
 		return tituloDAO.carregarTitulos(remessa);
 	}
 
-	public List<TituloRemessa> buscarListaTitulos(LocalDate dataInicio, LocalDate dataFim, TituloRemessa titulo, Municipio pracaProtesto, Usuario user) {
-		return tituloDAO.buscarListaTitulos(dataInicio, dataFim, titulo, pracaProtesto, user);
+	public List<TituloRemessa> buscarTitulos(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
+			Instituicao bancoConvenio, Instituicao cartorio, TituloRemessa tituloRemessa) {
+		return tituloDAO.buscarTitulos(usuario, dataInicio, dataFim, tipoInstituicao, bancoConvenio, cartorio, tituloRemessa);
 	}
 
 	@SuppressWarnings("rawtypes")
