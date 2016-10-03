@@ -52,6 +52,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 
 		List<Exception> erros = new ArrayList<Exception>();
 		Arquivo arquivo = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo, erros);
+
 		if (!erros.isEmpty()) {
 			return gerarRespostaErrosRetorno(arquivo, usuario, erros);
 		}

@@ -46,8 +46,8 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 
 	@Override
 	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {
-		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
 		ConfirmacaoVO confirmacaoVO = converterStringArquivoVO(dados, nomeArquivo);
+		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
 		remessasVO.add(ConversorArquivoVO.converterConfirmacaoParaRemessaVO(confirmacaoVO));
 
 		List<Exception> erros = new ArrayList<Exception>();

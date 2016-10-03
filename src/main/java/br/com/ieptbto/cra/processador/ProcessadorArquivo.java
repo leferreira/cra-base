@@ -89,7 +89,7 @@ public class ProcessadorArquivo extends Processador {
 		logger.info("Início processamento arquivo via WS " + arquivo.getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 
 		setArquivo(fabricaDeArquivo.fabricaWS(arquivoRecebido, arquivo, erros));
-		fabricaRegraValidacaoArquivo.validar(getArquivo(), getUsuario(), getErros());
+		fabricaRegraValidacaoArquivo.validar(getArquivo(), getUsuario(), erros);
 
 		logger.info("Fim processamento arquivo via WS " + arquivo.getNomeArquivo() + " do usuário " + getUsuario().getLogin());
 		return getArquivo();
