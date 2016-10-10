@@ -513,7 +513,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setCepSacadorVendedor(tituloFiliado.getFiliado().getCep());
 		this.setCidadeSacadorVendedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
 		this.setUfSacadorVendedor(tituloFiliado.getFiliado().getUf());
-		this.setNossoNumero(gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId()));
+		this.setNossoNumero(gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao(), tituloFiliado.getId()));
 		this.setEspecieTitulo(tituloFiliado.getEspecieTitulo().getConstante());
 		this.setNumeroTitulo(tituloFiliado.getNumeroTitulo());
 		this.setDataEmissaoTitulo(new LocalDate(tituloFiliado.getDataEmissao()));
@@ -548,7 +548,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setCepSacadorVendedor(tituloFiliado.getFiliado().getCep());
 		this.setCidadeSacadorVendedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getMunicipio().getNomeMunicipio().toUpperCase()));
 		this.setUfSacadorVendedor(tituloFiliado.getFiliado().getUf());
-		this.setNossoNumero(gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId()));
+		this.setNossoNumero(gerarNossoNumero(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao(), tituloFiliado.getId()));
 		this.setEspecieTitulo(tituloFiliado.getEspecieTitulo().getConstante());
 		this.setNumeroTitulo(tituloFiliado.getNumeroTitulo());
 		this.setDataEmissaoTitulo(new LocalDate(tituloFiliado.getDataEmissao()));
@@ -571,8 +571,8 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setComplementoRegistro(buscarAlineaCheque(tituloFiliado));
 	}
 
-	private String gerarNossoNumero(String nossoNumero) {
-		return StringUtils.rightPad(nossoNumero, 15, "0");
+	private String gerarNossoNumero(String codigoPortador, int idTituloFiliado) {
+		return codigoPortador + StringUtils.leftPad(Integer.toString(idTituloFiliado), 12, "0");
 	}
 
 	private String buscarAlineaCheque(TituloFiliado tituloFiliado) {
