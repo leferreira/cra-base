@@ -76,7 +76,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		}
 
 		if (titulo.getNossoNumero() != null && titulo.getNossoNumero() != StringUtils.EMPTY) {
-			criteria.add(Restrictions.ilike("nossoNumero", titulo.getNossoNumero(), MatchMode.ANYWHERE));
+			criteria.add(Restrictions.like("nossoNumero", titulo.getNossoNumero(), MatchMode.EXACT));
 		}
 		if (titulo.getNumeroProtocoloCartorio() != null && titulo.getNumeroProtocoloCartorio() != StringUtils.EMPTY) {
 			criteria.createAlias("confirmacao", "confirmacao");
@@ -90,13 +90,13 @@ public class TituloDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.ilike("nomeSacadorVendedor", titulo.getNomeSacadorVendedor(), MatchMode.ANYWHERE));
 
 		if (titulo.getDocumentoSacador() != null && titulo.getDocumentoSacador() != StringUtils.EMPTY)
-			criteria.add(Restrictions.ilike("documentoSacador", titulo.getDocumentoSacador(), MatchMode.ANYWHERE));
+			criteria.add(Restrictions.like("documentoSacador", titulo.getDocumentoSacador(), MatchMode.ANYWHERE));
 
 		if (titulo.getNomeDevedor() != null && titulo.getNomeDevedor() != StringUtils.EMPTY)
 			criteria.add(Restrictions.ilike("nomeDevedor", titulo.getNomeDevedor(), MatchMode.ANYWHERE));
 
 		if (titulo.getNumeroIdentificacaoDevedor() != null && titulo.getNumeroIdentificacaoDevedor() != StringUtils.EMPTY)
-			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor(), MatchMode.EXACT));
+			criteria.add(Restrictions.like("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor(), MatchMode.EXACT));
 
 		if (dataInicio != null) {
 			criteria.add(Restrictions.sqlRestriction("DATE(data_cadastro) >= ?", dataInicio.toDate(), org.hibernate.type.StandardBasicTypes.DATE));

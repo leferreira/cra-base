@@ -1,7 +1,6 @@
 package br.com.ieptbto.cra.dao;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -105,34 +104,30 @@ public class RemessaDAO extends AbstractBaseDAO {
 		return criteria.list().size();
 	}
 
-	@SuppressWarnings("rawtypes")
 	public List<Remessa> confirmacoesPendentes(Instituicao instituicao) {
 		List<Remessa> remessas = new ArrayList<Remessa>();
-		String sql = "";
 
 		Hibernate.initialize(instituicao.getTipoInstituicao());
+		StringBuffer sql = new StringBuffer();
 		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			sql = "SELECT t.remessa_id " + "from TB_TITULO t " + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
-					+ "LEFT OUTER JOIN tb_confirmacao AS conf ON t.id_titulo=conf.titulo_id " + "WHERE conf.id_confirmacao is null "
-					+ "AND rem.arquivo_id>18088 " + "GROUP BY t.remessa_id " + "ORDER BY t.remessa_id ASC;";
+			sql.append(
+					"SELECT t.remessa_id from TB_TITULO t INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa LEFT OUTER JOIN tb_confirmacao AS conf ON t.id_titulo=conf.titulo_id WHERE conf.id_confirmacao is null AND rem.arquivo_id>18088 GROUP BY t.remessa_id ORDER BY t.remessa_id ASC");
 		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
-			sql = "SELECT t.remessa_id " + "from TB_TITULO t " + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
-					+ "LEFT OUTER JOIN tb_confirmacao AS conf ON t.id_titulo=conf.titulo_id " + "WHERE conf.id_confirmacao is null "
-					+ "AND rem.instituicao_destino_id= " + instituicao.getId() + " " + "AND rem.arquivo_id>18088 " + "GROUP BY t.remessa_id "
-					+ "ORDER BY t.remessa_id ASC;";
+			sql.append(
+					"SELECT t.remessa_id from TB_TITULO t INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa LEFT OUTER JOIN tb_confirmacao AS conf ON t.id_titulo=conf.titulo_id WHERE conf.id_confirmacao is null AND rem.instituicao_destino_id= "
+							+ instituicao.getId() + " AND rem.arquivo_id>18088 GROUP BY t.remessa_id ORDER BY t.remessa_id ASC");
 		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)
 				|| instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
-			sql = "SELECT t.remessa_id " + "from TB_TITULO t " + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
-					+ "LEFT OUTER JOIN tb_confirmacao AS conf ON t.id_titulo=conf.titulo_id " + "WHERE conf.id_confirmacao is null "
-					+ "AND rem.instituicao_origem_id= " + instituicao.getId() + " " + "AND rem.arquivo_id>18088 " + "GROUP BY t.remessa_id "
-					+ "ORDER BY t.remessa_id ASC;";
+			sql.append(
+					"SELECT t.remessa_id from TB_TITULO t INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa LEFT OUTER JOIN tb_confirmacao AS conf ON t.id_titulo=conf.titulo_id WHERE conf.id_confirmacao is null AND rem.instituicao_origem_id= "
+							+ instituicao.getId() + " AND rem.arquivo_id>18088 GROUP BY t.remessa_id ORDER BY t.remessa_id ASC");
 		}
 
-		Query query = getSession().createSQLQuery(sql);
-		Iterator iterator = query.list().iterator();
-		while (iterator.hasNext()) {
+		Query query = getSession().createSQLQuery(sql.toString());
+		List<Integer> remessasId = query.list();
+		for (Integer id : remessasId) {
 			Criteria criteria = getCriteria(Remessa.class);
-			criteria.add(Restrictions.eq("id", iterator.next()));
+			criteria.add(Restrictions.eq("id", id));
 			remessas.add(Remessa.class.cast(criteria.uniqueResult()));
 		}
 		return remessas;

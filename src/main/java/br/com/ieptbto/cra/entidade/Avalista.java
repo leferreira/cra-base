@@ -153,11 +153,13 @@ public class Avalista extends AbstractEntidade<Avalista> {
 
 	@Override
 	public int compareTo(Avalista entidade) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	public String getBairro() {
+		if (bairro == null) {
+			this.bairro = "CENTRO";
+		}
 		return bairro;
 	}
 
