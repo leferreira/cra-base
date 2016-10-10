@@ -112,48 +112,27 @@ public class RemessaDAO extends AbstractBaseDAO {
 
 		Hibernate.initialize(instituicao.getTipoInstituicao());
 		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			sql = "select rem.instituicao_destino_id, t.remessa_id " + "from TB_TITULO t " + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
-					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_origem_id=ins.id_instituicao "
-					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) " + "	from TB_TITULO tit "
-					+ "	LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id " + "	INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa "
-					+ "	where con.titulo_id IS NULL and tit.id_titulo > 37085) " + "AND rem.arquivo_id>18088 "
-					+ "GROUP BY rem.instituicao_destino_id,t.remessa_id " + "ORDER BY remessa_id ASC;";
+			sql = "SELECT t.remessa_id " + "from TB_TITULO t " + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
+					+ "LEFT OUTER JOIN tb_confirmacao AS conf ON t.id_titulo=conf.titulo_id " + "WHERE conf.id_confirmacao is null "
+					+ "AND rem.arquivo_id>18088 " + "GROUP BY t.remessa_id " + "ORDER BY t.remessa_id ASC;";
 		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
-			sql = "SELECT ins.nome_fantasia,t.remessa_id from TB_TITULO t " + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
-					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_origem_id=ins.id_instituicao "
-					+ "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) "
-					+ "from TB_TITULO tit LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
-					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa " + "where con.titulo_id IS NULL and tit.id_titulo > 37085 ) "
-					+ "AND rem.instituicao_destino_id=" + instituicao.getId() + " " + "AND rem.arquivo_id>18088 " + "GROUP BY ins.nome_fantasia, t.remessa_id "
+			sql = "SELECT t.remessa_id " + "from TB_TITULO t " + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
+					+ "LEFT OUTER JOIN tb_confirmacao AS conf ON t.id_titulo=conf.titulo_id " + "WHERE conf.id_confirmacao is null "
+					+ "AND rem.instituicao_destino_id= " + instituicao.getId() + " " + "AND rem.arquivo_id>18088 " + "GROUP BY t.remessa_id "
 					+ "ORDER BY t.remessa_id ASC;";
-		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
-			sql = "select mun.nome_municipio,t.remessa_id " + "from TB_TITULO t " + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
-					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_destino_id=ins.id_instituicao "
-					+ "INNER JOIN tb_instituicao AS org ON rem.instituicao_origem_id=org.id_instituicao "
-					+ "INNER JOIN tb_municipio AS mun ON ins.municipio_id=mun.id_municipio " + "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) "
-					+ "from TB_TITULO tit " + "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
-					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa " + "where con.titulo_id IS NULL " + "and tit.id_titulo > 37085) "
-					+ "AND org.tipo_instituicao_id<>4 " + "AND rem.instituicao_origem_id=" + instituicao.getId() + " "
-					+ "OR rem.status_remessa LIKE 'AGUARDANDO' " + "AND org.tipo_instituicao_id<>4 " + "AND rem.instituicao_origem_id=" + instituicao.getId()
-					+ " " + "GROUP BY mun.nome_municipio,t.remessa_id " + "ORDER BY remessa_id ASC";
-		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
-			sql = "select mun.nome_municipio,t.remessa_id " + "from TB_TITULO t " + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
-					+ "INNER JOIN tb_instituicao AS ins ON rem.instituicao_destino_id=ins.id_instituicao "
-					+ "INNER JOIN tb_instituicao AS org ON rem.instituicao_origem_id=org.id_instituicao "
-					+ "INNER JOIN tb_municipio AS mun ON ins.municipio_id=mun.id_municipio " + "WHERE rem.id_remessa in (SELECT DISTINCT (tit.remessa_id) "
-					+ "from TB_TITULO tit " + "LEFT JOIN tb_confirmacao con ON tit.id_titulo = con.titulo_id "
-					+ "INNER JOIN tb_remessa rem ON tit.remessa_id=rem.id_remessa " + "where con.titulo_id IS NULL " + "and tit.id_titulo > 37085) "
-					+ "AND rem.instituicao_origem_id=" + instituicao.getId() + " " + "OR rem.status_remessa LIKE 'AGUARDANDO' "
-					+ "AND rem.instituicao_origem_id=" + instituicao.getId() + " " + "GROUP BY mun.nome_municipio,t.remessa_id " + "ORDER BY remessa_id ASC";
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)
+				|| instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
+			sql = "SELECT t.remessa_id " + "from TB_TITULO t " + "INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa "
+					+ "LEFT OUTER JOIN tb_confirmacao AS conf ON t.id_titulo=conf.titulo_id " + "WHERE conf.id_confirmacao is null "
+					+ "AND rem.instituicao_origem_id= " + instituicao.getId() + " " + "AND rem.arquivo_id>18088 " + "GROUP BY t.remessa_id "
+					+ "ORDER BY t.remessa_id ASC;";
 		}
 
 		Query query = getSession().createSQLQuery(sql);
 		Iterator iterator = query.list().iterator();
 		while (iterator.hasNext()) {
-			Object[] posicao = (Object[]) iterator.next();
-			Integer id = Integer.class.cast(posicao[1]);
 			Criteria criteria = getCriteria(Remessa.class);
-			criteria.add(Restrictions.eq("id", id));
+			criteria.add(Restrictions.eq("id", iterator.next()));
 			remessas.add(Remessa.class.cast(criteria.uniqueResult()));
 		}
 		return remessas;

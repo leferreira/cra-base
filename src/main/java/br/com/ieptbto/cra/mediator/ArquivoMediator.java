@@ -135,6 +135,7 @@ public class ArquivoMediator extends BaseMediator {
 		arquivo.setHoraEnvio(new LocalTime());
 		arquivo.setDataEnvio(new LocalDate());
 		arquivo.setDataRecebimento(new LocalDate().toDate());
+		arquivo.setRemessas(new ArrayList<Remessa>());
 		arquivo.setStatusArquivo(setStatusArquivo());
 		arquivo.setUsuarioEnvio(usuario);
 		arquivo.setInstituicaoEnvio(getInstituicaoEnvioArquivo(usuario, uploadedFile));

@@ -2,7 +2,6 @@ package br.com.ieptbto.cra.processador;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.markup.html.form.upload.FileUpload;
@@ -35,9 +34,6 @@ public class ProcessadorArquivo extends Processador {
 
 	private FileUpload fileUpload;
 	private File file;
-	private Usuario usuario;
-	private Arquivo arquivo;
-	private List<Exception> erros;
 	private String pathInstituicao;
 	private String pathUsuario;
 	private String pathInstituicaoTemp;
@@ -53,24 +49,22 @@ public class ProcessadorArquivo extends Processador {
 	 */
 	public Arquivo processarArquivo(FileUpload uploadedFile, Arquivo arquivo, List<Exception> erros) {
 		this.fileUpload = uploadedFile;
-		this.usuario = arquivo.getUsuarioEnvio();
-		this.arquivo = arquivo;
-		this.erros = erros;
 
+		Usuario usuario = arquivo.getUsuarioEnvio();
 		if (getFileUpload() != null) {
-			logger.info("Início processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
+			logger.info("Início processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + usuario.getLogin());
 
-			verificaDiretorio();
+			verificaDiretorio(usuario);
 			copiarArquivoParaDiretorioDoUsuarioTemporario(getFileUpload().getClientFileName());
-			setArquivo(fabricaDeArquivo.fabricaAplicacao(getFile(), getArquivo(), getErros()));
-			fabricaRegraValidacaoArquivo.validar(getFile(), getArquivo(), getUsuario(), getErros());
-			copiarArquivoEapagarTemporario();
+			arquivo = fabricaDeArquivo.fabricaAplicacao(getFile(), arquivo, erros);
+			fabricaRegraValidacaoArquivo.validar(getFile(), arquivo, usuario, erros);
+			copiarArquivoEapagarTemporario(arquivo);
 
-			logger.info("Fim processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + getUsuario().getLogin());
-			return getArquivo();
+			logger.info("Fim processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + usuario.getLogin());
 		} else {
 			throw new InfraException("O arquivo " + getFileUpload().getClientFileName() + " enviado não pode ser processado!");
 		}
+		return arquivo;
 	}
 
 	/**
@@ -82,17 +76,15 @@ public class ProcessadorArquivo extends Processador {
 	 * @return
 	 */
 	public Arquivo processarArquivoWS(List<RemessaVO> arquivoRecebido, Arquivo arquivo, List<Exception> erros) {
-		this.usuario = arquivo.getUsuarioEnvio();
-		this.arquivo = arquivo;
-		this.erros = erros;
+		Usuario usuario = arquivo.getUsuarioEnvio();
 
-		logger.info("Início processamento arquivo via WS " + arquivo.getNomeArquivo() + " do usuário " + getUsuario().getLogin());
+		logger.info("Início processamento arquivo via WS " + arquivo.getNomeArquivo() + " do usuário " + usuario.getLogin());
 
-		setArquivo(fabricaDeArquivo.fabricaWS(arquivoRecebido, arquivo, erros));
-		fabricaRegraValidacaoArquivo.validar(getArquivo(), getUsuario(), erros);
+		arquivo = fabricaDeArquivo.fabricaWS(arquivoRecebido, arquivo, erros);
+		fabricaRegraValidacaoArquivo.validar(arquivo, usuario, erros);
 
-		logger.info("Fim processamento arquivo via WS " + arquivo.getNomeArquivo() + " do usuário " + getUsuario().getLogin());
-		return getArquivo();
+		logger.info("Fim processamento arquivo via WS " + arquivo.getNomeArquivo() + " do usuário " + usuario.getLogin());
+		return arquivo;
 	}
 
 	/**
@@ -102,14 +94,10 @@ public class ProcessadorArquivo extends Processador {
 	 * @param remessas
 	 * @return
 	 */
-	public File baixarRemessaConfirmacaoRetornoTXT(Arquivo arquivo, List<Remessa> remessas) {
+	public File baixarRemessaConfirmacaoRetornoTXT(Arquivo arquivo, List<Remessa> remessas, Usuario usuario) {
 		this.file = null;
-		this.arquivo = arquivo;
-		this.usuario = arquivo.getUsuarioEnvio();
 
-		logger.info("Início do criação de Arquivo TXT " + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
-
-		verificaDiretorio();
+		verificaDiretorio(usuario);
 		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + arquivo.getId()));
 		return fabricaDeArquivo.baixarRemessaConfirmacaoRetornoTXT(remessas, getFile());
 	}
@@ -120,14 +108,10 @@ public class ProcessadorArquivo extends Processador {
 	 * @param remessa
 	 * @return
 	 */
-	public File baixarRemessaConfirmacaoRetornoTXT(Remessa remessa) {
+	public File baixarRemessaConfirmacaoRetornoTXT(Remessa remessa, Usuario usuario) {
 		this.file = null;
-		this.arquivo = remessa.getArquivo();
-		this.usuario = remessa.getArquivo().getUsuarioEnvio();
 
-		logger.info("Início do criação de Arquivo TXT " + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
-
-		verificaDiretorio();
+		verificaDiretorio(usuario);
 		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + remessa.getId()));
 		return fabricaDeArquivo.baixarRemessaConfirmacaoRetornoTXT(remessa, getFile());
 	}
@@ -139,14 +123,10 @@ public class ProcessadorArquivo extends Processador {
 	 * @param remessas
 	 * @return
 	 */
-	public File baixarDesistenciaTXT(RemessaDesistenciaProtesto remessa) {
+	public File baixarDesistenciaTXT(RemessaDesistenciaProtesto remessa, Usuario usuario) {
 		this.file = null;
-		this.arquivo = remessa.getArquivo();
-		this.usuario = remessa.getArquivo().getUsuarioEnvio();
 
-		logger.info("Início do criação de Arquivo TXT " + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
-
-		verificaDiretorio();
+		verificaDiretorio(usuario);
 		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + remessa.getId()));
 		return fabricaDeArquivo.baixarDesistenciaTXT(remessa, getFile());
 	}
@@ -158,14 +138,10 @@ public class ProcessadorArquivo extends Processador {
 	 * @param remessas
 	 * @return
 	 */
-	public File baixarCancelamentoTXT(RemessaCancelamentoProtesto remessa) {
+	public File baixarCancelamentoTXT(RemessaCancelamentoProtesto remessa, Usuario usuario) {
 		this.file = null;
-		this.arquivo = remessa.getArquivo();
-		this.usuario = remessa.getArquivo().getUsuarioEnvio();
 
-		logger.info("Início do criação de Arquivo TXT " + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
-
-		verificaDiretorio();
+		verificaDiretorio(usuario);
 		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + remessa.getId()));
 		return fabricaDeArquivo.baixarCancelamentoTXT(remessa, getFile());
 	}
@@ -177,14 +153,10 @@ public class ProcessadorArquivo extends Processador {
 	 * @param remessas
 	 * @return
 	 */
-	public File baixarAutorizacaoCancelamentoTXT(RemessaAutorizacaoCancelamento remessa) {
+	public File baixarAutorizacaoCancelamentoTXT(RemessaAutorizacaoCancelamento remessa, Usuario usuario) {
 		this.file = null;
-		this.arquivo = remessa.getArquivo();
-		this.usuario = remessa.getArquivo().getUsuarioEnvio();
 
-		logger.info("Início do criação de Arquivo TXT " + getArquivo().getNomeArquivo() + " do usuário " + getUsuario().getLogin());
-
-		verificaDiretorio();
+		verificaDiretorio(usuario);
 		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + remessa.getId()));
 		return fabricaDeArquivo.baixarAutorizacaoCancelamentoTXT(remessa, getFile());
 	}
@@ -199,22 +171,21 @@ public class ProcessadorArquivo extends Processador {
 		}
 	}
 
-	private void copiarArquivoEapagarTemporario() {
+	private void copiarArquivoEapagarTemporario(Arquivo arquivo) {
 		try {
-			if (getFile().renameTo(new File(getPathUsuario() + ConfiguracaoBase.BARRA + getArquivo().getId()))) {
+			if (getFile().renameTo(new File(getPathUsuario() + ConfiguracaoBase.BARRA + arquivo.getId()))) {
 				return;
 			}
 			new InfraException("Não foi possível mover o arquivo temporário para o diretório do usuário.");
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex.getCause());
-			getErros().add(ex);
-			new InfraException("Não foi possível mover o arquivo temporário para o diretório do usuário.");
+			throw new InfraException("Não foi possível mover o arquivo temporário para o diretório do usuário.");
 		}
 	}
 
-	private void verificaDiretorio() {
-		pathInstituicao = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + getUsuario().getInstituicao().getId();
-		pathInstituicaoTemp = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO_TEMP + getUsuario().getInstituicao().getId();
+	private void verificaDiretorio(Usuario usuario) {
+		pathInstituicao = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + usuario.getInstituicao().getId();
+		pathInstituicaoTemp = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO_TEMP + usuario.getInstituicao().getId();
 		pathUsuario = pathInstituicao + ConfiguracaoBase.BARRA + usuario.getId();
 		pathUsuarioTemp = pathInstituicaoTemp + ConfiguracaoBase.BARRA + usuario.getId();
 		File diretorioTemp = new File(ConfiguracaoBase.DIRETORIO_TEMP_BASE);
@@ -244,14 +215,6 @@ public class ProcessadorArquivo extends Processador {
 		return fileUpload;
 	}
 
-	public Usuario getUsuario() {
-		return usuario;
-	}
-
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
-	}
-
 	public void setFileUpload(FileUpload fileUpload) {
 		this.fileUpload = fileUpload;
 	}
@@ -273,31 +236,6 @@ public class ProcessadorArquivo extends Processador {
 			this.file.delete();
 		}
 		this.file = file;
-	}
-
-	public Arquivo getArquivo() {
-		if (this.arquivo == null) {
-			arquivo = new Arquivo();
-		}
-		if (arquivo.getRemessas() == null) {
-			arquivo.setRemessas(new ArrayList<Remessa>());
-		}
-		return arquivo;
-	}
-
-	public void setArquivo(Arquivo arquivo) {
-		this.arquivo = arquivo;
-	}
-
-	public List<Exception> getErros() {
-		if (erros == null) {
-			erros = new ArrayList<Exception>();
-		}
-		return erros;
-	}
-
-	public void setErros(List<Exception> erros) {
-		this.erros = erros;
 	}
 
 	public String getPathInstituicaoTemp() {

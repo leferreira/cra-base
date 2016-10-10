@@ -122,7 +122,6 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 			throw new InfraException("Não foi possível atualizar o status da DP.");
 		}
 		return desistenciaProtesto;
-
 	}
 
 	public DesistenciaProtesto buscarDesistenciaProtesto(DesistenciaProtesto entidade) {

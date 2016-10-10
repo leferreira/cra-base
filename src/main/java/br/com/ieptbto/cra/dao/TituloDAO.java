@@ -72,7 +72,7 @@ public class TituloDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
 		}
 		if (cartorio != null) {
-			criteria.add(Restrictions.eq("instituicaoDestino", cartorio));
+			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
 		}
 
 		if (titulo.getNossoNumero() != null && titulo.getNossoNumero() != StringUtils.EMPTY) {
@@ -96,12 +96,13 @@ public class TituloDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.ilike("nomeDevedor", titulo.getNomeDevedor(), MatchMode.ANYWHERE));
 
 		if (titulo.getNumeroIdentificacaoDevedor() != null && titulo.getNumeroIdentificacaoDevedor() != StringUtils.EMPTY)
-			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor(), MatchMode.ANYWHERE));
+			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor(), MatchMode.EXACT));
 
 		if (dataInicio != null) {
-			criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
+			criteria.add(Restrictions.sqlRestriction("DATE(data_cadastro) >= ?", dataInicio.toDate(), org.hibernate.type.StandardBasicTypes.DATE));
+			criteria.add(Restrictions.sqlRestriction("DATE(data_cadastro) <= ?", dataFim.toDate(), org.hibernate.type.StandardBasicTypes.DATE));
 		}
-		criteria.addOrder(Order.asc("remessa.dataRecebimento"));
+		criteria.addOrder(Order.asc("id"));
 		return criteria.list();
 	}
 

@@ -196,6 +196,11 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 
 	@Column(name = "TIPO_ENDOSO")
 	public String getTipoEndoso() {
+		if (tipoEndoso == null) {
+			tipoEndoso = "M";
+		} else if (StringUtils.isEmpty(tipoEndoso.trim())) {
+			tipoEndoso = "M";
+		}
 		return tipoEndoso;
 	}
 

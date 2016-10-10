@@ -378,6 +378,11 @@ public class TituloVO extends AbstractArquivoVO {
 	}
 
 	public String getTipoEndoso() {
+		if (tipoEndoso == null) {
+			tipoEndoso = "M";
+		} else if (StringUtils.isEmpty(tipoEndoso.trim())) {
+			tipoEndoso = "M";
+		}
 		return tipoEndoso;
 	}
 
@@ -391,6 +396,9 @@ public class TituloVO extends AbstractArquivoVO {
 
 	public String getNomeDevedor() {
 		if (nomeDevedor != null) {
+			if (nomeDevedor.length() > 45) {
+				nomeDevedor = nomeDevedor.substring(0, 44);
+			}
 			return RemoverAcentosUtil.removeAcentos(nomeDevedor);
 		}
 		return nomeDevedor;
