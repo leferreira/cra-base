@@ -184,9 +184,10 @@ public class ConversorRemessaArquivo {
 			if (titulo instanceof TituloRemessa) {
 				TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
 				tituloVO = TituloVO.parseTitulo(tituloRemessa);
-				if (tituloRemessa.getAnexo() != null) {
-					tituloVO.setComplementoRegistro(tituloRemessa.getAnexo().getDocumentoAnexo());
-				}
+				if (remessa.getInstituicaoOrigem().getTipoCampo51().equals(TipoCampo51.DOCUMENTOS_COMPACTADOS))
+					if (tituloRemessa.getAnexo() != null) {
+						tituloVO.setComplementoRegistro(tituloRemessa.getAnexo().getDocumentoAnexo());
+					}
 			}
 			titulosVO.add(tituloVO);
 		}

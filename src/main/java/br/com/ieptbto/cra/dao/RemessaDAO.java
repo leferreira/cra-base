@@ -133,11 +133,12 @@ public class RemessaDAO extends AbstractBaseDAO {
 		return remessas;
 	}
 
-	public List<Anexo> verificarAnexosRemessa(Remessa remessa) {
+	public Anexo verificarAnexosRemessa(Remessa remessa) {
 		Criteria criteria = getCriteria(Anexo.class);
 		criteria.createAlias("titulo", "titulo");
 		criteria.add(Restrictions.eq("titulo.remessa", remessa));
-		return criteria.list();
+		criteria.setMaxResults(1);
+		return Anexo.class.cast(criteria.uniqueResult());
 	}
 
 	public Remessa baixarArquivoCartorioRemessa(Remessa remessa) {

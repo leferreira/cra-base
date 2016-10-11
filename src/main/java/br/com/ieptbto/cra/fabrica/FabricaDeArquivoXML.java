@@ -12,6 +12,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
@@ -163,15 +164,25 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 
 	private Arquivo converterRemessa(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
 		JAXBContext context;
+
 		ArquivoVO arquivoVO = new ArquivoVO();
 		try {
 			context = JAXBContext.newInstance(ArquivoVO.class);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			String xmlGerado = "";
+
 			Scanner scanner = new Scanner(new FileInputStream(arquivoFisico));
 			while (scanner.hasNext()) {
-
 				xmlGerado = xmlGerado + scanner.nextLine().replaceAll("& ", "&amp;");
+				if (xmlGerado.contains("<?xml version=")) {
+					xmlGerado = xmlGerado.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", StringUtils.EMPTY);
+				}
+				if (xmlGerado.contains("<comarca CodMun")) {
+					xmlGerado = xmlGerado.replaceAll("<comarca CodMun=.[0-9]+..", StringUtils.EMPTY);
+				}
+				if (xmlGerado.contains("</comarca>")) {
+					xmlGerado = xmlGerado.replaceAll("</comarca>", StringUtils.EMPTY);
+				}
 			}
 			scanner.close();
 

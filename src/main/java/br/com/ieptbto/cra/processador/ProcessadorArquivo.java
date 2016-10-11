@@ -55,7 +55,7 @@ public class ProcessadorArquivo extends Processador {
 			logger.info("Início processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + usuario.getLogin());
 
 			verificaDiretorio(usuario);
-			copiarArquivoParaDiretorioDoUsuarioTemporario(getFileUpload().getClientFileName());
+			copiarArquivoParaDiretorioDoUsuarioTemporario(arquivo);
 			arquivo = fabricaDeArquivo.fabricaAplicacao(getFile(), arquivo, erros);
 			fabricaRegraValidacaoArquivo.validar(getFile(), arquivo, usuario, erros);
 			copiarArquivoEapagarTemporario(arquivo);
@@ -161,8 +161,8 @@ public class ProcessadorArquivo extends Processador {
 		return fabricaDeArquivo.baixarAutorizacaoCancelamentoTXT(remessa, getFile());
 	}
 
-	private void copiarArquivoParaDiretorioDoUsuarioTemporario(String nomeArquivo) {
-		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + nomeArquivo));
+	private void copiarArquivoParaDiretorioDoUsuarioTemporario(Arquivo arquivo) {
+		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + arquivo.getId()));
 		try {
 			getFileUpload().writeTo(getFile());
 		} catch (IOException e) {

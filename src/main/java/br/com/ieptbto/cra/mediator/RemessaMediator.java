@@ -214,7 +214,7 @@ public class RemessaMediator extends BaseMediator {
 		}
 	}
 
-	public List<Anexo> verificarAnexosRemessa(Remessa remessa) {
+	public Anexo verificarAnexosRemessa(Remessa remessa) {
 		return remessaDAO.verificarAnexosRemessa(remessa);
 	}
 

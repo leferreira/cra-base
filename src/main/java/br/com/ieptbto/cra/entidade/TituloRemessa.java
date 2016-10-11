@@ -498,8 +498,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	}
 
 	public static TituloRemessa parseTituloVO(TituloVO tituloVO) {
-		TituloRemessa titulo = new TituloConversor().converter(TituloRemessa.class, tituloVO);
-		return titulo;
+		return new TituloConversor().converter(TituloRemessa.class, tituloVO);
 	}
 
 	public void parseTituloFiliado(TituloFiliado tituloFiliado) {
