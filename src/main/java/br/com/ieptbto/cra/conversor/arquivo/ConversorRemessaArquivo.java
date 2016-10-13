@@ -50,7 +50,7 @@ public class ConversorRemessaArquivo {
 		this.arquivo = arquivo;
 		this.erros = erros;
 
-		List<RemessaVO> remessasVO = ConversorArquivoVO.converterParaRemessaVO(arquivoVO);
+		List<RemessaVO> remessasVO = ConversorArquivoVO.conversorXmlGenericoAplicacao(arquivoVO);
 		return converter(remessasVO);
 	}
 

@@ -3,6 +3,8 @@ package br.com.ieptbto.cra.bean;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
+
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -135,5 +137,35 @@ public class TituloFormBean implements Serializable {
 		tituloRemessa.setNomeSacadorVendedor(nomeCredor);
 		tituloRemessa.setNumeroIdentificacaoDevedor(documentoCredor);
 		return tituloRemessa;
+	}
+
+	public boolean isTodosCamposEmBranco() {
+		if (!StringUtils.isEmpty(this.nossoNumero) || StringUtils.isNotBlank(this.nossoNumero)) {
+			return false;
+		}
+		if (!StringUtils.isEmpty(this.numeroTitulo) || StringUtils.isNotBlank(this.numeroTitulo)) {
+			return false;
+		}
+		if (!StringUtils.isEmpty(this.numeroProtocoloCartorio) || StringUtils.isNotBlank(this.numeroProtocoloCartorio)) {
+			return false;
+		}
+		if (!StringUtils.isEmpty(this.nomeDevedor) || StringUtils.isNotBlank(this.nomeDevedor)) {
+			return false;
+		}
+		if (!StringUtils.isEmpty(this.numeroIdentificacaoDevedor) || StringUtils.isNotBlank(this.numeroIdentificacaoDevedor)) {
+			return false;
+		}
+		if (!StringUtils.isEmpty(this.nomeCredor) || StringUtils.isNotBlank(this.nomeCredor)) {
+			return false;
+		}
+		if (!StringUtils.isEmpty(this.documentoCredor) || StringUtils.isNotBlank(this.documentoCredor)) {
+			return false;
+		}
+		if (this.dataInicio != null) {
+			if (this.bancoConvenio != null || this.cartorio != null) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

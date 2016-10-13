@@ -10,6 +10,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,12 +26,14 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.BancoAgenciaCentralizadoraCodigoCartorio;
+import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.exception.TituloException;
+import br.com.ieptbto.cra.mediator.DesistenciaProtestoMediator;
 
 /**
  * @author Thasso Araújo
@@ -39,6 +42,9 @@ import br.com.ieptbto.cra.exception.TituloException;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @Repository
 public class TituloDAO extends AbstractBaseDAO {
+
+	@Autowired
+	private DesistenciaProtestoMediator desistenciaProtestoMediator;
 
 	public Confirmacao buscarConfirmacao(TituloRemessa titulo) {
 		Criteria criteria = getCriteria(Confirmacao.class);
@@ -76,11 +82,11 @@ public class TituloDAO extends AbstractBaseDAO {
 		}
 
 		if (titulo.getNossoNumero() != null && titulo.getNossoNumero() != StringUtils.EMPTY) {
-			criteria.add(Restrictions.like("nossoNumero", titulo.getNossoNumero(), MatchMode.EXACT));
+			criteria.add(Restrictions.like("nossoNumero", titulo.getNossoNumero(), MatchMode.ANYWHERE));
 		}
 		if (titulo.getNumeroProtocoloCartorio() != null && titulo.getNumeroProtocoloCartorio() != StringUtils.EMPTY) {
 			criteria.createAlias("confirmacao", "confirmacao");
-			criteria.add(Restrictions.eq("confirmacao.numeroProtocoloCartorio", titulo.getNumeroProtocoloCartorio()));
+			criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", titulo.getNumeroProtocoloCartorio(), MatchMode.EXACT));
 		}
 
 		if (titulo.getNumeroTitulo() != null && titulo.getNumeroTitulo() != StringUtils.EMPTY)
@@ -245,6 +251,8 @@ public class TituloDAO extends AbstractBaseDAO {
 			}
 
 			if (titulo != null) {
+				verificarProtestoIndevidoERetirado(titulo, tituloRetorno, erros);
+
 				tituloRetorno.setTitulo(titulo);
 				titulo.setRetorno(save(tituloRetorno));
 				save(titulo);
@@ -254,6 +262,35 @@ public class TituloDAO extends AbstractBaseDAO {
 			logger.error(ex.getMessage(), ex);
 		}
 		return titulo;
+	}
+
+	private void verificarProtestoIndevidoERetirado(TituloRemessa titulo, Retorno tituloRetorno, List<Exception> erros) {
+		TipoOcorrencia tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloRetorno.getTipoOcorrencia());
+
+		if (!titulo.getRemessa().getInstituicaoOrigem().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
+			if (TipoOcorrencia.PROTESTADO.equals(tipoOcorrencia) || TipoOcorrencia.RETIRADO.equals(tipoOcorrencia)) {
+				List<PedidoDesistencia> pedidosDesistencia = desistenciaProtestoMediator.buscarPedidosDesistenciaProtestoPorTitulo(titulo);
+
+				if (TipoOcorrencia.PROTESTADO.equals(tipoOcorrencia)) {
+					for (PedidoDesistencia pedido : pedidosDesistencia) {
+						LocalDate dataOcorrenciaProtesto = tituloRetorno.getDataOcorrencia();
+						LocalDate dataEnvioDesistencia = pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
+						if (dataOcorrenciaProtesto.isAfter(dataEnvioDesistencia) || dataOcorrenciaProtesto.equals(dataEnvioDesistencia)) {
+							erros.add(new TituloException(CodigoErro.CARTORIO_PROTESTO_INDEVIDO, tituloRetorno.getNossoNumero(),
+									tituloRetorno.getNumeroSequencialArquivo()));
+						}
+					}
+				}
+
+				if (TipoOcorrencia.RETIRADO.equals(tipoOcorrencia)) {
+					if (pedidosDesistencia.isEmpty()) {
+						titulo.setTipoOcorrencia(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante());
+						titulo.setCodigoIrregularidade(CodigoIrregularidade.IRREGULARIDADE_22.getCodigoIrregularidade());
+					}
+				}
+			}
+		}
+
 	}
 
 	/**
