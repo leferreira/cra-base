@@ -27,9 +27,9 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
+import br.com.ieptbto.cra.enumeration.EspecieTituloEntradaManual;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
 import br.com.ieptbto.cra.enumeration.TipoAlineaCheque;
-import br.com.ieptbto.cra.enumeration.EspecieTituloEntradaManual;
 
 /**
  * @author Thasso Araújo
@@ -363,5 +363,14 @@ public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 
 	public void setAvalistas(List<Avalista> avalistas) {
 		this.avalistas = avalistas;
+	}
+
+	public static boolean isEspecieNaoContemOutrosDevedores(EspecieTituloEntradaManual especieTitulo) {
+		if (EspecieTituloEntradaManual.CBI.equals(especieTitulo) || EspecieTituloEntradaManual.CH.equals(especieTitulo)
+				|| EspecieTituloEntradaManual.DMI.equals(especieTitulo) || EspecieTituloEntradaManual.DSI.equals(especieTitulo)
+				|| EspecieTituloEntradaManual.EC.equals(especieTitulo) || EspecieTituloEntradaManual.NP.equals(especieTitulo)) {
+			return true;
+		}
+		return false;
 	}
 }

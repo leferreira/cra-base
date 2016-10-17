@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -26,6 +27,7 @@ public class ArquivoFormBean implements Serializable {
 	private TipoInstituicaoCRA tipoInstituicao;
 	private Instituicao bancoConvenio;
 	private Instituicao cartorio;
+	private Municipio municipio;
 	private TipoVisualizacaoArquivos tipoVisualizacaoArquivos;
 
 	public String getNomeArquivo() {
@@ -110,6 +112,14 @@ public class ArquivoFormBean implements Serializable {
 
 	public List<SituacaoArquivo> getSituacoesArquivos() {
 		return situacoesArquivos;
+	}
+
+	public Municipio getMunicipio() {
+		return municipio;
+	}
+
+	public void setMunicipio(Municipio municipio) {
+		this.municipio = municipio;
 	}
 
 	public void setSituacoesArquivos(List<SituacaoArquivo> situacoesArquivos) {

@@ -27,7 +27,7 @@ import br.com.ieptbto.cra.entidade.vo.TituloVO;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoCampo51;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
-import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.mediator.TituloMediator;
 
 /**
  * 
@@ -42,6 +42,8 @@ public class ConversorRemessaArquivo {
 
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
+	@Autowired
+	private TituloMediator tituloMediator;
 
 	private Arquivo arquivo;
 	private List<Exception> erros;
@@ -50,7 +52,7 @@ public class ConversorRemessaArquivo {
 		this.arquivo = arquivo;
 		this.erros = erros;
 
-		List<RemessaVO> remessasVO = ConversorArquivoVO.conversorXmlGenericoAplicacao(arquivoVO);
+		List<RemessaVO> remessasVO = ConversorArquivoVO.converterParaRemessaVO(arquivoVO);
 		return converter(remessasVO);
 	}
 
@@ -73,18 +75,11 @@ public class ConversorRemessaArquivo {
 			remessa.setArquivo(arquivo);
 			remessa.setInstituicaoDestino(getInstituicaoDestino(remessaVO.getCabecalho()));
 			remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
-			remessa.setDataRecebimento(getDataRecebimento(remessaVO.getCabecalho().getDataMovimento()));
+			remessa.setDataRecebimento(new LocalDate());
 			remessa.setTitulos(getTitulos(remessaVO.getTitulos(), remessa));
 			arquivo.getRemessas().add(remessa);
 		}
 		return arquivo;
-	}
-
-	private LocalDate getDataRecebimento(String dataMovimento) {
-		if (dataMovimento.equals("00000000") || dataMovimento == null) {
-			return new LocalDate();
-		}
-		return DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, dataMovimento);
 	}
 
 	private Instituicao getInstituicaoDestino(CabecalhoVO cabecalho) {
@@ -121,11 +116,12 @@ public class ConversorRemessaArquivo {
 				if (!tituloVO.getComplementoRegistro().trim().equals(StringUtils.EMPTY)) {
 					titulo.setComplementoRegistro(tituloVO.getComplementoRegistro());
 
-					Anexo anexoArquivo = new Anexo();
-					anexoArquivo.setTitulo(titulo);
-					anexoArquivo.setDocumentoAnexo(tituloVO.getComplementoRegistro());
+					Anexo anexo = new Anexo();
+					anexo.setTitulo(titulo);
+					anexo.setDocumentoAnexo(tituloVO.getComplementoRegistro());
 
-					titulo.setAnexo(anexoArquivo);
+					titulo.setAnexos(new ArrayList<Anexo>());
+					titulo.getAnexos().add(anexo);
 					titulo.setComplementoRegistro(StringUtils.EMPTY);
 				}
 			}
@@ -184,10 +180,12 @@ public class ConversorRemessaArquivo {
 			if (titulo instanceof TituloRemessa) {
 				TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
 				tituloVO = TituloVO.parseTitulo(tituloRemessa);
-				if (remessa.getInstituicaoOrigem().getTipoCampo51().equals(TipoCampo51.DOCUMENTOS_COMPACTADOS))
-					if (tituloRemessa.getAnexo() != null) {
-						tituloVO.setComplementoRegistro(tituloRemessa.getAnexo().getDocumentoAnexo());
+				if (remessa.getInstituicaoOrigem().getTipoCampo51().equals(TipoCampo51.DOCUMENTOS_COMPACTADOS)) {
+					Anexo anexo = tituloMediator.buscarAnexo(tituloRemessa);
+					if (anexo != null) {
+						tituloVO.setComplementoRegistro(anexo.getDocumentoAnexo());
 					}
+				}
 			}
 			titulosVO.add(tituloVO);
 		}

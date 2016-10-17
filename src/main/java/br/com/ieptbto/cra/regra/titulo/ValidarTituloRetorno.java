@@ -61,11 +61,12 @@ public class ValidarTituloRetorno extends RegraTitulo {
 	}
 
 	private void verificarTipoOcorrenciaProtocoloCodigoIrregularidade(Retorno tituloRetorno) {
+		Integer numeroProtocoloCartorio = Integer.valueOf(tituloRetorno.getNumeroProtocoloCartorio().trim());
 		TipoOcorrencia tipoOcorrencia = null;
 		if (tituloRetorno.getTipoOcorrencia() != null) {
 			tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloRetorno.getTipoOcorrencia());
 			if (tipoOcorrencia == null) {
-				erros.add(new TituloException(CodigoErro.CARTORIO_TIPO_OCORRENCIA_INVALIDO, tituloRetorno.getNossoNumero(),
+				erros.add(new TituloException(CodigoErro.CARTORIO_TIPO_OCORRENCIA_INVALIDO, tituloRetorno.getNossoNumero(), numeroProtocoloCartorio,
 						tituloRetorno.getNumeroSequencialArquivo()));
 			}
 		}
@@ -77,15 +78,16 @@ public class ValidarTituloRetorno extends RegraTitulo {
 					|| TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_COM_CUSTAS.equals(tipoOcorrencia)) {
 				if (codigoIrregularidade == null || codigoIrregularidade == CodigoIrregularidade.IRREGULARIDADE_0) {
 					erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE, tituloRetorno.getNossoNumero(),
-							tituloRetorno.getNumeroSequencialArquivo()));
+							numeroProtocoloCartorio, tituloRetorno.getNumeroSequencialArquivo()));
 				}
 			}
 		}
 	}
 
 	private void verificarDuplicidadeDeTitulosNoArquivo(Retorno tituloRetorno) {
+		Integer numeroProtocoloCartorio = Integer.valueOf(tituloRetorno.getNumeroProtocoloCartorio().trim());
 		if (titulosProcessados.contains(tituloRetorno)) {
-			erros.add(new TituloException(CodigoErro.CARTORIO_TITULOS_DUPLICADOS_NO_ARQUIVO, tituloRetorno.getNossoNumero(),
+			erros.add(new TituloException(CodigoErro.CARTORIO_TITULOS_DUPLICADOS_NO_ARQUIVO, tituloRetorno.getNossoNumero(), numeroProtocoloCartorio,
 					tituloRetorno.getNumeroSequencialArquivo()));
 		} else {
 			titulosProcessados.add(tituloRetorno);

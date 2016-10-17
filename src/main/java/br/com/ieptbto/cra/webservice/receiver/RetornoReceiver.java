@@ -143,6 +143,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 				mensagem.setCodigo(exception.getCodigoErro().getCodigo());
 				mensagem.setDescricao(exception.getDescricao());
 				mensagem.setNossoNumero(exception.getNossoNumero());
+				mensagem.setNumeroProtocoloCartorio(exception.getNumeroProtocoloCartorio());
 				mensagem.setNumeroSequencialRegistro(Integer.valueOf(exception.getNumeroSequencialRegistro()));
 				mensagens.add(mensagem);
 

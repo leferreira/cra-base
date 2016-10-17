@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -184,9 +185,12 @@ public class TituloDAO extends AbstractBaseDAO {
 			tituloRemessa.setDataCadastro(tituloRemessa.getRemessa().getCabecalho().getDataMovimento().toDate());
 			TituloRemessa tituloSalvo = save(tituloRemessa);
 
-			if (tituloRemessa.getAnexo() != null) {
-				tituloRemessa.getAnexo().setTitulo(tituloSalvo);
-				save(tituloRemessa.getAnexo());
+			if (tituloRemessa.getAnexos() != null) {
+				for (Anexo anexo : tituloRemessa.getAnexos()) {
+
+					anexo.setTitulo(tituloSalvo);
+					save(anexo);
+				}
 			}
 			return save(tituloRemessa);
 		} catch (Exception ex) {
@@ -276,7 +280,8 @@ public class TituloDAO extends AbstractBaseDAO {
 						LocalDate dataOcorrenciaProtesto = tituloRetorno.getDataOcorrencia();
 						LocalDate dataEnvioDesistencia = pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
 						if (dataOcorrenciaProtesto.isAfter(dataEnvioDesistencia) || dataOcorrenciaProtesto.equals(dataEnvioDesistencia)) {
-							erros.add(new TituloException(CodigoErro.CARTORIO_PROTESTO_INDEVIDO, tituloRetorno.getNossoNumero(),
+							Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio().trim());
+							erros.add(new TituloException(CodigoErro.CARTORIO_PROTESTO_INDEVIDO, tituloRetorno.getNossoNumero(), numeroProtocolo,
 									tituloRetorno.getNumeroSequencialArquivo()));
 						}
 					}
@@ -315,11 +320,13 @@ public class TituloDAO extends AbstractBaseDAO {
 				return titulo;
 			}
 		}
+
+		Integer numeroProtocolo = Integer.parseInt(tituloConfirmacao.getNumeroProtocoloCartorio().trim());
 		if (!titulos.isEmpty()) {
-			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_CONFIRMACAO_JA_ENVIADO, tituloConfirmacao.getNossoNumero(),
+			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_CONFIRMACAO_JA_ENVIADO, tituloConfirmacao.getNossoNumero(), numeroProtocolo,
 					tituloConfirmacao.getNumeroSequencialArquivo()));
 		} else {
-			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_NAO_ENCONTRADO, tituloConfirmacao.getNossoNumero(),
+			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_NAO_ENCONTRADO, tituloConfirmacao.getNossoNumero(), numeroProtocolo,
 					tituloConfirmacao.getNumeroSequencialArquivo()));
 		}
 		return null;
@@ -350,11 +357,11 @@ public class TituloDAO extends AbstractBaseDAO {
 			}
 		}
 		if (!titulos.isEmpty()) {
-			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_RETORNO_JA_ENVIADO, tituloRetorno.getNossoNumero(),
+			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_RETORNO_JA_ENVIADO, tituloRetorno.getNossoNumero(), numeroProtocolo,
 					tituloRetorno.getNumeroSequencialArquivo()));
 		} else {
-			erros.add(
-					new TituloException(CodigoErro.CARTORIO_TITULO_NAO_ENCONTRADO, tituloRetorno.getNossoNumero(), tituloRetorno.getNumeroSequencialArquivo()));
+			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_NAO_ENCONTRADO, tituloRetorno.getNossoNumero(), numeroProtocolo,
+					tituloRetorno.getNumeroSequencialArquivo()));
 		}
 		return null;
 	}
@@ -447,13 +454,6 @@ public class TituloDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public List<TituloRemessa> carregarTitulosRemessaComDocumentosAnexos(Remessa remessa) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.add(Restrictions.eq("remessa", remessa));
-		criteria.createAlias("anexo", "anexo");
-		return criteria.list();
-	}
-
 	public TituloRemessa buscarTituloRemessaPorDadosRetorno(Retorno tituloRetorno) {
 		Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio().trim());
 		Criteria criteria = getCriteria(TituloRemessa.class);
@@ -465,5 +465,12 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.createAlias("confirmacao", "confirmacao");
 		criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", numeroProtocolo.toString(), MatchMode.EXACT));
 		return TituloRemessa.class.cast(criteria.uniqueResult());
+	}
+
+	public Anexo buscarAnexo(TituloRemessa tituloRemessa) {
+		Criteria criteria = getCriteria(Anexo.class);
+		criteria.setMaxResults(1);
+		criteria.add(Restrictions.eq("titulo", tituloRemessa));
+		return Anexo.class.cast(criteria.uniqueResult());
 	}
 }

@@ -90,9 +90,9 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 		return cancelamentoDAO.buscarPedidosCancelamentoProtesto(cancelamentoProtesto);
 	}
 
-	public List<CancelamentoProtesto> buscarCancelamentoProtesto(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
-			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
-		return cancelamentoDAO.buscarCancelamentoProtesto(arquivo, portador, municipio, dataInicio, dataFim, tiposArquivo, usuario);
+	public List<CancelamentoProtesto> buscarCancelamentoProtesto(String nomeArquivo, Instituicao bancoConvenio, Municipio municipio, LocalDate dataInicio,
+			LocalDate dataFim, List<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+		return cancelamentoDAO.buscarCancelamentoProtesto(nomeArquivo, bancoConvenio, municipio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)

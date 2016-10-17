@@ -71,7 +71,7 @@ public class ValidarTituloConfirmacao extends RegraTitulo {
 			tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloConfirmacao.getTipoOcorrencia());
 			if (numeroProtocoloCartorio.equals(ZERO)) {
 				if (tipoOcorrencia == null) {
-					erros.add(new TituloException(CodigoErro.CARTORIO_TIPO_OCORRENCIA_INVALIDO, tituloConfirmacao.getNossoNumero(),
+					erros.add(new TituloException(CodigoErro.CARTORIO_TIPO_OCORRENCIA_INVALIDO, tituloConfirmacao.getNossoNumero(), numeroProtocoloCartorio,
 							tituloConfirmacao.getNumeroSequencialArquivo()));
 				}
 			}
@@ -84,17 +84,17 @@ public class ValidarTituloConfirmacao extends RegraTitulo {
 				if (TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.equals(tipoOcorrencia)) {
 					if (codigoIrregularidade == null || codigoIrregularidade == CodigoIrregularidade.IRREGULARIDADE_0) {
 						erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE, tituloConfirmacao.getNossoNumero(),
-								tituloConfirmacao.getNumeroSequencialArquivo()));
+								numeroProtocoloCartorio, tituloConfirmacao.getNumeroSequencialArquivo()));
 					}
 				}
 			} else if (numeroProtocoloCartorio.equals(ZERO)) {
 				if (!TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.equals(tipoOcorrencia)) {
 					erros.add(new TituloException(CodigoErro.CARTORIO_PROTOCOLO_VAZIO_SEM_OCORRENCIA_DE_DEVOLUCAO, tituloConfirmacao.getNossoNumero(),
-							tituloConfirmacao.getNumeroSequencialArquivo()));
+							numeroProtocoloCartorio, tituloConfirmacao.getNumeroSequencialArquivo()));
 				}
 				if (codigoIrregularidade == null || codigoIrregularidade == CodigoIrregularidade.IRREGULARIDADE_0) {
 					erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE, tituloConfirmacao.getNossoNumero(),
-							tituloConfirmacao.getNumeroSequencialArquivo()));
+							numeroProtocoloCartorio, tituloConfirmacao.getNumeroSequencialArquivo()));
 				}
 			}
 		}
@@ -102,8 +102,9 @@ public class ValidarTituloConfirmacao extends RegraTitulo {
 	}
 
 	private void verificarDuplicidadeDeTitulosNoArquivo(Confirmacao tituloConfirmacao) {
+		Integer numeroProtocoloCartorio = Integer.valueOf(tituloConfirmacao.getNumeroProtocoloCartorio().trim());
 		if (titulosProcessados.contains(tituloConfirmacao)) {
-			erros.add(new TituloException(CodigoErro.CARTORIO_TITULOS_DUPLICADOS_NO_ARQUIVO, tituloConfirmacao.getNossoNumero(),
+			erros.add(new TituloException(CodigoErro.CARTORIO_TITULOS_DUPLICADOS_NO_ARQUIVO, tituloConfirmacao.getNossoNumero(), numeroProtocoloCartorio,
 					tituloConfirmacao.getNumeroSequencialArquivo()));
 		} else {
 			titulosProcessados.add(tituloConfirmacao);

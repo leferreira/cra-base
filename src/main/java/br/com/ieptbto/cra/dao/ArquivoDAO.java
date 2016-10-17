@@ -71,7 +71,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					remessa.setCabecalho(save(remessa.getCabecalho()));
 					remessa.setRodape(save(remessa.getRodape()));
 					remessa.setArquivoGeradoProBanco(arquivo);
-					remessa.setDataRecebimento(remessa.getCabecalho().getDataMovimento());
+					remessa.setDataRecebimento(new LocalDate());
 					remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
 					setDevolvidoPelaCRA(remessa);
 					setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
@@ -87,11 +87,14 @@ public class ArquivoDAO extends AbstractBaseDAO {
 						}
 						TituloRemessa tituloSalvo = tituloDAO.salvar(titulo, erros, transaction);
 						if (TituloRemessa.class.isInstance(titulo)) {
-							if (TituloRemessa.class.cast(titulo).getAnexo() != null) {
-								Anexo anexo = TituloRemessa.class.cast(titulo).getAnexo();
-								tituloSalvo.setAnexo(anexo);
-								anexo.setTitulo(tituloSalvo);
-								save(anexo);
+							if (TituloRemessa.class.cast(titulo).getAnexos() != null) {
+								for (Anexo anexo : TituloRemessa.class.cast(titulo).getAnexos()) {
+
+									tituloSalvo.setAnexos(new ArrayList<Anexo>());
+									tituloSalvo.getAnexos().add(anexo);
+									anexo.setTitulo(tituloSalvo);
+									save(anexo);
+								}
 							}
 						}
 						if (tituloSalvo != null) {

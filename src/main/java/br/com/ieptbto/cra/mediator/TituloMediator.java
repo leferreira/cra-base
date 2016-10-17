@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.TituloDAO;
+import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -15,6 +16,7 @@ import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.TipoCampo51;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 
 /**
@@ -67,5 +69,15 @@ public class TituloMediator {
 
 	public TituloRemessa buscarTituloRemessaPorDadosRetorno(Retorno tituloRetorno) {
 		return tituloDAO.buscarTituloRemessaPorDadosRetorno(tituloRetorno);
+	}
+
+	public Anexo buscarAnexo(TituloRemessa tituloRemessa) {
+		if (tituloRemessa.getRemessa().getInstituicaoOrigem().getTipoCampo51().equals(TipoCampo51.DOCUMENTOS_COMPACTADOS)) {
+			Anexo anexo = tituloDAO.buscarAnexo(tituloRemessa);
+			if (anexo != null) {
+				return anexo;
+			}
+		}
+		return null;
 	}
 }

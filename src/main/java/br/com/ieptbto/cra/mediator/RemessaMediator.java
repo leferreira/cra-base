@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.dao.RemessaDAO;
-import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
@@ -45,7 +44,7 @@ public class RemessaMediator extends BaseMediator {
 	@Autowired
 	private RemessaDAO remessaDAO;
 	@Autowired
-	private TituloDAO tituloDAO;
+	private TituloMediator tituloMediator;
 
 	@Transactional
 	public CabecalhoRemessa carregarCabecalhoRemessaPorId(CabecalhoRemessa cabecalhoRemessa) {
@@ -86,7 +85,7 @@ public class RemessaMediator extends BaseMediator {
 	 * @param remessa
 	 * @return
 	 */
-	public File decodificarAnexoTitulo(Usuario user, TituloRemessa tituloRemessa) {
+	public File decodificarAnexoTitulo(Usuario user, TituloRemessa tituloRemessa, Anexo anexo) {
 		String pathDiretorioIdRemessa = criarDiretoriosAnexos(user, tituloRemessa.getRemessa());
 		File diretorioPath = new File(pathDiretorioIdRemessa);
 
@@ -97,10 +96,9 @@ public class RemessaMediator extends BaseMediator {
 		String nomeArquivoZip =
 				tituloRemessa.getNomeDevedor().replace(" ", "_").replace("/", "") + "_" + tituloRemessa.getNumeroTitulo().replace("\\", "").replace("/", "");
 		try {
-			if (tituloRemessa.getAnexo() != null) {
+			if (anexo != null) {
 				DecoderString decoderString = new DecoderString();
-				decoderString.decode(tituloRemessa.getAnexo().getDocumentoAnexo(), pathDiretorioIdRemessa,
-						nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+				decoderString.decode(anexo.getDocumentoAnexo(), pathDiretorioIdRemessa, nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 			}
 			return new File(pathDiretorioIdRemessa + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 
@@ -125,6 +123,7 @@ public class RemessaMediator extends BaseMediator {
 		String pathDiretorioArquivo =
 				ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA + remessa.getArquivo().getId();
 
+		
 		String pathDiretorioIdRemessa = criarDiretoriosAnexos(user, remessa);
 		File diretorioRemessa = new File(pathDiretorioIdRemessa);
 		if (!diretorioRemessa.exists()) {
@@ -138,6 +137,7 @@ public class RemessaMediator extends BaseMediator {
 				if (!Arrays.asList(diretorioRemessa.listFiles()).isEmpty()) {
 
 					String nomeArquivoZip = remessa.getArquivo().getNomeArquivo().replace(".", "_") + "_" + remessa.getCabecalho().getCodigoMunicipio();
+					
 					FileOutputStream fileOutputStream =
 							new FileOutputStream(pathDiretorioArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 					ZipOutputStream zipOut = new ZipOutputStream(fileOutputStream);
@@ -191,15 +191,16 @@ public class RemessaMediator extends BaseMediator {
 	private void decodificarArquivosAnexos(Usuario user, String pathDiretorioRemessa, Remessa remessa) {
 
 		try {
-			List<TituloRemessa> titulos = tituloDAO.carregarTitulosRemessaComDocumentosAnexos(remessa);
-			if (!titulos.isEmpty()) {
+			List<TituloRemessa> titulos = tituloMediator.carregarTitulos(remessa);
+			if (titulos != null) {
 				for (TituloRemessa tituloRemessa : titulos) {
-					if (tituloRemessa.getAnexo() != null) {
+					Anexo anexo = tituloMediator.buscarAnexo(tituloRemessa);
+					if (anexo != null) {
 						DecoderString decoderString = new DecoderString();
 						String nomeArquivoZip = tituloRemessa.getNomeDevedor().replace(" ", "_").replace("/", "") + "_"
 								+ tituloRemessa.getNumeroTitulo().replace("\\", "").replace("/", "");
 
-						decoderString.decode(tituloRemessa.getAnexo().getDocumentoAnexo(), pathDiretorioRemessa + ConfiguracaoBase.BARRA,
+						decoderString.decode(anexo.getDocumentoAnexo(), pathDiretorioRemessa + ConfiguracaoBase.BARRA,
 								nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 					}
 				}

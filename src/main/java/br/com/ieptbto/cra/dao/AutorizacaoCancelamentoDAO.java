@@ -143,30 +143,30 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(Arquivo arquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
-			LocalDate dataFim, ArrayList<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(String nomeArquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
+			LocalDate dataFim, List<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(AutorizacaoCancelamento.class);
 		criteria.createAlias("remessaAutorizacaoCancelamento", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
 
-		if (StringUtils.isNotBlank(arquivo.getNomeArquivo())) {
-			criteria.add(Restrictions.ilike("arquivo.nomeArquivo", arquivo.getNomeArquivo(), MatchMode.ANYWHERE));
+		if (StringUtils.isNotBlank(nomeArquivo)) {
+			criteria.add(Restrictions.ilike("arquivo.nomeArquivo", nomeArquivo, MatchMode.ANYWHERE));
 		}
-
 		if (tiposArquivo != null && !tiposArquivo.isEmpty()) {
-			criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
-			criteria.add(filtrarRemessaPorTipoArquivo(tiposArquivo));
+			criteria.createAlias("arquivo.tipoArquivo", "tipo");
+			Disjunction disjunction = Restrictions.disjunction();
+			for (TipoArquivoEnum tipo : tiposArquivo) {
+				disjunction.add(Restrictions.eq("tipo.tipoArquivo", tipo));
+			}
+			criteria.add(disjunction);
 		}
-
 		if (dataInicio != null && dataFim != null) {
 			criteria.add((Restrictions.between("arquivo.dataEnvio", dataInicio, dataFim)));
 		}
-
 		if (portador != null) {
 			criteria.createAlias("remessa.cabecalho", "cabecalhoArquivo");
 			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", portador.getCodigoCompensacao()));
 		}
-
 		if (municipio != null) {
 			criteria.createAlias("cabecalhoCartorio", "cabecalho");
 			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", municipio.getCodigoIBGE()));
@@ -180,14 +180,6 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", usuario.getInstituicao().getCodigoCompensacao()));
 		}
 		return criteria.list();
-	}
-
-	private Disjunction filtrarRemessaPorTipoArquivo(ArrayList<TipoArquivoEnum> tiposArquivo) {
-		Disjunction disjunction = Restrictions.disjunction();
-		for (TipoArquivoEnum tipo : tiposArquivo) {
-			disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipo));
-		}
-		return disjunction;
 	}
 
 	@SuppressWarnings({ "unchecked" })

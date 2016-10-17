@@ -2,16 +2,13 @@ package br.com.ieptbto.cra.entidade;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.LazyToOne;
-import org.hibernate.annotations.LazyToOneOption;
 import org.hibernate.bytecode.internal.javassist.FieldHandled;
 import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
@@ -42,13 +39,9 @@ public class Anexo extends AbstractEntidade<Anexo> implements FieldHandled {
 		return id;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "TITULO_ID")
-	@LazyToOne(LazyToOneOption.NO_PROXY)
 	public TituloRemessa getTitulo() {
-		if (this.handler != null) {
-			return (TituloRemessa) this.handler.readObject(this, "titulo", titulo);
-		}
 		return titulo;
 	}
 
@@ -62,9 +55,6 @@ public class Anexo extends AbstractEntidade<Anexo> implements FieldHandled {
 	}
 
 	public void setTitulo(TituloRemessa Titulo) {
-		if (this.handler != null) {
-			this.titulo = (TituloRemessa) this.handler.writeObject(this, "titulo", this.titulo, titulo);
-		}
 		this.titulo = Titulo;
 	}
 
@@ -81,7 +71,6 @@ public class Anexo extends AbstractEntidade<Anexo> implements FieldHandled {
 	@Override
 	public void setFieldHandler(FieldHandler handler) {
 		this.handler = handler;
-
 	}
 
 	@Override

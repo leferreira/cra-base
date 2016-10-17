@@ -15,14 +15,16 @@ public class TituloException extends RuntimeException {
 
 	private String nossoNumero;
 	private String numeroSequencialRegistro;
+	private Integer numeroProtocoloCartorio;
 	private CodigoErro codigoErro;
 	private String descricao;
 
-	public TituloException(CodigoErro codigoErro, String nossoNumero, String sequencialRegistro) {
+	public TituloException(CodigoErro codigoErro, String nossoNumero, Integer numeroProtocoloCartorio, String sequencialRegistro) {
 		super(codigoErro.getDescricao());
 		this.descricao = codigoErro.getDescricao();
 		this.nossoNumero = nossoNumero;
 		this.codigoErro = codigoErro;
+		this.numeroProtocoloCartorio = numeroProtocoloCartorio;
 		this.numeroSequencialRegistro = sequencialRegistro;
 	}
 
@@ -45,6 +47,13 @@ public class TituloException extends RuntimeException {
 			codigoErro = CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO;
 		}
 		return codigoErro;
+	}
+
+	public Integer getNumeroProtocoloCartorio() {
+		if (numeroProtocoloCartorio == null) {
+			numeroProtocoloCartorio = 0;
+		}
+		return numeroProtocoloCartorio;
 	}
 
 	public String getNumeroSequencialRegistro() {

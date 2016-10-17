@@ -53,6 +53,9 @@ public class Mensagem extends MensagemCra {
 	@XmlAttribute(name = "numero_sequencial_registro")
 	private int numeroSequencialRegistro;
 
+	@XmlAttribute(name = "numero_protocolo_cartorio")
+	private Integer numeroProtocoloCartorio;
+
 	public String getNossoNumero() {
 		return nossoNumero;
 	}
@@ -61,11 +64,19 @@ public class Mensagem extends MensagemCra {
 		return numeroSequencialRegistro;
 	}
 
+	public Integer getNumeroProtocoloCartorio() {
+		return numeroProtocoloCartorio;
+	}
+
 	public void setNossoNumero(String nossoNumero) {
 		this.nossoNumero = nossoNumero;
 	}
 
 	public void setNumeroSequencialRegistro(int numeroSequencialRegistro) {
 		this.numeroSequencialRegistro = numeroSequencialRegistro;
+	}
+
+	public void setNumeroProtocoloCartorio(Integer numeroProtocoloCartorio) {
+		this.numeroProtocoloCartorio = numeroProtocoloCartorio;
 	}
 }

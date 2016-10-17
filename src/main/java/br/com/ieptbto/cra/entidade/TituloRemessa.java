@@ -47,9 +47,9 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	private static final long serialVersionUID = 1L;
 
 	private int id;
-	private Anexo anexo;
 	private Confirmacao confirmacao;
 	private Retorno retorno;
+	private List<Anexo> anexos;
 	private List<PedidoDesistencia> pedidosDesistencia;
 	private List<PedidoCancelamento> pedidosCancelamento;
 	private List<PedidoAutorizacaoCancelamento> pedidosAutorizacaoCancelamento;
@@ -112,6 +112,11 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 			return (Retorno) this.handler.readObject(this, "retorno", retorno);
 		}
 		return retorno;
+	}
+
+	@OneToMany(mappedBy = "titulo", fetch = FetchType.LAZY)
+	public List<Anexo> getAnexos() {
+		return anexos;
 	}
 
 	@OneToMany(mappedBy = "titulo", fetch = FetchType.LAZY)
@@ -610,26 +615,13 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		return getId();
 	}
 
-	@OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
-	@LazyToOne(LazyToOneOption.NO_PROXY)
-	public Anexo getAnexo() {
-		if (this.handler != null) {
-			return (Anexo) this.handler.readObject(this, "anexo", anexo);
-		}
-		return anexo;
-	}
-
-	public void setAnexo(Anexo anexo) {
-		if (this.handler != null) {
-			this.anexo = (Anexo) this.handler.writeObject(this, "anexo", this.anexo, anexo);
-		}
-		this.anexo = anexo;
+	public void setAnexos(List<Anexo> anexos) {
+		this.anexos = anexos;
 	}
 
 	@Override
 	public void setFieldHandler(FieldHandler handler) {
 		this.handler = handler;
-
 	}
 
 	@Override

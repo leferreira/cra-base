@@ -170,7 +170,9 @@ public class ProcessadorRemessaConveniada extends Processador {
 			Anexo anexo = new Anexo();
 			anexo.setDocumentoAnexo(tituloFiliado.getAnexoAsString());
 			anexo.setTitulo(tituloRemessa);
-			tituloRemessa.setAnexo(anexo);
+
+			tituloRemessa.setAnexos(new ArrayList<Anexo>());
+			tituloRemessa.getAnexos().add(anexo);
 		}
 		tituloRemessa.setNumeroSequencialArquivo(Integer.toString(listaTitulos.size() + 2));
 		listaTitulos.add(tituloRemessa);
@@ -190,7 +192,9 @@ public class ProcessadorRemessaConveniada extends Processador {
 			Anexo anexo = new Anexo();
 			anexo.setDocumentoAnexo(tituloFiliado.getAnexoAsString());
 			anexo.setTitulo(titulo);
-			titulo.setAnexo(anexo);
+
+			titulo.setAnexos(new ArrayList<Anexo>());
+			titulo.getAnexos().add(anexo);
 		}
 		titulo.setNumeroSequencialArquivo(Integer.toString(remessa.getTitulos().size() + 2));
 		remessa.getTitulos().add(titulo);
