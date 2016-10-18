@@ -123,21 +123,19 @@ public class RemessaMediator extends BaseMediator {
 		String pathDiretorioArquivo =
 				ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + remessa.getInstituicaoOrigem().getId() + ConfiguracaoBase.BARRA + remessa.getArquivo().getId();
 
-		
 		String pathDiretorioIdRemessa = criarDiretoriosAnexos(user, remessa);
 		File diretorioRemessa = new File(pathDiretorioIdRemessa);
+
 		if (!diretorioRemessa.exists()) {
 			diretorioRemessa.mkdirs();
-
-			decodificarArquivosAnexos(user, pathDiretorioIdRemessa, remessa);
 		}
+		decodificarArquivosAnexos(user, pathDiretorioIdRemessa, remessa);
 
 		try {
 			if (diretorioRemessa.exists()) {
 				if (!Arrays.asList(diretorioRemessa.listFiles()).isEmpty()) {
-
 					String nomeArquivoZip = remessa.getArquivo().getNomeArquivo().replace(".", "_") + "_" + remessa.getCabecalho().getCodigoMunicipio();
-					
+
 					FileOutputStream fileOutputStream =
 							new FileOutputStream(pathDiretorioArquivo + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 					ZipOutputStream zipOut = new ZipOutputStream(fileOutputStream);
@@ -194,14 +192,16 @@ public class RemessaMediator extends BaseMediator {
 			List<TituloRemessa> titulos = tituloMediator.carregarTitulos(remessa);
 			if (titulos != null) {
 				for (TituloRemessa tituloRemessa : titulos) {
-					Anexo anexo = tituloMediator.buscarAnexo(tituloRemessa);
-					if (anexo != null) {
-						DecoderString decoderString = new DecoderString();
-						String nomeArquivoZip = tituloRemessa.getNomeDevedor().replace(" ", "_").replace("/", "") + "_"
-								+ tituloRemessa.getNumeroTitulo().replace("\\", "").replace("/", "");
+					String nomeArquivoZip = tituloRemessa.getNomeDevedor().replace(" ", "_").replace("/", "") + "_"
+							+ tituloRemessa.getNumeroTitulo().replace("\\", "").replace("/", "") + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP;
+					File file = new File(pathDiretorioRemessa + ConfiguracaoBase.BARRA + nomeArquivoZip);
+					if (!file.exists()) {
+						Anexo anexo = tituloMediator.buscarAnexo(tituloRemessa);
+						if (anexo != null) {
+							DecoderString decoderString = new DecoderString();
 
-						decoderString.decode(anexo.getDocumentoAnexo(), pathDiretorioRemessa + ConfiguracaoBase.BARRA,
-								nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+							decoderString.decode(anexo.getDocumentoAnexo(), pathDiretorioRemessa + ConfiguracaoBase.BARRA, nomeArquivoZip);
+						}
 					}
 				}
 			}

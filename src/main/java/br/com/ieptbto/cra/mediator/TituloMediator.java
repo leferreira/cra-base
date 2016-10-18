@@ -6,6 +6,7 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.bean.TituloFormBean;
 import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
@@ -54,8 +55,8 @@ public class TituloMediator {
 	}
 
 	public List<TituloRemessa> buscarTitulos(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
-			Instituicao bancoConvenio, Instituicao cartorio, TituloRemessa tituloRemessa) {
-		return tituloDAO.buscarTitulos(usuario, dataInicio, dataFim, tipoInstituicao, bancoConvenio, cartorio, tituloRemessa);
+			Instituicao bancoConvenio, Instituicao cartorio, TituloFormBean titulo) {
+		return tituloDAO.buscarTitulos(usuario, dataInicio, dataFim, tipoInstituicao, bancoConvenio, cartorio, titulo);
 	}
 
 	@SuppressWarnings("rawtypes")

@@ -61,14 +61,14 @@ public class ArquivoFiliadoMediator {
 		}
 
 		if (!verificarSeInstituicaoPossuiLayout(usuario.getInstituicao())) {
-			logger.error("Olá " + usuario.getNome() + ", Não existe layout cadastrado para sua instituicao");
+			logger.error("Olá " + usuario.getNome() + ", Não existe layout cadastrado para sua instituicao...");
 			throw new InfraException("Olá " + usuario.getNome() + ", Não há layout cadastrado para sua instituicao");
 		}
 
 		setUsuario(usuario);
 		setArquivo(new Arquivo());
-		getArquivo().setNomeArquivo(getNomeArquivo());
-		getArquivo().setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.REMESSA));
+		this.arquivo.setNomeArquivo(getNomeArquivo());
+		this.arquivo.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.REMESSA));
 		this.arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
 		this.arquivo.setUsuarioEnvio(usuario);
 		this.arquivo.setRemessas(new ArrayList<Remessa>());
@@ -76,16 +76,13 @@ public class ArquivoFiliadoMediator {
 		this.arquivo.setDataEnvio(new LocalDate());
 		this.arquivo.setDataRecebimento(new LocalDate().toDate());
 		this.arquivo.setInstituicaoEnvio(usuario.getInstituicao());
-		getArquivo().setStatusArquivo(getStatusArquivoEnviado());
+		this.arquivo.setStatusArquivo(getStatusArquivoEnviado());
 
 		if (verificarSeArquivoJaEnviado(getArquivo())) {
 
 		}
-
 		conversorArquivoFiliado.converter(file, getUsuario(), getArquivo(), getErros());
-
 		setArquivo(arquivoDAO.salvar(getArquivo(), usuario, getErros()));
-
 		return this;
 	}
 

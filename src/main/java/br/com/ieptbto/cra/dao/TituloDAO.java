@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.ieptbto.cra.bean.TituloFormBean;
 import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
@@ -60,7 +61,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	}
 
 	public List<TituloRemessa> buscarTitulos(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
-			Instituicao bancoConvenio, Instituicao cartorio, TituloRemessa titulo) {
+			Instituicao bancoConvenio, Instituicao cartorio, TituloFormBean titulo) {
 		Instituicao instituicaoUsuario = usuario.getInstituicao();
 
 		Criteria criteria = getCriteria(TituloRemessa.class);
@@ -93,17 +94,17 @@ public class TituloDAO extends AbstractBaseDAO {
 		if (titulo.getNumeroTitulo() != null && titulo.getNumeroTitulo() != StringUtils.EMPTY)
 			criteria.add(Restrictions.ilike("numeroTitulo", titulo.getNumeroTitulo(), MatchMode.EXACT));
 
-		if (titulo.getNomeSacadorVendedor() != null && titulo.getNomeSacadorVendedor() != StringUtils.EMPTY)
-			criteria.add(Restrictions.ilike("nomeSacadorVendedor", titulo.getNomeSacadorVendedor(), MatchMode.ANYWHERE));
+		if (titulo.getNomeCredor() != null && titulo.getNomeCredor() != StringUtils.EMPTY)
+			criteria.add(Restrictions.ilike("nomeSacadorVendedor", titulo.getNomeCredor(), MatchMode.ANYWHERE));
 
-		if (titulo.getDocumentoSacador() != null && titulo.getDocumentoSacador() != StringUtils.EMPTY)
-			criteria.add(Restrictions.like("documentoSacador", titulo.getDocumentoSacador(), MatchMode.ANYWHERE));
+		if (titulo.getDocumentoCredor() != null && titulo.getDocumentoCredor() != StringUtils.EMPTY)
+			criteria.add(Restrictions.eq("documentoSacador", titulo.getDocumentoCredor()));
 
 		if (titulo.getNomeDevedor() != null && titulo.getNomeDevedor() != StringUtils.EMPTY)
 			criteria.add(Restrictions.ilike("nomeDevedor", titulo.getNomeDevedor(), MatchMode.ANYWHERE));
 
 		if (titulo.getNumeroIdentificacaoDevedor() != null && titulo.getNumeroIdentificacaoDevedor() != StringUtils.EMPTY)
-			criteria.add(Restrictions.like("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor(), MatchMode.EXACT));
+			criteria.add(Restrictions.eq("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor()));
 
 		if (dataInicio != null) {
 			criteria.add(Restrictions.sqlRestriction("DATE(data_cadastro) >= ?", dataInicio.toDate(), org.hibernate.type.StandardBasicTypes.DATE));

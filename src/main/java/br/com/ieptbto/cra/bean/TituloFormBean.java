@@ -6,7 +6,6 @@ import java.util.Date;
 import org.apache.commons.lang.StringUtils;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 
 /**
@@ -125,18 +124,6 @@ public class TituloFormBean implements Serializable {
 
 	public void setCartorio(Instituicao cartorio) {
 		this.cartorio = cartorio;
-	}
-
-	public TituloRemessa getTituloRemessa() {
-		TituloRemessa tituloRemessa = new TituloRemessa();
-		tituloRemessa.setNossoNumero(nossoNumero);
-		tituloRemessa.setNumeroTitulo(numeroTitulo);
-		tituloRemessa.setNumeroProtocoloCartorio(numeroProtocoloCartorio);
-		tituloRemessa.setNomeDevedor(nomeDevedor);
-		tituloRemessa.setNumeroIdentificacaoDevedor(numeroIdentificacaoDevedor);
-		tituloRemessa.setNomeSacadorVendedor(nomeCredor);
-		tituloRemessa.setNumeroIdentificacaoDevedor(documentoCredor);
-		return tituloRemessa;
 	}
 
 	public boolean isTodosCamposEmBranco() {

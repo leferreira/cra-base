@@ -18,6 +18,7 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
  * @author Thasso Araújo
@@ -70,13 +71,12 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 
 		Criterion restrict1 = Restrictions.ilike("municipio.nomeMunicipio", nomeMunicipio, MatchMode.EXACT);
-		Criterion restrict2 = Restrictions.ilike("municipio.nomeMunicipioSemAcento", nomeMunicipio, MatchMode.EXACT);
+		Criterion restrict2 =
+				Restrictions.ilike("municipio.nomeMunicipioSemAcento", RemoverAcentosUtil.removeAcentos(nomeMunicipio.trim().toUpperCase()), MatchMode.EXACT);
 
 		criteria.add(Restrictions.or(restrict1, restrict2));
-
 		if (criteria.uniqueResult() != null) {
 			return Instituicao.class.cast(criteria.uniqueResult());
-
 		}
 		return null;
 

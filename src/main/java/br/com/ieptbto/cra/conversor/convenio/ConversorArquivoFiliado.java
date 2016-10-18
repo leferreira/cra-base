@@ -54,11 +54,11 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 
 	@Autowired
-	LayoutFiliadoMediator layoutFiliadoMediator;
+	private LayoutFiliadoMediator layoutFiliadoMediator;
 	@Autowired
-	InstituicaoMediator instituicaoMediator;
+	private InstituicaoMediator instituicaoMediator;
 	@Autowired
-	MunicipioMediator municipioMediator;
+	private MunicipioMediator municipioMediator;
 
 	private Instituicao instituicao;
 	private List<LayoutFiliado> layoutfiliado;
@@ -138,7 +138,6 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 						lista.add(mapaCampos.getCampos());
 						listaCampos.put(mapaCampos.getCidade(), lista);
 					}
-
 				} else {
 					getErros().add(new InfraException("A Linha " + cont + " contem erros é não foi processada."));
 					logger.warn("Linha " + cont + " com problema  = " + linha);
@@ -151,7 +150,6 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 			logger.info(e.getMessage(), e);
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
 		}
-
 		converterTemplate(listaCampos, arquivo);
 	}
 
@@ -163,7 +161,6 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		remessas = new ArrayList<>();
 
 		for (String cidade : listaRegistros.keySet()) {
-
 			remessa = new Remessa();
 			valortotalTitulos = BigDecimal.ZERO;
 
@@ -259,6 +256,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		titulo.setCepSacadorVendedor("77000000");
 
 		titulo.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(titulo.getNumeroIdentificacaoDevedor()));
+		titulo.setNumeroControleDevedor(1);
 		titulo.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(titulo.getEnderecoDevedor()));
 		titulo.setUfDevedor("TO");
 
