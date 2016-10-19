@@ -49,14 +49,15 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	@Autowired
 	private ConversorCancelamentoProtesto conversorCancelamentoProtesto;
 
+	private static final String PRIMEIRO_DEVEDOR = "1";
+
 	public Arquivo converter(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
 		this.file = arquivoFisico;
 		this.arquivo = arquivo;
 		this.erros = erros;
 
 		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo);
-		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo) || TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)
-				|| TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
+		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo) || TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
 			return fabricaRemessaConfirmacaoRetorno.processarRemessaConfirmacaoRetorno(getFile(), getArquivo(), getErros());
 		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
 			return fabricaDesistenciaCancelamento.processarDesistenciaProtesto(getFile(), getArquivo(), getErros());
@@ -82,6 +83,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		remessaVO.setRodapes(new RodapeConversor().converter(remessa.getRodape(), RodapeVO.class));
 
 		int contSequencial = 2;
+		int quantidadeTitulos = 0;
 		for (Titulo titulo : remessa.getTitulos()) {
 			TituloVO tituloVO = new TituloVO();
 			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
@@ -91,12 +93,16 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 			} else if (TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
 				tituloVO = new RetornoConversor().converter(Retorno.class.cast(titulo), TituloVO.class);
 			}
+			if (tituloVO.getNumeroControleDevedor() != null && tituloVO.getNumeroControleDevedor().trim().equals(PRIMEIRO_DEVEDOR)) {
+				quantidadeTitulos++;
+			}
 			tituloVO.setNumeroSequencialArquivo(String.valueOf(contSequencial));
 			valorTotalTitulos = valorTotalTitulos.add(titulo.getSaldoTitulo());
 			remessaVO.getTitulos().add(tituloVO);
 			contSequencial++;
 		}
-		remessaVO.getCabecalho().setQtdTitulosRemessa(String.valueOf(remessaVO.getTitulos().size()));
+		remessaVO.getCabecalho().setQtdRegistrosRemessa(String.valueOf(remessaVO.getTitulos().size()));
+		remessaVO.getCabecalho().setQtdTitulosRemessa(String.valueOf(quantidadeTitulos));
 		remessaVO.getRodape().setSomatorioQtdRemessa(somatorioSegurancaQuantidadeRemessa(remessaVO));
 		remessaVO.getRodape().setSomatorioValorRemessa(new BigDecimalConversor().getValorConvertidoParaString(valorTotalTitulos));
 		remessaVO.setIdentificacaoRegistro(remessa.getCabecalho().getIdentificacaoRegistro().getConstante());
@@ -166,8 +172,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		int somatorioQtdRemessa = 0;
 		if (remessaVO.getCabecalho() != null) {
 			somatorioQtdRemessa = Integer.parseInt(remessaVO.getCabecalho().getQtdRegistrosRemessa())
-					+ Integer.parseInt(remessaVO.getCabecalho().getQtdTitulosRemessa())
-					+ Integer.parseInt(remessaVO.getCabecalho().getQtdIndicacoesRemessa())
+					+ Integer.parseInt(remessaVO.getCabecalho().getQtdTitulosRemessa()) + Integer.parseInt(remessaVO.getCabecalho().getQtdIndicacoesRemessa())
 					+ Integer.parseInt(remessaVO.getCabecalho().getQtdOriginaisRemessa());
 		}
 		return Integer.toString(somatorioQtdRemessa);

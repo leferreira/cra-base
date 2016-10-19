@@ -31,6 +31,10 @@ public class CabecalhoMediator {
 		return true;
 	}
 
+	public CabecalhoRemessa buscarUltimoCabecalhoRemessaPorMunicipio(String codigoPortador, String codigoMunicipio) {
+		return cabecalhoDAO.buscarUltimoCabecalhoRemessaPorMunicipio(codigoPortador, codigoMunicipio);
+	}
+
 	public CabecalhoRemessa buscarUltimoCabecalhoRetornoPorMunicipio(CabecalhoRemessa cabecalhoRemessa) {
 		return cabecalhoDAO.buscarUltimoCabecalhoRetornoPorMunicipio(cabecalhoRemessa);
 	}

@@ -48,6 +48,16 @@ public class CabecalhoDAO extends AbstractBaseDAO {
 		return CabecalhoRemessa.class.cast(criteria.uniqueResult());
 	}
 
+	public CabecalhoRemessa buscarUltimoCabecalhoRemessaPorMunicipio(String codigoPortador, String codigoMunicipio) {
+		Criteria criteria = getCriteria(CabecalhoRemessa.class);
+		criteria.add(Restrictions.eq("numeroCodigoPortador", codigoPortador));
+		criteria.add(Restrictions.eq("codigoMunicipio", codigoMunicipio));
+		criteria.add(Restrictions.eq("identificacaoTransacaoTipo", TipoArquivoEnum.REMESSA.getIdentificacaoTransacaoCabecalho()));
+		criteria.setMaxResults(1);
+		criteria.addOrder(Order.desc("id"));
+		return CabecalhoRemessa.class.cast(criteria.uniqueResult());
+	}
+
 	public CabecalhoRemessa buscarUltimoCabecalhoRemessa(CabecalhoRemessa cabecalhoRemessa) {
 		Criteria criteria = getCriteria(CabecalhoRemessa.class);
 		criteria.add(Restrictions.eq("numeroCodigoPortador", cabecalhoRemessa.getNumeroCodigoPortador()));

@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import br.com.ieptbto.cra.entidade.LayoutFiliado;
 import br.com.ieptbto.cra.enumeration.CampoLayout;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 public class TemplateLayoutEmpresa {
 
@@ -48,12 +49,15 @@ public class TemplateLayoutEmpresa {
 					TemplateLayoutEmpresa template = new TemplateLayoutEmpresa(dados[i], listaLayout.getCampo());
 					listaCampos.add(template);
 					if (listaLayout.getCampo().equals(CampoLayout.CIDADEDEVEDOR) && StringUtils.isNotBlank(dados[i])) {
-						cidade = dados[i];
+						cidade = RemoverAcentosUtil.removeAcentos(dados[i].trim());
 					} else if (listaLayout.getCampo().equals(CampoLayout.CIDADEDEVEDOR) && StringUtils.isBlank(dados[i])) {
 						cidade = "Palmas";
 						logger.error("cidade não informada. " + Arrays.toString(dados));
 					}
-					if (listaLayout.getCampo().equals(CampoLayout.DOCUMENTODEVEDOR) && StringUtils.isNotBlank(dados[i])) {
+					if (listaLayout.getCampo().equals(CampoLayout.NUMEROIDENTIFICACAODEVEDOR) && StringUtils.isNotBlank(dados[i])) {
+						if (dados[i] != null) {
+							dados[i] = dados[i].replace(".", "").replace("-", "").replace("/", "").trim();
+						}
 						validarCpfCnpj(dados[i], list, listaCampos);
 					}
 					break;
@@ -73,10 +77,8 @@ public class TemplateLayoutEmpresa {
 			list.add(new InfraException("O CPF/CNPJ " + dados + " está com o tamanho incorreto."));
 			logger.error("O CPF/CNPJ " + dados + " está com o tamanho incorreto.");
 		}
-
 		listaCampos.add(new TemplateLayoutEmpresa(tipo, CampoLayout.TIPOIDENTIFICACAODEVEDOR));
 	}
-
 }
 
 class LinhaTemplateLayout {

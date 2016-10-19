@@ -232,7 +232,6 @@ public class TituloDAO extends AbstractBaseDAO {
 				titulo.setConfirmacao(save(tituloConfirmacao));
 				save(titulo);
 			}
-
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
 		}
@@ -262,7 +261,6 @@ public class TituloDAO extends AbstractBaseDAO {
 				titulo.setRetorno(save(tituloRetorno));
 				save(titulo);
 			}
-
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
 		}

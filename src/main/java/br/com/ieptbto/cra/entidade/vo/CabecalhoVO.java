@@ -31,8 +31,7 @@ public class CabecalhoVO extends AbstractArquivoVO {
 
 	@XmlAttribute(name = "h16", required = true)
 	@IAtributoArquivo(ordem = 16, posicao = 100, tamanho = 497,
-			descricao = "Ajustar o tamanho do registro do header com o tamanho do registro de transação. Preencher com brancos.",
-			obrigatoriedade = true)
+			descricao = "Ajustar o tamanho do registro do header com o tamanho do registro de transação. Preencher com brancos.", obrigatoriedade = true)
 	private String complementoRegistro;
 
 	@XmlAttribute(name = "h15", required = true)
@@ -107,8 +106,8 @@ public class CabecalhoVO extends AbstractArquivoVO {
 	private String numeroCodigoPortador;
 
 	@XmlAttribute(name = "h01", required = true)
-	@IAtributoArquivo(ordem = 1, posicao = 1, tamanho = 1, descricao = "Identificar o registro header no arquivo. Constante 0.",
-			obrigatoriedade = true, validacao = "0", tipo = Integer.class)
+	@IAtributoArquivo(ordem = 1, posicao = 1, tamanho = 1, descricao = "Identificar o registro header no arquivo. Constante 0.", obrigatoriedade = true,
+			validacao = "0", tipo = Integer.class)
 	private String identificacaoRegistro;
 
 	public String getNumeroCodigoPortador() {
@@ -272,9 +271,6 @@ public class CabecalhoVO extends AbstractArquivoVO {
 		cabecalhoVO.setQtdRegistrosRemessa(StringUtils.leftPad(cabecalho.getQtdRegistrosRemessa().toString(), 4, "0"));
 		cabecalhoVO.setQtdTitulosRemessa(StringUtils.leftPad(cabecalho.getQtdTitulosRemessa().toString(), 4, "0"));
 		cabecalhoVO.setVersaoLayout(cabecalho.getVersaoLayout());
-
 		return cabecalhoVO;
-
 	}
-
 }

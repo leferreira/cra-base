@@ -35,8 +35,10 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
+import br.com.ieptbto.cra.enumeration.CampoLayout;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.mediator.CabecalhoMediator;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.mediator.LayoutFiliadoMediator;
 import br.com.ieptbto.cra.mediator.MunicipioMediator;
@@ -59,6 +61,8 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 	private InstituicaoMediator instituicaoMediator;
 	@Autowired
 	private MunicipioMediator municipioMediator;
+	@Autowired
+	private CabecalhoMediator cabecalhoMediator;
 
 	private Instituicao instituicao;
 	private List<LayoutFiliado> layoutfiliado;
@@ -74,7 +78,6 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		setErros(list);
 		setLayoutfiliado(layoutFiliadoMediator.buscarLayout(instituicao));
 		setRemessa(arquivo);
-
 	}
 
 	private void setRemessa(Arquivo arquivo) {
@@ -91,15 +94,16 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		rodape.setRemessa(remessa);
 		rodape.setSomatorioQtdRemessa(new BigDecimal(remessa.getTitulos().size() * 3));
 		rodape.setSomatorioValorRemessa(valortotalTitulos);
-		rodape.setNumeroSequencialRegistroArquivo(String.valueOf(remessa.getTitulos().size() + 1));
+		rodape.setNumeroSequencialRegistroArquivo(String.valueOf(remessa.getTitulos().size() + 2));
 		return rodape;
 	}
 
 	private CabecalhoRemessa getCabecalhoRemessa(Remessa remessa, String cidade) {
 		int totalTitulos = remessa.getTitulos().size();
+		String codigoMunicipio = getCodigoMunicipio(cidade);
 
 		CabecalhoRemessa cabecalho = new CabecalhoRemessa();
-		cabecalho.setCodigoMunicipio(getCodigoMunicipio(cidade));
+		cabecalho.setCodigoMunicipio(codigoMunicipio);
 		cabecalho.setDataMovimento(new LocalDate());
 		cabecalho.setIdentificacaoRegistro(TipoRegistro.CABECALHO);
 		cabecalho.setIdentificacaoTransacaoDestinatario("SDT");
@@ -107,7 +111,8 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		cabecalho.setIdentificacaoTransacaoTipo("TPR");
 		cabecalho.setNomePortador(RemoverAcentosUtil.removeAcentos(getInstituicao().getRazaoSocial()).toUpperCase());
 		cabecalho.setNumeroCodigoPortador(getInstituicao().getCodigoCompensacao());
-		cabecalho.setNumeroSequencialRegistroArquivo(String.valueOf(1));
+		cabecalho.setNumeroSequencialRemessa(gerarNumeroSequencial(remessa.getInstituicaoOrigem().getCodigoCompensacao(), codigoMunicipio));
+		cabecalho.setNumeroSequencialRegistroArquivo("1");
 		cabecalho.setAgenciaCentralizadora(StringUtils.leftPad(getInstituicao().getAgenciaCentralizadora(), 6, "0"));
 		cabecalho.setQtdTitulosRemessa(totalTitulos);
 		cabecalho.setQtdRegistrosRemessa(totalTitulos);
@@ -115,8 +120,16 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		cabecalho.setQtdOriginaisRemessa(totalTitulos);
 		cabecalho.setRemessa(remessa);
 		cabecalho.setVersaoLayout("043");
-
 		return cabecalho;
+	}
+
+	private Integer gerarNumeroSequencial(String codigoPortador, String codigoMunicipio) {
+		CabecalhoRemessa ultimoCabecalhoRemessa = cabecalhoMediator.buscarUltimoCabecalhoRemessaPorMunicipio(codigoPortador, codigoMunicipio);
+
+		if (ultimoCabecalhoRemessa != null) {
+			return ultimoCabecalhoRemessa.getNumeroSequencialRemessa() + 1;
+		}
+		return 1;
 	}
 
 	private void processarArquivoRecebido(Arquivo arquivo) {
@@ -145,7 +158,6 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 				cont++;
 			}
 			reader.close();
-
 		} catch (IOException e) {
 			logger.info(e.getMessage(), e);
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
@@ -177,12 +189,18 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 					for (TemplateLayoutEmpresa templateLayoutEmpresa : registro) {
 						for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
 							String propertyName = propertyDescriptor.getName();
+							if (templateLayoutEmpresa.getCampo().equals(CampoLayout.NUMEROIDENTIFICACAODEVEDOR)) {
+								if (StringUtils.isNotBlank(templateLayoutEmpresa.getValor())) {
+									String documentoDevedor = templateLayoutEmpresa.getValor().replace(".", "").replace("-", "").replace("/", "").trim();
+									titulo.setNumeroIdentificacaoDevedor(documentoDevedor);
+									break;
+								}
+							}
 							if (propertyName.equals(templateLayoutEmpresa.getCampo().getLabel())) {
 								propertyAccessTitulo.setPropertyValue(propertyName,
 										getValorConvertido(templateLayoutEmpresa.getValor(), propertyAccessTitulo.getPropertyType(propertyName), propertyName));
 								break;
 							}
-
 						}
 					}
 					valortotalTitulos = valortotalTitulos.add(titulo.getSaldoTitulo());
@@ -257,6 +275,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 
 		titulo.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(titulo.getNumeroIdentificacaoDevedor()));
 		titulo.setNumeroControleDevedor(1);
+		titulo.setInformacaoSobreAceite("N");
 		titulo.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(titulo.getEnderecoDevedor()));
 		titulo.setUfDevedor("TO");
 
@@ -267,6 +286,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		titulo.setPracaProtesto(titulo.getCidadeDevedor());
 		titulo.setValorTitulo(titulo.getSaldoTitulo());
 		titulo.setRemessa(remessa);
+		titulo.setNumeroSequencialArquivo(Integer.toString(remessa.getTitulos().size() + 1));
 		return titulo;
 	}
 

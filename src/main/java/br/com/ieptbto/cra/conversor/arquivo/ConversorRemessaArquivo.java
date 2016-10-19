@@ -48,6 +48,8 @@ public class ConversorRemessaArquivo {
 	private Arquivo arquivo;
 	private List<Exception> erros;
 
+	private static final String PRIMEIRO_DEVEDOR = "1";
+
 	public Arquivo converterParaArquivo(ArquivoVO arquivoVO, Arquivo arquivo, List<Exception> erros) {
 		this.arquivo = arquivo;
 		this.erros = erros;
@@ -175,11 +177,15 @@ public class ConversorRemessaArquivo {
 		remessaVO.setCabecalho(CabecalhoVO.parseCabecalho(remessa.getCabecalho()));
 
 		List<TituloVO> titulosVO = new ArrayList<TituloVO>();
+		int quantidadeTitulos = 0;
 		for (Titulo titulo : remessa.getTitulos()) {
 			TituloVO tituloVO = null;
 			if (titulo instanceof TituloRemessa) {
 				TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
 				tituloVO = TituloVO.parseTitulo(tituloRemessa);
+				if (tituloVO.getNumeroControleDevedor() != null && tituloVO.getNumeroControleDevedor().trim().equals(PRIMEIRO_DEVEDOR)) {
+					quantidadeTitulos++;
+				}
 				if (remessa.getInstituicaoOrigem().getTipoCampo51().equals(TipoCampo51.DOCUMENTOS_COMPACTADOS)) {
 					Anexo anexo = tituloMediator.buscarAnexo(tituloRemessa);
 					if (anexo != null) {
@@ -191,6 +197,8 @@ public class ConversorRemessaArquivo {
 		}
 		remessaVO.setTitulos(titulosVO);
 		remessaVO.setRodapes(RodapeVO.parseRodape(remessa.getRodape(), remessa.getCabecalho()));
+		remessaVO.getCabecalho().setQtdRegistrosRemessa(String.valueOf(remessaVO.getTitulos().size()));
+		remessaVO.getCabecalho().setQtdTitulosRemessa(String.valueOf(quantidadeTitulos));
 		return remessaVO;
 	}
 
