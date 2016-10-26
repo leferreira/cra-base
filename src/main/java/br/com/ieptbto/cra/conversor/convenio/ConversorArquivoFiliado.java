@@ -283,7 +283,8 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		titulo.setEspecieTitulo("CDA");
 		titulo.setDataOcorrencia(new LocalDate());
 		titulo.setDataVencimentoTitulo(titulo.getDataEmissaoTitulo());
-		titulo.setPracaProtesto(titulo.getCidadeDevedor());
+		titulo.setPracaProtesto(RemoverAcentosUtil.removeAcentos(titulo.getCidadeDevedor()));
+		titulo.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(titulo.getCidadeDevedor()));
 		titulo.setValorTitulo(titulo.getSaldoTitulo());
 		titulo.setRemessa(remessa);
 		titulo.setNumeroSequencialArquivo(Integer.toString(remessa.getTitulos().size() + 1));

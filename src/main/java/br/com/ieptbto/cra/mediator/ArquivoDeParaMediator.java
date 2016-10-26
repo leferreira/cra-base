@@ -10,8 +10,8 @@ import br.com.ieptbto.cra.entidade.AgenciaBradesco;
 import br.com.ieptbto.cra.entidade.AgenciaCAF;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.BancoTipoRegraBasicaInstrumento;
+import br.com.ieptbto.cra.enumeration.BooleanSimNao;
 import br.com.ieptbto.cra.enumeration.PadraoArquivoDePara;
-import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivoDeParaBB;
 import br.com.ieptbto.cra.slip.ArquivoBradesco;
 import br.com.ieptbto.cra.slip.ArquivoCAF;
@@ -24,22 +24,35 @@ import br.com.ieptbto.cra.slip.ArquivoCAF;
 public class ArquivoDeParaMediator {
 
 	@Autowired
-	ArquivoDeParaDAO deParaDAO;
+	private ArquivoDeParaDAO deParaDAO;
 	@Autowired
-	ProcessadorArquivoDeParaBB processadorArquivoDeParaBB;
+	private ProcessadorArquivoDeParaBB processadorArquivoDeParaBB;
 
-	public void processarArquivo(FileUpload uploadedFile) {
+	public void processarArquivo(FileUpload uploadedFile, PadraoArquivoDePara padraoArquivo, BooleanSimNao limparBase) {
+		if (limparBase.getBool()) {
+			limparBasesAgencias(padraoArquivo);
+		}
 
-		if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.ARQUIVO_DE_PARA_ATUALIZACAO.getModelo())) {
+		if (padraoArquivo.equals(PadraoArquivoDePara.ARQUIVO_DE_PARA_ATUALIZACAO)) {
 
-		} else if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.CAF.getModelo())) {
+		} else if (padraoArquivo.equals(PadraoArquivoDePara.CAF)) {
 			deParaDAO.salvarArquivoCAF(new ArquivoCAF().processar(uploadedFile));
-		} else if (uploadedFile.getClientFileName().contains(PadraoArquivoDePara.BANCO_DO_BRASIL.getModelo())) {
+		} else if (padraoArquivo.equals(PadraoArquivoDePara.BANCO_DO_BRASIL)) {
 			processadorArquivoDeParaBB.iniciarProcessamento(uploadedFile);
-		} else if (uploadedFile.getClientFileName().toUpperCase().contains(PadraoArquivoDePara.BRADESCO.getModelo())) {
+		} else if (padraoArquivo.equals(PadraoArquivoDePara.BRADESCO)) {
 			deParaDAO.salvarArquivoBradesco(new ArquivoBradesco().processar(uploadedFile));
-		} else {
-			new InfraException("Não foi possível definir o modelo do arquivo de/para ! Entre em contato com a CRA !");
+		}
+	}
+
+	private void limparBasesAgencias(PadraoArquivoDePara padraoArquivo) {
+		if (padraoArquivo.equals(PadraoArquivoDePara.ARQUIVO_DE_PARA_ATUALIZACAO)) {
+
+		} else if (padraoArquivo.equals(PadraoArquivoDePara.CAF)) {
+			deParaDAO.limparAgenciasCaf();
+		} else if (padraoArquivo.equals(PadraoArquivoDePara.BANCO_DO_BRASIL)) {
+			deParaDAO.limparAgenciasBancoDoBrasil();
+		} else if (padraoArquivo.equals(PadraoArquivoDePara.BRADESCO)) {
+			deParaDAO.limparAgenciasBradesco();
 		}
 	}
 

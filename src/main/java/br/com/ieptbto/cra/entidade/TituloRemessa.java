@@ -69,7 +69,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	private String pracaProtesto;
 	private String tipoEndoso;
 	private String informacaoSobreAceite;
-	private Integer numeroControleDevedor;
 	private String nomeDevedor;
 	private String tipoIdentificacaoDevedor;
 	private String numeroIdentificacaoDevedor;
@@ -212,11 +211,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	@Column(name = "INFORMACAO_SOBRE_ACEITE")
 	public String getInformacaoSobreAceite() {
 		return informacaoSobreAceite;
-	}
-
-	@Column(name = "NUMERO_CONTROLE_DEVEDOR")
-	public Integer getNumeroControleDevedor() {
-		return numeroControleDevedor;
 	}
 
 	@Column(name = "NOME_DEVEDOR")
@@ -393,10 +387,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 
 	public void setInformacaoSobreAceite(String informacaoSobreAceite) {
 		this.informacaoSobreAceite = informacaoSobreAceite;
-	}
-
-	public void setNumeroControleDevedor(Integer numeroControleDevedor) {
-		this.numeroControleDevedor = numeroControleDevedor;
 	}
 
 	public void setNomeDevedor(String nomeDevedor) {
@@ -617,6 +607,18 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 
 	public void setAnexos(List<Anexo> anexos) {
 		this.anexos = anexos;
+	}
+
+	@Transient
+	public boolean isDevedorPrincipal() {
+		Integer numeroDevedor = 0;
+		if (StringUtils.isNotBlank(Integer.toString(this.getNumeroControleDevedor()))) {
+			numeroDevedor = this.getNumeroControleDevedor();
+		}
+		if (numeroDevedor > 1) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

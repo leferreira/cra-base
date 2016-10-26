@@ -31,6 +31,7 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 	private String agenciaCodigoCedente;
 	private BigDecimal saldoTitulo;
 
+	private Integer numeroControleDevedor;
 	private String ufDevedor;
 	private Integer codigoCartorio;
 	private String numeroProtocoloCartorio;
@@ -90,6 +91,11 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 			agenciaCodigoCedente = StringUtils.EMPTY;
 		}
 		return agenciaCodigoCedente.trim();
+	}
+
+	@Column(name = "NUMERO_CONTROLE_DEVEDOR")
+	public Integer getNumeroControleDevedor() {
+		return numeroControleDevedor;
 	}
 
 	@Column(name = "VALOR_SALDO_TITULO")
@@ -224,6 +230,10 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 		this.valorCustaCartorio = valorCustaCartorio;
 	}
 
+	public void setNumeroControleDevedor(Integer numeroControleDevedor) {
+		this.numeroControleDevedor = numeroControleDevedor;
+	}
+
 	public void setDeclaracaoPortador(String declaracaoPortador) {
 		this.declaracaoPortador = declaracaoPortador;
 	}
@@ -303,7 +313,9 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 				equalsBuilder.append(this.getCodigoPortador(), confirmacao.getCodigoPortador());
 				equalsBuilder.append(this.getAgenciaCodigoCedente(), confirmacao.getAgenciaCodigoCedente());
 				equalsBuilder.append(this.getNossoNumero(), confirmacao.getNossoNumero());
+				equalsBuilder.append(this.getNumeroTitulo(), confirmacao.getNumeroTitulo());
 				equalsBuilder.append(this.getNumeroProtocoloCartorio(), confirmacao.getNumeroProtocoloCartorio());
+				equalsBuilder.append(this.getNumeroControleDevedor(), confirmacao.getNumeroControleDevedor());
 			} else if (Retorno.class.isInstance(modalidade)) {
 				Retorno retorno = Retorno.class.cast(modalidade);
 				equalsBuilder.append(this.getCodigoPortador(), retorno.getCodigoPortador());

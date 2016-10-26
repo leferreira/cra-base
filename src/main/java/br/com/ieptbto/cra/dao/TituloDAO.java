@@ -60,6 +60,20 @@ public class TituloDAO extends AbstractBaseDAO {
 		return Retorno.class.cast(criteria.uniqueResult());
 	}
 
+	public Retorno buscarRetornoTituloDevedorPrincipal(Confirmacao confirmacao) {
+		Integer numeroProtocolo = Integer.parseInt(confirmacao.getNumeroProtocoloCartorio().trim());
+
+		Criteria criteria = getCriteria(Retorno.class);
+		criteria.createAlias("remessa", "remessa");
+		criteria.createAlias("remessa.cabecalho", "cabecalho");
+		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", confirmacao.getRemessa().getCabecalho().getCodigoMunicipio()));
+		criteria.add(Restrictions.ilike("codigoPortador", confirmacao.getCodigoPortador(), MatchMode.EXACT));
+		criteria.add(Restrictions.like("nossoNumero", confirmacao.getNossoNumero().trim(), MatchMode.EXACT));
+		criteria.add(Restrictions.like("numeroProtocoloCartorio", numeroProtocolo.toString(), MatchMode.EXACT));
+		criteria.setMaxResults(1);
+		return Retorno.class.cast(criteria.uniqueResult());
+	}
+
 	public List<TituloRemessa> buscarTitulos(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
 			Instituicao bancoConvenio, Instituicao cartorio, TituloFormBean titulo) {
 		Instituicao instituicaoUsuario = usuario.getInstituicao();
@@ -208,7 +222,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	 * @return
 	 */
 	private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao, List<Exception> erros) {
-		TituloRemessa titulo = buscaTituloConfirmacaoSalvo(tituloConfirmacao, erros);
+		TituloRemessa titulo = buscarTituloConfirmacaoSalvo(tituloConfirmacao, erros);
 
 		try {
 			BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBanco(tituloConfirmacao.getCodigoPortador());
@@ -246,7 +260,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	 * @return
 	 */
 	private TituloRemessa salvarTituloRetorno(Retorno tituloRetorno, List<Exception> erros) {
-		TituloRemessa titulo = buscaTituloRetornoSalvo(tituloRetorno, erros);
+		TituloRemessa titulo = buscarTituloRetornoSalvo(tituloRetorno, erros);
 
 		try {
 			BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBanco(tituloRetorno.getCodigoPortador());
@@ -304,14 +318,15 @@ public class TituloDAO extends AbstractBaseDAO {
 	 * @param erros
 	 * @return
 	 */
-	public TituloRemessa buscaTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao, List<Exception> erros) {
+	public TituloRemessa buscarTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao, List<Exception> erros) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("remessa.cabecalho", "cabecalho");
 		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", tituloConfirmacao.getRemessa().getCabecalho().getCodigoMunicipio()));
 		criteria.add(Restrictions.like("codigoPortador", tituloConfirmacao.getCodigoPortador().trim(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("nossoNumero", tituloConfirmacao.getNossoNumero(), MatchMode.EXACT));
-		criteria.add(Restrictions.like("numeroTitulo", tituloConfirmacao.getNumeroTitulo(), MatchMode.EXACT));
+		criteria.add(Restrictions.like("numeroTitulo", tituloConfirmacao.getNumeroTitulo().trim(), MatchMode.EXACT));
+		criteria.add(Restrictions.eq("numeroControleDevedor", tituloConfirmacao.getNumeroControleDevedor()));
 
 		List<TituloRemessa> titulos = criteria.list();
 		for (TituloRemessa titulo : titulos) {
@@ -338,7 +353,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	 * @param erros
 	 * @return
 	 */
-	public TituloRemessa buscaTituloRetornoSalvo(Retorno tituloRetorno, List<Exception> erros) {
+	public TituloRemessa buscarTituloRetornoSalvo(Retorno tituloRetorno, List<Exception> erros) {
 		Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio().trim());
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
@@ -351,8 +366,10 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		List<TituloRemessa> titulos = criteria.list();
 		for (TituloRemessa titulo : titulos) {
-			if (titulo.getRetorno() == null) {
-				return titulo;
+			if (titulo.isDevedorPrincipal()) {
+				if (titulo.getRetorno() == null) {
+					return titulo;
+				}
 			}
 		}
 		if (!titulos.isEmpty()) {

@@ -414,6 +414,51 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
+	public List<Arquivo> buscarArquivosDesistenciaCancelamento(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim,
+			TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoEnum> tiposArquivo, List<SituacaoArquivo> situacoesArquivos) {
+		Criteria criteria = getCriteria(Arquivo.class);
+		criteria.createAlias("tipoArquivo", "tipoArquivo");
+
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", usuario.getInstituicao()),
+					Restrictions.eq("instituicaoRecebe", usuario.getInstituicao())));
+		}
+		if (bancoConvenio != null) {
+			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", bancoConvenio), Restrictions.eq("instituicaoRecebe", bancoConvenio)));
+		}
+		if (tipoInstituicao != null && bancoConvenio == null) {
+			criteria.createAlias("instituicaoEnvio", "instituicaoEnvio");
+			criteria.createAlias("instituicaoEnvio.tipoInstituicao", "tipoInstituicao");
+			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
+		}
+		if (!situacoesArquivos.isEmpty()) {
+			Disjunction disjunction = Restrictions.disjunction();
+			criteria.createAlias("statusArquivo", "statusArquivo");
+			for (SituacaoArquivo status : situacoesArquivos) {
+				disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", status));
+			}
+			criteria.add(disjunction);
+		}
+		if (nomeArquivo != null && StringUtils.isNotEmpty(nomeArquivo)) {
+			criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.ANYWHERE));
+		}
+		if (!tiposArquivo.isEmpty()) {
+			Disjunction disjunction = Restrictions.disjunction();
+			for (TipoArquivoEnum tipoArquivo : tiposArquivo) {
+				disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipoArquivo));
+			}
+			criteria.add(disjunction);
+		}
+		if (dataInicio != null) {
+			criteria.add(Restrictions.between("dataEnvio", dataInicio, dataFim));
+		}
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.REMESSA));
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.CONFIRMACAO));
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.RETORNO));
+		criteria.addOrder(Order.desc("dataEnvio"));
+		return criteria.list();
+	}
+
 	@Transactional(readOnly = true)
 	public Arquivo buscarArquivosPorNomeArquivoInstituicaoEnvio(Instituicao instituicao, String nomeArquivo) {
 		Criteria criteria = getCriteria(Arquivo.class);

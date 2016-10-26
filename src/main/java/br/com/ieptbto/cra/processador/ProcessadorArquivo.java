@@ -184,21 +184,27 @@ public class ProcessadorArquivo extends Processador {
 	}
 
 	private void verificaDiretorio(Usuario usuario) {
-		pathInstituicao = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + usuario.getInstituicao().getId();
-		pathInstituicaoTemp = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO_TEMP + usuario.getInstituicao().getId();
-		pathUsuario = pathInstituicao + ConfiguracaoBase.BARRA + usuario.getId();
-		pathUsuarioTemp = pathInstituicaoTemp + ConfiguracaoBase.BARRA + usuario.getId();
-		File diretorioTemp = new File(ConfiguracaoBase.DIRETORIO_TEMP_BASE);
-		File diretorioArquivo = new File(ConfiguracaoBase.DIRETORIO_BASE);
-		File diretorioInstituicao = new File(pathInstituicao);
-		File diretorioUsuario = new File(pathUsuario);
-		File diretorioUsuarioTemp = new File(pathUsuarioTemp);
+		File diretorioBaseTemp = new File(ConfiguracaoBase.DIRETORIO_TEMP_BASE);
+		File diretorioBase = new File(ConfiguracaoBase.DIRETORIO_BASE);
 
-		if (!diretorioTemp.exists()) {
-			diretorioTemp.mkdirs();
+		pathInstituicaoTemp = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO_TEMP + usuario.getInstituicao().getId();
+		pathInstituicao = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + usuario.getInstituicao().getId();
+		File diretorioInstituicaoTemp = new File(pathInstituicaoTemp);
+		File diretorioInstituicao = new File(pathInstituicao);
+
+		pathUsuarioTemp = pathInstituicaoTemp + ConfiguracaoBase.BARRA + usuario.getId();
+		pathUsuario = pathInstituicao + ConfiguracaoBase.BARRA + usuario.getId();
+		File diretorioUsuarioTemp = new File(pathUsuarioTemp);
+		File diretorioUsuario = new File(pathUsuario);
+
+		if (!diretorioBaseTemp.exists()) {
+			diretorioBaseTemp.mkdirs();
 		}
-		if (!diretorioArquivo.exists()) {
-			diretorioArquivo.mkdirs();
+		if (!diretorioBase.exists()) {
+			diretorioBase.mkdirs();
+		}
+		if (!diretorioInstituicaoTemp.exists()) {
+			diretorioInstituicaoTemp.mkdirs();
 		}
 		if (!diretorioInstituicao.exists()) {
 			diretorioInstituicao.mkdirs();
@@ -225,7 +231,7 @@ public class ProcessadorArquivo extends Processador {
 				file.createNewFile();
 			} catch (IOException e) {
 				logger.error(e.getMessage(), e.getCause());
-				throw new InfraException("Não foi possível criar arquivo Físico temporário para o arquivo " + file.getName());
+				throw new InfraException("Não foi possível criar o arquivo temporário. Favor entrar em contato com a CRA...");
 			}
 		}
 		return file;

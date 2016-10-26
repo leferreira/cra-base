@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
 import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
+import br.com.ieptbto.cra.exception.InfraException;
 
 /**
  * 
@@ -36,14 +37,15 @@ public class ProcessadorArquivoDeParaBB {
 			uploadedFile = new FileReader(file.writeToTempFile());
 			processarDados(uploadedFile);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info(e.getMessage(), e);
+			throw new InfraException("Não foi possível processar o arquivo de atualizações do Banco do Brasil. Favor entrar em contato com a CRA!");
 		}
 	}
 
 	private void processarDados(FileReader arquivo) {
 		try {
 			BufferedReader reader = new BufferedReader(arquivo);
-			logger.info("inicio processamento arquivo DePara BB ");
+			logger.info("Inicio processamento arquivo DePara BB...");
 			String linha = "";
 			int cont = 0;
 
@@ -79,10 +81,5 @@ public class ProcessadorArquivoDeParaBB {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static void main(String[] args) {
-		System.out.println("0188341211494000000177".substring(0, 9));
-		System.out.println("0188341211494000000177".substring(9, 13));
 	}
 }

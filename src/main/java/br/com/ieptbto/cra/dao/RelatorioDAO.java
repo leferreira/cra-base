@@ -26,8 +26,8 @@ import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 @Repository
 public class RelatorioDAO extends AbstractBaseDAO {
 
-	public List<TituloRemessa> relatorioTitulosGeral(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
-			Instituicao bancoConvenio, Instituicao cartorio) {
+	public List<TituloRemessa> relatorioTitulosGeral(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio,
+			Instituicao cartorio) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("confirmacao", "confirmacao", JoinType.LEFT_OUTER_JOIN);
@@ -52,8 +52,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		if (tipoInstituicao != null) {
 			if (bancoConvenio == null && cartorio == null) {
 				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio"))
-						.addOrder(Order.asc("id"));
+				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
 			}
 			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
 			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
@@ -84,11 +83,10 @@ public class RelatorioDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
 			criteria.addOrder(Order.asc("id"));
 		}
-		if (tipoInstituicao != null) {
+		if (tipoInstituicao != null && bancoConvenio == null) {
 			if (bancoConvenio == null && cartorio == null) {
 				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio"))
-						.addOrder(Order.asc("id"));
+				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
 			}
 			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
 			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
@@ -126,8 +124,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
 				criteria.createAlias("remessa.instituicaoDestino", "instituicaoDestino");
 				criteria.createAlias("instituicaoDestino.municipio", "municipio");
-				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio"))
-						.addOrder(Order.asc("id"));
+				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
 			}
 			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
 			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
@@ -135,12 +132,13 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.isNull("retorno.id"));
 		criteria.add(Restrictions.ne("confirmacao.tipoOcorrencia", TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante()));
 		criteria.add(Restrictions.ne("confirmacao.numeroProtocoloCartorio", ConfiguracaoBase.ZERO));
+		criteria.add(Restrictions.eq("numeroControleDevedor", Integer.valueOf(ConfiguracaoBase.UM)));
 		criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
 		return criteria.list();
 	}
 
-	public List<TituloRemessa> relatorioTitulosRetorno(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
-			Instituicao bancoConvenio, Instituicao cartorio) {
+	public List<TituloRemessa> relatorioTitulosRetorno(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio,
+			Instituicao cartorio) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("confirmacao", "confirmacao");
@@ -165,8 +163,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		if (tipoInstituicao != null && bancoConvenio == null) {
 			if (cartorio == null) {
 				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio"))
-						.addOrder(Order.asc("id"));
+				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
 			}
 			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
 			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
@@ -175,8 +172,8 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public List<TituloRemessa> relatorioTitulosPagos(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
-			Instituicao bancoConvenio, Instituicao cartorio) {
+	public List<TituloRemessa> relatorioTitulosPagos(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio,
+			Instituicao cartorio) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("confirmacao", "confirmacao");
@@ -201,8 +198,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		if (tipoInstituicao != null && bancoConvenio == null) {
 			if (cartorio == null) {
 				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio"))
-						.addOrder(Order.asc("id"));
+				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
 			}
 			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
 			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
@@ -238,8 +234,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		if (tipoInstituicao != null) {
 			if (bancoConvenio == null && cartorio == null) {
 				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio"))
-						.addOrder(Order.asc("id"));
+				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
 			}
 			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
 			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
@@ -275,8 +270,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		if (tipoInstituicao != null && bancoConvenio == null) {
 			if (cartorio == null) {
 				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio"))
-						.addOrder(Order.asc("id"));
+				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
 			}
 			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
 			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
@@ -294,8 +288,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 			Instituicao instituicao, Instituicao cartorio) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		TipoInstituicaoCRA tipoInstituicaoParametro = instituicao.getTipoInstituicao().getTipoInstituicao();
-		if (tipoInstituicaoParametro.equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)
-				|| tipoInstituicaoParametro.equals(TipoInstituicaoCRA.CONVENIO)) {
+		if (tipoInstituicaoParametro.equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA) || tipoInstituicaoParametro.equals(TipoInstituicaoCRA.CONVENIO)) {
 
 		} else if (tipoInstituicaoParametro.equals(TipoInstituicaoCRA.CARTORIO)) {
 
@@ -307,8 +300,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 			Instituicao instituicao, Instituicao cartorio) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		TipoInstituicaoCRA tipoInstituicaoParametro = instituicao.getTipoInstituicao().getTipoInstituicao();
-		if (tipoInstituicaoParametro.equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)
-				|| tipoInstituicaoParametro.equals(TipoInstituicaoCRA.CONVENIO)) {
+		if (tipoInstituicaoParametro.equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA) || tipoInstituicaoParametro.equals(TipoInstituicaoCRA.CONVENIO)) {
 
 		} else if (tipoInstituicaoParametro.equals(TipoInstituicaoCRA.CARTORIO)) {
 

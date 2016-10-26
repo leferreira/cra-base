@@ -46,6 +46,10 @@ public class TituloMediator {
 		return tituloDAO.buscarRetorno(titulo);
 	}
 
+	public Retorno buscarRetornoTituloDevedorPrincipal(Confirmacao confirmacao) {
+		return tituloDAO.buscarRetornoTituloDevedorPrincipal(confirmacao);
+	}
+
 	public Retorno carregarTituloRetorno(Retorno retorno) {
 		return tituloDAO.buscarPorPK(retorno, Retorno.class);
 	}

@@ -23,6 +23,7 @@ public class TituloRelatorioCSVBean implements Serializable {
 	private String numeroTitulo;
 	private String numeroProtocoloCartorio;
 	private String municipio;
+	private Integer numeroControleDevedor;
 	private String nomeDevedor;
 	private String saldoTitulo;
 	private String remessa;
@@ -58,6 +59,7 @@ public class TituloRelatorioCSVBean implements Serializable {
 		} else if (tituloRemessa.getConfirmacao() != null) {
 			this.dataOcorrencia = DataUtil.localDateToString(tituloRemessa.getConfirmacao().getDataOcorrencia());
 		}
+		this.numeroControleDevedor = tituloRemessa.getNumeroControleDevedor();
 		if (!tituloRemessa.getPedidosDesistencia().isEmpty()) {
 			this.desistencia = "SIM";
 		} else {
@@ -183,5 +185,13 @@ public class TituloRelatorioCSVBean implements Serializable {
 
 	public TituloRemessa getTitulo() {
 		return titulo;
+	}
+
+	public Integer getNumeroControleDevedor() {
+		return numeroControleDevedor;
+	}
+
+	public void setNumeroControleDevedor(Integer numeroControleDevedor) {
+		this.numeroControleDevedor = numeroControleDevedor;
 	}
 }

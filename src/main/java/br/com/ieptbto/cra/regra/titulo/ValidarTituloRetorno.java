@@ -45,9 +45,8 @@ public class ValidarTituloRetorno extends RegraTitulo {
 
 		for (Remessa remessa : arquivo.getRemessas()) {
 
-			if (remessa.getTitulos().isEmpty()) {
+			if (remessa.getTitulos() == null || remessa.getTitulos().isEmpty()) {
 				erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_ARQUIVO_ENVIADO_SEM_TITULOS));
-				return;
 			}
 
 			this.titulosProcessados = new ArrayList<Titulo>();

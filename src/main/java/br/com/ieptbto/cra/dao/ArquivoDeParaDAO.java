@@ -29,14 +29,11 @@ public class ArquivoDeParaDAO extends AbstractBaseDAO {
 		Transaction transaction = getBeginTransation();
 
 		try {
-			Query query = createSQLQuery("DELETE FROM tb_agencia_caf ");
-			query.executeUpdate();
 			for (AgenciaCAF agencia : listaAgencias) {
 				save(agencia);
 			}
 			transaction.commit();
 
-			logger.info("O arquivo CAF enviado foi inserido na base ");
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
@@ -54,7 +51,6 @@ public class ArquivoDeParaDAO extends AbstractBaseDAO {
 			}
 			transaction.commit();
 
-			logger.info("O arquivo Bradesco enviado foi inserido na base ");
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
@@ -87,8 +83,7 @@ public class ArquivoDeParaDAO extends AbstractBaseDAO {
 	public AgenciaBradesco buscarAgenciaArquivoDeParaBradesco(TituloRemessa tituloRemessa) {
 		Criteria criteria = getCriteria(AgenciaBradesco.class);
 		criteria.add(Restrictions.like("cnpj", tituloRemessa.getDocumentoSacador(), MatchMode.EXACT));
-		criteria.add(
-				Restrictions.like("codigoAgenciaCedente", tituloRemessa.getAgenciaCodigoCedente(), MatchMode.EXACT));
+		criteria.add(Restrictions.like("codigoAgenciaCedente", tituloRemessa.getAgenciaCodigoCedente(), MatchMode.EXACT));
 		criteria.setMaxResults(1);
 		return AgenciaBradesco.class.cast(criteria.uniqueResult());
 	}
@@ -99,5 +94,36 @@ public class ArquivoDeParaDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.like("codigoAgencia", agencia, MatchMode.EXACT));
 		criteria.setMaxResults(1);
 		return AgenciaCAF.class.cast(criteria.uniqueResult());
+	}
+
+	public void limparAgenciasCaf() {
+		try {
+			Query query = createSQLQuery("DELETE FROM tb_agencia_caf; DELETE FROM audit_tb_agencia_caf;");
+			query.executeUpdate();
+
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível limpar a base de agências CAF. Favor entrar em contato com a CRA!");
+		}
+	}
+
+	public void limparAgenciasBancoDoBrasil() {
+		try {
+			Query query = createSQLQuery("DELETE FROM tb_agencia_banco_brasil; DELETE FROM audit_tb_agencia_banco_brasil;");
+			query.executeUpdate();
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível limpar a base de agências Banco do Brasil. Favor entrar em contato com a CRA!");
+		}
+	}
+
+	public void limparAgenciasBradesco() {
+		try {
+			Query query = createSQLQuery("DELETE FROM tb_agencia_bradesco; DELETE FROM audit_tb_agencia_bradesco;");
+			query.executeUpdate();
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível limpar a base de agências Bradesco. Favor entrar em contato com a CRA!");
+		}
 	}
 }

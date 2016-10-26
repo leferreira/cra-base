@@ -21,6 +21,7 @@ public class ConfiguracaoBase {
 	public static String RELATORIOS_PATH = "/br/com/ieptbto/cra/relatorio/";
 	public static String RELATORIOS_CONVENIO_PATH = "/br/com/ieptbto/cra/relatorioConvenio/";
 	public static final String ZERO = "0";
+	public static final String UM = "1";
 	public static final String EXTENSAO_ARQUIVO_ZIP = ".zip";
 	public static final int TAMANHO_PADRAO_LINHA = 600;
 	public static final int TAMANHO_PADRAO_LINHA_DESISTENCIA_PROTESTO = 127;

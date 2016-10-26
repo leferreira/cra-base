@@ -80,6 +80,35 @@ public class DownloadMediator extends BaseMediator {
 	}
 
 	/**
+	 * Download de arquivos TXT de Instituições e Convênios
+	 * 
+	 * @param instituicao
+	 * @param arquivo
+	 * @return
+	 */
+	public File baixarDesistenciaCancelamentoTXT(Usuario usuario, Arquivo arquivo) {
+
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
+				&& !arquivo.getStatusArquivo().getSituacaoArquivo().equals(SituacaoArquivo.ENVIADO)) {
+			StatusArquivo status = new StatusArquivo();
+			status.setData(new LocalDateTime());
+			status.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
+			arquivo.setStatusArquivo(status);
+			arquivoDAO.alterarStatusArquivo(arquivo);
+		}
+
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
+			return null;
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)) {
+			return null;
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
+			RemessaAutorizacaoCancelamento remessaAutorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessasAutorizacaoCancelamento(arquivo);
+			return processadorArquivo.baixarAutorizacaoCancelamentoTXT(remessaAutorizacaoCancelamento, usuario);
+		}
+		return null;
+	}
+
+	/**
 	 * Download de arquivos B,C,R TXT de Cartórios
 	 * 
 	 * @param usuario
