@@ -29,6 +29,7 @@ import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.DesistenciaCancelamentoException;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.util.DataUtil;
 
 /**
  * @author Thasso Araújo
@@ -71,31 +72,25 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 
 				for (PedidoAutorizacaoCancelamento pedido : ac.getAutorizacoesCancelamentos()) {
 					pedido.setAutorizacaoCancelamento(ac);
-					// pedido.setTitulo(tituloDAO.buscarTituloAutorizacaoCancelamento(pedido));
+					pedido.setTitulo(tituloDAO.buscarTituloAutorizacaoCancelamento(pedido));
 
-					// if (pedido.getTitulo() != null) {
-					// pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO);
-					// pedidosAutorizacao.add(pedido);
-					// quantidadeAutorizacaoCartorio =
-					// quantidadeAutorizacaoCartorio + 1;
-					// valorTotalAutorizacao =
-					// valorTotalAutorizacao.add(pedido.getValorTitulo());
-					// totalAutorizacaoArquivo = totalAutorizacaoArquivo + 1;
-					// } else if
-					// (pedido.getDataProtocolagem().isAfter(DataUtil.stringToLocalDate("dd/MM/yyyy",
-					// "01/12/2015"))
-					// ||
-					// pedido.getDataProtocolagem().equals(DataUtil.stringToLocalDate("dd/MM/yyyy",
-					// "01/12/2015"))) {
-					// pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO);
-					// pedidosAutorizacaoErros.add(pedido);
-					// } else {
-					pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO);
-					pedidosAutorizacao.add(pedido);
-					quantidadeAutorizacaoCartorio = quantidadeAutorizacaoCartorio + 1;
-					valorTotalAutorizacao = valorTotalAutorizacao.add(pedido.getValorTitulo());
-					totalAutorizacaoArquivo = totalAutorizacaoArquivo + 1;
-					// }
+					if (pedido.getTitulo() != null) {
+						pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO);
+						pedidosAutorizacao.add(pedido);
+						quantidadeAutorizacaoCartorio = quantidadeAutorizacaoCartorio + 1;
+						valorTotalAutorizacao = valorTotalAutorizacao.add(pedido.getValorTitulo());
+						totalAutorizacaoArquivo = totalAutorizacaoArquivo + 1;
+					} else if (pedido.getDataProtocolagem().isAfter(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))
+							|| pedido.getDataProtocolagem().equals(DataUtil.stringToLocalDate("dd/MM/yyyy", "01/12/2015"))) {
+						pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO);
+						pedidosAutorizacaoErros.add(pedido);
+					} else {
+						pedido.setCodigoErroProcessamento(CodigoErro.SERPRO_SUCESSO_DESISTENCIA_CANCELAMENTO);
+						pedidosAutorizacao.add(pedido);
+						quantidadeAutorizacaoCartorio = quantidadeAutorizacaoCartorio + 1;
+						valorTotalAutorizacao = valorTotalAutorizacao.add(pedido.getValorTitulo());
+						totalAutorizacaoArquivo = totalAutorizacaoArquivo + 1;
+					}
 				}
 
 				if (pedidosAutorizacaoErros.isEmpty()) {

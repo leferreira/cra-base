@@ -42,5 +42,4 @@ public enum TipoInstituicaoCRA implements AbstractCraEnum {
 		}
 		throw new InfraException("Tipo de instituição desconhecido : " + valor);
 	}
-
 }

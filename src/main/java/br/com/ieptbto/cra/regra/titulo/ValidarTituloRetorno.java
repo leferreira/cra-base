@@ -24,6 +24,7 @@ import br.com.ieptbto.cra.exception.TituloException;
 @Service
 public class ValidarTituloRetorno extends RegraTitulo {
 
+	private static final String SEFAZ = "801";
 	private List<Titulo> titulosProcessados;
 
 	@Override
@@ -76,8 +77,12 @@ public class ValidarTituloRetorno extends RegraTitulo {
 			if (TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.equals(tipoOcorrencia)
 					|| TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_COM_CUSTAS.equals(tipoOcorrencia)) {
 				if (codigoIrregularidade == null || codigoIrregularidade == CodigoIrregularidade.IRREGULARIDADE_0) {
-					erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE, tituloRetorno.getNossoNumero(),
-							numeroProtocoloCartorio, tituloRetorno.getNumeroSequencialArquivo()));
+					if (tituloRetorno.getCodigoPortador().equals(SEFAZ)) {
+						tituloRetorno.setCodigoIrregularidade("67");
+					} else {
+						erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE, tituloRetorno.getNossoNumero(),
+								numeroProtocoloCartorio, tituloRetorno.getNumeroSequencialArquivo()));
+					}
 				}
 			}
 		}

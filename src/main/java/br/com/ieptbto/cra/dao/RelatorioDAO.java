@@ -49,7 +49,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
 			criteria.addOrder(Order.asc("id"));
 		}
-		if (tipoInstituicao != null) {
+		if (tipoInstituicao != null && bancoConvenio == null) {
 			if (bancoConvenio == null && cartorio == null) {
 				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
 				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
@@ -231,7 +231,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
 			criteria.addOrder(Order.asc("id"));
 		}
-		if (tipoInstituicao != null) {
+		if (tipoInstituicao != null && bancoConvenio == null) {
 			if (bancoConvenio == null && cartorio == null) {
 				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
 				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));

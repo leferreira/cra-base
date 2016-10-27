@@ -99,7 +99,7 @@ public class ArquivoMediator extends BaseMediator {
 	}
 
 	/**
-	 * Arquivos de Remessa pendentes de confirmação dos cartórios
+	 * Arquivos de Remessa, Desistencia e Cancelamentos pendentes dos cartórios
 	 * 
 	 * @param instituicao
 	 * @return
@@ -124,6 +124,24 @@ public class ArquivoMediator extends BaseMediator {
 		RemessaCancelamentoProtesto remessaCancelamento = new RemessaCancelamentoProtesto();
 		remessaCancelamento.setCancelamentoProtesto(cancelamentoProtesto);
 		arquivo.setRemessaCancelamentoProtesto(remessaCancelamento);
+		return arquivo;
+	}
+
+	/**
+	 * Arquivos de Desistencias pendentes dos cartórios
+	 * 
+	 * @param instituicao
+	 * @return
+	 */
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
+	public Arquivo desistenciaPendentes(Instituicao instituicao) {
+		instituicao.setMunicipio(municipioDAO.buscarPorPK(instituicao.getMunicipio(), Municipio.class));
+
+		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
+		Arquivo arquivo = new Arquivo();
+		RemessaDesistenciaProtesto remessaDesistenciaProtesto = new RemessaDesistenciaProtesto();
+		remessaDesistenciaProtesto.setDesistenciaProtesto(new ArrayList<DesistenciaProtesto>(desistenciasProtesto));
+		arquivo.setRemessaDesistenciaProtesto(remessaDesistenciaProtesto);
 		return arquivo;
 	}
 

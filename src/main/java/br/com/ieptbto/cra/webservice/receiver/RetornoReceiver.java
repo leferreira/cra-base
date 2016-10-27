@@ -147,8 +147,8 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 				mensagem.setNumeroSequencialRegistro(Integer.valueOf(exception.getNumeroSequencialRegistro()));
 				mensagens.add(mensagem);
 
-				descricaoLog = descricaoLog + "<li><span class=\"alert-link\">Linha " + exception.getNumeroSequencialRegistro() + ": </span> [ Nosso Número = "
-						+ exception.getNossoNumero() + " ] " + exception.getDescricao() + ";</li>";
+				descricaoLog = descricaoLog + "<li><span class=\"alert-link\">Nº Sequencial do Registro " + exception.getNumeroSequencialRegistro()
+						+ ": </span> [ Nosso Número = " + exception.getNossoNumero() + " ] " + exception.getDescricao() + ";</li>";
 			}
 			if (CabecalhoRodapeException.class.isInstance(ex)) {
 				CabecalhoRodapeException exception = CabecalhoRodapeException.class.cast(ex);

@@ -612,8 +612,10 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	@Transient
 	public boolean isDevedorPrincipal() {
 		Integer numeroDevedor = 0;
-		if (StringUtils.isNotBlank(Integer.toString(this.getNumeroControleDevedor()))) {
-			numeroDevedor = this.getNumeroControleDevedor();
+		if (this.getNumeroControleDevedor() != null) {
+			if (StringUtils.isNotBlank(Integer.toString(this.getNumeroControleDevedor()))) {
+				numeroDevedor = this.getNumeroControleDevedor();
+			}
 		}
 		if (numeroDevedor > 1) {
 			return false;

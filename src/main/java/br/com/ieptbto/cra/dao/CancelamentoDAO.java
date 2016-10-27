@@ -322,6 +322,8 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 	public SolicitacaoCancelamento buscarSolicitacaoCancelamentoPorTitulo(TituloRemessa titulo) {
 		Criteria criteria = getCriteria(SolicitacaoCancelamento.class);
 		criteria.add(Restrictions.eq("tituloRemessa", titulo));
+		criteria.setMaxResults(1);
+		criteria.addOrder(Order.asc("id"));
 		return SolicitacaoCancelamento.class.cast(criteria.uniqueResult());
 	}
 }
