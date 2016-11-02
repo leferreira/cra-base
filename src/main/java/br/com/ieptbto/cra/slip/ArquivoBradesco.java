@@ -86,9 +86,10 @@ public class ArquivoBradesco extends AbstractDePara {
 			return processarPlanilha(planilha);
 
 		} catch (FileNotFoundException ex) {
-			System.out.println("Arquivo não encontrado.");
+			logger.info("Arquivo não encontrado.");
+			logger.error(ex.getMessage(), ex);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return null;
 	}
@@ -128,7 +129,7 @@ public class ArquivoBradesco extends AbstractDePara {
 		try {
 			getFile().writeTo(getArquivoFisico());
 		} catch (IOException e) {
-			logger.error(e.getMessage(), e.getCause());
+			logger.error(e.getMessage(), e);
 			throw new InfraException("Não foi possível criar arquivo Físico temporário para o arquivo " + getFile().getClientFileName());
 		}
 
@@ -139,7 +140,7 @@ public class ArquivoBradesco extends AbstractDePara {
 			try {
 				arquivoFisico.createNewFile();
 			} catch (IOException e) {
-				logger.error(e.getMessage(), e.getCause());
+				logger.error(e.getMessage(), e);
 				throw new InfraException("Não foi possível criar arquivo Físico temporário para o arquivo " + arquivoFisico.getName());
 			}
 		}

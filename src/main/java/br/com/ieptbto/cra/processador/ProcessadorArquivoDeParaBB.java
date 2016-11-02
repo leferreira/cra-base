@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,14 +44,24 @@ public class ProcessadorArquivoDeParaBB {
 	}
 
 	private void processarDados(FileReader arquivo) {
+
 		try {
 			BufferedReader reader = new BufferedReader(arquivo);
 			logger.info("Inicio processamento arquivo DePara BB...");
 			String linha = "";
 			int cont = 0;
 
-			while ((linha = reader.readLine()) != null) {
+			linha = reader.readLine();
+
+			do {
+				if (StringUtils.isBlank(linha)) {
+					if (!listaAgencias.isEmpty()) {
+						deParaDAO.salvarArquivoBancoDoBrasil(listaAgencias);
+					}
+					break;
+				}
 				cont++;
+
 				AgenciaBancoDoBrasil agenciaBancoDoBrasil = new AgenciaBancoDoBrasil();
 				agenciaBancoDoBrasil.setNumeroContrato(linha.substring(0, 9));
 				agenciaBancoDoBrasil.setAgenciaDestino(linha.substring(9, 13));
@@ -70,8 +81,8 @@ public class ProcessadorArquivoDeParaBB {
 					thread.start();
 					listaAgencias = new ArrayList<>();
 				}
-
-			}
+				linha = reader.readLine();
+			} while (true);
 			reader.close();
 
 		} catch (UnsupportedEncodingException e) {

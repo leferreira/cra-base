@@ -12,7 +12,6 @@ public class ConfiguracaoBase {
 
 	public static final int TAMANHO_NOME_ARQUIVO = 13;
 	public static String DIRETORIO_BASE = "../ARQUIVOS_CRA/";
-	public static String DIRETORIO_TESTE = "../TESTE/";
 	public static String DIRETORIO_TEMP_BASE = "../ARQUIVOS_CRA/TEMP/";
 	public static String DIRETORIO_BASE_INSTITUICAO = DIRETORIO_BASE + "INSTITUICAO/";
 	public static String DIRETORIO_BASE_INSTITUICAO_TEMP = DIRETORIO_TEMP_BASE + "INSTITUICAO/";

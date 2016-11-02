@@ -57,7 +57,7 @@ public enum CodigoErro {
 																										"Arquivo corrompido. Número sequencial do registro no trailler (XXX) não está contínuo. Faltou registro (XXX)."),
 	CRA_ARQUIVO_CORROMPIDO_SOMA_DE_REGISTROS_DE_TRANSACAO_EXISTENTES_NO_ARQUIVO_NAO_CONFERE_COM_TOTAL_INFORMADO_NO_HEADER(
 																															" 2122",
-																															"Arquivo corrompido. Soma de registros de transação existentes no arquivo (XXX) não confere com total informado no header (XXX)."),
+																															"Arquivo corrompido. Soma de registros de transação existentes no arquivo não confere com total informado no header."),
 	CRA_ARQUIVO_CORROMPIDO_SOMATÓRIO_DO_SALDO_NO_TRAILLER_NAO_CONFERE_COM_SOMATORIO_DOS_SALDOS_DOS_TITULOS(
 																											" 2123",
 																											"Arquivo corrompido. Somatório do saldo no trailler (XXX) não confere com somatório dos saldos dos títulos (XXX)."),
@@ -103,6 +103,7 @@ public enum CodigoErro {
 	SERPRO_NAO_HA_REGISTRO_DE_RETORNO_NESTA_DATA("0003", "NÃO HA REGISTRO DE RETORNO NESTA DATA."),
 	SERPRO_ARQUIVO_INVALIDO_REMESSA_DESISTENCIA_CANCELAMENTO("0004", "ARQUIVO INVALIDO."),
 	SERPRO_NAO_EXISTE_REMESSA_PARA_A_CONFIRMACAO("0004", "NÃO EXISTE REMESSA PARA A CONFIRMACAO."),
+	SERPRO_QUANTIDADE_REGISTROS_INVALIDA("1109", "CAMPO 09 HEADER - QUANTIDADE DE REGISTROS INVALIDA"),
 	SERPRO_NUMERO_PROTOCOLO_INVALIDO("2005", "NUMERO PROTOOCOLO INVALIDO"),
 
 	CNP_SUCESSO("0000", "Envio efetuado com sucesso."),

@@ -46,9 +46,8 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 
 	@Override
 	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {
-		RetornoVO retornoVO = converterStringArquivoVO(dados, nomeArquivo);
 		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
-		remessasVO.add(ConversorArquivoVO.converterRetornoParaRemessaVO(retornoVO));
+		remessasVO.add(ConversorArquivoVO.conversorParaArquivoRetorno(converterStringArquivoVO(dados, nomeArquivo)));
 
 		List<Exception> erros = new ArrayList<Exception>();
 		Arquivo arquivo = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo, erros);

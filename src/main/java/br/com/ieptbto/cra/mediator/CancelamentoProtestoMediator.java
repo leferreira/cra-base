@@ -12,7 +12,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
@@ -63,8 +62,6 @@ import br.com.ieptbto.cra.util.DataUtil;
  */
 @Service
 public class CancelamentoProtestoMediator extends BaseMediator {
-
-	protected static final Logger logger = Logger.getLogger(CancelamentoProtestoMediator.class);
 
 	@Autowired
 	private ConversorDesistenciaProtesto conversorArquivoDesistenciaProtesto;
@@ -308,6 +305,9 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 	}
 
 	public SolicitacaoCancelamento buscarSolicitacaoCancelamentoPorTitulo(TituloRemessa titulo) {
-		return cancelamentoDAO.buscarSolicitacaoCancelamentoPorTitulo(titulo);
+		if (titulo.getRemessa().getInstituicaoOrigem().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
+			return cancelamentoDAO.buscarSolicitacaoCancelamentoPorTitulo(titulo);
+		}
+		return null;
 	}
 }

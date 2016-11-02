@@ -43,23 +43,21 @@ public class ValidarCidadeCodigoIBGE extends RegraValidacao {
 	}
 
 	private void verificarCodigoIBGE() {
-		if (arquivo.getRemessas() == null || arquivo.getRemessas().isEmpty()) {
-			erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_ARQUIVO_VAZIO_OU_FORA_DO_LAYOUT_DE_TRANSMISSAO));
-			return;
-		}
+		if (arquivo.getRemessas() != null && !arquivo.getRemessas().isEmpty()) {
 
-		for (Remessa remessa : arquivo.getRemessas()) {
+			for (Remessa remessa : arquivo.getRemessas()) {
 
-			Municipio municipio = municipioMediator.buscaMunicipioPorCodigoIBGE(remessa.getCabecalho().getCodigoMunicipio());
-			if (municipio == null) {
-				addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO));
-			}
+				Municipio municipio = municipioMediator.buscaMunicipioPorCodigoIBGE(remessa.getCabecalho().getCodigoMunicipio());
+				if (municipio == null) {
+					addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO));
+				}
 
-			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-				if (!TipoArquivoEnum.REMESSA.equals(getTipoArquivo(arquivo))) {
-					Municipio municipioEnvio = municipioMediator.carregarMunicipio(remessa.getInstituicaoOrigem().getMunicipio());
-					if (!municipio.equals(municipioEnvio)) {
-						addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO));
+				if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+					if (!TipoArquivoEnum.REMESSA.equals(getTipoArquivo(arquivo))) {
+						Municipio municipioEnvio = municipioMediator.carregarMunicipio(remessa.getInstituicaoOrigem().getMunicipio());
+						if (!municipio.equals(municipioEnvio)) {
+							addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO));
+						}
 					}
 				}
 			}

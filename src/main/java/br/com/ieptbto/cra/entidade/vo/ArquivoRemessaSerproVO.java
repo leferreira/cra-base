@@ -1,5 +1,6 @@
 package br.com.ieptbto.cra.entidade.vo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -13,9 +14,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "remessa")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ArquivoRemessaVO {
+public class ArquivoRemessaSerproVO {
 
-	@XmlElement(name = "arquivo_comarca")
+	@XmlElement(name = "comarca")
 	private List<RemessaComarcaVO> remessasComarcas;
 
 	public List<RemessaComarcaVO> getRemessasComarcas() {
@@ -26,4 +27,10 @@ public class ArquivoRemessaVO {
 		this.remessasComarcas = remessasComarcas;
 	}
 
+	public static ArquivoRemessaVO parseToArquivoRemessaVO(ArquivoRemessaSerproVO arquivoRemessaSerpro) {
+		ArquivoRemessaVO arquivoRemessaVO = new ArquivoRemessaVO();
+		arquivoRemessaVO.setRemessasComarcas(new ArrayList<RemessaComarcaVO>());
+			arquivoRemessaVO.getRemessasComarcas().addAll(arquivoRemessaSerpro.getRemessasComarcas());
+		return arquivoRemessaVO;
+	}
 }

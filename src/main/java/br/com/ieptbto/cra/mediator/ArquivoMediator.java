@@ -318,7 +318,10 @@ public class ArquivoMediator extends BaseMediator {
 	public List<RemessaVO> buscarArquivos(String nomeArquivo, Instituicao instituicao) {
 		Arquivo arquivo = null;
 
-		if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
+		if (nomeArquivo.startsWith(TipoArquivoEnum.REMESSA.getConstante())) {
+			arquivo = arquivoDAO.buscarArquivoInstituicaoRemessa(nomeArquivo, instituicao);
+			return conversorRemessaArquivo.converterArquivoVO(arquivo.getRemessas());
+		} else if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
 			arquivo = arquivoDAO.buscarArquivoInstituicaoConfirmacao(nomeArquivo, instituicao);
 		} else if (nomeArquivo.startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
 			arquivo = arquivoDAO.buscarArquivoInstituicaoRetorno(nomeArquivo, instituicao);

@@ -19,7 +19,6 @@ import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Rodape;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
@@ -49,14 +48,6 @@ public class ConversorRemessaArquivo {
 	private List<Exception> erros;
 
 	private static final String PRIMEIRO_DEVEDOR = "1";
-
-	public Arquivo converterParaArquivo(ArquivoVO arquivoVO, Arquivo arquivo, List<Exception> erros) {
-		this.arquivo = arquivo;
-		this.erros = erros;
-
-		List<RemessaVO> remessasVO = ConversorArquivoVO.converterParaRemessaVO(arquivoVO);
-		return converter(remessasVO);
-	}
 
 	public Arquivo converterParaArquivo(List<RemessaVO> remessasVO, Arquivo arquivo, List<Exception> erros) {
 		this.arquivo = arquivo;

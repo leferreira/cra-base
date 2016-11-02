@@ -19,43 +19,43 @@ import br.com.ieptbto.cra.entidade.AgenciaCAF;
  */
 public class ArquivoCAF extends AbstractDePara {
 
-    private static final int POSICAO_STATUS_AGENCIA_INICIO = 186;
-    private static final int POSICAO_STATUS_AGENCIA_FIM = 187;
+	private static final int POSICAO_STATUS_AGENCIA_INICIO = 186;
+	private static final int POSICAO_STATUS_AGENCIA_FIM = 187;
 
-    @Autowired
-    ArquivoDeParaDAO deParaDAO;
+	@Autowired
+	ArquivoDeParaDAO deParaDAO;
 
-    private List<AgenciaCAF> listaAgencias;
+	private List<AgenciaCAF> listaAgencias;
 
-    @Override
-    public List<AgenciaCAF> processar(FileUpload file) {
-	this.listaAgencias = new ArrayList<AgenciaCAF>();
+	@Override
+	public List<AgenciaCAF> processar(FileUpload file) {
+		this.listaAgencias = new ArrayList<AgenciaCAF>();
 
-	try {
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), "ISO-8859-1"));
-	    String linha = "";
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), "ISO-8859-1"));
+			String linha = "";
 
-	    while ((linha = reader.readLine()) != null) {
+			while ((linha = reader.readLine()) != null) {
 
-		if (linha.substring(POSICAO_STATUS_AGENCIA_INICIO, POSICAO_STATUS_AGENCIA_FIM).equals("S")) {
-		    AgenciaCAF arquivoCAF = new AgenciaCAF();
+				if (linha.substring(POSICAO_STATUS_AGENCIA_INICIO, POSICAO_STATUS_AGENCIA_FIM).equals("S")) {
+					AgenciaCAF arquivoCAF = new AgenciaCAF();
 
-		    arquivoCAF.setBanco(linha.substring(0, 3));
-		    arquivoCAF.setCodigoAgencia(linha.substring(3, 7));
-		    arquivoCAF.setNomeAgencia(linha.substring(57, 87));
-		    arquivoCAF.setCidade(linha.substring(107, 145));
-		    arquivoCAF.setUf(linha.substring(145, 147));
+					arquivoCAF.setBanco(linha.substring(0, 3));
+					arquivoCAF.setCodigoAgencia(linha.substring(3, 7));
+					arquivoCAF.setNomeAgencia(linha.substring(57, 87));
+					arquivoCAF.setCidade(linha.substring(107, 145));
+					arquivoCAF.setUf(linha.substring(145, 147));
 
-		    listaAgencias.add(arquivoCAF);
+					listaAgencias.add(arquivoCAF);
+				}
+			}
+			reader.close();
+
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-	    }
-	    reader.close();
-
-	} catch (UnsupportedEncodingException e) {
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    e.printStackTrace();
+		return listaAgencias;
 	}
-	return listaAgencias;
-    }
 }

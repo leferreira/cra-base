@@ -10,8 +10,6 @@ import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.error.CodigoErro;
-import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 import br.com.ieptbto.cra.mediator.CabecalhoMediator;
 
 /**
@@ -47,17 +45,15 @@ public class ValidarSequencialCabecalho extends RegraValidacao {
 	}
 
 	private void verificarSequencialRetorno() {
-		if (arquivo.getRemessas() == null || arquivo.getRemessas().isEmpty()) {
-			erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_ARQUIVO_VAZIO_OU_FORA_DO_LAYOUT_DE_TRANSMISSAO));
-			return;
-		}
+		if (arquivo.getRemessas() != null && !arquivo.getRemessas().isEmpty()) {
 
-		for (Remessa remessa : arquivo.getRemessas()) {
-			CabecalhoRemessa ultimoCabecalhoRetorno = cabecalhoMediator.buscarUltimoCabecalhoRetornoPorMunicipio(remessa.getCabecalho());
+			for (Remessa remessa : arquivo.getRemessas()) {
+				CabecalhoRemessa ultimoCabecalhoRetorno = cabecalhoMediator.buscarUltimoCabecalhoRetornoPorMunicipio(remessa.getCabecalho());
 
-			if (ultimoCabecalhoRetorno != null) {
-				if (remessa.getCabecalho().getNumeroSequencialRemessa() <= ultimoCabecalhoRetorno.getNumeroSequencialRemessa()) {
-					remessa.getCabecalho().setNumeroSequencialRemessa(ultimoCabecalhoRetorno.getNumeroSequencialRemessa() + 1);
+				if (ultimoCabecalhoRetorno != null) {
+					if (remessa.getCabecalho().getNumeroSequencialRemessa() <= ultimoCabecalhoRetorno.getNumeroSequencialRemessa()) {
+						remessa.getCabecalho().setNumeroSequencialRemessa(ultimoCabecalhoRetorno.getNumeroSequencialRemessa() + 1);
+					}
 				}
 			}
 		}

@@ -22,12 +22,16 @@ import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivoVO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
+import br.com.ieptbto.cra.entidade.vo.ArquivoRemessaSerproVO;
+import br.com.ieptbto.cra.entidade.vo.ArquivoRemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.error.CodigoErro;
+import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.ArquivoMediator;
+import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.webservice.VO.ComarcaDetalhamentoSerpro;
 import br.com.ieptbto.cra.webservice.VO.Descricao;
@@ -49,7 +53,13 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 
 	@Override
 	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {
-		List<RemessaVO> remessasVO = ConversorArquivoVO.converterParaRemessaVO(converterStringArquivoVO(dados));
+		ArquivoRemessaVO arquivoRemessaVO = null;
+		if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.SERPRO)) {
+			arquivoRemessaVO = converterStringArquivoVOSerpro(dados);
+		} else {
+			arquivoRemessaVO = converterStringArquivoVO(dados);
+		}
+		List<RemessaVO> remessasVO = ConversorArquivoVO.conversorParaArquivoRemessa(arquivoRemessaVO);
 
 		List<Exception> erros = new ArrayList<Exception>();
 		Arquivo arquivo = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo, erros);
@@ -62,12 +72,12 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 		return gerarRespostaSucesso(arquivo, usuario);
 	}
 
-	private ArquivoVO converterStringArquivoVO(String dados) {
+	private ArquivoRemessaVO converterStringArquivoVOSerpro(String dados) {
 		JAXBContext context;
 
-		ArquivoVO arquivo = null;
+		ArquivoRemessaSerproVO arquivo = null;
 		try {
-			context = JAXBContext.newInstance(ArquivoVO.class);
+			context = JAXBContext.newInstance(ArquivoRemessaSerproVO.class);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			String xmlRecebido = "";
 
@@ -77,17 +87,49 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 				if (xmlRecebido.contains("<?xml version=")) {
 					xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", StringUtils.EMPTY);
 				}
-				if (xmlRecebido.contains("<comarca CodMun")) {
-					xmlRecebido = xmlRecebido.replaceAll("<comarca CodMun=.[0-9]+..", StringUtils.EMPTY);
+			}
+			scanner.close();
+			InputStream xml = new ByteArrayInputStream(xmlRecebido.getBytes());
+			arquivo = (ArquivoRemessaSerproVO) unmarshaller.unmarshal(new InputSource(xml));
+
+		} catch (JAXBException e) {
+			logger.error(e.getMessage(), e);
+			throw new InfraException("Erro ao converter o contéudo xml do arquivo.");
+		}
+		return ArquivoRemessaSerproVO.parseToArquivoRemessaVO(arquivo);
+	}
+
+	private ArquivoRemessaVO converterStringArquivoVO(String dados) {
+		JAXBContext context;
+
+		ArquivoRemessaVO arquivo = null;
+		try {
+			context = JAXBContext.newInstance(ArquivoRemessaVO.class);
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			String xmlRecebido = "";
+
+			Scanner scanner = new Scanner(new ByteArrayInputStream(new String(dados).getBytes()));
+			while (scanner.hasNext()) {
+				String line = scanner.nextLine().replaceAll("& ", "&amp;");
+				if (line.contains("<hd ") && !line.contains("<tl ")) {
+					line = "<arquivo_comarca>" + line;
 				}
-				if (xmlRecebido.contains("</comarca>")) {
-					xmlRecebido = xmlRecebido.replaceAll("</comarca>", StringUtils.EMPTY);
+				if (line.contains("<tl ") && !line.contains("</remessa>")) {
+					line = line.concat("</arquivo_comarca>");
+				}
+				if (line.contains("<tl ") && line.contains("</remessa>")) {
+					line = line.replace("</arquivo_comarca>", "</arquivo_comarca></remessa>");
+				}
+
+				xmlRecebido = xmlRecebido + line;
+				if (xmlRecebido.contains("<?xml version=")) {
+					xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", StringUtils.EMPTY);
 				}
 			}
 			scanner.close();
-
 			InputStream xml = new ByteArrayInputStream(xmlRecebido.getBytes());
-			arquivo = (ArquivoVO) unmarshaller.unmarshal(new InputSource(xml));
+			arquivo = (ArquivoRemessaVO) unmarshaller.unmarshal(new InputSource(xml));
+
 		} catch (JAXBException e) {
 			logger.error(e.getMessage(), e);
 			throw new InfraException("Erro ao converter o contéudo xml do arquivo.");
@@ -150,32 +192,73 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 			return gerarRespostaSerproErrosRemessa(arquivo, usuario, erros);
 		}
 
-		return null;
+		return gerarRespostaErro(arquivo, usuario, erros);
+	}
+
+	private MensagemCra gerarRespostaErro(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+		List<Mensagem> mensagens = new ArrayList<Mensagem>();
+		MensagemXml mensagemXml = new MensagemXml();
+		Descricao descricao = new Descricao();
+		Detalhamento detalhamento = new Detalhamento();
+		detalhamento.setMensagem(mensagens);
+
+		mensagemXml.setDescricao(descricao);
+		mensagemXml.setDetalhamento(detalhamento);
+		mensagemXml.setCodigoFinal(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getCodigo());
+		mensagemXml.setDescricaoFinal(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao());
+
+		descricao.setDataEnvio(LocalDateTime.now().toString(DataUtil.PADRAO_FORMATACAO_DATAHORASEG));
+		descricao.setTipoArquivo(Descricao.XML_UPLOAD_CONFIRMACAO);
+		descricao.setDataMovimento(arquivo.getDataEnvio().toString(DataUtil.PADRAO_FORMATACAO_DATA));
+		descricao.setPortador(arquivo.getInstituicaoEnvio().getCodigoCompensacao());
+		descricao.setUsuario(usuario.getNome());
+
+		String descricaoLog = "Ocorrência(s) e(ou) erros encontrado(s) no arquivo " + arquivo.getNomeArquivo() + " enviado:</span>";
+		descricaoLog = descricaoLog + "<ul>";
+		for (Exception ex : erros) {
+			if (CabecalhoRodapeException.class.isInstance(ex)) {
+				CabecalhoRodapeException exception = CabecalhoRodapeException.class.cast(ex);
+				Mensagem mensagem = new Mensagem();
+				mensagem.setCodigo(exception.getCodigoErro().getCodigo());
+				mensagem.setDescricao(exception.getDescricao());
+				mensagem.setMunicipio(exception.getCodigoMunicipio());
+				mensagens.add(mensagem);
+
+				descricaoLog = descricaoLog + "<li>" + exception.getDescricao() + ";</li>";
+			}
+		}
+		descricaoLog = descricaoLog + "</ul>";
+		if (!erros.isEmpty()) {
+			loggerCra.error(usuario, CraAcao.ENVIO_ARQUIVO_REMESSA, descricaoLog);
+		}
+		return mensagemXml;
 	}
 
 	private MensagemCra gerarRespostaSerproErrosRemessa(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
-		// HashMap<String, ComarcaDetalhamentoSerpro> mapComarcasErros = new
-		// HashMap<String, ComarcaDetalhamentoSerpro>();
-		//
-		// MensagemXmlSerpro mensagemSerpro = new MensagemXmlSerpro();
-		// mensagemSerpro.setNomeArquivo(arquivo.getNomeArquivo());
-		// for (Exception ex : erros) {
-		//
-		// ComarcaDetalhamentoSerpro comarcaDetalhamento = new
-		// ComarcaDetalhamentoSerpro();
-		// comarcaDetalhamento.setCodigoMunicipio(remessa.getCabecalho().getCodigoMunicipio());
-		// comarcaDetalhamento.setDataHora(DataUtil.localDateToStringddMMyyyy(new
-		// LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
-		// comarcaDetalhamento.setRegistro(StringUtils.EMPTY);
-		//
-		// CodigoErro codigoErroSerpro = CodigoErro.SERPRO_SUCESSO_REMESSA;
-		// comarcaDetalhamento.setCodigo(codigoErroSerpro.getCodigo());
-		// comarcaDetalhamento.setOcorrencia(codigoErroSerpro.getDescricao());
-		// comarcaDetalhamento.setTotalRegistros(remessa.getCabecalho().getQtdRegistrosRemessa());
-		// listaComarcas.add(comarcaDetalhamento);
-		// }
-		// mensagemSerpro.setComarca(listaComarcas);
-		// return mensagemSerpro;
-		return null;
+		MensagemXmlSerpro mensagemSerpro = new MensagemXmlSerpro();
+		mensagemSerpro.setNomeArquivo(arquivo.getNomeArquivo());
+		mensagemSerpro.setComarca(new ArrayList<ComarcaDetalhamentoSerpro>());
+
+		for (Exception ex : erros) {
+			if (CabecalhoRodapeException.class.isInstance(ex)) {
+				CabecalhoRodapeException exception = CabecalhoRodapeException.class.cast(ex);
+
+				ComarcaDetalhamentoSerpro comarcaDetalhamento = new ComarcaDetalhamentoSerpro();
+				comarcaDetalhamento.setCodigoMunicipio(exception.getCodigoMunicipio());
+				comarcaDetalhamento.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
+				comarcaDetalhamento.setRegistro(ConfiguracaoBase.UM);
+
+				CodigoErro codigoErroSerpro = CodigoErro.SERPRO_ARQUIVO_INVALIDO_REMESSA_DESISTENCIA_CANCELAMENTO;
+				if (CodigoErro.CRA_ARQUIVO_CORROMPIDO_SOMA_DE_REGISTROS_DE_TRANSACAO_EXISTENTES_NO_ARQUIVO_NAO_CONFERE_COM_TOTAL_INFORMADO_NO_HEADER
+						.equals(exception.getCodigoErro())) {
+					codigoErroSerpro = CodigoErro.SERPRO_QUANTIDADE_REGISTROS_INVALIDA;
+				}
+				comarcaDetalhamento.setCodigo(codigoErroSerpro.getCodigo());
+				comarcaDetalhamento.setOcorrencia(codigoErroSerpro.getDescricao());
+				comarcaDetalhamento.setTotalRegistros(0);
+				mensagemSerpro.getComarca().add(comarcaDetalhamento);
+			}
+		}
+		return mensagemSerpro;
 	}
 }

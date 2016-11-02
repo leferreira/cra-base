@@ -46,9 +46,8 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 
 	@Override
 	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {
-		ConfirmacaoVO confirmacaoVO = converterStringArquivoVO(dados, nomeArquivo);
 		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
-		remessasVO.add(ConversorArquivoVO.converterConfirmacaoParaRemessaVO(confirmacaoVO));
+		remessasVO.add(ConversorArquivoVO.conversorParaArquivoConfirmacao(converterStringArquivoVO(dados, nomeArquivo)));
 
 		List<Exception> erros = new ArrayList<Exception>();
 		Arquivo arquivo = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo, erros);

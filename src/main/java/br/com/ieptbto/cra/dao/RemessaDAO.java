@@ -67,7 +67,9 @@ public class RemessaDAO extends AbstractBaseDAO {
 		if (tipoInstituicao != null && bancoConvenio == null) {
 			criteria.createAlias("instituicaoOrigem", "instituicaoOrigem");
 			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
-			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
+			criteria.createAlias("instituicaoDestino", "instituicaoDestino");
+			criteria.createAlias("instituicaoDestino.tipoInstituicao", "tipoInstituicaoDestino");
+			criteria.add(Restrictions.or(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao), Restrictions.eq("tipoInstituicaoDestino.tipoInstituicao", tipoInstituicao)));
 		}
 		if (bancoConvenio != null) {
 			criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", bancoConvenio), Restrictions.eq("instituicaoOrigem", bancoConvenio)));

@@ -36,21 +36,19 @@ public class ValidarRodape extends RegraValidacao {
 	}
 
 	private void validarDadosRodape() {
-		if (arquivo.getRemessas() == null || arquivo.getRemessas().isEmpty()) {
-			erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_ARQUIVO_VAZIO_OU_FORA_DO_LAYOUT_DE_TRANSMISSAO));
-			return;
-		}
+		if (arquivo.getRemessas() != null && !arquivo.getRemessas().isEmpty()) {
 
-		for (Remessa remessa : arquivo.getRemessas()) {
-			if (remessa.getRodape().getNumeroCodigoPortador() != null) {
-				if (remessa.getRodape().getNumeroCodigoPortador().trim().isEmpty()) {
-					addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_PORTADOR_RODAPE_INVALIDO));
+			for (Remessa remessa : arquivo.getRemessas()) {
+				if (remessa.getRodape().getNumeroCodigoPortador() != null) {
+					if (remessa.getRodape().getNumeroCodigoPortador().trim().isEmpty()) {
+						addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_PORTADOR_RODAPE_INVALIDO));
+					}
 				}
-			}
 
-			if (remessa.getRodape().getNomePortador() != null) {
-				if (remessa.getRodape().getNomePortador().trim().isEmpty()) {
-					addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_NOME_PORTADOR_RODAPE_INVALIDO));
+				if (remessa.getRodape().getNomePortador() != null) {
+					if (remessa.getRodape().getNomePortador().trim().isEmpty()) {
+						addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_NOME_PORTADOR_RODAPE_INVALIDO));
+					}
 				}
 			}
 		}

@@ -184,11 +184,11 @@ public class ProcessadorArquivo extends Processador {
 	}
 
 	private void verificaDiretorio(Usuario usuario) {
-		File diretorioBaseTemp = new File(ConfiguracaoBase.DIRETORIO_TEMP_BASE);
 		File diretorioBase = new File(ConfiguracaoBase.DIRETORIO_BASE);
+		File diretorioBaseTemp = new File(ConfiguracaoBase.DIRETORIO_TEMP_BASE);
 
-		pathInstituicaoTemp = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO_TEMP + usuario.getInstituicao().getId();
 		pathInstituicao = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO + usuario.getInstituicao().getId();
+		pathInstituicaoTemp = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO_TEMP + usuario.getInstituicao().getId();
 		File diretorioInstituicaoTemp = new File(pathInstituicaoTemp);
 		File diretorioInstituicao = new File(pathInstituicao);
 
@@ -197,23 +197,28 @@ public class ProcessadorArquivo extends Processador {
 		File diretorioUsuarioTemp = new File(pathUsuarioTemp);
 		File diretorioUsuario = new File(pathUsuario);
 
-		if (!diretorioBaseTemp.exists()) {
-			diretorioBaseTemp.mkdirs();
-		}
-		if (!diretorioBase.exists()) {
-			diretorioBase.mkdirs();
-		}
-		if (!diretorioInstituicaoTemp.exists()) {
-			diretorioInstituicaoTemp.mkdirs();
-		}
-		if (!diretorioInstituicao.exists()) {
-			diretorioInstituicao.mkdirs();
-		}
-		if (!diretorioUsuario.exists()) {
-			diretorioUsuario.mkdirs();
-		}
-		if (!diretorioUsuarioTemp.exists()) {
-			diretorioUsuarioTemp.mkdirs();
+		try {
+			if (!diretorioBase.exists()) {
+				diretorioBase.mkdir();
+			}
+			if (!diretorioBaseTemp.exists()) {
+				diretorioBaseTemp.mkdir();
+			}
+			if (!diretorioInstituicao.exists()) {
+				diretorioInstituicao.mkdir();
+			}
+			if (!diretorioInstituicaoTemp.exists()) {
+				diretorioInstituicaoTemp.mkdir();
+			}
+			if (!diretorioUsuario.exists()) {
+				diretorioUsuario.mkdir();
+			}
+			if (!diretorioUsuarioTemp.exists()) {
+				diretorioUsuarioTemp.mkdir();
+			}
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex.getCause());
+			throw new InfraException("Não foi possível criar os diretórios do usuário. Favor entrar em contato com a CRA...");
 		}
 	}
 

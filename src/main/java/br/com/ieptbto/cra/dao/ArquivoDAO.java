@@ -310,10 +310,10 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	}
 
 	@Transactional(readOnly = true)
-	public Arquivo buscarArquivoInstituicaoRemessa(String nomeArquivo, Instituicao instituicaoRecebe) {
+	public Arquivo buscarArquivoInstituicaoRemessa(String nomeArquivo, Instituicao instituicaoEnvio) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.add(Restrictions.ilike("nomeArquivo", nomeArquivo, MatchMode.EXACT));
-		criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
+		criteria.add(Restrictions.eq("instituicaoEnvio", instituicaoEnvio));
 
 		Arquivo arquivo = Arquivo.class.cast(criteria.uniqueResult());
 		arquivo.setRemessas(new ArrayList<Remessa>());

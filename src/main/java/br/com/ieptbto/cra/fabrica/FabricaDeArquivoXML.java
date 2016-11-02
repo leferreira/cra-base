@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,12 +19,17 @@ import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
 
 import br.com.ieptbto.cra.conversor.AbstractFabricaDeArquivo;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivoVO;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorDesistenciaProtesto;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorRemessaArquivo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.vo.ArquivoDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.ArquivoVO;
+import br.com.ieptbto.cra.entidade.vo.ArquivoRemessaSerproVO;
+import br.com.ieptbto.cra.entidade.vo.ArquivoRemessaVO;
+import br.com.ieptbto.cra.entidade.vo.ConfirmacaoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import br.com.ieptbto.cra.entidade.vo.RetornoVO;
+import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -106,9 +112,9 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 
 	private Arquivo converterRetorno(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
 		JAXBContext context;
-		ArquivoVO arquivoVO = new ArquivoVO();
+		RetornoVO arquivoVO = new RetornoVO();
 		try {
-			context = JAXBContext.newInstance(ArquivoVO.class);
+			context = JAXBContext.newInstance(RetornoVO.class);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			String xmlGerado = "";
 			Scanner scanner = new Scanner(new FileInputStream(arquivoFisico));
@@ -120,7 +126,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 			scanner.close();
 
 			InputStream xml = new ByteArrayInputStream(xmlGerado.getBytes());
-			arquivoVO = (ArquivoVO) unmarshaller.unmarshal(new InputSource(xml));
+			arquivoVO = (RetornoVO) unmarshaller.unmarshal(new InputSource(xml));
 			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.RETORNO));
 
 		} catch (JAXBException e) {
@@ -130,14 +136,17 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 			logger.error(e.getMessage(), e.getCause());
 			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		}
-		return conversorRemessaArquivo.converterParaArquivo(arquivoVO, arquivo, erros);
+		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
+		remessasVO.add(ConversorArquivoVO.conversorParaArquivoRetorno(arquivoVO));
+		return conversorRemessaArquivo.converterParaArquivo(remessasVO, arquivo, erros);
 	}
 
 	private Arquivo converterConfirmacao(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
 		JAXBContext context;
-		ArquivoVO arquivoVO = new ArquivoVO();
+
+		ConfirmacaoVO arquivoVO = new ConfirmacaoVO();
 		try {
-			context = JAXBContext.newInstance(ArquivoVO.class);
+			context = JAXBContext.newInstance(ConfirmacaoVO.class);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			String xmlGerado = "";
 			Scanner scanner = new Scanner(new FileInputStream(arquivoFisico));
@@ -149,7 +158,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 			scanner.close();
 
 			InputStream xml = new ByteArrayInputStream(xmlGerado.getBytes());
-			arquivoVO = (ArquivoVO) unmarshaller.unmarshal(new InputSource(xml));
+			arquivoVO = (ConfirmacaoVO) unmarshaller.unmarshal(new InputSource(xml));
 			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.CONFIRMACAO));
 
 		} catch (JAXBException e) {
@@ -159,35 +168,61 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 			logger.error(e.getMessage(), e.getCause());
 			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		}
-		return conversorRemessaArquivo.converterParaArquivo(arquivoVO, arquivo, erros);
+		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
+		remessasVO.add(ConversorArquivoVO.conversorParaArquivoConfirmacao(arquivoVO));
+		return conversorRemessaArquivo.converterParaArquivo(remessasVO, arquivo, erros);
 	}
 
 	private Arquivo converterRemessa(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
 		JAXBContext context;
 
-		ArquivoVO arquivoVO = new ArquivoVO();
+		ArquivoRemessaVO arquivoVO = new ArquivoRemessaVO();
 		try {
-			context = JAXBContext.newInstance(ArquivoVO.class);
-			Unmarshaller unmarshaller = context.createUnmarshaller();
-			String xmlGerado = "";
+			if (arquivo.getInstituicaoEnvio().getLayoutPadraoXML().equals(LayoutPadraoXML.SERPRO)) {
+				context = JAXBContext.newInstance(ArquivoRemessaSerproVO.class);
+				Unmarshaller unmarshaller = context.createUnmarshaller();
+				String xmlRecebido = "";
 
-			Scanner scanner = new Scanner(new FileInputStream(arquivoFisico));
-			while (scanner.hasNext()) {
-				xmlGerado = xmlGerado + scanner.nextLine().replaceAll("& ", "&amp;");
-				if (xmlGerado.contains("<?xml version=")) {
-					xmlGerado = xmlGerado.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", StringUtils.EMPTY);
+				Scanner scanner = new Scanner(new FileInputStream(arquivoFisico));
+				while (scanner.hasNext()) {
+					xmlRecebido = xmlRecebido + scanner.nextLine().replaceAll("& ", "&amp;");
+					if (xmlRecebido.contains("<?xml version=")) {
+						xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", StringUtils.EMPTY);
+					}
 				}
-				if (xmlGerado.contains("<comarca CodMun")) {
-					xmlGerado = xmlGerado.replaceAll("<comarca CodMun=.[0-9]+..", StringUtils.EMPTY);
+				scanner.close();
+				InputStream xml = new ByteArrayInputStream(xmlRecebido.getBytes());
+				ArquivoRemessaSerproVO arquivoRemessaSerpro = (ArquivoRemessaSerproVO) unmarshaller.unmarshal(new InputSource(xml));
+				arquivoVO = ArquivoRemessaSerproVO.parseToArquivoRemessaVO(arquivoRemessaSerpro);
+
+			} else {
+				context = JAXBContext.newInstance(ArquivoRemessaVO.class);
+				Unmarshaller unmarshaller = context.createUnmarshaller();
+				String xmlRecebido = "";
+
+				Scanner scanner = new Scanner(new FileInputStream(arquivoFisico));
+				while (scanner.hasNext()) {
+					String line = scanner.nextLine().replaceAll("& ", "&amp;");
+					if (line.contains("<hd ") && !line.contains("<tl ")) {
+						line = "<arquivo_comarca>" + line;
+					}
+					if (line.contains("<tl ") && !line.contains("</remessa>")) {
+						line = line.concat("</arquivo_comarca>");
+					}
+					if (line.contains("<tl ") && line.contains("</remessa>")) {
+						line = line.replace("</arquivo_comarca>", "</arquivo_comarca></remessa>");
+					}
+
+					xmlRecebido = xmlRecebido + line;
+					if (xmlRecebido.contains("<?xml version=")) {
+						xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", StringUtils.EMPTY);
+					}
 				}
-				if (xmlGerado.contains("</comarca>")) {
-					xmlGerado = xmlGerado.replaceAll("</comarca>", StringUtils.EMPTY);
-				}
+				scanner.close();
+
+				InputStream xml = new ByteArrayInputStream(xmlRecebido.getBytes());
+				arquivoVO = (ArquivoRemessaVO) unmarshaller.unmarshal(new InputSource(xml));
 			}
-			scanner.close();
-
-			InputStream xml = new ByteArrayInputStream(xmlGerado.getBytes());
-			arquivoVO = (ArquivoVO) unmarshaller.unmarshal(new InputSource(xml));
 
 		} catch (JAXBException e) {
 			logger.error(e.getMessage(), e);
@@ -196,6 +231,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 			logger.error(e.getMessage(), e);
 			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		}
-		return conversorRemessaArquivo.converterParaArquivo(arquivoVO, arquivo, erros);
+		List<RemessaVO> remessasVO = ConversorArquivoVO.conversorParaArquivoRemessa(arquivoVO);
+		return conversorRemessaArquivo.converterParaArquivo(remessasVO, arquivo, erros);
 	}
 }
