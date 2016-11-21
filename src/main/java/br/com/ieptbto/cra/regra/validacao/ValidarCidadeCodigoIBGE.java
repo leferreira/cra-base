@@ -23,40 +23,32 @@ public class ValidarCidadeCodigoIBGE extends RegraValidacao {
 
 	@Override
 	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
-		this.arquivo = arquivo;
-		this.usuario = usuario;
-		this.erros = erros;
 
-		executar();
-	}
-
-	@Override
-	protected void executar() {
 		TipoArquivoEnum tipoArquivo = getTipoArquivo(arquivo);
 		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
 
 		} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)) {
-			verificarCodigoIBGE();
+			verificarCodigoIBGE(arquivo, usuario, erros);
 		} else if (TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
-			verificarCodigoIBGE();
+			verificarCodigoIBGE(arquivo, usuario, erros);
 		}
 	}
 
-	private void verificarCodigoIBGE() {
+	private void verificarCodigoIBGE(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		if (arquivo.getRemessas() != null && !arquivo.getRemessas().isEmpty()) {
 
 			for (Remessa remessa : arquivo.getRemessas()) {
 
 				Municipio municipio = municipioMediator.buscaMunicipioPorCodigoIBGE(remessa.getCabecalho().getCodigoMunicipio());
 				if (municipio == null) {
-					addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO));
+					erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO));
 				}
 
 				if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 					if (!TipoArquivoEnum.REMESSA.equals(getTipoArquivo(arquivo))) {
 						Municipio municipioEnvio = municipioMediator.carregarMunicipio(remessa.getInstituicaoOrigem().getMunicipio());
 						if (!municipio.equals(municipioEnvio)) {
-							addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO));
+							erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO));
 						}
 					}
 				}

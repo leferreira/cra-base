@@ -53,7 +53,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 		Arquivo arquivo = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo, erros);
 
 		if (!erros.isEmpty()) {
-			return gerarRespostaErrosRetorno(arquivo, usuario, erros);
+			return gerarRespostaErrosRetorno(arquivo, usuario, erros, dados);
 		}
 		return gerarResposta(arquivo, usuario);
 	}
@@ -108,14 +108,14 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 			Mensagem mensagem = new Mensagem();
 			mensagem.setCodigo(CodigoErro.CRA_SUCESSO.getCodigo());
 			mensagem.setMunicipio(remessa.getCabecalho().getCodigoMunicipio());
-			mensagem.setDescricao("Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - " + remessa.getCabecalho().getQtdTitulosRemessa()
-					+ " títulos receberam retorno.");
+			mensagem.setDescricao("Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
+					+ remessa.getCabecalho().getQtdTitulosRemessa() + " títulos receberam retorno.");
 			mensagens.add(mensagem);
 		}
 		return mensagemXml;
 	}
 
-	private MensagemXml gerarRespostaErrosRetorno(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+	private MensagemXml gerarRespostaErrosRetorno(Arquivo arquivo, Usuario usuario, List<Exception> erros, String dados) {
 		List<Mensagem> mensagens = new ArrayList<Mensagem>();
 		MensagemXml mensagemXml = new MensagemXml();
 		Descricao descricao = new Descricao();
@@ -146,8 +146,9 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 				mensagem.setNumeroSequencialRegistro(Integer.valueOf(exception.getNumeroSequencialRegistro()));
 				mensagens.add(mensagem);
 
-				descricaoLog = descricaoLog + "<li><span class=\"alert-link\">Nº Sequencial do Registro " + exception.getNumeroSequencialRegistro()
-						+ ": </span> [ Nosso Número = " + exception.getNossoNumero() + " ] " + exception.getDescricao() + ";</li>";
+				descricaoLog =
+						descricaoLog + "<li><span class=\"alert-link\">Nº Sequencial do Registro " + exception.getNumeroSequencialRegistro()
+								+ ": </span> [ Nosso Número = " + exception.getNossoNumero() + " ] " + exception.getDescricao() + ";</li>";
 			}
 			if (CabecalhoRodapeException.class.isInstance(ex)) {
 				CabecalhoRodapeException exception = CabecalhoRodapeException.class.cast(ex);
@@ -161,7 +162,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 		}
 		descricaoLog = descricaoLog + "</ul>";
 		if (!erros.isEmpty()) {
-			loggerCra.error(usuario, CraAcao.ENVIO_ARQUIVO_RETORNO, descricaoLog);
+			loggerCra.error(usuario, CraAcao.ENVIO_ARQUIVO_RETORNO, descricaoLog, dados);
 		}
 		return mensagemXml;
 	}

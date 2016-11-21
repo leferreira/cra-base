@@ -119,9 +119,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 			String xmlGerado = "";
 			Scanner scanner = new Scanner(new FileInputStream(arquivoFisico));
 			while (scanner.hasNext()) {
-
 				xmlGerado = xmlGerado + scanner.nextLine().replaceAll("& ", "&amp;");
-				xmlGerado = xmlGerado.replaceAll("retorno", "remessa").trim();
 			}
 			scanner.close();
 
@@ -153,7 +151,6 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 			while (scanner.hasNext()) {
 
 				xmlGerado = xmlGerado + scanner.nextLine().replaceAll("& ", "&amp;");
-				xmlGerado = xmlGerado.replaceAll("confirmacao", "remessa").trim();
 			}
 			scanner.close();
 
@@ -200,17 +197,17 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 				Unmarshaller unmarshaller = context.createUnmarshaller();
 				String xmlRecebido = "";
 
+				boolean inicioRemessaComarca = true;
 				Scanner scanner = new Scanner(new FileInputStream(arquivoFisico));
 				while (scanner.hasNext()) {
 					String line = scanner.nextLine().replaceAll("& ", "&amp;");
-					if (line.contains("<hd ") && !line.contains("<tl ")) {
+					if (line.contains("<hd") && inicioRemessaComarca == true) {
 						line = "<arquivo_comarca>" + line;
-					}
-					if (line.contains("<tl ") && !line.contains("</remessa>")) {
-						line = line.concat("</arquivo_comarca>");
-					}
-					if (line.contains("<tl ") && line.contains("</remessa>")) {
-						line = line.replace("</arquivo_comarca>", "</arquivo_comarca></remessa>");
+						inicioRemessaComarca = false;
+					} else if (line.contains("<hd") && inicioRemessaComarca == false) {
+						line = "</arquivo_comarca><arquivo_comarca>" + line;
+					} else if (line.contains("</remessa>") && inicioRemessaComarca == false) {
+						line = line.replace("</remessa>", "</arquivo_comarca></remessa>");
 					}
 
 					xmlRecebido = xmlRecebido + line;

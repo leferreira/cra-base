@@ -15,8 +15,8 @@ import org.hibernate.envers.Audited;
  */
 @Entity
 @Audited
-@Table(name = "TB_CABECALHO_CARTORIO_DP")
-@org.hibernate.annotations.Table(appliesTo = "TB_CABECALHO_CARTORIO_DP")
+@Table(name = "TB_CABECALHO_CARTORIO_DESISTENCIA_CANCELAMENTO")
+@org.hibernate.annotations.Table(appliesTo = "TB_CABECALHO_CARTORIO_DESISTENCIA_CANCELAMENTO")
 public class CabecalhoCartorio extends CabecalhoDesistenciaCancelamento<CabecalhoCartorio> {
 
 	/****/

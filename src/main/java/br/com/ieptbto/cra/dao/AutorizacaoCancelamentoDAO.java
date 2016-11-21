@@ -18,7 +18,6 @@ import org.springframework.stereotype.Repository;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
@@ -105,7 +104,8 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 						descricao = descricao + "Protocolo Inválido (" + pedidoAutorizacao.getNumeroProtocolo() + ").";
 						codigoMunicipio = pedidoAutorizacao.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio();
 					}
-					erros.add(new DesistenciaCancelamentoException(descricao, codigoMunicipio, CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
+					erros.add(
+							new DesistenciaCancelamentoException(descricao, codigoMunicipio, CodigoErro.SERPRO_NUMERO_PROTOCOLO_INVALIDO));
 					pedidosAutorizacaoErros.clear();
 				}
 			}
@@ -130,8 +130,9 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 				}
 			}
 			transaction.commit();
-			loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, CraAcao.ENVIO_ARQUIVO_AUTORIZACAO_CANCELAMENTO, "Arquivo " + arquivo.getNomeArquivo()
-					+ ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso via aplicação.");
+			loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, CraAcao.ENVIO_ARQUIVO_AUTORIZACAO_CANCELAMENTO,
+					"Arquivo " + arquivo.getNomeArquivo() + ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia()
+							+ ", recebido com sucesso via aplicação.");
 
 		} catch (InfraException ex) {
 			transaction.rollback();
@@ -144,8 +145,8 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(String nomeArquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
-			LocalDate dataFim, List<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(String nomeArquivo, Instituicao portador, Instituicao cartorio,
+			LocalDate dataInicio, LocalDate dataFim, List<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(AutorizacaoCancelamento.class);
 		criteria.createAlias("remessaAutorizacaoCancelamento", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
@@ -168,9 +169,9 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 			criteria.createAlias("remessa.cabecalho", "cabecalhoArquivo");
 			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", portador.getCodigoCompensacao()));
 		}
-		if (municipio != null) {
+		if (cartorio != null) {
 			criteria.createAlias("cabecalhoCartorio", "cabecalho");
-			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", municipio.getCodigoIBGE()));
+			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", cartorio.getMunicipio().getCodigoIBGE()));
 		}
 
 		if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
@@ -219,7 +220,8 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 		return remessa;
 	}
 
-	public AutorizacaoCancelamento alterarSituacaoAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento, boolean download) {
+	public AutorizacaoCancelamento alterarSituacaoAutorizacaoCancelamento(AutorizacaoCancelamento autorizacaoCancelamento,
+			boolean download) {
 		Transaction transaction = getBeginTransation();
 
 		try {

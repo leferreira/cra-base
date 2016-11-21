@@ -115,9 +115,9 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 		return desistenciaDAO.buscarPedidosDesistenciaProtestoPorTitulo(tituloRemessa);
 	}
 
-	public List<DesistenciaProtesto> buscarDesistenciaProtesto(String nomeArquivo, Instituicao bancoConvenio, Municipio municipio, LocalDate dataInicio,
-			LocalDate dataFim, List<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
-		return desistenciaDAO.buscarDesistenciaProtesto(nomeArquivo, bancoConvenio, municipio, dataInicio, dataFim, tiposArquivo, usuario);
+	public List<DesistenciaProtesto> buscarDesistenciaProtesto(String nomeArquivo, Instituicao bancoConvenio, Instituicao cartorio,
+			LocalDate dataInicio, LocalDate dataFim, List<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+		return desistenciaDAO.buscarDesistenciaProtesto(nomeArquivo, bancoConvenio, cartorio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)

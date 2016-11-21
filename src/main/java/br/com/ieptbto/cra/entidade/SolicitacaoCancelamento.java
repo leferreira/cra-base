@@ -30,8 +30,8 @@ import br.com.ieptbto.cra.enumeration.StatusSolicitacaoCancelamento;
  */
 @Entity
 @Audited
-@Table(name = "TB_SOLICITACAO_CANCELAMENTO")
-@org.hibernate.annotations.Table(appliesTo = "TB_SOLICITACAO_CANCELAMENTO")
+@Table(name = "TB_SOLICITACAO_DESISTENCIA_CANCELAMENTO")
+@org.hibernate.annotations.Table(appliesTo = "TB_SOLICITACAO_DESISTENCIA_CANCELAMENTO")
 public class SolicitacaoCancelamento extends AbstractEntidade<SolicitacaoCancelamento> {
 
 	/***/

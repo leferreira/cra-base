@@ -83,15 +83,18 @@ public class ArquivoMediator extends BaseMediator {
 		return arquivoDAO.buscarPorPK(arquivo, Arquivo.class);
 	}
 
-	public List<Arquivo> buscarArquivos(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
-			Instituicao bancoConvenio, List<TipoArquivoEnum> tiposArquivo, List<SituacaoArquivo> situacoesArquivos) {
-		return arquivoDAO.buscarArquivos(usuario, nomeArquivo, dataInicio, dataFim, tipoInstituicao, bancoConvenio, tiposArquivo, situacoesArquivos);
+	public List<Arquivo> buscarArquivos(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim,
+			TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoEnum> tiposArquivo,
+			List<SituacaoArquivo> situacoesArquivos) {
+		return arquivoDAO.buscarArquivos(usuario, nomeArquivo, dataInicio, dataFim, tipoInstituicao, bancoConvenio, tiposArquivo,
+				situacoesArquivos);
 	}
 
 	public List<Arquivo> buscarArquivosDesistenciaCancelamento(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim,
-			TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoEnum> tiposArquivo, List<SituacaoArquivo> situacoesArquivos) {
-		return arquivoDAO.buscarArquivosDesistenciaCancelamento(usuario, nomeArquivo, dataInicio, dataFim, tipoInstituicao, bancoConvenio, tiposArquivo,
-				situacoesArquivos);
+			TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoEnum> tiposArquivo,
+			List<SituacaoArquivo> situacoesArquivos) {
+		return arquivoDAO.buscarArquivosDesistenciaCancelamento(usuario, nomeArquivo, dataInicio, dataFim, tipoInstituicao, bancoConvenio,
+				tiposArquivo, situacoesArquivos);
 	}
 
 	public Arquivo buscarArquivoEnviado(Usuario usuario, String nomeArquivo) {
@@ -111,7 +114,8 @@ public class ArquivoMediator extends BaseMediator {
 		List<Remessa> remessas = remessaDAO.confirmacoesPendentes(instituicao);
 		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
 		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
-		List<AutorizacaoCancelamento> autorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
+		List<AutorizacaoCancelamento> autorizacaoCancelamento =
+				autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
 
 		Arquivo arquivo = new Arquivo();
 		arquivo.setRemessas(remessas);
@@ -292,7 +296,7 @@ public class ArquivoMediator extends BaseMediator {
 			remessa = remessaDAO.baixarArquivoCartorioRemessa(usuario.getInstituicao(), nomeArquivo);
 		}
 
-		if (remessa == null) {
+		if (remessa == null || remessa.getDevolvidoPelaCRA().equals(true)) {
 			return null;
 		}
 		if (!StatusRemessa.RECEBIDO.equals(remessa.getStatusRemessa())) {
@@ -302,8 +306,9 @@ public class ArquivoMediator extends BaseMediator {
 
 		ArrayList<Arquivo> arquivos = new ArrayList<>();
 		arquivos.add(remessa.getArquivo());
-		logger.info("O Usuario " + usuario.getLogin() + " da instituição " + usuario.getInstituicao().getNomeFantasia() + " fez o download do arquivo "
-				+ nomeArquivo + " que foi enviado para " + remessa.getInstituicaoDestino().getNomeFantasia() + ".");
+		logger.info("O Usuario " + usuario.getLogin() + " da instituição " + usuario.getInstituicao().getNomeFantasia()
+				+ " fez o download do arquivo " + nomeArquivo + " que foi enviado para " + remessa.getInstituicaoDestino().getNomeFantasia()
+				+ ".");
 		return conversorRemessaArquivo.converterArquivoXMLRemessaVO(remessa);
 	}
 

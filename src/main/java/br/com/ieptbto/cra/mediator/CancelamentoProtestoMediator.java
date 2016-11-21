@@ -87,9 +87,9 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 		return cancelamentoDAO.buscarPedidosCancelamentoProtesto(cancelamentoProtesto);
 	}
 
-	public List<CancelamentoProtesto> buscarCancelamentoProtesto(String nomeArquivo, Instituicao bancoConvenio, Municipio municipio, LocalDate dataInicio,
-			LocalDate dataFim, List<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
-		return cancelamentoDAO.buscarCancelamentoProtesto(nomeArquivo, bancoConvenio, municipio, dataInicio, dataFim, tiposArquivo, usuario);
+	public List<CancelamentoProtesto> buscarCancelamentoProtesto(String nomeArquivo, Instituicao bancoConvenio, Instituicao cartorio,
+			LocalDate dataInicio, LocalDate dataFim, List<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+		return cancelamentoDAO.buscarCancelamentoProtesto(nomeArquivo, bancoConvenio, cartorio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
@@ -190,8 +190,8 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 		return cancelamentoVO;
 	}
 
-	private RemessaCancelamentoProtesto converterCancelamentoSerpro(Arquivo arquivo, Instituicao instituicao, CancelamentoSerproVO cancelamentoSerpro,
-			List<Exception> erros) {
+	private RemessaCancelamentoProtesto converterCancelamentoSerpro(Arquivo arquivo, Instituicao instituicao,
+			CancelamentoSerproVO cancelamentoSerpro, List<Exception> erros) {
 		RemessaCancelamentoProtesto remessaCancelamento = new RemessaCancelamentoProtesto();
 		remessaCancelamento.setArquivo(arquivo);
 		remessaCancelamento.setCancelamentoProtesto(getCancelamentosProtesto(remessaCancelamento, cancelamentoSerpro));
@@ -200,7 +200,8 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 		return remessaCancelamento;
 	}
 
-	private List<CancelamentoProtesto> getCancelamentosProtesto(RemessaCancelamentoProtesto remessaCancelamento, CancelamentoSerproVO cancelamentoSerpro) {
+	private List<CancelamentoProtesto> getCancelamentosProtesto(RemessaCancelamentoProtesto remessaCancelamento,
+			CancelamentoSerproVO cancelamentoSerpro) {
 		List<CancelamentoProtesto> cancelamentos = new ArrayList<CancelamentoProtesto>();
 
 		for (ComarcaDesistenciaCancelamentoSerproVO comarca : cancelamentoSerpro.getComarcaDesistenciaCancelamento()) {
@@ -291,8 +292,8 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 		return sequenciaRegistro;
 	}
 
-	public List<TituloRemessa> buscarTitulosParaSolicitarCancelamento(TituloRemessa tituloRemessa, Instituicao bancoConvenio, Municipio municipio,
-			Usuario usuario) {
+	public List<TituloRemessa> buscarTitulosParaSolicitarCancelamento(TituloRemessa tituloRemessa, Instituicao bancoConvenio,
+			Municipio municipio, Usuario usuario) {
 		return cancelamentoDAO.buscarTitulosParaSolicitarCancelamento(tituloRemessa, bancoConvenio, municipio, usuario);
 	}
 

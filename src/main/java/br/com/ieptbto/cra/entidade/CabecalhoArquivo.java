@@ -16,8 +16,8 @@ import org.joda.time.LocalDate;
  */
 @Entity
 @Audited
-@Table(name = "TB_CABECALHO_ARQUIVO_DP")
-@org.hibernate.annotations.Table(appliesTo = "TB_CABECALHO_ARQUIVO_DP")
+@Table(name = "TB_CABECALHO_ARQUIVO_DESISTENCIA_CANCELAMENTO")
+@org.hibernate.annotations.Table(appliesTo = "TB_CABECALHO_ARQUIVO_DESISTENCIA_CANCELAMENTO")
 public class CabecalhoArquivo extends CabecalhoDesistenciaCancelamento<CabecalhoArquivo> {
 
 	/****/

@@ -30,52 +30,22 @@ public class FabricaRegraEntradaValidacao {
 	@Autowired
 	private FabricaValidacaoTitulo fabricaValidacaoTitulo;
 
-	private File file;
-	private Arquivo arquivo;
-	private Usuario usuario;
-	private List<Exception> erros;
-
 	public void validar(File file, Arquivo arquivo, Usuario usuario, List<Exception> erros) {
-		this.arquivo = arquivo;
-		this.usuario = usuario;
-		this.erros = erros;
-		this.file = file;
-
 		logger.info("Iniciando validações do arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + usuario.getLogin());
 
-		fabricaRegrasDeEntrada.validar(getFile(), getArquivo(), getUsuario(), getErros());
-		fabricaRegrasValidacao.validar(getArquivo(), getUsuario(), getErros());
-		fabricaValidacaoTitulo.validar(getArquivo(), getUsuario(), getErros());
+		fabricaRegrasDeEntrada.validar(file, arquivo, usuario, erros);
+		fabricaRegrasValidacao.validar(arquivo, usuario, erros);
+		fabricaValidacaoTitulo.validar(arquivo, usuario, erros);
 
 		logger.info("Fim de validações do arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + usuario.getLogin());
 	}
-	
+
 	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
-		this.arquivo = arquivo;
-		this.usuario = usuario;
-		this.erros = erros;
-
 		logger.info("Iniciando validações do arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + usuario.getLogin());
 
-		fabricaRegrasValidacao.validar(getArquivo(), getUsuario(), getErros());
-		fabricaValidacaoTitulo.validar(getArquivo(), getUsuario(), getErros());
+		fabricaRegrasValidacao.validar(arquivo, usuario, erros);
+		fabricaValidacaoTitulo.validar(arquivo, usuario, erros);
 
 		logger.info("Fim de validações do arquivo " + arquivo.getNomeArquivo() + " enviado pelo usuário " + usuario.getLogin());
-	}
-
-	public Usuario getUsuario() {
-		return usuario;
-	}
-
-	public List<Exception> getErros() {
-		return erros;
-	}
-
-	public Arquivo getArquivo() {
-		return arquivo;
-	}
-
-	public File getFile() {
-		return file;
 	}
 }

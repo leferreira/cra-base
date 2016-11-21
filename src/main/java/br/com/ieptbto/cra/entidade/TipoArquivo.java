@@ -1,7 +1,5 @@
 package br.com.ieptbto.cra.entidade;
 
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,7 +7,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -32,10 +29,9 @@ public class TipoArquivo extends AbstractEntidade<TipoArquivo> {
 
 	/****/
 	private static final long serialVersionUID = 1L;
-	
+
 	private int id;
 	private TipoArquivoEnum tipoArquivo;
-	private List<PermissaoEnvio> arquivosEnvioPermitido;
 	private LocalTime horaEnvioInicio;
 	private LocalTime horaEnvioFim;
 
@@ -50,11 +46,6 @@ public class TipoArquivo extends AbstractEntidade<TipoArquivo> {
 	@Enumerated(EnumType.STRING)
 	public TipoArquivoEnum getTipoArquivo() {
 		return tipoArquivo;
-	}
-
-	@OneToMany(mappedBy = "tipoArquivo")
-	public List<PermissaoEnvio> getArquivosEnvioPermitido() {
-		return arquivosEnvioPermitido;
 	}
 
 	@Column(name = "HORA_ENVIO_FIM")
@@ -83,10 +74,6 @@ public class TipoArquivo extends AbstractEntidade<TipoArquivo> {
 		this.tipoArquivo = tipoArquivo;
 	}
 
-	public void setArquivosEnvioPermitido(List<PermissaoEnvio> arquivosEnvioPermitido) {
-		this.arquivosEnvioPermitido = arquivosEnvioPermitido;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof TipoArquivo) {
@@ -98,7 +85,7 @@ public class TipoArquivo extends AbstractEntidade<TipoArquivo> {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		if (getId() == 0) {
@@ -106,7 +93,7 @@ public class TipoArquivo extends AbstractEntidade<TipoArquivo> {
 		}
 		return getId();
 	}
-	
+
 	@Override
 	public int compareTo(TipoArquivo entidade) {
 		CompareToBuilder compareTo = new CompareToBuilder();

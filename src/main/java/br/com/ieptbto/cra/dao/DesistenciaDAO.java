@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -44,8 +43,8 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<DesistenciaProtesto> buscarDesistenciaProtesto(String nomeArquivo, Instituicao portador, Municipio municipio, LocalDate dataInicio,
-			LocalDate dataFim, List<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+	public List<DesistenciaProtesto> buscarDesistenciaProtesto(String nomeArquivo, Instituicao portador, Instituicao cartorio,
+			LocalDate dataInicio, LocalDate dataFim, List<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(DesistenciaProtesto.class);
 		criteria.createAlias("remessaDesistenciaProtesto", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
@@ -68,9 +67,9 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 			criteria.createAlias("remessa.cabecalho", "cabecalhoArquivo");
 			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", portador.getCodigoCompensacao()));
 		}
-		if (municipio != null) {
+		if (cartorio != null) {
 			criteria.createAlias("cabecalhoCartorio", "cabecalho");
-			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", municipio.getCodigoIBGE()));
+			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", cartorio.getMunicipio().getCodigoIBGE()));
 		}
 
 		if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {

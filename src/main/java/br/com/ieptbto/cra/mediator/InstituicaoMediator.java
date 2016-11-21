@@ -88,7 +88,8 @@ public class InstituicaoMediator {
 		return instituicao;
 	}
 
-	public Instituicao buscarBancoPorCodigoPortador(String codigoPortador) {
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = false)
+	public Instituicao buscarApresentantePorCodigoPortador(String codigoPortador) {
 		Instituicao instituicao = instituicaoDAO.getInstituicaoPorCodigo(codigoPortador);
 		if (instituicao == null) {
 			throw new InfraException("Instituição não cadastrada com o Código de Portador [" + codigoPortador + "]");

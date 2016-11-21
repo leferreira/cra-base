@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import br.com.ieptbto.cra.conversor.enumeration.ErroValidacao;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.PermissaoEnvio;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -54,7 +53,7 @@ public class RegraInstituicaoEnvio extends RegraEntrada {
 	 */
 	private void verificarInstituicaoDeEnvio() {
 		try {
-			if (!usuario.getInstituicao().isSituacao()) {
+			if (!usuario.getInstituicao().getSituacao()) {
 				logger.error(ErroValidacao.INSTITUICAO_BLOQUEADA.getMensagemErro());
 				throw new InfraException(ErroValidacao.INSTITUICAO_BLOQUEADA.getMensagemErro());
 			}
@@ -69,13 +68,7 @@ public class RegraInstituicaoEnvio extends RegraEntrada {
 	 * C, R ou DP)
 	 */
 	private boolean verificarPermissaoDeEnvioDaInstituicao() {
-		List<PermissaoEnvio> permissoes = tipoInstituicaoMediator.permissoesPorTipoInstituicao(getInstituicao().getTipoInstituicao());
-		for (PermissaoEnvio permissao : permissoes) {
-			if (tipoArquivo.equals(permissao.getTipoArquivo().getTipoArquivo())) {
-				return true;
-			}
-		}
-		return false;
+		return true;
 	}
 
 	public Instituicao getInstituicao() {

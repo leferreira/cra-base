@@ -52,7 +52,8 @@ public class ProcessadorArquivo extends Processador {
 
 		Usuario usuario = arquivo.getUsuarioEnvio();
 		if (getFileUpload() != null) {
-			logger.info("Início processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + usuario.getLogin());
+			logger.info("Início processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário "
+					+ usuario.getLogin());
 
 			verificaDiretorio(usuario);
 			copiarArquivoParaDiretorioDoUsuarioTemporario(arquivo);
@@ -60,7 +61,8 @@ public class ProcessadorArquivo extends Processador {
 			fabricaRegraValidacaoArquivo.validar(getFile(), arquivo, usuario, erros);
 			copiarArquivoEapagarTemporario(arquivo);
 
-			logger.info("Fim processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + usuario.getLogin());
+			logger.info(
+					"Fim processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + usuario.getLogin());
 		} else {
 			throw new InfraException("O arquivo " + getFileUpload().getClientFileName() + " enviado não pode ser processado!");
 		}
@@ -167,7 +169,8 @@ public class ProcessadorArquivo extends Processador {
 			getFileUpload().writeTo(getFile());
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException("Não foi possível criar arquivo Físico temporário para o arquivo " + getFileUpload().getClientFileName());
+			throw new InfraException(
+					"Não foi possível criar arquivo Físico temporário para o arquivo " + getFileUpload().getClientFileName());
 		}
 	}
 
@@ -199,25 +202,25 @@ public class ProcessadorArquivo extends Processador {
 
 		try {
 			if (!diretorioBase.exists()) {
-				diretorioBase.mkdir();
+				diretorioBase.mkdirs();
 			}
 			if (!diretorioBaseTemp.exists()) {
-				diretorioBaseTemp.mkdir();
+				diretorioBaseTemp.mkdirs();
 			}
 			if (!diretorioInstituicao.exists()) {
-				diretorioInstituicao.mkdir();
+				diretorioInstituicao.mkdirs();
 			}
 			if (!diretorioInstituicaoTemp.exists()) {
-				diretorioInstituicaoTemp.mkdir();
+				diretorioInstituicaoTemp.mkdirs();
 			}
 			if (!diretorioUsuario.exists()) {
-				diretorioUsuario.mkdir();
+				diretorioUsuario.mkdirs();
 			}
 			if (!diretorioUsuarioTemp.exists()) {
-				diretorioUsuarioTemp.mkdir();
+				diretorioUsuarioTemp.mkdirs();
 			}
 		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex.getCause());
+			logger.error(ex.getMessage(), ex);
 			throw new InfraException("Não foi possível criar os diretórios do usuário. Favor entrar em contato com a CRA...");
 		}
 	}
@@ -235,7 +238,7 @@ public class ProcessadorArquivo extends Processador {
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				logger.error(e.getMessage(), e.getCause());
+				logger.error(e.getMessage(), e);
 				throw new InfraException("Não foi possível criar o arquivo temporário. Favor entrar em contato com a CRA...");
 			}
 		}

@@ -1,5 +1,6 @@
 package br.com.ieptbto.cra.logger;
 
+import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.TipoLog;
 import br.com.ieptbto.cra.mediator.LoggerMediator;
+import br.com.ieptbto.cra.util.XmlFormatterUtil;
 
 /**
  * @author Thasso Aráujo
@@ -18,6 +20,8 @@ import br.com.ieptbto.cra.mediator.LoggerMediator;
  */
 @Service
 public class LoggerCra {
+
+	protected static final Logger logger = Logger.getLogger(LoggerCra.class);
 
 	@Autowired
 	private LoggerMediator loggerMediator;
@@ -56,6 +60,19 @@ public class LoggerCra {
 		return loggerMediator.salvar(logCra);
 	}
 
+	public LogCra error(Usuario user, CraAcao acao, String descricao, String dados) {
+		LogCra logCra = new LogCra();
+		logCra.setAcao(acao);
+		logCra.setDescricao(descricao);
+		logCra.setTipoLog(TipoLog.OCORRENCIA_ERRO);
+		logCra.setData(new LocalDate());
+		logCra.setHora(new LocalTime());
+		logCra.setUsuario(user.getNome());
+		logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
+		logger.info(XmlFormatterUtil.format(dados));
+		return loggerMediator.salvar(logCra);
+	}
+
 	public LogCra error(Usuario user, CraAcao acao, String descricao, Exception ex) {
 		LogCra logCra = new LogCra();
 		logCra.setAcao(acao);
@@ -66,6 +83,20 @@ public class LoggerCra {
 		logCra.setHora(new LocalTime());
 		logCra.setUsuario(user.getNome());
 		logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
+		return loggerMediator.salvar(logCra);
+	}
+
+	public LogCra error(Usuario user, CraAcao acao, String descricao, Exception ex, String dados) {
+		LogCra logCra = new LogCra();
+		logCra.setAcao(acao);
+		logCra.setDescricao(descricao);
+		logCra.setTipoLog(TipoLog.OCORRENCIA_ERRO);
+		logCra.setExcecao(ex);
+		logCra.setData(new LocalDate());
+		logCra.setHora(new LocalTime());
+		logCra.setUsuario(user.getNome());
+		logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
+		logger.info(XmlFormatterUtil.format(dados));
 		return loggerMediator.salvar(logCra);
 	}
 

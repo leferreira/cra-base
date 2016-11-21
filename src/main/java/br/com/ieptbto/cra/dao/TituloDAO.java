@@ -27,7 +27,7 @@ import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.BancoAgenciaCentralizadoraCodigoCartorio;
+import br.com.ieptbto.cra.enumeration.BancoCentralizadoraCodigoCartorio;
 import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -121,8 +121,10 @@ public class TituloDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor()));
 
 		if (dataInicio != null) {
-			criteria.add(Restrictions.sqlRestriction("DATE(data_cadastro) >= ?", dataInicio.toDate(), org.hibernate.type.StandardBasicTypes.DATE));
-			criteria.add(Restrictions.sqlRestriction("DATE(data_cadastro) <= ?", dataFim.toDate(), org.hibernate.type.StandardBasicTypes.DATE));
+			criteria.add(Restrictions.sqlRestriction("DATE(data_cadastro) >= ?", dataInicio.toDate(),
+					org.hibernate.type.StandardBasicTypes.DATE));
+			criteria.add(
+					Restrictions.sqlRestriction("DATE(data_cadastro) <= ?", dataFim.toDate(), org.hibernate.type.StandardBasicTypes.DATE));
 		}
 		criteria.addOrder(Order.asc("id"));
 		return criteria.list();
@@ -190,6 +192,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	/**
 	 * Salvar título Remessa
 	 * 
+	 * 
 	 * @param tituloRemessa
 	 * @param erros
 	 * @return
@@ -225,9 +228,20 @@ public class TituloDAO extends AbstractBaseDAO {
 		TituloRemessa titulo = buscarTituloConfirmacaoSalvo(tituloConfirmacao, erros);
 
 		try {
-			BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBanco(tituloConfirmacao.getCodigoPortador());
+			BancoCentralizadoraCodigoCartorio banco = BancoCentralizadoraCodigoCartorio.getBanco(tituloConfirmacao.getCodigoPortador());
 			if (banco != null) {
-				tituloConfirmacao.setCodigoCartorio(banco.getCodigoCartorio());
+				if (banco.equals(BancoCentralizadoraCodigoCartorio.ITAU)) {
+					Integer codigoCartorio = banco.getCodigoCartorio(titulo.getRemessa().getCabecalho().getCodigoMunicipio());
+					if (codigoCartorio != 0) {
+						tituloConfirmacao.setCodigoCartorio(codigoCartorio);
+					} else {
+						Integer numeroProtocolo = Integer.valueOf(tituloConfirmacao.getNumeroProtocoloCartorio().trim());
+						erros.add(new TituloException(CodigoErro.CARTORIO_CODIGO_CARTORIO_APRESENTANTE_INVALIDO,
+								tituloConfirmacao.getNossoNumero(), numeroProtocolo, tituloConfirmacao.getNumeroSequencialArquivo()));
+					}
+				} else {
+					tituloConfirmacao.setCodigoCartorio(banco.getCodigoCartorio());
+				}
 			}
 			if (tituloConfirmacao.getNumeroProtocoloCartorio() != null) {
 				Integer numeroProtocoloCartorio = Integer.valueOf(tituloConfirmacao.getNumeroProtocoloCartorio().trim());
@@ -263,9 +277,20 @@ public class TituloDAO extends AbstractBaseDAO {
 		TituloRemessa titulo = buscarTituloRetornoSalvo(tituloRetorno, erros);
 
 		try {
-			BancoAgenciaCentralizadoraCodigoCartorio banco = BancoAgenciaCentralizadoraCodigoCartorio.getBanco(tituloRetorno.getCodigoPortador());
+			BancoCentralizadoraCodigoCartorio banco = BancoCentralizadoraCodigoCartorio.getBanco(tituloRetorno.getCodigoPortador());
 			if (banco != null) {
-				tituloRetorno.setCodigoCartorio(banco.getCodigoCartorio());
+				if (banco.equals(BancoCentralizadoraCodigoCartorio.ITAU)) {
+					Integer codigoCartorio = banco.getCodigoCartorio(titulo.getRemessa().getCabecalho().getCodigoMunicipio());
+					if (codigoCartorio != 0) {
+						tituloRetorno.setCodigoCartorio(codigoCartorio);
+					} else {
+						Integer numeroProtocolo = Integer.valueOf(tituloRetorno.getNumeroProtocoloCartorio().trim());
+						erros.add(new TituloException(CodigoErro.CARTORIO_CODIGO_CARTORIO_APRESENTANTE_INVALIDO,
+								tituloRetorno.getNossoNumero(), numeroProtocolo, tituloRetorno.getNumeroSequencialArquivo()));
+					}
+				} else {
+					tituloRetorno.setCodigoCartorio(banco.getCodigoCartorio());
+				}
 			}
 
 			if (titulo != null) {
@@ -291,11 +316,12 @@ public class TituloDAO extends AbstractBaseDAO {
 				if (TipoOcorrencia.PROTESTADO.equals(tipoOcorrencia)) {
 					for (PedidoDesistencia pedido : pedidosDesistencia) {
 						LocalDate dataOcorrenciaProtesto = tituloRetorno.getDataOcorrencia();
-						LocalDate dataEnvioDesistencia = pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
+						LocalDate dataEnvioDesistencia =
+								pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
 						if (dataOcorrenciaProtesto.isAfter(dataEnvioDesistencia) || dataOcorrenciaProtesto.equals(dataEnvioDesistencia)) {
 							Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio().trim());
-							erros.add(new TituloException(CodigoErro.CARTORIO_PROTESTO_INDEVIDO, tituloRetorno.getNossoNumero(), numeroProtocolo,
-									tituloRetorno.getNumeroSequencialArquivo()));
+							erros.add(new TituloException(CodigoErro.CARTORIO_PROTESTO_INDEVIDO, tituloRetorno.getNossoNumero(),
+									numeroProtocolo, tituloRetorno.getNumeroSequencialArquivo()));
 						}
 					}
 				}
@@ -337,8 +363,8 @@ public class TituloDAO extends AbstractBaseDAO {
 
 		Integer numeroProtocolo = Integer.parseInt(tituloConfirmacao.getNumeroProtocoloCartorio().trim());
 		if (!titulos.isEmpty()) {
-			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_CONFIRMACAO_JA_ENVIADO, tituloConfirmacao.getNossoNumero(), numeroProtocolo,
-					tituloConfirmacao.getNumeroSequencialArquivo()));
+			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_CONFIRMACAO_JA_ENVIADO, tituloConfirmacao.getNossoNumero(),
+					numeroProtocolo, tituloConfirmacao.getNumeroSequencialArquivo()));
 		} else {
 			erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_NAO_ENCONTRADO, tituloConfirmacao.getNossoNumero(), numeroProtocolo,
 					tituloConfirmacao.getNumeroSequencialArquivo()));
@@ -426,7 +452,8 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.createAlias("titulo", "titulo");
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
+		criteria.add(
+				Restrictions.eq("cabecalho.codigoMunicipio", pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
 		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
@@ -444,7 +471,8 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.createAlias("titulo", "titulo");
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio()));
+		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio",
+				pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio()));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
 		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());

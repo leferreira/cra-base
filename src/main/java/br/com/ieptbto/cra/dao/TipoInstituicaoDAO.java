@@ -8,7 +8,6 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
-import br.com.ieptbto.cra.entidade.PermissaoEnvio;
 import br.com.ieptbto.cra.entidade.TipoInstituicao;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -20,25 +19,15 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class TipoInstituicaoDAO extends AbstractBaseDAO {
 
-	@SuppressWarnings("unchecked")
-	public TipoInstituicao alterar(TipoInstituicao tipoInstituicao, List<PermissaoEnvio> permissoes) {
+	public TipoInstituicao alterar(TipoInstituicao tipoInstituicao) {
 		Transaction transaction = getBeginTransation();
-		
+
 		try {
-			Criteria criteria = getCriteria(PermissaoEnvio.class);
-			criteria.add(Restrictions.eq("tipoInstituicao", tipoInstituicao));
-			List<PermissaoEnvio> lista = criteria.list();
-			
-			for (PermissaoEnvio permissao: lista){
-				delete(permissao);
-			}
-			for (PermissaoEnvio permissao : permissoes){
-				save(permissao);
-			}
+			update(tipoInstituicao);
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
-			throw new InfraException("Não foi possível alterar as permissões para o tipo selecionado !");
+			throw new InfraException("Não foi possível alterar o tipo de instituição. Favor entrar em contato com a CRA!");
 		}
 		return tipoInstituicao;
 	}
@@ -68,8 +57,6 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<TipoInstituicao> listarTodos() {
 		Criteria criteria = getCriteria(TipoInstituicao.class);
-		// criteria.createAlias("arquivosEnvioPermitido",
-		// "arquivosEnvioPermitido");
 		criteria.addOrder(Order.asc("tipoInstituicao"));
 		return criteria.list();
 	}
@@ -78,14 +65,5 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(TipoInstituicao.class);
 		criteria.add(Restrictions.eq("tipoInstituicao", tipoInstituicao));
 		return TipoInstituicao.class.cast(criteria.uniqueResult());
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<PermissaoEnvio> permissoesPorTipoInstituicao(TipoInstituicao tipo) {
-		Criteria criteria = getCriteria(PermissaoEnvio.class);
-		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
-		criteria.createAlias("tipoArquivo", "tipoArquivo");
-		criteria.add(Restrictions.eq("tipoInstituicao", tipo));
-		return criteria.list();
 	}
 }

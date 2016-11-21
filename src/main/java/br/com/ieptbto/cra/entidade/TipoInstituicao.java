@@ -28,7 +28,6 @@ public class TipoInstituicao extends AbstractEntidade<TipoInstituicao> {
 	private int id;
 	private TipoInstituicaoCRA tipoInstituicao;
 	private List<Instituicao> listaInstituicoes;
-	private List<PermissaoEnvio> arquivosEnvioPermitido;
 
 	@Id
 	@Column(name = "ID_TIPO_INSTITUICAO", columnDefinition = "serial")
@@ -48,11 +47,6 @@ public class TipoInstituicao extends AbstractEntidade<TipoInstituicao> {
 		return listaInstituicoes;
 	}
 
-	@OneToMany(mappedBy = "tipoInstituicao")
-	public List<PermissaoEnvio> getArquivosEnvioPermitido() {
-		return arquivosEnvioPermitido;
-	}
-
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -63,10 +57,6 @@ public class TipoInstituicao extends AbstractEntidade<TipoInstituicao> {
 
 	public void setListaInstituicoes(List<Instituicao> listaInstituicoes) {
 		this.listaInstituicoes = listaInstituicoes;
-	}
-
-	public void setArquivosEnvioPermitido(List<PermissaoEnvio> arquivosEnvioPermitido) {
-		this.arquivosEnvioPermitido = arquivosEnvioPermitido;
 	}
 
 	@Override
@@ -80,7 +70,7 @@ public class TipoInstituicao extends AbstractEntidade<TipoInstituicao> {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		if (getId() == 0) {
@@ -88,7 +78,7 @@ public class TipoInstituicao extends AbstractEntidade<TipoInstituicao> {
 		}
 		return getId();
 	}
-	
+
 	@Override
 	public int compareTo(TipoInstituicao entidade) {
 		CompareToBuilder compareTo = new CompareToBuilder();

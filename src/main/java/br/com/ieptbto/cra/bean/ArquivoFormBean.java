@@ -27,6 +27,7 @@ public class ArquivoFormBean implements Serializable {
 	private TipoInstituicaoCRA tipoInstituicao;
 	private Instituicao bancoConvenio;
 	private Instituicao cartorio;
+	private Instituicao instituicao;
 	private Municipio municipio;
 	private TipoVisualizacaoArquivos tipoVisualizacaoArquivos;
 
@@ -124,5 +125,13 @@ public class ArquivoFormBean implements Serializable {
 
 	public void setSituacoesArquivos(List<SituacaoArquivo> situacoesArquivos) {
 		this.situacoesArquivos = situacoesArquivos;
+	}
+
+	public void setInstituicao(Instituicao instituicao) {
+		this.instituicao = instituicao;
+	}
+
+	public Instituicao getInstituicao() {
+		return instituicao;
 	}
 }

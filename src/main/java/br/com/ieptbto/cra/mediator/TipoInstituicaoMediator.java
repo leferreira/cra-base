@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.TipoInstituicaoDAO;
-import br.com.ieptbto.cra.entidade.PermissaoEnvio;
 import br.com.ieptbto.cra.entidade.TipoInstituicao;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 
@@ -20,8 +19,8 @@ public class TipoInstituicaoMediator {
 	@Autowired
 	private TipoInstituicaoDAO tipoInstituicaoDao;
 
-	public TipoInstituicao alterarPermissoesTipoInstituicao(TipoInstituicao tipo, List<PermissaoEnvio> permissoes) {
-		return tipoInstituicaoDao.alterar(tipo, permissoes);
+	public TipoInstituicao alterarPermissoesTipoInstituicao(TipoInstituicao tipoInstituicao) {
+		return tipoInstituicaoDao.alterar(tipoInstituicao);
 	}
 
 	public TipoInstituicao buscarTipoInstituicao(TipoInstituicaoCRA tipoInstituicao) {
@@ -34,9 +33,5 @@ public class TipoInstituicaoMediator {
 
 	public List<TipoInstituicao> listarTipos() {
 		return tipoInstituicaoDao.listarTodos();
-	}
-
-	public List<PermissaoEnvio> permissoesPorTipoInstituicao(TipoInstituicao tipo) {
-		return tipoInstituicaoDao.permissoesPorTipoInstituicao(tipo);
 	}
 }

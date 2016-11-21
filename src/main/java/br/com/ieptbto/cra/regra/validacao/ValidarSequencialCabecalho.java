@@ -25,30 +25,23 @@ public class ValidarSequencialCabecalho extends RegraValidacao {
 
 	@Override
 	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
-		this.arquivo = arquivo;
-		this.usuario = usuario;
-		this.erros = erros;
 
-		executar();
-	}
-
-	@Override
-	protected void executar() {
 		TipoArquivoEnum tipoArquivo = getTipoArquivo(arquivo);
 		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
 
 		} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)) {
 
 		} else if (TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
-			verificarSequencialRetorno();
+			verificarSequencialRetorno(arquivo, usuario, erros);
 		}
 	}
 
-	private void verificarSequencialRetorno() {
+	private void verificarSequencialRetorno(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		if (arquivo.getRemessas() != null && !arquivo.getRemessas().isEmpty()) {
 
 			for (Remessa remessa : arquivo.getRemessas()) {
-				CabecalhoRemessa ultimoCabecalhoRetorno = cabecalhoMediator.buscarUltimoCabecalhoRetornoPorMunicipio(remessa.getCabecalho());
+				CabecalhoRemessa ultimoCabecalhoRetorno =
+						cabecalhoMediator.buscarUltimoCabecalhoRetornoPorMunicipio(remessa.getCabecalho());
 
 				if (ultimoCabecalhoRetorno != null) {
 					if (remessa.getCabecalho().getNumeroSequencialRemessa() <= ultimoCabecalhoRetorno.getNumeroSequencialRemessa()) {

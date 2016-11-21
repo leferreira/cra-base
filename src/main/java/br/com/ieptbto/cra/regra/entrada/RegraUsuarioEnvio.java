@@ -22,9 +22,9 @@ import br.com.ieptbto.cra.mediator.UsuarioMediator;
 public class RegraUsuarioEnvio extends RegraEntrada {
 
 	@Autowired
-	UsuarioMediator usuarioMediator;
+	private UsuarioMediator usuarioMediator;
 	@Autowired
-	InstituicaoMediator instituicaoMediator;
+	private InstituicaoMediator instituicaoMediator;
 
 	@Override
 	public void validar(File file, Arquivo arquivo, Usuario usuario, List<Exception> erros) {

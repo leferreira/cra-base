@@ -108,17 +108,17 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			String xmlRecebido = "";
 
+			boolean inicioRemessaComarca = true;
 			Scanner scanner = new Scanner(new ByteArrayInputStream(new String(dados).getBytes()));
 			while (scanner.hasNext()) {
 				String line = scanner.nextLine().replaceAll("& ", "&amp;");
-				if (line.contains("<hd ") && !line.contains("<tl ")) {
+				if (line.contains("<hd") && inicioRemessaComarca == true) {
 					line = "<arquivo_comarca>" + line;
-				}
-				if (line.contains("<tl ") && !line.contains("</remessa>")) {
-					line = line.concat("</arquivo_comarca>");
-				}
-				if (line.contains("<tl ") && line.contains("</remessa>")) {
-					line = line.replace("</arquivo_comarca>", "</arquivo_comarca></remessa>");
+					inicioRemessaComarca = false;
+				} else if (line.contains("<hd") && inicioRemessaComarca == false) {
+					line = "</arquivo_comarca><arquivo_comarca>" + line;
+				} else if (line.contains("</remessa>") && inicioRemessaComarca == false) {
+					line = line.replace("</remessa>", "</arquivo_comarca></remessa>");
 				}
 
 				xmlRecebido = xmlRecebido + line;
@@ -160,7 +160,8 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 			mensagem.setCodigo(CodigoErro.CRA_SUCESSO.getCodigo());
 			mensagem.setMunicipio(remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE());
 			mensagem.setDescricao("Município: " + remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString() + " - "
-					+ remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - " + remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.");
+					+ remessa.getInstituicaoDestino().getMunicipio().getNomeMunicipio() + " - "
+					+ remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.");
 			mensagens.add(mensagem);
 		}
 		return mensagemXml;
@@ -174,7 +175,8 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 		for (Remessa remessa : arquivo.getRemessas()) {
 			ComarcaDetalhamentoSerpro comarcaDetalhamento = new ComarcaDetalhamentoSerpro();
 			comarcaDetalhamento.setCodigoMunicipio(remessa.getCabecalho().getCodigoMunicipio());
-			comarcaDetalhamento.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
+			comarcaDetalhamento
+					.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
 			comarcaDetalhamento.setRegistro(StringUtils.EMPTY);
 
 			CodigoErro codigoErroSerpro = CodigoErro.SERPRO_SUCESSO_REMESSA;
@@ -245,7 +247,8 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 
 				ComarcaDetalhamentoSerpro comarcaDetalhamento = new ComarcaDetalhamentoSerpro();
 				comarcaDetalhamento.setCodigoMunicipio(exception.getCodigoMunicipio());
-				comarcaDetalhamento.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
+				comarcaDetalhamento
+						.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
 				comarcaDetalhamento.setRegistro(ConfiguracaoBase.UM);
 
 				CodigoErro codigoErroSerpro = CodigoErro.SERPRO_ARQUIVO_INVALIDO_REMESSA_DESISTENCIA_CANCELAMENTO;

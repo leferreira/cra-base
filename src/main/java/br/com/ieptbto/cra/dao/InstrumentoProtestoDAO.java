@@ -8,6 +8,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
@@ -121,7 +122,8 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 	public void removerInstrumento(InstrumentoProtesto instrumentoProtesto) {
 
 		try {
-			Query query = createSQLQuery("DELETE FROM tb_instrumento_protesto WHERE id_instrumento_protesto=" + instrumentoProtesto.getId() + ";");
+			Query query = createSQLQuery(
+					"DELETE FROM tb_instrumento_protesto WHERE id_instrumento_protesto=" + instrumentoProtesto.getId() + ";");
 			query.executeUpdate();
 		} catch (Exception ex) {
 			logger.info(ex.getMessage());
@@ -138,5 +140,17 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 			total = new Long(0);
 		}
 		return total;
+	}
+
+	public boolean verificarEtiquetasGeradasNaoConfimadas() {
+		Criteria criteria = getCriteria(EtiquetaSLIP.class);
+		criteria.createAlias("instrumentoProtesto", "instrumentoProtesto", JoinType.INNER_JOIN);
+		criteria.add(Restrictions.eq("instrumentoProtesto.gerado", false));
+		criteria.setMaxResults(1);
+		EtiquetaSLIP etiqueta = EtiquetaSLIP.class.cast(criteria.uniqueResult());
+		if (etiqueta != null) {
+			return true;
+		}
+		return false;
 	}
 }

@@ -21,6 +21,7 @@ import br.com.ieptbto.cra.entidade.InstrumentoProtesto;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.slip.regra.RegraAgenciaDestino;
 
 /**
@@ -87,8 +88,13 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 	private void gerarSLIP(List<InstrumentoProtesto> instrumentos) {
 
 		for (InstrumentoProtesto instrumento : instrumentos) {
+			if (instrumento.getEtiquetaSlip() != null) {
+				throw new InfraException(
+						"Os instrumentos de protestos já tiveram as Slips geradas. Por favor clique em confirmar para marca-los como gerados!");
+			}
 			RegraAgenciaDestino regraAgencia = regraAgenciaDestino.regraAgenciaDestino(instrumento.getTituloRetorno().getTitulo());
-			instrumento.getTituloRetorno().setRemessa(instrumentoDao.buscarPorPK(instrumento.getTituloRetorno().getRemessa(), Remessa.class));
+			instrumento.getTituloRetorno()
+					.setRemessa(instrumentoDao.buscarPorPK(instrumento.getTituloRetorno().getRemessa(), Remessa.class));
 
 			if (StringUtils.isNotEmpty(regraAgencia.getAgenciaDestino().trim())) {
 				EtiquetaSLIP novaEtiqueta = new EtiquetaSLIP();
@@ -106,10 +112,12 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 		HashMap<Integer, EnvelopeSLIP> mapaEnvelopes = new HashMap<Integer, EnvelopeSLIP>();
 
 		for (EtiquetaSLIP etiqueta : getEtiquetas()) {
-			if (mapaEnvelopes.containsKey(Integer.parseInt(
-					new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino()).toString()))) {
-				EnvelopeSLIP envelope = mapaEnvelopes.get(Integer.parseInt(
-						new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino()).toString()));
+			if (mapaEnvelopes.containsKey(
+					Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(),
+							etiqueta.getAgenciaDestino()).toString()))) {
+				EnvelopeSLIP envelope = mapaEnvelopes
+						.get(Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(),
+								etiqueta.getAgenciaDestino()).toString()));
 				envelope.setQuantidadeInstrumentos(envelope.getQuantidadeInstrumentos() + 1);
 				envelope.getEtiquetas().add(etiqueta);
 			} else {
@@ -125,9 +133,9 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 				envelope.setEtiquetas(new ArrayList<EtiquetaSLIP>());
 				envelope.getEtiquetas().add(etiqueta);
 
-				mapaEnvelopes.put(Integer.parseInt(
-						new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(), etiqueta.getAgenciaDestino()).toString()),
-						envelope);
+				mapaEnvelopes
+						.put(Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(),
+								etiqueta.getAgenciaDestino()).toString()), envelope);
 				getEnvelopes().add(envelope);
 			}
 		}
@@ -209,6 +217,10 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 
 	public void removerInstrumento(InstrumentoProtesto instrumentoProtesto) {
 		instrumentoDao.removerInstrumento(instrumentoProtesto);
+	}
+
+	public boolean verificarEtiquetasGeradasNaoConfimadas() {
+		return instrumentoDao.verificarEtiquetasGeradasNaoConfimadas();
 	}
 }
 

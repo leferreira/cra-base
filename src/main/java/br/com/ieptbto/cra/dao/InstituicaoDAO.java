@@ -3,7 +3,6 @@ package br.com.ieptbto.cra.dao;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
@@ -37,7 +36,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		try {
 			instituicao = save(instituicao);
 			transaction.commit();
-			logger.info(instituicao.getTipoInstituicao().getTipoInstituicao() + " foi salvo na base de dados. ");
+
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
@@ -47,14 +46,12 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	}
 
 	public Instituicao alterar(Instituicao instituicao) {
-		Session session = getSession();
-		session.clear();
-		session.flush();
-		Transaction transaction = session.beginTransaction();
+		Transaction transaction = getBeginTransation();
+
 		try {
 			update(instituicao);
 			transaction.commit();
-			logger.info(instituicao.getTipoInstituicao().getTipoInstituicao() + " foi alterado na base de dados. ");
+
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
@@ -71,8 +68,8 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 
 		Criterion restrict1 = Restrictions.ilike("municipio.nomeMunicipio", nomeMunicipio, MatchMode.EXACT);
-		Criterion restrict2 =
-				Restrictions.ilike("municipio.nomeMunicipioSemAcento", RemoverAcentosUtil.removeAcentos(nomeMunicipio.trim().toUpperCase()), MatchMode.EXACT);
+		Criterion restrict2 = Restrictions.ilike("municipio.nomeMunicipioSemAcento",
+				RemoverAcentosUtil.removeAcentos(nomeMunicipio.trim().toUpperCase()), MatchMode.EXACT);
 
 		criteria.add(Restrictions.or(restrict1, restrict2));
 		if (criteria.uniqueResult() != null) {
@@ -83,7 +80,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	}
 
 	public boolean isInstituicaoAtiva(Instituicao instituicao) {
-		if (instituicao.isSituacao()) {
+		if (instituicao.getSituacao()) {
 			return true;
 		} else {
 			return false;

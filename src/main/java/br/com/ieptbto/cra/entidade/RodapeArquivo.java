@@ -18,8 +18,8 @@ import org.joda.time.LocalDate;
  */
 @Entity
 @Audited
-@Table(name = "TB_RODAPE_ARQUIVO_DP")
-@org.hibernate.annotations.Table(appliesTo = "TB_RODAPE_ARQUIVO_DP")
+@Table(name = "TB_RODAPE_ARQUIVO_DESISTENCIA_CANCELAMENTO")
+@org.hibernate.annotations.Table(appliesTo = "TB_RODAPE_ARQUIVO_DESISTENCIA_CANCELAMENTO")
 public class RodapeArquivo extends RodapeDesistenciaCancelamento<RodapeArquivo> {
 
 	/***/

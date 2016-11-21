@@ -16,38 +16,30 @@ public class ValidarRodape extends RegraValidacao {
 
 	@Override
 	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
-		this.arquivo = arquivo;
-		this.usuario = usuario;
-		this.erros = erros;
 
-		executar();
-	}
-
-	@Override
-	protected void executar() {
 		TipoArquivoEnum tipoArquivo = getTipoArquivo(arquivo);
 		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
 
 		} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)) {
-			validarDadosRodape();
+			validarDadosRodape(arquivo, usuario, erros);
 		} else if (TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
-			validarDadosRodape();
+			validarDadosRodape(arquivo, usuario, erros);
 		}
 	}
 
-	private void validarDadosRodape() {
+	private void validarDadosRodape(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		if (arquivo.getRemessas() != null && !arquivo.getRemessas().isEmpty()) {
 
 			for (Remessa remessa : arquivo.getRemessas()) {
 				if (remessa.getRodape().getNumeroCodigoPortador() != null) {
 					if (remessa.getRodape().getNumeroCodigoPortador().trim().isEmpty()) {
-						addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_PORTADOR_RODAPE_INVALIDO));
+						erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_PORTADOR_RODAPE_INVALIDO));
 					}
 				}
 
 				if (remessa.getRodape().getNomePortador() != null) {
 					if (remessa.getRodape().getNomePortador().trim().isEmpty()) {
-						addErro(new CabecalhoRodapeException(CodigoErro.CARTORIO_NOME_PORTADOR_RODAPE_INVALIDO));
+						erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_NOME_PORTADOR_RODAPE_INVALIDO));
 					}
 				}
 			}
