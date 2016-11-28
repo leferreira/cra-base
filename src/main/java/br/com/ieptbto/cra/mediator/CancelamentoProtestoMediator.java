@@ -31,13 +31,12 @@ import br.com.ieptbto.cra.entidade.CabecalhoArquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoCartorio;
 import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoCancelamento;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.RodapeArquivo;
 import br.com.ieptbto.cra.entidade.RodapeCartorio;
-import br.com.ieptbto.cra.entidade.SolicitacaoCancelamento;
+import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
@@ -292,22 +291,26 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 		return sequenciaRegistro;
 	}
 
-	public List<TituloRemessa> buscarTitulosParaSolicitarCancelamento(TituloRemessa tituloRemessa, Instituicao bancoConvenio,
-			Municipio municipio, Usuario usuario) {
-		return cancelamentoDAO.buscarTitulosParaSolicitarCancelamento(tituloRemessa, bancoConvenio, municipio, usuario);
+	public SolicitacaoDesistenciaCancelamento salvarSolicitacaoDesistenciaCancelamento(
+			SolicitacaoDesistenciaCancelamento solicitacaoDesistenciaCancelamento) {
+
+		SolicitacaoDesistenciaCancelamento solicitacaoEnviada =
+				cancelamentoDAO.verificarSolicitadoAnteriormente(solicitacaoDesistenciaCancelamento);
+		if (solicitacaoEnviada != null) {
+			throw new InfraException("Esta solicitação já foi enviada anteriormente para este título em "
+					+ DataUtil.localDateToString(new LocalDate(solicitacaoEnviada.getDataSolicitacao()))
+					+ "! Aguarde o processamento pelo cartório...");
+		}
+		return cancelamentoDAO.salvarSolicitacaoDesistenciaCancelamento(solicitacaoDesistenciaCancelamento);
 	}
 
-	public SolicitacaoCancelamento salvarSolicitacaoCancelamento(SolicitacaoCancelamento solicitacaoCancelamento) {
-		return cancelamentoDAO.salvarSolicitacaoCancelamento(solicitacaoCancelamento);
-	}
-
-	public List<SolicitacaoCancelamento> buscarSolicitacoesCancelamentos() {
+	public List<SolicitacaoDesistenciaCancelamento> buscarSolicitacoesDesistenciasCancelamentos() {
 		return cancelamentoDAO.buscarCancelamentosSolicitados();
 	}
 
-	public SolicitacaoCancelamento buscarSolicitacaoCancelamentoPorTitulo(TituloRemessa titulo) {
+	public List<SolicitacaoDesistenciaCancelamento> buscarSolicitacoesDesistenciasCancelamentoPorTitulo(TituloRemessa titulo) {
 		if (titulo.getRemessa().getInstituicaoOrigem().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
-			return cancelamentoDAO.buscarSolicitacaoCancelamentoPorTitulo(titulo);
+			return cancelamentoDAO.buscarSolicitacoesDesistenciasCancelamentoPorTitulo(titulo);
 		}
 		return null;
 	}

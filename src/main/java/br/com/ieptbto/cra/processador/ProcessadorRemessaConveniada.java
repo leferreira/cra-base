@@ -57,24 +57,23 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private RemessaMediator remessaMediator;
 	@Autowired
 	private AvalistaMediator avalistaMediator;
+
 	private Usuario usuario;
-	private Map<chaveTitulo, TituloFiliado> mapaTitulos;
-	private Map<String, Arquivo> mapaArquivos;
-	private List<TituloFiliado> listTitulosFiliado;
+	private HashMap<chaveTitulo, TituloFiliado> mapaTitulos;
+	private HashMap<String, Arquivo> mapaArquivos;
 	private List<Remessa> remessas;
 	private List<Arquivo> arquivos;
 
-	public List<Arquivo> processar(List<TituloFiliado> listaTitulosConvenios, Usuario usuario) {
-		this.listTitulosFiliado = listaTitulosConvenios;
+	public List<Arquivo> processarRemessa(List<TituloFiliado> titulosConvenios, Usuario usuario) {
 		this.usuario = usuario;
 		this.mapaTitulos = null;
 		this.mapaArquivos = null;
 		this.remessas = null;
 		this.arquivos = null;
-		agruparTitulosFiliado();
+
+		agruparTitulosFiliado(titulosConvenios);
 		gerarRemessas();
 		criarArquivos();
-
 		return getArquivos();
 	}
 
@@ -208,11 +207,12 @@ public class ProcessadorRemessaConveniada extends Processador {
 		remessa.getCabecalho().setQtdTitulosRemessa(quantidadeTitulos + 1);
 		remessa.getCabecalho().setQtdIndicacoesRemessa(quantidadeIndicacoes);
 		remessa.getCabecalho().setQtdOriginaisRemessa(quantidadeOriginais);
-		BigDecimal somatorioQtdRemessa = new BigDecimal(quantidadeRegistros + quantidadeTitulos + quantidadeOriginais + quantidadeIndicacoes);
+		BigDecimal somatorioQtdRemessa =
+				new BigDecimal(quantidadeRegistros + quantidadeTitulos + quantidadeOriginais + quantidadeIndicacoes);
 		remessa.getRodape().setSomatorioQtdRemessa(somatorioQtdRemessa);
 		remessa.getRodape().setSomatorioValorRemessa(valorSaldo);
-		remessa.getRodape()
-				.setNumeroSequencialRegistroArquivo(Integer.toString(Integer.parseInt(remessa.getRodape().getNumeroSequencialRegistroArquivo()) + 1));
+		remessa.getRodape().setNumeroSequencialRegistroArquivo(
+				Integer.toString(Integer.parseInt(remessa.getRodape().getNumeroSequencialRegistroArquivo()) + 1));
 
 		int numeroControleDevedor = 2;
 		for (Avalista avalista : avalistaMediator.buscarAvalistasPorTitulo(tituloFiliado)) {
@@ -237,10 +237,11 @@ public class ProcessadorRemessaConveniada extends Processador {
 		titulo.setNumeroSequencialArquivo(Integer.toString(remessa.getTitulos().size() + 2));
 		remessa.getTitulos().add(titulo);
 
-		BigDecimal somatorioQtdRemessa = new BigDecimal(quantidadeRegistros + quantidadeTitulos + quantidadeOriginais + quantidadeIndicacoes);
+		BigDecimal somatorioQtdRemessa =
+				new BigDecimal(quantidadeRegistros + quantidadeTitulos + quantidadeOriginais + quantidadeIndicacoes);
 		remessa.getRodape().setSomatorioQtdRemessa(somatorioQtdRemessa);
-		remessa.getRodape()
-				.setNumeroSequencialRegistroArquivo(Integer.toString(Integer.parseInt(remessa.getRodape().getNumeroSequencialRegistroArquivo()) + 1));
+		remessa.getRodape().setNumeroSequencialRegistroArquivo(
+				Integer.toString(Integer.parseInt(remessa.getRodape().getNumeroSequencialRegistroArquivo()) + 1));
 	}
 
 	private Instituicao setInstituicaoDestino(TituloFiliado tituloFiliado) {
@@ -262,7 +263,8 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private CabecalhoRemessa setCabecalho(TituloFiliado tituloFiliado, Instituicao instituicaoDestino) {
 		CabecalhoRemessa cabecalho = new CabecalhoRemessa();
 		cabecalho.setDataMovimento(new LocalDate());
-		cabecalho.setAgenciaCentralizadora(StringUtils.leftPad(tituloFiliado.getFiliado().getInstituicaoConvenio().getAgenciaCentralizadora(), 6, "0"));
+		cabecalho.setAgenciaCentralizadora(
+				StringUtils.leftPad(tituloFiliado.getFiliado().getInstituicaoConvenio().getAgenciaCentralizadora(), 6, "0"));
 		cabecalho.setCodigoMunicipio(tituloFiliado.getPracaProtesto().getCodigoIBGE());
 		cabecalho.setIdentificacaoRegistro(TipoRegistro.CABECALHO);
 		cabecalho.setIdentificacaoTransacaoRemetente("BFO");
@@ -271,7 +273,8 @@ public class ProcessadorRemessaConveniada extends Processador {
 		cabecalho.setNomePortador(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getInstituicaoConvenio().getRazaoSocial()));
 		cabecalho.setNumeroCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
 		cabecalho.setNumeroSequencialRegistroArquivo("0001");
-		cabecalho.setNumeroSequencialRemessa(gerarNumeroSequencial(tituloFiliado.getFiliado().getInstituicaoConvenio(), instituicaoDestino));
+		cabecalho
+				.setNumeroSequencialRemessa(gerarNumeroSequencial(tituloFiliado.getFiliado().getInstituicaoConvenio(), instituicaoDestino));
 		cabecalho.setVersaoLayout("043");
 		cabecalho.setQtdTitulosRemessa(1);
 		cabecalho.setQtdRegistrosRemessa(1);
@@ -285,8 +288,8 @@ public class ProcessadorRemessaConveniada extends Processador {
 		return cabecalho;
 	}
 
-	private void agruparTitulosFiliado() {
-		for (TituloFiliado tituloFiliado : getListTitulosFiliado()) {
+	private void agruparTitulosFiliado(List<TituloFiliado> titulosFiliados) {
+		for (TituloFiliado tituloFiliado : titulosFiliados) {
 			getMapaTitulos().put(new chaveTitulo(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao(),
 					tituloFiliado.getPracaProtesto().getCodigoIBGE()), tituloFiliado);
 		}
@@ -301,12 +304,8 @@ public class ProcessadorRemessaConveniada extends Processador {
 		return usuario;
 	}
 
-	public void setMapatitulos(Map<chaveTitulo, TituloFiliado> mapatitulos) {
+	public void setMapatitulos(HashMap<chaveTitulo, TituloFiliado> mapatitulos) {
 		this.mapaTitulos = mapatitulos;
-	}
-
-	public void setListTitulosFiliado(List<TituloFiliado> listTitulosFiliado) {
-		this.listTitulosFiliado = listTitulosFiliado;
 	}
 
 	public void setUsuario(Usuario usuario) {
@@ -317,7 +316,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		this.remessas = remessas;
 	}
 
-	public void setMapaArquivos(Map<String, Arquivo> mapaArquivos) {
+	public void setMapaArquivos(HashMap<String, Arquivo> mapaArquivos) {
 		this.mapaArquivos = mapaArquivos;
 	}
 
@@ -326,13 +325,6 @@ public class ProcessadorRemessaConveniada extends Processador {
 			mapaTitulos = new HashMap<chaveTitulo, TituloFiliado>();
 		}
 		return mapaTitulos;
-	}
-
-	public List<TituloFiliado> getListTitulosFiliado() {
-		if (listTitulosFiliado == null) {
-			listTitulosFiliado = new ArrayList<TituloFiliado>();
-		}
-		return listTitulosFiliado;
 	}
 
 	public List<Remessa> getRemessas() {

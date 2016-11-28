@@ -188,7 +188,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 		return BigDecimal.class.cast(criteria.uniqueResult());
 	}
 
-	public void gerarRetornos(Usuario usuarioAcao, List<Arquivo> arquivosDeRetorno) {
+	public void gerarRetornos(Usuario usuario, List<Arquivo> arquivosDeRetorno) {
 		Transaction transaction = getBeginTransation();
 
 		try {
@@ -197,7 +197,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 				status.setData(new LocalDateTime());
 				status.setSituacaoArquivo(SituacaoArquivo.AGUARDANDO);
 
-				retorno.setUsuarioEnvio(usuarioAcao);
+				retorno.setUsuarioEnvio(usuario);
 				retorno.setStatusArquivo(save(status));
 				save(retorno);
 

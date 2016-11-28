@@ -456,8 +456,9 @@ public class TituloDAO extends AbstractBaseDAO {
 				Restrictions.eq("cabecalho.codigoMunicipio", pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
-		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
+		criteria.add(Restrictions.eq("numeroControleDevedor", 1));
 
+		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
 		if (confirmacao == null) {
 			return null;
 		}
@@ -475,8 +476,9 @@ public class TituloDAO extends AbstractBaseDAO {
 				pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio()));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
-		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
+		criteria.add(Restrictions.eq("numeroControleDevedor", 1));
 
+		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
 		if (confirmacao == null) {
 			return null;
 		}

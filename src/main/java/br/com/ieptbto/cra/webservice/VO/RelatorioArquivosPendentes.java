@@ -15,13 +15,13 @@ public class RelatorioArquivosPendentes {
 
 	@XmlElement(name = "remessa")
 	private RemessaPendente remessas;
-	
+
 	@XmlElement(name = "desistencia")
 	private DesistenciaPendente desistencias;
-	
+
 	@XmlElement(name = "cancelamento")
 	private CancelamentoPendente cancelamentos;
-	
+
 	@XmlElement(name = "autorizaCancelamento")
 	private AutorizaCancelamentoPendente autorizaCancelamentos;
 

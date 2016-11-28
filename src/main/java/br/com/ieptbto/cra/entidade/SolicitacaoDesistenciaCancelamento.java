@@ -22,7 +22,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
-import br.com.ieptbto.cra.enumeration.StatusSolicitacaoCancelamento;
+import br.com.ieptbto.cra.enumeration.TipoSolicitacaoDesistenciaCancelamento;
 
 /**
  * @author Thasso Araújo
@@ -32,36 +32,37 @@ import br.com.ieptbto.cra.enumeration.StatusSolicitacaoCancelamento;
 @Audited
 @Table(name = "TB_SOLICITACAO_DESISTENCIA_CANCELAMENTO")
 @org.hibernate.annotations.Table(appliesTo = "TB_SOLICITACAO_DESISTENCIA_CANCELAMENTO")
-public class SolicitacaoCancelamento extends AbstractEntidade<SolicitacaoCancelamento> {
+public class SolicitacaoDesistenciaCancelamento extends AbstractEntidade<SolicitacaoDesistenciaCancelamento> {
 
 	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private Date dataSolicitacao;
 	private LocalTime horaSolicitacao;
-	private StatusSolicitacaoCancelamento statusSolicitacaoCancelamento;
-	private CodigoIrregularidade codigoIrregularidadeCancelamento;
+	private TipoSolicitacaoDesistenciaCancelamento tipoSolicitacao;
+	private CodigoIrregularidade codigoIrregularidade;
 	private Usuario usuario;
 	private TituloRemessa tituloRemessa;
+	private Boolean statusLiberacao;
 
 	@Override
 	@Id
-	@Column(name = "ID_SOLICITACAO_CANCELAMENTO", columnDefinition = "serial")
+	@Column(name = "ID_SOLICITACAO_DESISTENCIA_CANCELAMENTO", columnDefinition = "serial")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int getId() {
 		return id;
 	}
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "STATUS_SOLICITACAO_CANCELAMENTO", length = 50)
-	public StatusSolicitacaoCancelamento getStatusSolicitacaoCancelamento() {
-		return statusSolicitacaoCancelamento;
+	@Column(name = "TIPO_SOLICITACAO", length = 50)
+	public TipoSolicitacaoDesistenciaCancelamento getTipoSolicitacao() {
+		return tipoSolicitacao;
 	}
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "CODIGO_IRREGULARIDADE_CANCELAMENTO", length = 50)
-	public CodigoIrregularidade getCodigoIrregularidadeCancelamento() {
-		return codigoIrregularidadeCancelamento;
+	@Column(name = "CODIGO_IRREGULARIDADE", length = 50)
+	public CodigoIrregularidade getCodigoIrregularidade() {
+		return codigoIrregularidade;
 	}
 
 	@Temporal(TemporalType.DATE)
@@ -92,6 +93,11 @@ public class SolicitacaoCancelamento extends AbstractEntidade<SolicitacaoCancela
 		return tituloRemessa;
 	}
 
+	@Column(name = "STATUS_LIBERACAO")
+	public Boolean getStatusLiberacao() {
+		return statusLiberacao;
+	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -108,20 +114,24 @@ public class SolicitacaoCancelamento extends AbstractEntidade<SolicitacaoCancela
 		this.horaSolicitacao = horaSolicitacao;
 	}
 
-	public void setStatusSolicitacaoCancelamento(StatusSolicitacaoCancelamento statusSolicitacaoCancelamento) {
-		this.statusSolicitacaoCancelamento = statusSolicitacaoCancelamento;
+	public void setTipoSolicitacao(TipoSolicitacaoDesistenciaCancelamento tipoSolicitacao) {
+		this.tipoSolicitacao = tipoSolicitacao;
 	}
 
-	public void setCodigoIrregularidadeCancelamento(CodigoIrregularidade codigoIrregularidadeCancelamento) {
-		this.codigoIrregularidadeCancelamento = codigoIrregularidadeCancelamento;
+	public void setCodigoIrregularidade(CodigoIrregularidade codigoIrregularidade) {
+		this.codigoIrregularidade = codigoIrregularidade;
 	}
 
 	public void setTituloRemessa(TituloRemessa tituloRemessa) {
 		this.tituloRemessa = tituloRemessa;
 	}
 
+	public void setStatusLiberacao(Boolean statusLiberacao) {
+		this.statusLiberacao = statusLiberacao;
+	}
+
 	@Override
-	public int compareTo(SolicitacaoCancelamento entidade) {
+	public int compareTo(SolicitacaoDesistenciaCancelamento entidade) {
 		return 0;
 	}
 }

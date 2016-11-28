@@ -95,6 +95,9 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 
 	@Column(name = "NUMERO_CONTROLE_DEVEDOR")
 	public Integer getNumeroControleDevedor() {
+		if (numeroControleDevedor == null) {
+			numeroControleDevedor = 1;
+		}
 		return numeroControleDevedor;
 	}
 

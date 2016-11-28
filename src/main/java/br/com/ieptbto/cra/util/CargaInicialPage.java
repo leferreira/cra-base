@@ -24,7 +24,7 @@ public class CargaInicialPage extends WebPage {
 	private static final long serialVersionUID = 1L;
 
 	@SpringBean
-	AdministracaoMediator administracaoMediator;
+	private AdministracaoMediator administracaoMediator;
 
 	public CargaInicialPage() {
 		String municipioParametro = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("codigoMunicipio").toString();

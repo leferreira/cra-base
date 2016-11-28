@@ -10,15 +10,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "remessa")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RemessaPendente {
-	
-	@XmlElement(name = "nome_arquivo")
-	private List<String> arquivos;
 
-	public List<String> getArquivos() {
-		return arquivos;
+	@XmlElement(name = "arquivo")
+	private List<ArquivoRemessa> arquivoRemessa;
+
+	public List<ArquivoRemessa> getArquivoRemessa() {
+		return arquivoRemessa;
 	}
 
-	public void setArquivos(List<String> arquivos) {
-		this.arquivos = arquivos;
+	public void setArquivoRemessa(List<ArquivoRemessa> arquivoRemessa) {
+		this.arquivoRemessa = arquivoRemessa;
 	}
 }

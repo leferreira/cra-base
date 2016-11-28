@@ -21,13 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.PedidoCancelamento;
-import br.com.ieptbto.cra.entidade.SolicitacaoCancelamento;
+import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.CraAcao;
-import br.com.ieptbto.cra.enumeration.StatusSolicitacaoCancelamento;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.error.CodigoErro;
@@ -244,75 +242,35 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 		return CancelamentoProtesto.class.cast(criteria.uniqueResult());
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<TituloRemessa> buscarTitulosParaSolicitarCancelamento(TituloRemessa tituloRemessa, Instituicao bancoConvenio,
-			Municipio municipio, Usuario user) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-
-		criteria.createAlias("remessa", "remessa");
-		if (!user.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", user.getInstituicao()),
-					Restrictions.eq("remessa.instituicaoDestino", user.getInstituicao())));
-		}
-
-		if (bancoConvenio != null) {
-			criteria.add(Restrictions.eq("codigoPortador", bancoConvenio.getCodigoCompensacao()));
-		}
-
-		if (tituloRemessa.getNumeroProtocoloCartorio() != null && tituloRemessa.getNumeroProtocoloCartorio() != StringUtils.EMPTY) {
-			criteria.createAlias("confirmacao", "confirmacao");
-			criteria.add(Restrictions.eq("confirmacao.numeroProtocoloCartorio", tituloRemessa.getNumeroProtocoloCartorio()));
-		}
-
-		if (tituloRemessa.getNumeroTitulo() != null && tituloRemessa.getNumeroTitulo() != StringUtils.EMPTY)
-			criteria.add(Restrictions.ilike("numeroTitulo", tituloRemessa.getNumeroTitulo(), MatchMode.EXACT));
-
-		if (tituloRemessa.getNomeDevedor() != null && tituloRemessa.getNomeDevedor() != StringUtils.EMPTY)
-			criteria.add(Restrictions.ilike("nomeDevedor", tituloRemessa.getNomeDevedor(), MatchMode.ANYWHERE));
-
-		if (tituloRemessa.getNumeroIdentificacaoDevedor() != null && tituloRemessa.getNumeroIdentificacaoDevedor() != StringUtils.EMPTY)
-			criteria.add(
-					Restrictions.ilike("numeroIdentificacaoDevedor", tituloRemessa.getNumeroIdentificacaoDevedor(), MatchMode.ANYWHERE));
-
-		if (municipio != null) {
-			criteria.createAlias("remessa.cabecalho", "cabecalho");
-			criteria.add(Restrictions.ilike("cabecalho.codigoMunicipio", municipio.getCodigoIBGE()));
-		}
-		criteria.addOrder(Order.asc("nomeDevedor"));
-		return criteria.list();
-	}
-
-	public SolicitacaoCancelamento salvarSolicitacaoCancelamento(SolicitacaoCancelamento solicitacaoCancelamento) {
+	public SolicitacaoDesistenciaCancelamento salvarSolicitacaoDesistenciaCancelamento(
+			SolicitacaoDesistenciaCancelamento solicitacaoCancelamento) {
 		Transaction transaction = getBeginTransation();
 
 		try {
 			save(solicitacaoCancelamento);
 			transaction.commit();
+
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível enviar a solicitação de cancelamento!");
 		}
 		return solicitacaoCancelamento;
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<SolicitacaoCancelamento> buscarCancelamentosSolicitados() {
-		Criteria criteria = getCriteria(SolicitacaoCancelamento.class);
+	public List<SolicitacaoDesistenciaCancelamento> buscarCancelamentosSolicitados() {
+		Criteria criteria = getCriteria(SolicitacaoDesistenciaCancelamento.class);
 		criteria.createAlias("tituloRemessa", "tituloRemessa");
-		Disjunction disjuntion = Restrictions.disjunction();
-		disjuntion
-				.add(Restrictions.eq("statusSolicitacaoCancelamento", StatusSolicitacaoCancelamento.SOLICITACAO_AUTORIZACAO_CANCELAMENTO));
-		disjuntion.add(Restrictions.eq("statusSolicitacaoCancelamento", StatusSolicitacaoCancelamento.SOLICITACAO_CANCELAMENTO_PROTESTO));
-		criteria.add(disjuntion);
+		criteria.add(Restrictions.eq("statusLiberacao", false));
 		return criteria.list();
 	}
 
-	public void marcarCancelamentoEnviado(List<SolicitacaoCancelamento> solicitacoesCancelamento) {
+	public void marcarSolicitacoesDesistenciasCancelamentosEnviados(List<SolicitacaoDesistenciaCancelamento> solicitacoesCancelamento) {
 		Transaction transaction = getBeginTransation();
+
 		try {
-			for (SolicitacaoCancelamento solicitacaoCancelamento : solicitacoesCancelamento) {
-				solicitacaoCancelamento.setStatusSolicitacaoCancelamento(StatusSolicitacaoCancelamento.SOLICITACAO_ENVIADA);
+			for (SolicitacaoDesistenciaCancelamento solicitacaoCancelamento : solicitacoesCancelamento) {
+				solicitacaoCancelamento.setStatusLiberacao(true);
 				update(solicitacaoCancelamento);
 			}
 			transaction.commit();
@@ -323,11 +281,21 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 		}
 	}
 
-	public SolicitacaoCancelamento buscarSolicitacaoCancelamentoPorTitulo(TituloRemessa titulo) {
-		Criteria criteria = getCriteria(SolicitacaoCancelamento.class);
+	@SuppressWarnings("unchecked")
+	public List<SolicitacaoDesistenciaCancelamento> buscarSolicitacoesDesistenciasCancelamentoPorTitulo(TituloRemessa titulo) {
+		Criteria criteria = getCriteria(SolicitacaoDesistenciaCancelamento.class);
 		criteria.add(Restrictions.eq("tituloRemessa", titulo));
-		criteria.setMaxResults(1);
 		criteria.addOrder(Order.asc("id"));
-		return SolicitacaoCancelamento.class.cast(criteria.uniqueResult());
+		return criteria.list();
+	}
+
+	public SolicitacaoDesistenciaCancelamento verificarSolicitadoAnteriormente(
+			SolicitacaoDesistenciaCancelamento solicitacaoDesistenciaCancelamento) {
+		Criteria criteria = getCriteria(SolicitacaoDesistenciaCancelamento.class);
+		criteria.add(Restrictions.eq("tituloRemessa", solicitacaoDesistenciaCancelamento.getTituloRemessa()));
+		criteria.add(Restrictions.eq("tipoSolicitacao", solicitacaoDesistenciaCancelamento.getTipoSolicitacao()));
+		criteria.setMaxResults(1);
+		criteria.addOrder(Order.desc("id"));
+		return SolicitacaoDesistenciaCancelamento.class.cast(criteria.uniqueResult());
 	}
 }

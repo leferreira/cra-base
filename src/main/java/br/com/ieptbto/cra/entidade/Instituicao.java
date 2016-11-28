@@ -64,7 +64,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	private TipoBatimento tipoBatimento;
 	private LayoutPadraoXML layoutPadraoXML;
 	private TipoInstituicao tipoInstituicao;
-
+	private Integer versao;
 	private List<Arquivo> arquivoEnviados;
 	private List<Usuario> listaUsuarios;
 
@@ -200,6 +200,11 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		return telefone;
 	}
 
+	@Column(name = "VERSAO")
+	public Integer getVersao() {
+		return versao;
+	}
+
 	public void setCodigoCartorio(String codigoCartorio) {
 		this.codigoCartorio = codigoCartorio;
 	}
@@ -222,6 +227,10 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 
 	public void setCnpj(String cnpj) {
 		this.cnpj = cnpj;
+	}
+
+	public void setVersao(Integer versao) {
+		this.versao = versao;
 	}
 
 	public void setPermitidoSetoresConvenio(EnumerationSimNao permitidoSetoresConvenio) {

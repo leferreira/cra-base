@@ -19,7 +19,7 @@ import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.InstrumentoProtesto;
 import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.SolicitacaoCancelamento;
+import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.util.DataUtil;
 
@@ -41,7 +41,7 @@ public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOc
 	private DesistenciaProtesto desistenciaProtesto;
 	private CancelamentoProtesto cancelamentoProtesto;
 	private AutorizacaoCancelamento autorizacaoCancelamento;
-	private SolicitacaoCancelamento solicitacaoCancelamento;
+	private SolicitacaoDesistenciaCancelamento solicitacaoCancelamento;
 	private Batimento batimento;
 	private InstrumentoProtesto instrumentoProtesto;
 	private List<Deposito> depositos;
@@ -93,13 +93,13 @@ public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOc
 		this.batimento = batimento;
 		this.mensagem = "<b>Depósitos vínculados:</b><br/>";
 		for (Deposito deposito : depositos) {
-			this.mensagem =
-					this.mensagem.concat(DataUtil.localDateToString(deposito.getData()) + " - " + decimalFormat.format(deposito.getValorCredito()) + ";<br>");
+			this.mensagem = this.mensagem.concat(
+					DataUtil.localDateToString(deposito.getData()) + " - " + decimalFormat.format(deposito.getValorCredito()) + ";<br>");
 			this.nomeUsuario = deposito.getUsuario().getNome();
 		}
 		if (totalPagos != null) {
-			this.mensagem =
-					this.mensagem.concat("<b>Total Títulos (Pagos): <span style=\"color: red;\">R$ " + decimalFormat.format(totalPagos) + "</span></b>");
+			this.mensagem = this.mensagem
+					.concat("<b>Total Títulos (Pagos): <span style=\"color: red;\">R$ " + decimalFormat.format(totalPagos) + "</span></b>");
 		}
 		if (depositos.isEmpty()) {
 			this.mensagem = "Liberação sem identificação de depósitos.";
@@ -124,12 +124,15 @@ public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOc
 		}
 	}
 
-	public void parseToSolicitacaoCancelamento(SolicitacaoCancelamento solicitacaoCancelamento) {
-		this.solicitacaoCancelamento = solicitacaoCancelamento;
-		this.data = new LocalDate(solicitacaoCancelamento.getDataSolicitacao());
-		this.hora = solicitacaoCancelamento.getHoraSolicitacao();
-		this.nomeUsuario = solicitacaoCancelamento.getUsuario().getNome();
-		this.mensagem = "Cancelamento solicitado.";
+	public void parseToSolicitacaoCancelamento(SolicitacaoDesistenciaCancelamento solicitacao) {
+		this.solicitacaoCancelamento = solicitacao;
+		this.data = new LocalDate(solicitacao.getDataSolicitacao());
+		this.hora = solicitacao.getHoraSolicitacao();
+		this.nomeUsuario = solicitacao.getUsuario().getNome();
+		this.mensagem = "Solicitação de " + solicitacao.getTipoSolicitacao().getDescricao();
+		if (solicitacao.getCodigoIrregularidade() != null) {
+			this.mensagem = mensagem + ". <br><b>Motivo:</b> " + solicitacao.getCodigoIrregularidade().getMotivo() + ".";
+		}
 	}
 
 	public void parseToTituloFiliado(TituloFiliado tituloFiliado) {
@@ -173,7 +176,7 @@ public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOc
 		return nomeUsuario;
 	}
 
-	public SolicitacaoCancelamento getSolicitacaoCancelamento() {
+	public SolicitacaoDesistenciaCancelamento getSolicitacaoCancelamento() {
 		return solicitacaoCancelamento;
 	}
 
@@ -197,7 +200,7 @@ public class ArquivoOcorrenciaBean implements Serializable, Comparable<ArquivoOc
 		this.nomeUsuario = nomeUsuario;
 	}
 
-	public void setSolicitacaoCancelamento(SolicitacaoCancelamento solicitacaoCancelamento) {
+	public void setSolicitacaoCancelamento(SolicitacaoDesistenciaCancelamento solicitacaoCancelamento) {
 		this.solicitacaoCancelamento = solicitacaoCancelamento;
 	}
 

@@ -191,12 +191,12 @@ public class ArquivoMediator extends BaseMediator {
 		arquivo.setTipoArquivo(tipoArquivoDAO.buscarTipoArquivo(nomeArquivo));
 		arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
 		arquivo.setUsuarioEnvio(usuario);
+		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
 		arquivo.setStatusArquivo(setStatusArquivo());
 		arquivo.setRemessas(new ArrayList<Remessa>());
 		arquivo.setHoraEnvio(new LocalTime());
 		arquivo.setDataEnvio(new LocalDate());
 		arquivo.setDataRecebimento(new LocalDate().toDate());
-		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
 
 		arquivo = processadorArquivo.processarArquivoWS(arquivoRecebido, arquivo, erros);
 		if (erros.isEmpty()) {

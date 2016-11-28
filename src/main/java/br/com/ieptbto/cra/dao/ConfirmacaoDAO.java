@@ -27,7 +27,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class ConfirmacaoDAO extends AbstractBaseDAO {
 
-    public void salvarArquivosDeConfirmacaoGerados(Usuario usuarioAcao, List<Arquivo> arquivosDeConfirmacao) {
+    public void salvarArquivosDeConfirmacaoGerados(Usuario usuario, List<Arquivo> arquivosDeConfirmacao) {
 	Transaction transaction = getBeginTransation();
 
 	try {
@@ -36,7 +36,7 @@ public class ConfirmacaoDAO extends AbstractBaseDAO {
 		status.setData(new LocalDateTime());
 		status.setSituacaoArquivo(SituacaoArquivo.AGUARDANDO);
 
-		confirmacao.setUsuarioEnvio(usuarioAcao);
+		confirmacao.setUsuarioEnvio(usuario);
 		confirmacao.setStatusArquivo(save(status));
 		save(confirmacao);
 
@@ -49,7 +49,7 @@ public class ConfirmacaoDAO extends AbstractBaseDAO {
 		logger.info("O arquivo " + confirmacao.getNomeArquivo() + " foi inserido na base com sucesso!");
 	    }
 	    transaction.commit();
-	    logger.info("As confirmações foram geradas pelo usuário  " + usuarioAcao.getLogin()
+	    logger.info("As confirmações foram geradas pelo usuário  " + usuario.getLogin()
 		    + "e foram inseridas na base ");
 	} catch (Exception ex) {
 	    transaction.rollback();

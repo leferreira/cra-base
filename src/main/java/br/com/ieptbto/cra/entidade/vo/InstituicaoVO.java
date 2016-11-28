@@ -33,6 +33,9 @@ public class InstituicaoVO {
 	@XmlElement(name = "tipo_instituicao")
 	private String tipoInstituicao;
 
+	@XmlElement(name = "versao")
+	private Integer versao;
+
 	public String getRazaoSocial() {
 		return razaoSocial;
 	}
@@ -95,5 +98,13 @@ public class InstituicaoVO {
 
 	public void setTipoInstituicao(String tipoInstituicao) {
 		this.tipoInstituicao = tipoInstituicao;
+	}
+
+	public Integer getVersao() {
+		return versao;
+	}
+
+	public void setVersao(Integer versao) {
+		this.versao = versao;
 	}
 }

@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.regra.validacao;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,9 @@ public class ValidarCidadeCodigoIBGE extends RegraValidacao {
 		if (arquivo.getRemessas() != null && !arquivo.getRemessas().isEmpty()) {
 
 			for (Remessa remessa : arquivo.getRemessas()) {
+				if (StringUtils.isBlank(remessa.getCabecalho().getCodigoMunicipio())) {
+					erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO));
+				}
 
 				Municipio municipio = municipioMediator.buscaMunicipioPorCodigoIBGE(remessa.getCabecalho().getCodigoMunicipio());
 				if (municipio == null) {
