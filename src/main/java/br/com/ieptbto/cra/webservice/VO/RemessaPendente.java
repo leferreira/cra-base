@@ -11,14 +11,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RemessaPendente {
 
-	@XmlElement(name = "arquivo")
-	private List<ArquivoRemessa> arquivoRemessa;
+	@XmlElement(name = "nome_arquivo")
+	private List<String> nomeArquivos;
 
-	public List<ArquivoRemessa> getArquivoRemessa() {
-		return arquivoRemessa;
+	public void setNomeArquivos(List<String> nomeArquivo) {
+		this.nomeArquivos = nomeArquivo;
 	}
 
-	public void setArquivoRemessa(List<ArquivoRemessa> arquivoRemessa) {
-		this.arquivoRemessa = arquivoRemessa;
+	public List<String> getNomeArquivos() {
+		return nomeArquivos;
 	}
 }
