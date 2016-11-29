@@ -80,7 +80,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	}
 
 	public boolean isInstituicaoAtiva(Instituicao instituicao) {
-		if (instituicao.getSituacao()) {
+		if (instituicao.isSituacao()) {
 			return true;
 		} else {
 			return false;

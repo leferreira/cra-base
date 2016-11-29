@@ -54,7 +54,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	private String numeroContaCorrente;
 	private String codigoCartorio;
 	private BigDecimal valorConfirmacao;
-	private Boolean situacao;
+	private boolean situacao;
 	private Boolean seloDiferido;
 	private Boolean taxaCra;
 	private Boolean verificacaoManual;
@@ -135,7 +135,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	}
 
 	@Column(name = "SITUACAO")
-	public Boolean getSituacao() {
+	public boolean isSituacao() {
 		return situacao;
 	}
 
@@ -253,7 +253,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		this.contato = contato;
 	}
 
-	public void setSituacao(Boolean situacao) {
+	public void setSituacao(boolean situacao) {
 		this.situacao = situacao;
 	}
 
@@ -331,7 +331,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 
 	@Transient
 	public String getStatus() {
-		if (getSituacao() == true) {
+		if (isSituacao() == true) {
 			return "Ativo";
 		}
 		return "Não Ativo";

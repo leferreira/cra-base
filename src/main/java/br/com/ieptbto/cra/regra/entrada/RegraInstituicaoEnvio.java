@@ -53,7 +53,7 @@ public class RegraInstituicaoEnvio extends RegraEntrada {
 	 */
 	private void verificarInstituicaoDeEnvio() {
 		try {
-			if (!usuario.getInstituicao().getSituacao()) {
+			if (!usuario.getInstituicao().isSituacao()) {
 				logger.error(ErroValidacao.INSTITUICAO_BLOQUEADA.getMensagemErro());
 				throw new InfraException(ErroValidacao.INSTITUICAO_BLOQUEADA.getMensagemErro());
 			}
