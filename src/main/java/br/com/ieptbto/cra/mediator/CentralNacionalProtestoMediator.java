@@ -63,18 +63,19 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 		for (RegistroCnp registro : registros) {
 			if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
 				if (validarRegistroCnp.validarProtesto(registro)) {
-					if (centralNancionalProtestoDAO.buscarRegistroProtesto(instituicao, registro) == null) {
+					RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarRegistroProtesto(instituicao, registro);
+					if (registroProtesto == null) {
 						loteCnp.getRegistrosCnp().add(registro);
 					}
 				}
 			} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
 				if (validarRegistroCnp.validarCancelamento(registro)) {
-					RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarProtestoDoCancelamento(instituicao, registro);
+					RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarRegistroProtesto(instituicao, registro);
 					if (registroProtesto != null) {
 						registro.setValorProtesto(registroProtesto.getValorProtesto());
 						registro.setDataProtesto(registroProtesto.getDataProtesto());
-						loteCnp.getRegistrosCnp().add(registro);
 					}
+					loteCnp.getRegistrosCnp().add(registro);
 				}
 			}
 		}
@@ -284,7 +285,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 					}
 				} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
 					if (validarRegistroCnp.validarCancelamento(registro)) {
-						RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarProtestoDoCancelamento(instituicao, registro);
+						RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarRegistroProtesto(instituicao, registro);
 						if (registroProtesto != null) {
 							registro.setValorProtesto(registroProtesto.getValorProtesto());
 							loteCnp.getRegistrosCnp().add(registro);
@@ -330,7 +331,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 						}
 					} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
 						if (validarRegistroCnp.validarCancelamento(registro)) {
-							RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarProtestoDoCancelamento(instituicao, registro);
+							RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarRegistroProtesto(instituicao, registro);
 							if (registroProtesto != null) {
 								registro.setValorProtesto(registroProtesto.getValorProtesto());
 								loteCnp.getRegistrosCnp().add(registro);
