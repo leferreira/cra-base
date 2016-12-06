@@ -234,8 +234,20 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("tipoRegistroCnp", TipoRegistroCnp.PROTESTO));
 		criteria.add(Restrictions.eq("numeroDocumentoDevedor", registro.getNumeroDocumentoDevedor()));
 		criteria.add(Restrictions.eq("digitoControleDocumentoDevedor", registro.getDigitoControleDocumentoDevedor()));
-		criteria.add(Restrictions.eq("dataProtesto", registro.getDataProtesto()));
-		criteria.add(Restrictions.eq("valorProtesto", registro.getValorProtesto()));
+		criteria.add(Restrictions.eq("numeroProtocoloCartorio", registro.getNumeroProtocoloCartorio()));
+		criteria.add(Restrictions.eq("loteCnp.instituicaoOrigem", instituicao));
+		criteria.setMaxResults(1);
+		return RegistroCnp.class.cast(criteria.uniqueResult());
+	}
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public RegistroCnp buscarRegistroProtesto(Instituicao instituicao, RegistroCnp registro) {
+		Criteria criteria = getCriteria(RegistroCnp.class);
+		criteria.createAlias("loteCnp", "loteCnp");
+		criteria.add(Restrictions.eq("tipoRegistroCnp", TipoRegistroCnp.PROTESTO));
+		criteria.add(Restrictions.eq("numeroDocumentoDevedor", registro.getNumeroDocumentoDevedor()));
+		criteria.add(Restrictions.eq("digitoControleDocumentoDevedor", registro.getDigitoControleDocumentoDevedor()));
+		criteria.add(Restrictions.eq("numeroProtocoloCartorio", registro.getNumeroProtocoloCartorio()));
 		criteria.add(Restrictions.eq("loteCnp.instituicaoOrigem", instituicao));
 		criteria.setMaxResults(1);
 		return RegistroCnp.class.cast(criteria.uniqueResult());

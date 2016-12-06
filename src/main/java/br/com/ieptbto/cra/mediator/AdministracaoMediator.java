@@ -84,9 +84,9 @@ public class AdministracaoMediator extends BaseMediator {
 
 		List<Instituicao> cartorios = instituicaoDAO.getCartorios();
 		for (final Instituicao cartorio : cartorios) {
-			if (cartorio.getId() == 21 || cartorio.getId() == 114 || cartorio.getId() == 20 || cartorio.getId() == 18 || cartorio.getId() == 14
-					|| cartorio.getId() == 13 || cartorio.getId() == 43 || cartorio.getId() == 82 || cartorio.getId() == 2
-					|| cartorio.getId() == 24) {
+			if (cartorio.getId() == 21 || cartorio.getId() == 114 || cartorio.getId() == 20 || cartorio.getId() == 18
+					|| cartorio.getId() == 14 || cartorio.getId() == 13 || cartorio.getId() == 43 || cartorio.getId() == 82
+					|| cartorio.getId() == 2 || cartorio.getId() == 24) {
 				logger.info("==========================================================");
 				logger.info(cartorio.getMunicipio().getNomeMunicipio() + " => [id=" + cartorio.getId() + "] [codigoIbge="
 						+ cartorio.getMunicipio().getCodigoIBGE() + "]  deverá ser processado separadamente...");
@@ -176,7 +176,8 @@ public class AdministracaoMediator extends BaseMediator {
 
 			if (!novoLote.getRegistrosCnp().isEmpty()) {
 				logger.info("==========================================================");
-				logger.info("Municipio:  " + cartorio.getMunicipio().getNomeMunicipio() + "  -  Qtd. Títulos:  " + novoLote.getRegistrosCnp().size());
+				logger.info("Municipio:  " + cartorio.getMunicipio().getNomeMunicipio() + "  -  Qtd. Títulos:  "
+						+ novoLote.getRegistrosCnp().size());
 
 				List<TituloCnpVO> titulosProcessados = new ArrayList<>();
 				int total_titulos = 0;
@@ -207,7 +208,8 @@ public class AdministracaoMediator extends BaseMediator {
 							msg = msg.replace(" xsi:type=\"arquivoCnpVO\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", "");
 							writer.flush();
 							writer.close();
-							File arquivo = new File(ConfiguracaoBase.DIRETORIO_BASE + cartorio.getMunicipio().getNomeMunicipio() + i);
+							File arquivo =
+									new File(ConfiguracaoBase.DIRETORIO_BASE + 991 + "_" + cartorio.getMunicipio().getNomeMunicipio() + i);
 							BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivo));
 							logger.info("Escrevendo os dados no arquivo... " + i);
 							bWrite.write(msg);

@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.conversor.arquivo.RegistroCnpConversor;
 import br.com.ieptbto.cra.conversor.cnp.ConversorCnpVO;
+import br.com.ieptbto.cra.conversor.cnp.RegistroCnpConversor;
 import br.com.ieptbto.cra.dao.CentralNancionalProtestoDAO;
 import br.com.ieptbto.cra.dao.MunicipioDAO;
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -63,13 +63,16 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 		for (RegistroCnp registro : registros) {
 			if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
 				if (validarRegistroCnp.validarProtesto(registro)) {
-					loteCnp.getRegistrosCnp().add(registro);
+					if (centralNancionalProtestoDAO.buscarRegistroProtesto(instituicao, registro) == null) {
+						loteCnp.getRegistrosCnp().add(registro);
+					}
 				}
 			} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
 				if (validarRegistroCnp.validarCancelamento(registro)) {
 					RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarProtestoDoCancelamento(instituicao, registro);
 					if (registroProtesto != null) {
 						registro.setValorProtesto(registroProtesto.getValorProtesto());
+						registro.setDataProtesto(registroProtesto.getDataProtesto());
 						loteCnp.getRegistrosCnp().add(registro);
 					}
 				}
@@ -227,7 +230,8 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 		List<RegistroCnp> protestos = centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
 
 		for (RegistroCnp titulo : protestos) {
-			RegistroCnp cancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
+			RegistroCnp cancelamento =
+					centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
 			if (cancelamento == null) {
 				Municipio municipio = municipioDAO.carregarMunicipio(titulo.getLoteCnp().getInstituicaoOrigem().getMunicipio());
 				if (!pracasComProtesto.contains(municipio.getNomeMunicipio().toUpperCase())) {
@@ -243,7 +247,8 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 		List<RegistroCnp> protestos = centralNancionalProtestoDAO.consultarProtestos(documentoDevedor);
 
 		for (RegistroCnp titulo : protestos) {
-			RegistroCnp cancelamento = centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
+			RegistroCnp cancelamento =
+					centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
 
 			if (cancelamento == null) {
 				if (!cartorios.contains(titulo.getLoteCnp().getInstituicaoOrigem())) {
@@ -298,7 +303,8 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-			throw new InfraException("Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do arquivo da cnp!");
+			throw new InfraException(
+					"Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do arquivo da cnp!");
 		}
 	}
 
@@ -344,7 +350,8 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-			throw new InfraException("Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do arquivo da cnp!");
+			throw new InfraException(
+					"Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do arquivo da cnp!");
 		}
 	}
 }

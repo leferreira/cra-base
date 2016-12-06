@@ -41,12 +41,12 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 			registro.setNomeCredor(RemoverAcentosUtil.removeAcentos(entidadeVO.getNomeCredor()));
 		}
 		if (entidadeVO.getNumeroDocumentoCredor() != null) {
-			registro.setNumeroDocumentoCredor(
-					CpfCnpjUtil.buscarNumeroDocumento(entidadeVO.getNumeroDocumentoCredor().replace(".", "").replace("-", "").replace("/", "")));
-			registro.setComplementoDocumentoCredor(
-					CpfCnpjUtil.buscarComplementoDocumento(entidadeVO.getNumeroDocumentoCredor().replace(".", "").replace("-", "").replace("/", "")));
-			registro.setDigitoControleDocumentoCredor(
-					CpfCnpjUtil.calcularDigitoControle(entidadeVO.getNumeroDocumentoCredor().replace(".", "").replace("-", "").replace("/", "")));
+			registro.setNumeroDocumentoCredor(CpfCnpjUtil
+					.buscarNumeroDocumento(entidadeVO.getNumeroDocumentoCredor().replace(".", "").replace("-", "").replace("/", "")));
+			registro.setComplementoDocumentoCredor(CpfCnpjUtil
+					.buscarComplementoDocumento(entidadeVO.getNumeroDocumentoCredor().replace(".", "").replace("-", "").replace("/", "")));
+			registro.setDigitoControleDocumentoCredor(CpfCnpjUtil
+					.calcularDigitoControle(entidadeVO.getNumeroDocumentoCredor().replace(".", "").replace("-", "").replace("/", "")));
 		} else {
 			registro.setNumeroDocumentoCredor("");
 			registro.setComplementoDocumentoCredor("");
@@ -77,25 +77,17 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		}
 		if (entidadeVO.getValorProtesto() != null) {
 			try {
-				registro.setValorProtesto(new BigDecimal(entidadeVO.getValorProtesto().trim().replace("\"", "").replace(".", "").replace(",", ".")));
+				registro.setValorProtesto(
+						new BigDecimal(entidadeVO.getValorProtesto().trim().replace("\"", "").replace(".", "").replace(",", ".")));
 			} catch (Exception ex) {
 				registro.setValorProtesto(BigDecimal.ZERO);
 			}
 		}
 		if (entidadeVO.getDataProtesto() != null) {
 			try {
-				registro.setDataProtesto(DataUtil.stringToLocalDate(entidadeVO.getDataProtesto()).toDate());
+				registro.setDataProtesto(DataUtil.stringToLocalDate("ddMMyyyy", entidadeVO.getDataProtesto()).toDate());
 			} catch (Exception ex) {
 				registro.setDataProtesto(null);
-			}
-		}
-		if (entidadeVO.getNumeroDocumentoDevedor() != null) {
-			if (entidadeVO.getNumeroDocumentoDevedor().replace(" ", "").trim().length() > 11) {
-				registro.setTipoPessoaDevedor("J");
-				registro.setTipoDocumentoDevedor("1");
-			} else {
-				registro.setTipoPessoaDevedor("F");
-				registro.setTipoDocumentoDevedor("2");
 			}
 		}
 		registro.setNumeroCoResponsavel("01");
@@ -105,16 +97,25 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 			registro.setNomeDevedor(RemoverAcentosUtil.removeAcentos(entidadeVO.getNomeDevedor()));
 		}
 		if (entidadeVO.getNumeroDocumentoDevedor() != null) {
-			registro.setNumeroDocumentoDevedor(
-					CpfCnpjUtil.buscarNumeroDocumento(entidadeVO.getNumeroDocumentoDevedor().replace(".", "").replace("-", "").replace("/", "")));
+			registro.setNumeroDocumentoDevedor(CpfCnpjUtil
+					.buscarNumeroDocumento(entidadeVO.getNumeroDocumentoDevedor().replace(".", "").replace("-", "").replace("/", "")));
 			registro.setComplementoDocumentoDevedor(CpfCnpjUtil
 					.buscarComplementoDocumento(entidadeVO.getNumeroDocumentoDevedor().replace(".", "").replace("-", "").replace("/", "")));
-			registro.setDigitoControleDocumentoDevedor(
-					CpfCnpjUtil.calcularDigitoControle(entidadeVO.getNumeroDocumentoDevedor().replace(".", "").replace("-", "").replace("/", "")));
+			registro.setDigitoControleDocumentoDevedor(CpfCnpjUtil
+					.calcularDigitoControle(entidadeVO.getNumeroDocumentoDevedor().replace(".", "").replace("-", "").replace("/", "")));
 		} else {
 			registro.setNumeroDocumentoDevedor("");
 			registro.setComplementoDocumentoDevedor("");
 			registro.setDigitoControleDocumentoDevedor("");
+		}
+		if (entidadeVO.getNumeroDocumentoDevedor() != null) {
+			if (entidadeVO.getNumeroDocumentoDevedor().replace(" ", "").trim().length() > 11) {
+				registro.setTipoPessoaDevedor("J");
+				registro.setTipoDocumentoDevedor("1");
+			} else {
+				registro.setTipoPessoaDevedor("F");
+				registro.setTipoDocumentoDevedor("2");
+			}
 		}
 		if (entidadeVO.getEnderecoDevedor().length() > 45) {
 			registro.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(entidadeVO.getEnderecoDevedor().substring(0, 44)));
@@ -132,7 +133,8 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		registro.setNumeroProtocoloCartorio(RemoverAcentosUtil.removeAcentos(entidadeVO.getNumeroProtocoloCartorio()));
 		if (entidadeVO.getDataCancelamentoProtesto() != null) {
 			try {
-				registro.setDataCancelamentoProtesto(DataUtil.stringToLocalDate(entidadeVO.getDataCancelamentoProtesto()).toDate());
+				registro.setDataCancelamentoProtesto(
+						DataUtil.stringToLocalDate("ddMMyyyy", entidadeVO.getDataCancelamentoProtesto()).toDate());
 			} catch (Exception ex) {
 				registro.setDataCancelamentoProtesto(null);
 			}
@@ -164,7 +166,8 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		tituloVO.setTipoDocumentoCredor(entidade.getTipoDocumentoCredor());
 		tituloVO.setValorProtesto(new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(entidade.getValorProtesto()));
 		if (tituloVO.getValorProtesto().contains("E")) {
-			tituloVO.getValorProtesto().replace("E", "");
+			BigDecimal valorCorrigido = entidade.getValorProtesto().divide(new BigDecimal(100));
+			tituloVO.setValorProtesto(new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(valorCorrigido));
 		}
 		tituloVO.setDataProtesto(new DateConversor().getValorConvertidoParaString(new LocalDate(entidade.getDataProtesto())));
 		tituloVO.setTipoPessoaDevedor(entidade.getTipoPessoaDevedor());
@@ -209,7 +212,8 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 			registro.setNomeCredor(RemoverAcentosUtil.removeAcentos(dados[2]));
 		}
 		if (dados[3] != null) {
-			registro.setNumeroDocumentoCredor(CpfCnpjUtil.buscarNumeroDocumento(dados[3].replace(".", "").replace("-", "").replace("/", "")));
+			registro.setNumeroDocumentoCredor(
+					CpfCnpjUtil.buscarNumeroDocumento(dados[3].replace(".", "").replace("-", "").replace("/", "")));
 			registro.setComplementoDocumentoCredor(
 					CpfCnpjUtil.buscarComplementoDocumento(dados[3].replace(".", "").replace("-", "").replace("/", "")));
 			registro.setDigitoControleDocumentoCredor(
@@ -274,7 +278,8 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 			registro.setNomeDevedor(RemoverAcentosUtil.removeAcentos(dados[13]));
 		}
 		if (dados[14] != null) {
-			registro.setNumeroDocumentoDevedor(CpfCnpjUtil.buscarNumeroDocumento(dados[14].replace(".", "").replace("-", "").replace("/", "")));
+			registro.setNumeroDocumentoDevedor(
+					CpfCnpjUtil.buscarNumeroDocumento(dados[14].replace(".", "").replace("-", "").replace("/", "")));
 			registro.setComplementoDocumentoDevedor(
 					CpfCnpjUtil.buscarComplementoDocumento(dados[14].replace(".", "").replace("-", "").replace("/", "")));
 			registro.setDigitoControleDocumentoDevedor(
@@ -379,7 +384,8 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		}
 		if (linha.substring(260, 268) != null) {
 			try {
-				registro.setDataProtesto(DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, linha.substring(260, 268)).toDate());
+				registro.setDataProtesto(
+						DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA_DDMMYYYY, linha.substring(260, 268)).toDate());
 
 			} catch (Exception ex) {
 				registro.setDataProtesto(null);

@@ -1,5 +1,7 @@
 package br.com.ieptbto.cra.util;
 
+import org.apache.commons.lang.StringUtils;
+
 public class CpfCnpjUtil {
 
 	private static final int[] pesoCPF = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
@@ -34,8 +36,8 @@ public class CpfCnpjUtil {
 			return false;
 
 		if (cnpj.equals("00000000000000") || cnpj.equals("11111111111111") || cnpj.equals("22222222222222") || cnpj.equals("33333333333333")
-				|| cnpj.equals("44444444444444") || cnpj.equals("55555555555555") || cnpj.equals("66666666666666") || cnpj.equals("77777777777777")
-				|| cnpj.equals("88888888888888") || cnpj.equals("99999999999999") || (cnpj.length() != 14))
+				|| cnpj.equals("44444444444444") || cnpj.equals("55555555555555") || cnpj.equals("66666666666666")
+				|| cnpj.equals("77777777777777") || cnpj.equals("88888888888888") || cnpj.equals("99999999999999") || (cnpj.length() != 14))
 			return false;
 
 		Integer digito1 = calcularDigito(cnpj.substring(0, 12), pesoCNPJ);
@@ -44,39 +46,46 @@ public class CpfCnpjUtil {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(CpfCnpjUtil.isValidCNPJ("04185356000106"));
+		System.out.println(CpfCnpjUtil.isValidCPF("01875067604"));
 	}
 
 	public static String buscarComplementoDocumento(String numeroDocumento) {
-		String digitoControle = "";
+		String complemento = "";
 		if (numeroDocumento != null) {
 			if (numeroDocumento.trim().isEmpty()) {
-				return digitoControle;
+				return complemento;
 			}
 			numeroDocumento = numeroDocumento.replace(" ", "");
 			if (numeroDocumento.length() > 11) {
-				return numeroDocumento.substring(8, 12);
+				complemento = numeroDocumento.substring(8, 12);
 			}
 		}
-		return digitoControle;
+		// System.out.println("Complemento = " + complemento);
+		return complemento;
 	}
 
 	public static String buscarNumeroDocumento(String numeroDocumento) {
-		String digitoControle = "";
+		String documento = "";
 		if (numeroDocumento != null) {
 			if (numeroDocumento.trim().isEmpty()) {
-				return digitoControle;
+				return documento;
 			}
 			numeroDocumento = numeroDocumento.replace(" ", "");
 			if (numeroDocumento.length() > 11) {
-				return numeroDocumento.substring(0, 8);
+				documento = numeroDocumento.substring(0, 8);
 			} else {
-				if (numeroDocumento.length() > 9) {
-					return numeroDocumento.substring(0, 9);
+				if (numeroDocumento.length() >= 9) {
+					documento = numeroDocumento.substring(0, 9);
+				} else {
+					if (numeroDocumento.length() < 9) {
+						numeroDocumento = StringUtils.leftPad(numeroDocumento, 9, "0");
+						documento = numeroDocumento.substring(0, 9);
+					}
 				}
 			}
 		}
-		return digitoControle;
+		// System.out.println("Numero Documento = " + documento);
+		return documento;
 	}
 
 	public static String calcularDigitoControle(String numeroDocumento) {
@@ -94,12 +103,16 @@ public class CpfCnpjUtil {
 				digitoControle = digito1.toString();
 				digitoControle = digitoControle.concat(digito2.toString());
 			} else {
+				if (numeroDocumento.length() < 9) {
+					numeroDocumento = StringUtils.leftPad(numeroDocumento, 9, "0");
+				}
 				digito1 = calcularDigito(numeroDocumento.substring(0, 9), pesoCPF);
 				digito2 = calcularDigito(numeroDocumento.substring(0, 9) + digito1, pesoCPF);
 				digitoControle = digito1.toString();
 				digitoControle = digitoControle.concat(digito2.toString());
 			}
 		}
+		// System.out.println("Digito COntrole = " + digitoControle);
 		return digitoControle;
 	}
 }

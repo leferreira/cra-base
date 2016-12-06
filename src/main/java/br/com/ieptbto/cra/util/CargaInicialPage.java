@@ -40,7 +40,7 @@ public class CargaInicialPage extends WebPage {
 
 	public static void main(String[] args) {
 		BufferedReader reader = null;
-		File diretorio = new File("C:\\Users\\Thasso Araújo\\Documents\\jboss-as-7.1.1.Final\\ARQUIVOS_CRA\\");
+		File diretorio = new File("C:\\Users\\Thasso Araújo\\Documents\\jboss-as-7.1.1.Final\\ARQUIVOS_CRA\\5");
 
 		try {
 			StringBuffer cnp = new StringBuffer();
@@ -63,7 +63,7 @@ public class CargaInicialPage extends WebPage {
 				cnp.append("</cnp>");
 				System.out.println("=============================================================");
 				File arquivo =
-						new File("C:\\Users\\Thasso Araújo\\Documents\\jboss-as-7.1.1.Final\\ARQUIVOS_CRA\\" + "CNP-TO-19082016.xml");
+						new File("C:\\Users\\Thasso Araújo\\Documents\\jboss-as-7.1.1.Final\\ARQUIVOS_CRA\\" + "CNP-TO-05122016-5.xml");
 				BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivo));
 				System.out.println("Escrevendo os dados no arquivo...");
 				bWrite.write(cnp.toString());

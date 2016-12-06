@@ -476,13 +476,14 @@ public class TituloDAO extends AbstractBaseDAO {
 				pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio()));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
-		criteria.add(Restrictions.eq("numeroControleDevedor", 1));
 
-		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
-		if (confirmacao == null) {
-			return null;
+		List<Confirmacao> confirmacoes = criteria.list();
+		for (Confirmacao confirmacao : confirmacoes) {
+			if (confirmacao.getTitulo().getNumeroControleDevedor() == 1) {
+				return confirmacao.getTitulo();
+			}
 		}
-		return confirmacao.getTitulo();
+		return null;
 	}
 
 	public List<TituloRemessa> carregarTitulos(Remessa remessa) {
