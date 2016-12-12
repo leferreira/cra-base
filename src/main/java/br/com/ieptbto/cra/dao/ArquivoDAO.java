@@ -38,7 +38,6 @@ import br.com.ieptbto.cra.enumeration.TipoBatimento;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
 import br.com.ieptbto.cra.error.CodigoErro;
-import br.com.ieptbto.cra.exception.ArquivoException;
 import br.com.ieptbto.cra.exception.DesistenciaCancelamentoException;
 import br.com.ieptbto.cra.exception.InfraException;
 
@@ -57,12 +56,6 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	public Arquivo salvar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		Arquivo arquivoProcessado = arquivo;
 		Transaction transaction = getSession().beginTransaction();
-
-		Arquivo arquivoExistente = buscarArquivosPorNomeArquivoInstituicaoEnvio(arquivo.getInstituicaoEnvio(), arquivo.getNomeArquivo());
-		if (arquivoExistente != null) {
-			throw new ArquivoException(CodigoErro.CRA_ARQUIVO_ENVIADO_ANTERIORMENTE, arquivoExistente.getNomeArquivo(),
-					arquivoExistente.getDataEnvio());
-		}
 
 		TipoArquivoEnum tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
 		try {
