@@ -26,6 +26,7 @@ import br.com.ieptbto.cra.entidade.vo.ArquivoCnpVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoCnpVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaCnpVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeCnpVO;
+import br.com.ieptbto.cra.entidade.vo.TituloCnpVO;
 import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -41,58 +42,101 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 public class CentralNacionalProtestoMediator extends BaseMediator {
 
 	@Autowired
-	private FabricaRegraValidacaoCNP validarRegistroCnp;
-	@Autowired
 	private CentralNancionalProtestoDAO centralNancionalProtestoDAO;
 	@Autowired
 	private MunicipioDAO municipioDAO;
+	@Autowired
+	private FabricaRegraValidacaoCNP validarRegistroCnp;
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<Instituicao> consultarCartoriosCentralNacionalProtesto() {
 		return centralNancionalProtestoDAO.consultarCartoriosCentralNacionalProtesto();
 	}
 
-	public LoteCnp processarLoteCartorio(Instituicao instituicao, ArquivoCnpVO arquivoCnpVO) {
+	/**
+	 * @param instituicao
+	 * @param arquivoCnpVO
+	 * @return
+	 */
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public LoteCnp processarLote5anos(Instituicao instituicao, ArquivoCnpVO arquivoCnp5Anos) {
+		logger.info("Processando lote de protestos 5 anos de " + instituicao.getNomeFantasia());
+
+		LoteCnp loteCnp5anos = new LoteCnp();
+		loteCnp5anos.setDataRecebimento(new LocalDate().toDate());
+		loteCnp5anos.setInstituicaoOrigem(instituicao);
+		loteCnp5anos.setRegistrosCnp(new ConversorCnpVO().converterArquivoCnpVOParaRegistrosCnp(arquivoCnp5Anos));
+		loteCnp5anos.setStatus(false);
+		loteCnp5anos.setLote5anos(true);
+		return centralNancionalProtestoDAO.salvarLote5Anos(loteCnp5anos);
+	}
+
+	/**
+	 * @param instituicao
+	 * @param arquivoCnpVO
+	 * @return
+	 */
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public LoteCnp processarLoteDiario(Instituicao instituicao, ArquivoCnpVO arquivoCnpVO) {
+		LoteCnp loteProtesto = null;
+		LoteCnp loteCancelamento = null;
+
+		for (RemessaCnpVO remessaCnp : arquivoCnpVO.getRemessasCnpVO()) {
+			for (TituloCnpVO tituloCnpVO : remessaCnp.getTitulosCnpVO()) {
+				RegistroCnp registro = new RegistroCnpConversor().converter(RegistroCnp.class, tituloCnpVO);
+
+				if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
+					if (validarRegistroCnp.validarProtesto(registro)) {
+						if (loteProtesto == null) {
+							loteProtesto = criarLoteRegistros(instituicao, TipoRegistroCnp.PROTESTO);
+							loteProtesto.getRegistrosCnp().add(registro);
+						} else if (!loteProtesto.getRegistrosCnp().contains(registro)) {
+							loteProtesto.getRegistrosCnp().add(registro);
+						}
+					}
+				} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
+					if (validarRegistroCnp.validarCancelamento(registro)) {
+						if (loteCancelamento == null) {
+							loteCancelamento = criarLoteRegistros(instituicao, TipoRegistroCnp.CANCELAMENTO);
+							loteCancelamento.getRegistrosCnp().add(registro);
+						} else if (!loteCancelamento.getRegistrosCnp().contains(registro)) {
+							loteCancelamento.getRegistrosCnp().add(registro);
+						}
+					}
+				}
+			}
+		}
+
+		LoteCnp loteCnp = new LoteCnp();
+		loteCnp.setDataRecebimento(new LocalDate().toDate());
+		loteCnp.setInstituicaoOrigem(instituicao);
+		loteCnp.setRegistrosCnp(new ArrayList<RegistroCnp>());
+		if (loteProtesto != null) {
+			if (!loteProtesto.getRegistrosCnp().isEmpty()) {
+				loteCnp.getRegistrosCnp().addAll(centralNancionalProtestoDAO.salvarLoteProtesto(loteProtesto));
+			}
+		}
+		if (loteCancelamento != null) {
+			if (!loteCancelamento.getRegistrosCnp().isEmpty()) {
+				loteCnp.getRegistrosCnp().addAll(centralNancionalProtestoDAO.salvarLoteCancelamento(loteCancelamento));
+			}
+		}
+		return loteCnp;
+	}
+
+	private LoteCnp criarLoteRegistros(Instituicao instituicao, TipoRegistroCnp tipoRegistros) {
 		LoteCnp loteCnp = new LoteCnp();
 		loteCnp.setDataRecebimento(new LocalDate().toDate());
 		loteCnp.setInstituicaoOrigem(instituicao);
 		loteCnp.setRegistrosCnp(new ArrayList<RegistroCnp>());
 		loteCnp.setStatus(false);
-
-		List<RegistroCnp> registros = new ConversorCnpVO().converterArquivoCnpVOParaRegistrosCnp(arquivoCnpVO);
-		for (RegistroCnp registro : registros) {
-			if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
-				if (validarRegistroCnp.validarProtesto(registro)) {
-					RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarRegistroProtesto(instituicao, registro);
-					if (registroProtesto == null) {
-						loteCnp.getRegistrosCnp().add(registro);
-					}
-				}
-			} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
-				if (validarRegistroCnp.validarCancelamento(registro)) {
-					RegistroCnp registroProtesto = centralNancionalProtestoDAO.buscarRegistroProtesto(instituicao, registro);
-					if (registroProtesto != null) {
-						registro.setValorProtesto(registroProtesto.getValorProtesto());
-						registro.setDataProtesto(registroProtesto.getDataProtesto());
-					}
-					loteCnp.getRegistrosCnp().add(registro);
-				}
-			}
-		}
-		if (loteCnp.getRegistrosCnp().isEmpty()) {
-			return null;
-		}
-		return centralNancionalProtestoDAO.salvarLote(loteCnp);
+		loteCnp.setLote5anos(false);
+		return loteCnp;
 	}
 
-	public boolean isCartorioEnviouLoteCnpHoje(Instituicao instituicao) {
-		LoteCnp lote = centralNancionalProtestoDAO.isCartorioEnviouLoteCnpHoje(instituicao);
-		if (lote != null) {
-			return true;
-		}
-		return false;
-	}
-
+	/**
+	 * @return
+	 */
 	public ArquivoCnpVO processarLoteNacional() {
 		List<Instituicao> cartoriosPendentes = centralNancionalProtestoDAO.buscarCartoriosComLotesPendentesEnvioNacional();
 
@@ -153,6 +197,10 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 		return cabecalhoCnpVO;
 	}
 
+	/**
+	 * @param data
+	 * @return
+	 */
 	public ArquivoCnpVO processarLoteNacionalPorData(LocalDate data) {
 		List<Instituicao> cartoriosEnviaram = centralNancionalProtestoDAO.buscarCartoriosEviaramLotesNacionalPorData(data);
 
@@ -298,7 +346,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 			if (loteCnp.getRegistrosCnp().isEmpty()) {
 				throw new InfraException("O arquivo não pode ser importado, verifique as informações dos títulos se estão válidas!");
 			}
-			centralNancionalProtestoDAO.salvarLote(loteCnp);
+			centralNancionalProtestoDAO.salvarLote5Anos(loteCnp);
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
@@ -345,7 +393,8 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 			if (loteCnp.getRegistrosCnp().isEmpty()) {
 				throw new InfraException("O arquivo não pode ser importado, verifique as informações dos títulos se estão válidas!");
 			}
-			centralNancionalProtestoDAO.salvarLote(loteCnp);
+			// centralNancionalProtestoDAO.salvarLote(loteCnp);
+			throw new InfraException("O serviço de atualização da base da Central de Protestos está indiponível!");
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
@@ -354,5 +403,14 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 			throw new InfraException(
 					"Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do arquivo da cnp!");
 		}
+	}
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public boolean instituicaoEnviouLote5anos(Instituicao instituicao) {
+		LoteCnp lote5anos = centralNancionalProtestoDAO.buscarLote5anosInteituicao(instituicao);
+		if (lote5anos != null) {
+			return true;
+		}
+		return false;
 	}
 }

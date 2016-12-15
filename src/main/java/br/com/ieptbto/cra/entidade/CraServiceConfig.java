@@ -24,9 +24,7 @@ import br.com.ieptbto.cra.enumeration.CraServiceEnum;
 @org.hibernate.annotations.Table(appliesTo = "TB_CRA_SERVICE_CONFIG")
 public class CraServiceConfig extends AbstractEntidade<CraServiceConfig> {
 
-	/**
-	 * 
-	 */
+	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private CraServiceEnum craService;

@@ -40,6 +40,7 @@ public class LoteCnp extends AbstractEntidade<LoteCnp> {
 	private Date dataLiberacao;
 	private int sequencialLiberacao;
 	private Boolean status;
+	private boolean lote5anos;
 
 	@Override
 	@Id
@@ -82,6 +83,11 @@ public class LoteCnp extends AbstractEntidade<LoteCnp> {
 		return status;
 	}
 
+	@Column(name = "LOTE_5_ANOS")
+	public boolean isLote5anos() {
+		return lote5anos;
+	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -108,6 +114,10 @@ public class LoteCnp extends AbstractEntidade<LoteCnp> {
 
 	public void setStatus(Boolean status) {
 		this.status = status;
+	}
+
+	public void setLote5anos(boolean lote5anos) {
+		this.lote5anos = lote5anos;
 	}
 
 	@Override

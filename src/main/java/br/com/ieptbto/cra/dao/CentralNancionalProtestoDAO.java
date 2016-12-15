@@ -10,6 +10,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.RegistroCnp;
 import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.regra.FabricaRegraValidacaoCNP;
 import br.com.ieptbto.cra.util.CpfCnpjUtil;
 
 /**
@@ -28,6 +30,9 @@ import br.com.ieptbto.cra.util.CpfCnpjUtil;
  */
 @Repository
 public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
+
+	@Autowired
+	private FabricaRegraValidacaoCNP validarRegistroCnp;
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void salvarLiberacaoLoteCnp(LoteCnp lote) {
@@ -46,15 +51,19 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public LoteCnp salvarLote(LoteCnp loteCnp) {
+	public LoteCnp salvarLote5Anos(LoteCnp loteCnp) {
 		Transaction transaction = getBeginTransation();
 
 		try {
 			loteCnp = save(loteCnp);
 
 			for (RegistroCnp registroCnp : loteCnp.getRegistrosCnp()) {
-				registroCnp.setLoteCnp(loteCnp);
-				save(registroCnp);
+				if (registroCnp.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
+					if (validarRegistroCnp.validarProtesto(registroCnp)) {
+						registroCnp.setLoteCnp(loteCnp);
+						save(registroCnp);
+					}
+				}
 			}
 			transaction.commit();
 		} catch (Exception ex) {
@@ -65,12 +74,62 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public LoteCnp isCartorioEnviouLoteCnpHoje(Instituicao instituicao) {
-		Criteria criteria = getCriteria(LoteCnp.class);
-		criteria.add(Restrictions.eq("instituicaoOrigem", instituicao));
-		criteria.add(Restrictions.eq("dataRecebimento", new Date(new LocalDate().toDate().getTime())));
-		criteria.setMaxResults(1);
-		return LoteCnp.class.cast(criteria.uniqueResult());
+	public List<RegistroCnp> salvarLoteProtesto(LoteCnp loteProtesto) {
+		Transaction transaction = getBeginTransation();
+		List<RegistroCnp> registroProcessados = new ArrayList<RegistroCnp>();
+
+		Instituicao instituicao = loteProtesto.getInstituicaoOrigem();
+		try {
+			loteProtesto = save(loteProtesto);
+
+			for (RegistroCnp registroCnp : loteProtesto.getRegistrosCnp()) {
+				if (registroCnp.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
+					RegistroCnp registroProtesto = buscarRegistroProtesto(instituicao, registroCnp);
+					if (registroProtesto == null) {
+						registroCnp.setLoteCnp(loteProtesto);
+						save(registroCnp);
+						registroProcessados.add(registroCnp);
+					}
+				}
+			}
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+		}
+		return registroProcessados;
+	}
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public List<RegistroCnp> salvarLoteCancelamento(LoteCnp loteCancelamento) {
+		Transaction transaction = getBeginTransation();
+		List<RegistroCnp> registroProcessados = new ArrayList<RegistroCnp>();
+
+		Instituicao instituicao = loteCancelamento.getInstituicaoOrigem();
+		try {
+			loteCancelamento = save(loteCancelamento);
+
+			for (RegistroCnp registroCnp : loteCancelamento.getRegistrosCnp()) {
+				if (registroCnp.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
+					RegistroCnp registroProtesto = buscarRegistroProtesto(instituicao, registroCnp);
+					if (registroProtesto != null) {
+						RegistroCnp registroCancelamento = buscarRegistroCancelamento(instituicao, registroCnp);
+						if (registroCancelamento == null) {
+							registroCnp.setDataProtesto(registroProtesto.getDataProtesto());
+							registroCnp.setValorProtesto(registroProtesto.getValorProtesto());
+							registroCnp.setLoteCnp(loteCancelamento);
+							save(registroCnp);
+							registroProcessados.add(registroCnp);
+						}
+					}
+				}
+			}
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+		}
+		return registroProcessados;
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
@@ -238,5 +297,26 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("loteCnp.instituicaoOrigem", instituicao));
 		criteria.setMaxResults(1);
 		return RegistroCnp.class.cast(criteria.uniqueResult());
+	}
+
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public RegistroCnp buscarRegistroCancelamento(Instituicao instituicao, RegistroCnp registro) {
+		Criteria criteria = getCriteria(RegistroCnp.class);
+		criteria.createAlias("loteCnp", "loteCnp");
+		criteria.add(Restrictions.eq("tipoRegistroCnp", TipoRegistroCnp.CANCELAMENTO));
+		criteria.add(Restrictions.eq("numeroDocumentoDevedor", registro.getNumeroDocumentoDevedor()));
+		criteria.add(Restrictions.eq("digitoControleDocumentoDevedor", registro.getDigitoControleDocumentoDevedor()));
+		criteria.add(Restrictions.eq("numeroProtocoloCartorio", registro.getNumeroProtocoloCartorio()));
+		criteria.add(Restrictions.eq("loteCnp.instituicaoOrigem", instituicao));
+		criteria.setMaxResults(1);
+		return RegistroCnp.class.cast(criteria.uniqueResult());
+	}
+
+	public LoteCnp buscarLote5anosInteituicao(Instituicao instituicao) {
+		Criteria criteria = getCriteria(LoteCnp.class);
+		criteria.add(Restrictions.eq("instituicaoOrigem", instituicao));
+		criteria.add(Restrictions.eq("lote5anos", true));
+		criteria.setMaxResults(1);
+		return LoteCnp.class.cast(criteria.uniqueResult());
 	}
 }
