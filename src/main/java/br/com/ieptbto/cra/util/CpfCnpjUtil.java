@@ -46,10 +46,12 @@ public class CpfCnpjUtil {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(CpfCnpjUtil.isValidCPF("01875067604"));
+		System.out.println(CpfCnpjUtil.calcularDigitoControle("e01875067604"));
 	}
 
 	public static String buscarComplementoDocumento(String numeroDocumento) {
+		numeroDocumento = verificarCaracterIndevido(numeroDocumento);
+
 		String complemento = "";
 		if (numeroDocumento != null) {
 			if (numeroDocumento.trim().isEmpty()) {
@@ -65,6 +67,8 @@ public class CpfCnpjUtil {
 	}
 
 	public static String buscarNumeroDocumento(String numeroDocumento) {
+		numeroDocumento = verificarCaracterIndevido(numeroDocumento);
+
 		String documento = "";
 		if (numeroDocumento != null) {
 			if (numeroDocumento.trim().isEmpty()) {
@@ -89,6 +93,8 @@ public class CpfCnpjUtil {
 	}
 
 	public static String calcularDigitoControle(String numeroDocumento) {
+		numeroDocumento = verificarCaracterIndevido(numeroDocumento);
+
 		String digitoControle = "";
 		Integer digito1 = 0;
 		Integer digito2 = 0;
@@ -114,5 +120,19 @@ public class CpfCnpjUtil {
 		}
 		// System.out.println("Digito COntrole = " + digitoControle);
 		return digitoControle;
+	}
+
+	private static String verificarCaracterIndevido(String numeroDocumento) {
+		numeroDocumento = numeroDocumento.toUpperCase();
+		if (numeroDocumento.contains("T")) {
+			numeroDocumento = numeroDocumento.replaceAll("T", "");
+		}
+		if (numeroDocumento.contains("N")) {
+			numeroDocumento = numeroDocumento.replaceAll("N", "");
+		}
+		if (numeroDocumento.contains("E")) {
+			numeroDocumento = numeroDocumento.replaceAll("E", "");
+		}
+		return numeroDocumento;
 	}
 }
