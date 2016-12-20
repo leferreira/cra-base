@@ -16,10 +16,15 @@ public class RemoverAcentosUtil implements Serializable {
 	/***/
 	private static final long serialVersionUID = 1L;
 
+	public static void main(String[] args) {
+		System.out.println(RemoverAcentosUtil.removeAcentos("t♫e£s↓t♀e• m♠u↨i♫t►o  l*o#u♂c?o"));
+	}
+
 	public static String removeAcentos(String retorno) {
 
 		if (retorno != null) {
 			if (!StringUtils.isEmpty(retorno.trim())) {
+				retorno = retorno.replaceAll("[^a-zZ-Z1-9]", " ");
 				retorno = retorno.replaceAll("[ÂÀÁÄÃ]", "A");
 				retorno = retorno.replaceAll("[âãàáä]", "a");
 				retorno = retorno.replaceAll("[ÊÈÉË]", "E");
@@ -40,6 +45,7 @@ public class RemoverAcentosUtil implements Serializable {
 				retorno = retorno.replace("º", " ");
 				retorno = retorno.replace("ª", " ");
 				retorno = retorno.replace("�", "");
+				retorno = retorno.replace("_", " ");
 				retorno = retorno.replace("_", " ");
 
 				String nfdNormalizedString = Normalizer.normalize(retorno, Normalizer.Form.NFD);
