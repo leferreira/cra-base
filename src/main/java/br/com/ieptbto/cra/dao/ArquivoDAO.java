@@ -120,7 +120,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					}
 					Retorno.class.cast(titulo).setCabecalho(remessa.getCabecalho());
 				}
-				TituloRemessa tituloSalvo = tituloDAO.salvar(titulo, erros, transaction);
+				TituloRemessa tituloSalvo = tituloDAO.salvar(arquivo.getInstituicaoEnvio(), titulo, erros, transaction);
 				if (TituloRemessa.class.isInstance(titulo)) {
 					if (TituloRemessa.class.cast(titulo).getAnexos() != null) {
 						for (Anexo anexo : TituloRemessa.class.cast(titulo).getAnexos()) {

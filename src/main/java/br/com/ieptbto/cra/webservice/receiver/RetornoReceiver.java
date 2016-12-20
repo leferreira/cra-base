@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -65,18 +64,14 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 		try {
 			context = JAXBContext.newInstance(RetornoVO.class);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
-			String xmlRecebido = "";
 
-			Scanner scanner = new Scanner(new ByteArrayInputStream(new String(dados).getBytes()));
-			while (scanner.hasNext()) {
-				xmlRecebido = xmlRecebido + scanner.nextLine().replaceAll("& ", "&amp;");
-				if (xmlRecebido.contains("<?xml version=")) {
-					xmlRecebido = xmlRecebido.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", "");
-				}
+			if (dados.contains("<?xml version=")) {
+				dados = dados.replace("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>", "");
+				dados = dados.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
 			}
-			scanner.close();
+			dados = dados.replaceAll("& ", "&amp;");
 
-			InputStream xml = new ByteArrayInputStream(xmlRecebido.getBytes());
+			InputStream xml = new ByteArrayInputStream(dados.getBytes());
 			arquivo = (RetornoVO) unmarshaller.unmarshal(new InputSource(xml));
 
 		} catch (JAXBException e) {

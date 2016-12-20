@@ -231,6 +231,14 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 									break;
 								}
 							}
+							if (templateLayoutEmpresa.getCampo().equals(CampoLayout.DOCUMENTODEVEDOR)) {
+								if (StringUtils.isNotBlank(templateLayoutEmpresa.getValor())) {
+									String documentoDevedor =
+											templateLayoutEmpresa.getValor().replace(".", "").replace("-", "").replace("/", "").trim();
+									titulo.setNumeroIdentificacaoDevedor(documentoDevedor);
+									break;
+								}
+							}
 							if (templateLayoutEmpresa.getCampo().equals(CampoLayout.CEPDEVEDOR)) {
 								if (StringUtils.isNotBlank(templateLayoutEmpresa.getValor())) {
 									String cepDevedor = templateLayoutEmpresa.getValor().replace(".", "").replace("-", "").trim();

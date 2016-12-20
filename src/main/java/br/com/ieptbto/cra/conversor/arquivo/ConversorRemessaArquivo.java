@@ -169,6 +169,8 @@ public class ConversorRemessaArquivo {
 
 		List<TituloVO> titulosVO = new ArrayList<TituloVO>();
 		int quantidadeTitulos = 0;
+		remessaVO.getCabecalho().setNumeroSequencialRegistroArquivo(Integer.toString(1));
+		int sequencial = 2;
 		for (Titulo titulo : remessa.getTitulos()) {
 			TituloVO tituloVO = null;
 			if (titulo instanceof TituloRemessa) {
@@ -183,8 +185,10 @@ public class ConversorRemessaArquivo {
 						tituloVO.setComplementoRegistro(anexo.getDocumentoAnexo());
 					}
 				}
+				tituloVO.setNumeroSequencialArquivo(Integer.toString(sequencial));
+				sequencial++;
+				titulosVO.add(tituloVO);
 			}
-			titulosVO.add(tituloVO);
 		}
 		remessaVO.setTitulos(titulosVO);
 		remessaVO.setRodapes(RodapeVO.parseRodape(remessa.getRodape(), remessa.getCabecalho()));

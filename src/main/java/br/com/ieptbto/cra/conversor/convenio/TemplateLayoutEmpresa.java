@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import br.com.ieptbto.cra.entidade.LayoutFiliado;
 import br.com.ieptbto.cra.enumeration.CampoLayout;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.util.CpfCnpjUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 public class TemplateLayoutEmpresa {
@@ -58,7 +59,7 @@ public class TemplateLayoutEmpresa {
 						if (dados[i] != null) {
 							dados[i] = dados[i].replace(".", "").replace("-", "").replace("/", "").trim();
 						}
-						validarCpfCnpj(dados[i], list, listaCampos);
+						dados[i] = validarCpfCnpj(dados[i], list, listaCampos);
 					}
 					break;
 				}
@@ -67,17 +68,27 @@ public class TemplateLayoutEmpresa {
 		return new LinhaTemplateLayout(listaCampos, cidade);
 	}
 
-	private static void validarCpfCnpj(String dados, List<Exception> list, List<TemplateLayoutEmpresa> listaCampos) {
+	private static String validarCpfCnpj(String dados, List<Exception> list, List<TemplateLayoutEmpresa> listaCampos) {
 		String tipo = null;
-		if (dados.length() == 11) {
+		boolean bool = true;
+
+		if (dados.length() <= 11) {
+			dados = StringUtils.leftPad(dados, 11, "0");
+			bool = CpfCnpjUtil.isValidCPF(dados);
 			tipo = "002";
-		} else if (dados.length() == 14) {
+		} else if (dados.length() > 11 && dados.length() <= 14) {
+			dados = StringUtils.leftPad(dados, 14, "0");
+			bool = CpfCnpjUtil.isValidCNPJ(dados);
 			tipo = "001";
 		} else {
 			list.add(new InfraException("O CPF/CNPJ " + dados + " está com o tamanho incorreto."));
 			logger.error("O CPF/CNPJ " + dados + " está com o tamanho incorreto.");
 		}
+		if (bool == false) {
+			System.out.println("Documento inválido = " + dados);
+		}
 		listaCampos.add(new TemplateLayoutEmpresa(tipo, CampoLayout.TIPOIDENTIFICACAODEVEDOR));
+		return dados;
 	}
 }
 

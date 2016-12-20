@@ -173,18 +173,18 @@ public class TituloDAO extends AbstractBaseDAO {
 		return criteriaTitulo.list();
 	}
 
-	public TituloRemessa salvar(Titulo titulo, List<Exception> erros, Transaction transaction) {
+	public TituloRemessa salvar(Instituicao instituicao, Titulo titulo, List<Exception> erros, Transaction transaction) {
 		if (TituloRemessa.class.isInstance(titulo)) {
 			TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
 			return salvarTituloRemessa(tituloRemessa, erros);
 		}
 		if (Confirmacao.class.isInstance(titulo)) {
 			Confirmacao tituloConfirmacao = Confirmacao.class.cast(titulo);
-			return salvarTituloConfirmacao(tituloConfirmacao, erros);
+			return salvarTituloConfirmacao(instituicao, tituloConfirmacao, erros);
 		}
 		if (Retorno.class.isInstance(titulo)) {
 			Retorno tituloConfirmacao = Retorno.class.cast(titulo);
-			return salvarTituloRetorno(tituloConfirmacao, erros);
+			return salvarTituloRetorno(instituicao, tituloConfirmacao, erros);
 		}
 		return null;
 	}
@@ -224,8 +224,8 @@ public class TituloDAO extends AbstractBaseDAO {
 	 * @param erros
 	 * @return
 	 */
-	private TituloRemessa salvarTituloConfirmacao(Confirmacao tituloConfirmacao, List<Exception> erros) {
-		TituloRemessa titulo = buscarTituloConfirmacaoSalvo(tituloConfirmacao, erros);
+	private TituloRemessa salvarTituloConfirmacao(Instituicao instituicao, Confirmacao tituloConfirmacao, List<Exception> erros) {
+		TituloRemessa titulo = buscarTituloConfirmacaoSalvo(instituicao, tituloConfirmacao, erros);
 
 		try {
 			BancoCentralizadoraCodigoCartorio banco = BancoCentralizadoraCodigoCartorio.getBanco(tituloConfirmacao.getCodigoPortador());
@@ -273,8 +273,8 @@ public class TituloDAO extends AbstractBaseDAO {
 	 * @param erros
 	 * @return
 	 */
-	private TituloRemessa salvarTituloRetorno(Retorno tituloRetorno, List<Exception> erros) {
-		TituloRemessa titulo = buscarTituloRetornoSalvo(tituloRetorno, erros);
+	private TituloRemessa salvarTituloRetorno(Instituicao instituicao, Retorno tituloRetorno, List<Exception> erros) {
+		TituloRemessa titulo = buscarTituloRetornoSalvo(instituicao, tituloRetorno, erros);
 
 		try {
 			BancoCentralizadoraCodigoCartorio banco = BancoCentralizadoraCodigoCartorio.getBanco(tituloRetorno.getCodigoPortador());
@@ -344,11 +344,10 @@ public class TituloDAO extends AbstractBaseDAO {
 	 * @param erros
 	 * @return
 	 */
-	public TituloRemessa buscarTituloConfirmacaoSalvo(Confirmacao tituloConfirmacao, List<Exception> erros) {
+	public TituloRemessa buscarTituloConfirmacaoSalvo(Instituicao instituicao, Confirmacao tituloConfirmacao, List<Exception> erros) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", tituloConfirmacao.getRemessa().getCabecalho().getCodigoMunicipio()));
+		criteria.add(Restrictions.eq("remessa.instituicaoDestino", instituicao));
 		criteria.add(Restrictions.like("codigoPortador", tituloConfirmacao.getCodigoPortador().trim(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("nossoNumero", tituloConfirmacao.getNossoNumero(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("numeroTitulo", tituloConfirmacao.getNumeroTitulo().trim(), MatchMode.EXACT));
@@ -379,12 +378,11 @@ public class TituloDAO extends AbstractBaseDAO {
 	 * @param erros
 	 * @return
 	 */
-	public TituloRemessa buscarTituloRetornoSalvo(Retorno tituloRetorno, List<Exception> erros) {
+	public TituloRemessa buscarTituloRetornoSalvo(Instituicao instituicao, Retorno tituloRetorno, List<Exception> erros) {
 		Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio().trim());
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", tituloRetorno.getRemessa().getCabecalho().getCodigoMunicipio()));
+		criteria.add(Restrictions.eq("remessa.instituicaoDestino", instituicao));
 		criteria.add(Restrictions.ilike("codigoPortador", tituloRetorno.getCodigoPortador(), MatchMode.EXACT));
 		criteria.add(Restrictions.like("nossoNumero", tituloRetorno.getNossoNumero().trim(), MatchMode.EXACT));
 		criteria.createAlias("confirmacao", "confirmacao");
