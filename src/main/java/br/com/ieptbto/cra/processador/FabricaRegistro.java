@@ -90,7 +90,7 @@ public class FabricaRegistro extends Processador {
 		int tamLinha = linha.length();
 		if (tamLinha != ConfiguracaoBase.TAMANHO_PADRAO_LINHA) {
 			throw new InfraException("tamanho inválido de linha do arquivo. Esperado: [" + ConfiguracaoBase.TAMANHO_PADRAO_LINHA
-			        + "], Recebido:[" + tamLinha + ConfiguracaoBase.FECHA_CHAVE);
+					+ "], Recebido:[" + tamLinha + ConfiguracaoBase.FECHA_CHAVE);
 		}
 	}
 

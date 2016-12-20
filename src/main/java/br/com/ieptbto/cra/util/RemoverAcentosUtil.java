@@ -24,7 +24,6 @@ public class RemoverAcentosUtil implements Serializable {
 
 		if (retorno != null) {
 			if (!StringUtils.isEmpty(retorno.trim())) {
-				retorno = retorno.replaceAll("[^a-zZ-Z1-9]", " ");
 				retorno = retorno.replaceAll("[ÂÀÁÄÃ]", "A");
 				retorno = retorno.replaceAll("[âãàáä]", "a");
 				retorno = retorno.replaceAll("[ÊÈÉË]", "E");
@@ -47,9 +46,14 @@ public class RemoverAcentosUtil implements Serializable {
 				retorno = retorno.replace("�", "");
 				retorno = retorno.replace("_", " ");
 				retorno = retorno.replace("_", " ");
+				retorno = retorno.replace("#", " ");
+				retorno = retorno.replace("?", " ");
 
 				String nfdNormalizedString = Normalizer.normalize(retorno, Normalizer.Form.NFD);
 				Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+				retorno = pattern.matcher(nfdNormalizedString).replaceAll(" ");
+
+				pattern = Pattern.compile("[^\\p{ASCII}]");
 				retorno = pattern.matcher(nfdNormalizedString).replaceAll(" ");
 			}
 		}
