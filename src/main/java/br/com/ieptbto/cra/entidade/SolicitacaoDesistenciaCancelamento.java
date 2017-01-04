@@ -14,6 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.envers.Audited;
 import org.joda.time.DateTime;
@@ -44,6 +45,7 @@ public class SolicitacaoDesistenciaCancelamento extends AbstractEntidade<Solicit
 	private Usuario usuario;
 	private TituloRemessa tituloRemessa;
 	private Boolean statusLiberacao;
+	private byte[] documentoAnexo;
 
 	@Override
 	@Id
@@ -98,6 +100,16 @@ public class SolicitacaoDesistenciaCancelamento extends AbstractEntidade<Solicit
 		return statusLiberacao;
 	}
 
+	@Column(name = "DOCUMENTO_ANEXO")
+	public byte[] getDocumentoAnexo() {
+		return documentoAnexo;
+	}
+
+	@Transient
+	public String getDocumentoAnexoAsString() {
+		return new String(this.documentoAnexo);
+	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -128,6 +140,10 @@ public class SolicitacaoDesistenciaCancelamento extends AbstractEntidade<Solicit
 
 	public void setStatusLiberacao(Boolean statusLiberacao) {
 		this.statusLiberacao = statusLiberacao;
+	}
+
+	public void setDocumentoAnexo(byte[] documentoAnexo) {
+		this.documentoAnexo = documentoAnexo;
 	}
 
 	@Override

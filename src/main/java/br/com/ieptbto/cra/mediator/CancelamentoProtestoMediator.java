@@ -1,6 +1,8 @@
 package br.com.ieptbto.cra.mediator;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -11,7 +13,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
@@ -53,6 +57,7 @@ import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.util.DecoderString;
 
 /**
  * 
@@ -73,6 +78,8 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 	@Autowired
 	private TipoArquivoDAO tipoArquivoDAO;
 
+	private String pathInstituicaoTemp;
+	private String pathUsuarioTemp;
 	private int sequenciaRegistro = 2;
 	private int quantidadeDesistencias = 0;
 	private int quantidadeRegistrosTipo2 = 0;
@@ -291,8 +298,16 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 		return sequenciaRegistro;
 	}
 
+	/**
+	 * Salvar uma solicitação de desistencia e cancelamento com anexos
+	 * 
+	 * @param solicitacaoDesistenciaCancelamento
+	 * @param uploadedFile
+	 * @return
+	 */
 	public SolicitacaoDesistenciaCancelamento salvarSolicitacaoDesistenciaCancelamento(
-			SolicitacaoDesistenciaCancelamento solicitacaoDesistenciaCancelamento) {
+			SolicitacaoDesistenciaCancelamento solicitacaoDesistenciaCancelamento, FileUpload uploadedFile) {
+		Usuario usuario = solicitacaoDesistenciaCancelamento.getUsuario();
 
 		SolicitacaoDesistenciaCancelamento solicitacaoEnviada =
 				cancelamentoDAO.verificarSolicitadoAnteriormente(solicitacaoDesistenciaCancelamento);
@@ -301,7 +316,40 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 					+ DataUtil.localDateToString(new LocalDate(solicitacaoEnviada.getDataSolicitacao()))
 					+ "! Aguarde o processamento pelo cartório...");
 		}
+		if (uploadedFile != null) {
+			this.pathInstituicaoTemp = null;
+			this.pathUsuarioTemp = null;
+			File fileTmp = verificarDiretorioECopiarArquivo(usuario, uploadedFile);
+
+			byte[] conteudoArquivo = DecoderString.loadFile(fileTmp);
+			solicitacaoDesistenciaCancelamento.setDocumentoAnexo(Base64.encodeBase64(conteudoArquivo));
+		}
 		return cancelamentoDAO.salvarSolicitacaoDesistenciaCancelamento(solicitacaoDesistenciaCancelamento);
+	}
+
+	private File verificarDiretorioECopiarArquivo(Usuario usuario, FileUpload uploadedFile) {
+		pathInstituicaoTemp = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO_TEMP + usuario.getInstituicao().getId();
+		pathUsuarioTemp = pathInstituicaoTemp + ConfiguracaoBase.BARRA + usuario.getId();
+		File diretorioInstituicaoTemp = new File(pathInstituicaoTemp);
+		File diretorioUsuarioTemp = new File(pathUsuarioTemp);
+
+		if (diretorioInstituicaoTemp.exists()) {
+			diretorioInstituicaoTemp.delete();
+		}
+		diretorioInstituicaoTemp.mkdirs();
+		if (diretorioUsuarioTemp.exists()) {
+			diretorioUsuarioTemp.delete();
+		}
+		diretorioUsuarioTemp.mkdirs();
+
+		File fileTmp = new File(pathUsuarioTemp + ConfiguracaoBase.BARRA + usuario.getId());
+		try {
+			uploadedFile.writeTo(fileTmp);
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+			throw new InfraException("Não foi possível criar arquivo temporário do anexo! Por favor entre em contato com o IEPTB-TO.");
+		}
+		return fileTmp;
 	}
 
 	public List<SolicitacaoDesistenciaCancelamento> buscarSolicitacoesDesistenciasCancelamentos() {

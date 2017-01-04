@@ -25,9 +25,11 @@ import br.com.ieptbto.cra.entidade.PedidoCancelamento;
 import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
 import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.TipoSolicitacaoDesistenciaCancelamento;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.DesistenciaCancelamentoException;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -294,6 +296,18 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(SolicitacaoDesistenciaCancelamento.class);
 		criteria.add(Restrictions.eq("tituloRemessa", solicitacaoDesistenciaCancelamento.getTituloRemessa()));
 		criteria.add(Restrictions.eq("tipoSolicitacao", solicitacaoDesistenciaCancelamento.getTipoSolicitacao()));
+		criteria.setMaxResults(1);
+		criteria.addOrder(Order.desc("id"));
+		return SolicitacaoDesistenciaCancelamento.class.cast(criteria.uniqueResult());
+	}
+
+	public SolicitacaoDesistenciaCancelamento buscarSolicitacaoDesistenciaCancelamento(String nossoNumero,
+			TipoSolicitacaoDesistenciaCancelamento tipoSolicitacao, CodigoIrregularidade codigoIrregularidade) {
+		Criteria criteria = getCriteria(SolicitacaoDesistenciaCancelamento.class);
+		criteria.createAlias("tituloRemessa", "tituloRemessa");
+		criteria.add(Restrictions.eq("tituloRemessa.nossoNumero", nossoNumero));
+		criteria.add(Restrictions.eq("tipoSolicitacao", tipoSolicitacao));
+		criteria.add(Restrictions.eq("codigoIrregularidade", codigoIrregularidade));
 		criteria.setMaxResults(1);
 		criteria.addOrder(Order.desc("id"));
 		return SolicitacaoDesistenciaCancelamento.class.cast(criteria.uniqueResult());
