@@ -296,7 +296,7 @@ public class ArquivoMediator extends BaseMediator {
 			remessa = remessaDAO.baixarArquivoCartorioRemessa(usuario.getInstituicao(), nomeArquivo);
 		}
 
-		if (remessa == null || remessa.getDevolvidoPelaCRA().equals(true)) {
+		if (remessa == null || remessa.getDevolvidoPelaCRA()) {
 			return null;
 		}
 		if (!StatusRemessa.RECEBIDO.equals(remessa.getStatusRemessa())) {
