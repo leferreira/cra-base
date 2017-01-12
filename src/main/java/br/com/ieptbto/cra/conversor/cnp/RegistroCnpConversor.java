@@ -40,13 +40,11 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		} else {
 			registro.setNomeCredor(RemoverAcentosUtil.removeAcentos(entidadeVO.getNomeCredor()));
 		}
+		String documentoCredor = entidadeVO.getNumeroDocumentoCredor().replace(".", "").replace("-", "").replace("/", "").replaceAll("([A-z])\\w+", "");
 		if (entidadeVO.getNumeroDocumentoCredor() != null) {
-			registro.setNumeroDocumentoCredor(CpfCnpjUtil
-					.buscarNumeroDocumento(entidadeVO.getNumeroDocumentoCredor().replace(".", "").replace("-", "").replace("/", "")));
-			registro.setComplementoDocumentoCredor(CpfCnpjUtil
-					.buscarComplementoDocumento(entidadeVO.getNumeroDocumentoCredor().replace(".", "").replace("-", "").replace("/", "")));
-			registro.setDigitoControleDocumentoCredor(CpfCnpjUtil
-					.calcularDigitoControle(entidadeVO.getNumeroDocumentoCredor().replace(".", "").replace("-", "").replace("/", "")));
+			registro.setNumeroDocumentoCredor(CpfCnpjUtil.buscarNumeroDocumento(documentoCredor));
+			registro.setComplementoDocumentoCredor(CpfCnpjUtil.buscarComplementoDocumento(documentoCredor));
+			registro.setDigitoControleDocumentoCredor(CpfCnpjUtil.calcularDigitoControle(documentoCredor));
 		} else {
 			registro.setNumeroDocumentoCredor("");
 			registro.setComplementoDocumentoCredor("");
@@ -77,8 +75,8 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		}
 		if (entidadeVO.getValorProtesto() != null) {
 			try {
-				registro.setValorProtesto(
-						new BigDecimal(entidadeVO.getValorProtesto().trim().replace("\"", "").replace(".", "").replace(",", ".")));
+				BigDecimal valorProtesto = new BigDecimal(entidadeVO.getValorProtesto().trim().replace("\"", "").replace(".", "").replace(",", "."));
+				registro.setValorProtesto(valorProtesto);
 			} catch (Exception ex) {
 				registro.setValorProtesto(BigDecimal.ZERO);
 			}
@@ -96,13 +94,11 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		} else {
 			registro.setNomeDevedor(RemoverAcentosUtil.removeAcentos(entidadeVO.getNomeDevedor()));
 		}
+		String documentoDevedor = entidadeVO.getNumeroDocumentoDevedor().replace(".", "").replace("-", "").replace("/", "").replaceAll("([A-z])\\w+", "");
 		if (entidadeVO.getNumeroDocumentoDevedor() != null) {
-			registro.setNumeroDocumentoDevedor(CpfCnpjUtil
-					.buscarNumeroDocumento(entidadeVO.getNumeroDocumentoDevedor().replace(".", "").replace("-", "").replace("/", "")));
-			registro.setComplementoDocumentoDevedor(CpfCnpjUtil
-					.buscarComplementoDocumento(entidadeVO.getNumeroDocumentoDevedor().replace(".", "").replace("-", "").replace("/", "")));
-			registro.setDigitoControleDocumentoDevedor(CpfCnpjUtil
-					.calcularDigitoControle(entidadeVO.getNumeroDocumentoDevedor().replace(".", "").replace("-", "").replace("/", "")));
+			registro.setNumeroDocumentoDevedor(CpfCnpjUtil.buscarNumeroDocumento(documentoDevedor));
+			registro.setComplementoDocumentoDevedor(CpfCnpjUtil.buscarComplementoDocumento(documentoDevedor));
+			registro.setDigitoControleDocumentoDevedor(CpfCnpjUtil.calcularDigitoControle(documentoDevedor));
 		} else {
 			registro.setNumeroDocumentoDevedor("");
 			registro.setComplementoDocumentoDevedor("");

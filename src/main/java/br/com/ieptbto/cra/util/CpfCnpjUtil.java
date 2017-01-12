@@ -8,6 +8,7 @@ public class CpfCnpjUtil {
 	private static final int[] pesoCNPJ = { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
 
 	private static int calcularDigito(String str, int[] peso) {
+		str = verificarCaracterIndevido(str);
 		int soma = 0;
 		for (int indice = str.length() - 1, digito; indice >= 0; indice--) {
 			digito = Integer.parseInt(str.substring(indice, indice + 1));
@@ -123,16 +124,6 @@ public class CpfCnpjUtil {
 	}
 
 	private static String verificarCaracterIndevido(String numeroDocumento) {
-		numeroDocumento = numeroDocumento.toUpperCase();
-		if (numeroDocumento.contains("T")) {
-			numeroDocumento = numeroDocumento.replaceAll("T", "");
-		}
-		if (numeroDocumento.contains("N")) {
-			numeroDocumento = numeroDocumento.replaceAll("N", "");
-		}
-		if (numeroDocumento.contains("E")) {
-			numeroDocumento = numeroDocumento.replaceAll("E", "");
-		}
-		return numeroDocumento;
+		return numeroDocumento.replaceAll("([A-z])\\w+", "");
 	}
 }
