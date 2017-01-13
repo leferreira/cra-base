@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.dao.MunicipioDAO;
@@ -14,10 +16,11 @@ import br.com.ieptbto.cra.entidade.Municipio;
 public class MunicipioMediator {
 
 	@Autowired
-	private MunicipioDAO municipioDao;
+	MunicipioDAO municipioDao;
 	@Autowired
-	private InstituicaoDAO instituicaoDao;
+	InstituicaoDAO instituicaoDao;
 
+	@Transactional(propagation=Propagation.NOT_SUPPORTED, readOnly=false)
 	public Municipio carregarMunicipio(Municipio municipio) {
 		return municipioDao.carregarMunicipio(municipio);
 	}

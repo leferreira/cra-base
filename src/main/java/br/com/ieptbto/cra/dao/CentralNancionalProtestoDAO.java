@@ -32,7 +32,7 @@ import br.com.ieptbto.cra.util.CpfCnpjUtil;
 public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 
 	@Autowired
-	private FabricaRegraValidacaoCNP validarRegistroCnp;
+	FabricaRegraValidacaoCNP validarRegistroCnp;
 	private Object resultado;
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
