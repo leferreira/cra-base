@@ -21,12 +21,12 @@ import br.com.ieptbto.cra.slip.ArquivoCAF;
  *
  */
 @Service
-public class ArquivoDeParaMediator {
+public class ArquivoDeParaMediator extends BaseMediator {
 
 	@Autowired
-	private ArquivoDeParaDAO deParaDAO;
+	ArquivoDeParaDAO deParaDAO;
 	@Autowired
-	private ProcessadorArquivoDeParaBB processadorArquivoDeParaBB;
+	ProcessadorArquivoDeParaBB processadorArquivoDeParaBB;
 
 	public void processarArquivo(FileUpload uploadedFile, PadraoArquivoDePara padraoArquivo, BooleanSimNao limparBase) {
 		if (limparBase.getBool()) {
