@@ -115,7 +115,7 @@ public enum CodigoErro {
 						CNP_CONSULTA_FORA_DO_HORARIO_LIMITE_DO_SERVICO("9999", "Fora do horário limite de consulta de Arquivo CNP."),
 						CNP_ARQUIVO_CNP_JA_ENVIADO_HOJE("9999", "Arquivo CNP já enviado hoje."),
 						CNP_DATA_MOVIMENTO_INVALIDA("9999", "A data do movimento informada é inválida."),
-						CNP_NAO_HA_MOVIMENTO_NESSA_DATA("9999", "Não há movimento nessa data"),
+						CNP_NAO_HA_MOVIMENTO_NESSA_DATA("9999", "Não há movimento na data informada"),
 
 						CARTORIO_ARQUIVO_NAO_EXISTE("9999", "Não foi localizado este arquivo na CRA."),
 						CARTORIO_NOME_ARQUIVO_INVALIDO("9999", "Nome do arquivo inválido."),

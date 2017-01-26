@@ -93,8 +93,7 @@ public class ProcessadorDesistenciaCancelamentoConveniada extends Processador {
 			} else if (solicitacao.getTipoSolicitacao() == TipoSolicitacaoDesistenciaCancelamento.SOLICITACAO_AUTORIZACAO_CANCELAMENTO) {
 				processarAutorizacaoCancelamento(key, titulo);
 			} else if (solicitacao.getTipoSolicitacao() == TipoSolicitacaoDesistenciaCancelamento.SOLICITACAO_DESISTENCIA_PROTESTO
-					|| solicitacao
-							.getTipoSolicitacao() == TipoSolicitacaoDesistenciaCancelamento.SOLICITACAO_DESISTENCIA_PROTESTO_IRREGULARIDADE) {
+					|| solicitacao.getTipoSolicitacao() == TipoSolicitacaoDesistenciaCancelamento.SOLICITACAO_DESISTENCIA_PROTESTO_IRREGULARIDADE) {
 				processarDesistenciaProtesto(key, titulo, solicitacao);
 			}
 		}
@@ -169,8 +168,7 @@ public class ProcessadorDesistenciaCancelamentoConveniada extends Processador {
 			dp.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(dp.getCabecalhoCartorio().getQuantidadeDesistencia() * 2);
 		} else {
 			getMapaDesistencia().put(key, criarRemessaDesistenciaProtesto(titulo, solicitacao));
-			getMapaArquivosDesistencia().put(key,
-					criarArquivoDesistenciaProtesto(titulo.getCodigoPortador(), getMapaDesistencia().get(key)));
+			getMapaArquivosDesistencia().put(key, criarArquivoDesistenciaProtesto(titulo.getCodigoPortador(), getMapaDesistencia().get(key)));
 		}
 	}
 
