@@ -116,6 +116,19 @@ public class AbstractBaseDAO {
 	public <T extends AbstractEntidade<T>> T buscarPorPK(T entidade, Class<T> clazz) {
 		return (T) getSession().get(clazz, entidade.getId());
 	}
+	
+	/**
+	 * Buscar uma entidade pelo seu identificador.
+	 * 
+	 * @param <T>
+	 * @param entidade
+	 * @param clazz
+	 * @return
+	 */
+	public <T extends AbstractEntidade<T>> T buscarPorPK(Integer id, Class<T> clazz) {
+		return (T) getSession().get(clazz, id);
+	}
+
 
 	/**
 	 * Criar uma query com a querystring passada.

@@ -1,13 +1,16 @@
 package br.com.ieptbto.cra.dao;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import br.com.ieptbto.cra.entidade.Batimento;
 import br.com.ieptbto.cra.entidade.BatimentoDeposito;
 import br.com.ieptbto.cra.entidade.Deposito;
+import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
@@ -23,16 +27,81 @@ import br.com.ieptbto.cra.enumeration.TipoBatimento;
 import br.com.ieptbto.cra.enumeration.TipoDeposito;
 import br.com.ieptbto.cra.exception.InfraException;
 
-/**
- * @author Thasso Araújo
- *
- */
 @Repository
 public class BatimentoDAO extends AbstractBaseDAO {
 
 	@Autowired
-	private RemessaDAO remessaDAO;
+	RemessaDAO remessaDAO;
 
+	/**
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Remessa> buscarRetornosParaBatimento() {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.NAO_CONFIRMADO));
+		criteria.add(Restrictions.eq("situacao", false));
+		return criteria.list();
+	}
+	
+	/**
+	 * @param instiuicao
+	 * @param dataBatimento
+	 * @param dataComoDataLimite
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Remessa> buscarRetornosAguardandoLiberacao(Instituicao instiuicao, LocalDate dataBatimento, boolean dataComoDataLimite) {
+		if (dataBatimento == null) {
+			return new ArrayList<Remessa>();
+		}
+
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "arquivo");
+		criteria.createAlias("batimento", "batimento");
+		criteria.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO));
+		criteria.add(Restrictions.eq("instituicaoDestino", instiuicao));
+		criteria.add(Restrictions.eq("situacao", false));
+		if (dataComoDataLimite == true) {
+			criteria.add(Restrictions.le("batimento.data", dataBatimento));
+		} else {
+			criteria.add(Restrictions.eq("batimento.data", dataBatimento));
+		}
+		return criteria.list();
+	}
+	
+	/**
+	 * @param dataBatimento
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Remessa> buscarRetornosParaPagamentoInstituicao(LocalDate dataBatimento) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "arquivo");
+		criteria.createAlias("batimento", "batimento");
+		criteria.createAlias("instituicaoDestino", "instituicaoDestino");
+		criteria.createAlias("batimento.depositosBatimento", "depositosBatimento");
+		criteria.createAlias("depositosBatimento.deposito", "deposito");
+
+		criteria.add(Restrictions.eq("instituicaoDestino.tipoBatimento", TipoBatimento.BATIMENTO_REALIZADO_PELA_INSTITUICAO));
+		criteria.add(Restrictions.ne("deposito.numeroDocumento", CONSTANTE_TIPO_DEPOSITO_CARTORIO));
+
+		Disjunction disjunction = Restrictions.disjunction();
+		disjunction.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.CONFIRMADO));
+		disjunction.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO));
+		criteria.add(disjunction);
+
+		criteria.add(Restrictions.eq("batimento.data", dataBatimento));
+		criteria.setProjection(Projections.distinct(Projections.property("batimento.remessa")));
+		return criteria.list();
+	}
+
+
+	
+	/**
+	 * @param batimento
+	 * @return
+	 */
 	public Batimento salvarBatimento(Batimento batimento) {
 		Transaction transaction = getBeginTransation();
 
@@ -70,8 +139,11 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		return batimento;
 	}
 
+	/**
+	 * @param batimento
+	 * @return
+	 */
 	public Batimento removerBatimento(Batimento batimento) {
-
 		try {
 			Query query = createSQLQuery("DELETE FROM tb_batimento_deposito WHERE batimento_id=" + batimento.getId() + ";"
 					+ "DELETE FROM audit_tb_batimento_deposito WHERE batimento_id=" + batimento.getId() + ";"
@@ -88,6 +160,10 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		return batimento;
 	}
 
+	/**
+	 * @param retorno
+	 * @return
+	 */
 	public Remessa retornarArquivoRetornoParaBatimento(Remessa retorno) {
 		Transaction transaction = getBeginTransation();
 
@@ -108,6 +184,10 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		return retorno;
 	}
 
+	/**
+	 * @param deposito
+	 * @return
+	 */
 	public Deposito salvarDeposito(Deposito deposito) {
 		Transaction transaction = getBeginTransation();
 
@@ -198,7 +278,7 @@ public class BatimentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Deposito> buscarDepositosExtrato() {
+	public List<Deposito> buscarDepositosNaoIdentificados() {
 		Criteria criteria = getCriteria(Deposito.class);
 		criteria.addOrder(Order.asc("data"));
 		criteria.add(Restrictions.eq("situacaoDeposito", SituacaoDeposito.NAO_IDENTIFICADO));
@@ -245,19 +325,10 @@ public class BatimentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Deposito> buscarDepositosArquivoRetorno(Batimento batimento) {
+	public List<Deposito> buscarDepositosPorBatimento(Batimento batimento) {
 		Criteria criteria = getCriteria(Deposito.class);
 		criteria.createAlias("batimentosDeposito", "batimentosDeposito");
 		criteria.add(Restrictions.eq("batimentosDeposito.batimento", batimento));
-		return criteria.list();
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<Remessa> carregarRetornosVinculados(Deposito deposito) {
-		Criteria criteria = getCriteria(Remessa.class);
-		criteria.createAlias("batimento", "batimento");
-		criteria.createAlias("batimento.depositosBatimento", "depositosBatimento");
-		criteria.add(Restrictions.eq("depositosBatimento.deposito", deposito));
 		return criteria.list();
 	}
 }

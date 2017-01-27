@@ -19,6 +19,7 @@ public class ConfiguracaoBase {
 	public static String BARRA = "/";
 	public static String RELATORIOS_PATH = "/br/com/ieptbto/cra/relatorio/";
 	public static String RELATORIOS_CONVENIO_PATH = "/br/com/ieptbto/cra/relatorioConvenio/";
+	
 	public static final String ZERO = "0";
 	public static final String UM = "1";
 	public static final String EXTENSAO_ARQUIVO_ZIP = ".zip";
@@ -27,5 +28,6 @@ public class ConfiguracaoBase {
 	public static final String FECHA_CHAVE = "]";
 	public static final String CARACTER_INICIO_TXT = "0";
 	public static final String CARACTER_INICIO_XML = "<";
+	public static final String CONSTANTE_TIPO_DEPOSITO_CARTORIO = "CARTORIO";
 	public static final String CODIGO_IRREGULARIDADE_AUTORIZACAO_DESISTENCIA_PROTESTO = "00";
 }

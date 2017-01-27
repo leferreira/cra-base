@@ -106,7 +106,7 @@ public class HistoricoMediator extends BaseMediator {
 
 				if (retorno.getRemessa().getSituacaoBatimentoRetorno().equals(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO)
 								|| retorno.getRemessa().getSituacaoBatimentoRetorno().equals(SituacaoBatimentoRetorno.CONFIRMADO)) {
-					List<Deposito> depositos = batimentoMediator.buscarDepositosArquivoRetorno(batimento);
+					List<Deposito> depositos = batimentoMediator.buscarDepositosPorBatimento(batimento);
 					BigDecimal valorPagos = retornoMediator.buscarValorDeTitulosPagos(retorno.getRemessa());
 
 					addOcorrencia(TituloOcorrenciaBean.getOcorrenciaToBatimento(batimento, depositos, valorPagos));

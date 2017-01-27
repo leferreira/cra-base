@@ -1,201 +1,117 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.BatimentoDAO;
+import br.com.ieptbto.cra.dao.InstituicaoDAO;
+import br.com.ieptbto.cra.dao.RetornoDAO;
 import br.com.ieptbto.cra.entidade.Batimento;
 import br.com.ieptbto.cra.entidade.BatimentoDeposito;
 import br.com.ieptbto.cra.entidade.Deposito;
+import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
-import br.com.ieptbto.cra.enumeration.TipoDeposito;
-import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.util.DataUtil;
-import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
-/**
- * @author Thasso Araújo
- *
- */
 @Service
-public class BatimentoMediator {
-
-	protected static final Logger logger = Logger.getLogger(BatimentoMediator.class);
-	public static final String CONSTANTE_TIPO_DEPOSITO_CARTORIO = "CARTORIO";
+public class BatimentoMediator extends BaseMediator {
 
 	@Autowired
-	private BatimentoDAO batimentoDAO;
+	BatimentoDAO batimentoDAO;
 	@Autowired
-	private RetornoMediator retornoMediator;
-
-	private Usuario usuario;
-	private FileUpload fileUpload;
-
-	public void processarExtrato(Usuario user, FileUpload fileUpload) {
-		this.usuario = user;
-		this.fileUpload = fileUpload;
-
-		converterDepositosExtrato();
-	}
-
-	private void converterDepositosExtrato() {
-		List<Deposito> depositos = new ArrayList<Deposito>();
-		Boolean arquivoRetornoGeradoHoje = retornoMediator.verificarArquivoRetornoGeradoCra();
-		int numeroLinha = 1;
-
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(getFileUpload().getInputStream()));
-			String linha = reader.readLine();
-
-			while ((linha = reader.readLine()) != null) {
-				if (numeroLinha == 7 || numeroLinha > 7) {
-					if (StringUtils.isNotBlank(linha.trim())) {
-						String dados[] = linha.split(Pattern.quote(";"));
-
-						if (validarLinhaCSV(dados)) {
-							Deposito deposito = new Deposito();
-							deposito.setSituacaoDeposito(SituacaoDeposito.NAO_IDENTIFICADO);
-							deposito.setDataImportacao(new LocalDate());
-							deposito.setUsuario(getUsuario());
-							deposito.setTipoDeposito(verificaTipoDeposito(dados));
-							deposito.setData(DataUtil.stringToLocalDate(DataUtil.PADRAO_FORMATACAO_DATA, dados[0]));
-							deposito.setLancamento(RemoverAcentosUtil.removeAcentos(dados[1]));
-							deposito.setNumeroDocumento(dados[2]);
-							deposito.setValorCredito(new BigDecimal(dados[3].trim().replace(".", "").replace(",", ".")));
-
-							Remessa retorno = batimentoDAO.buscarRetornoCorrespondenteAoDeposito(deposito);
-							if (retorno != null) {
-								Batimento batimento = new Batimento();
-								batimento.setData(retornoMediator.aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
-								batimento.setDataBatimento(new LocalDateTime());
-								batimento.setRemessa(retorno);
-
-								BatimentoDeposito batimentoDeposito = new BatimentoDeposito();
-								batimentoDeposito.setBatimento(batimento);
-								batimentoDeposito.setDeposito(deposito);
-
-								List<BatimentoDeposito> depositosBatimento = new ArrayList<BatimentoDeposito>();
-								depositosBatimento.add(batimentoDeposito);
-								deposito.setBatimentosDeposito(depositosBatimento);
-								deposito.setSituacaoDeposito(SituacaoDeposito.IDENTIFICADO);
-							}
-							depositos.add(deposito);
-						}
-					}
-				}
-				numeroLinha++;
-			}
-			reader.close();
-			for (Deposito deposito : depositos) {
-				batimentoDAO.salvarDeposito(deposito);
-			}
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-			throw new InfraException("Não foi possível abrir o arquivo enviado.");
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException("Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do depósito!");
-		}
-	}
-
-	private TipoDeposito verificaTipoDeposito(String dados[]) {
-		if (dados[2] != null) {
-			String numeroDocumento = RemoverAcentosUtil.removeAcentos(dados[2]);
-			if (numeroDocumento.toUpperCase().trim().equals(CONSTANTE_TIPO_DEPOSITO_CARTORIO))
-				return TipoDeposito.DEPOSITO_CARTORIO_PARA_BANCO;
-		}
-		return TipoDeposito.NAO_INFORMADO;
-	}
-
-	private boolean validarLinhaCSV(String[] dados) {
-		if (verificarLinhaTotalOuVazia(dados)) {
-			return false;
-		}
-		if (verificarLancamentoDeDebitoEmConta(dados)) {
-			return false;
-		}
-		if (verificarResgateMercadoAberto(dados)) {
-			return false;
-		}
-		return true;
-	}
-
-	private boolean verificarLinhaTotalOuVazia(String[] dados) {
-		String campoData = dados[0];
-		if (campoData != null) {
-			if (StringUtils.isBlank(campoData.trim()) || campoData.trim().toUpperCase().contains("TOTAL") || campoData.trim().toUpperCase().contains("DATA")) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean verificarResgateMercadoAberto(String[] dados) {
-		String campolancamento = dados[1];
-		if (campolancamento != null) {
-			if (campolancamento.trim().equals("SALDO ANTERIOR") || campolancamento.trim().equals("RESGATE MERCADO ABERTO")) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean verificarLancamentoDeDebitoEmConta(String[] dados) {
-		String campoDebito = dados[4];
-		if (campoDebito != null) {
-			if (!StringUtils.isBlank(campoDebito.trim()) || !campoDebito.trim().equals(StringUtils.EMPTY)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public Usuario getUsuario() {
-		return usuario;
-	}
-
-	public FileUpload getFileUpload() {
-		return fileUpload;
-	}
-
-	public List<Deposito> buscarDepositosExtrato() {
-		return batimentoDAO.buscarDepositosExtrato();
-	}
-
-	public List<Deposito> consultarDepositos(Deposito deposito, LocalDate dataInicio, LocalDate dataFim) {
-		return batimentoDAO.consultarDepositos(deposito, dataInicio, dataFim);
-	}
-
-	public List<Deposito> buscarDepositosArquivoRetorno(Batimento batimento) {
-		return batimentoDAO.buscarDepositosArquivoRetorno(batimento);
-	}
-
-	public List<Remessa> carregarRetornosVinculados(Deposito deposito) {
-		return batimentoDAO.carregarRetornosVinculados(deposito);
+	RetornoDAO retornoDAO;
+	@Autowired
+	InstituicaoDAO instituicaoDAO;
+	
+	/**
+	 * @return
+	 */
+	public List<Remessa> buscarRetornosParaBatimento() {
+		return batimentoDAO.buscarRetornosParaBatimento();
 	}
 
 	/**
-	 * Método para atualização de Depósitos
-	 * 
-	 * @param deposito
+	 * @param instiuicao
+	 * @param dataBatimento
+	 * @param dataComoDataLimite
 	 * @return
 	 */
-	public Deposito atualizarDeposito(Deposito deposito) {
-		return batimentoDAO.atualizarDeposito(deposito);
+	public List<Remessa> buscarRetornosAguardandoLiberacao(Instituicao instiuicao, LocalDate dataBatimento, boolean dataComoDataLimite) {
+		return batimentoDAO.buscarRetornosAguardandoLiberacao(instiuicao, dataBatimento, dataComoDataLimite);
+	}
+
+	/**
+	 * @param dataBatimento
+	 * @return
+	 */
+	public List<Remessa> buscarRetornosParaPagamentoInstituicao(LocalDate dataBatimento) {
+		return batimentoDAO.buscarRetornosParaPagamentoInstituicao(dataBatimento);
+	}
+
+	/**
+	 * @param retornos
+	 * @return
+	 */
+	public List<Remessa> salvarBatimentos(List<Remessa> retornos) {
+		Instituicao cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
+		Boolean arquivoRetornoGeradoHoje = retornoDAO.verificarArquivoRetornoGeradoCra(cra);
+		for (Remessa retorno : retornos) {
+			Batimento batimento = new Batimento();
+			batimento.setData(aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
+			batimento.setDataBatimento(new LocalDateTime());
+			batimento.setRemessa(retorno);
+			batimento.setDepositosBatimento(new ArrayList<BatimentoDeposito>());
+
+			for (Deposito depositosIdentificado : retorno.getListaDepositos()) {
+				BatimentoDeposito depositosBatimento = new BatimentoDeposito();
+				depositosBatimento.setBatimento(batimento);
+				depositosBatimento.setDeposito(depositosIdentificado);
+
+				batimento.getDepositosBatimento().add(depositosBatimento);
+			}
+			batimentoDAO.salvarBatimento(batimento);
+		}
+		return retornos;
+	}
+
+	/**
+	 * Aplicando a regra de data do batimento
+	 * 
+	 * @param arquivoRetornoGeradoHoje
+	 * @return
+	 */
+	public LocalDate aplicarRegraDataBatimento(Boolean arquivoRetornoGeradoHoje) {
+		if (arquivoRetornoGeradoHoje.equals(false)) {
+			return new LocalDate();
+		} else if (arquivoRetornoGeradoHoje.equals(true)) {
+			Integer contadorDeDias = 1;
+			while (true) {
+				LocalDate proximoDiaUtil = new LocalDate().plusDays(contadorDeDias);
+				Date date = proximoDiaUtil.toDate();
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(date);
+
+				if (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+					return proximoDiaUtil;
+				}
+				contadorDeDias++;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Buscar Depositos vínculados a um batimento
+	 * @param batimento
+	 * @return
+	 */
+	public List<Deposito> buscarDepositosPorBatimento(Batimento batimento) {
+		return batimentoDAO.buscarDepositosPorBatimento(batimento);
 	}
 }

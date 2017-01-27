@@ -1,15 +1,11 @@
 package br.com.ieptbto.cra.mediator;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,43 +28,24 @@ import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.exception.InfraException;
 
-/**
- * @author Thasso Araújo
- *
- */
 @Service
 public class RetornoMediator extends BaseMediator {
 
-	private static final int NUMERO_SEQUENCIAL_RETORNO = 1;
+	@Autowired
+	InstituicaoDAO instituicaoDAO;
+	@Autowired
+	TipoArquivoDAO tipoArquivoDAO;
+	@Autowired
+	RetornoDAO retornoDAO;
+	@Autowired
+	BatimentoDAO batimentoDAO;
 
-	@Autowired
-	private InstituicaoDAO instituicaoDAO;
-	@Autowired
-	private TipoArquivoDAO tipoArquivoDAO;
-	@Autowired
-	private RetornoDAO retornoDAO;
-	@Autowired
-	private BatimentoDAO batimentoDAO;
-
-	private Instituicao cra;
-	private TipoArquivo tipoArquivo;
-
-	public Retorno carregarTituloRetornoPorId(int id) {
-		Retorno retorno = new Retorno();
-		retorno.setId(id);
-		return retornoDAO.carregarTituloRetornoPorId(retorno);
+	public Retorno carregarTituloRetornoPorPk(Integer id) {
+		return retornoDAO.buscarPorPK(id, Retorno.class);
 	}
-
-	public List<Remessa> buscarRetornosParaBatimento() {
-		return retornoDAO.buscarRetornosParaBatimento();
-	}
-
-	public List<Remessa> buscarRetornosAguardandoLiberacao(Instituicao instiuicao, LocalDate dataBatimento, boolean dataComoDataLimite) {
-		return retornoDAO.buscarRetornosAguardandoLiberacao(instiuicao, dataBatimento, dataComoDataLimite);
-	}
-
-	public List<Remessa> buscarRetornosParaPagamentoInstituicao(LocalDate dataBatimento) {
-		return retornoDAO.buscarRetornosParaPagamentoInstituicao(dataBatimento);
+	
+	public Retorno carregarTituloRetornoPorId(Retorno retorno) {
+		return retornoDAO.buscarPorPK(retorno);
 	}
 
 	public List<Remessa> buscarRetornosConfirmados() {
@@ -87,61 +64,13 @@ public class RetornoMediator extends BaseMediator {
 		return retornoDAO.buscarValorDeCustasCartorio(retorno);
 	}
 
-	public Boolean verificarArquivoRetornoGeradoCra() {
-		this.cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
-		return retornoDAO.verificarArquivoRetornoGeradoCra(getCra());
-	}
-
-	public List<Remessa> salvarBatimentos(List<Remessa> retornos) {
-		Boolean arquivoRetornoGeradoHoje = verificarArquivoRetornoGeradoCra();
-		for (Remessa retorno : retornos) {
-			Batimento batimento = new Batimento();
-			batimento.setData(aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
-			batimento.setDataBatimento(new LocalDateTime());
-			batimento.setRemessa(retorno);
-			batimento.setDepositosBatimento(new ArrayList<BatimentoDeposito>());
-
-			for (Deposito depositosIdentificado : retorno.getListaDepositos()) {
-				BatimentoDeposito depositosBatimento = new BatimentoDeposito();
-				depositosBatimento.setBatimento(batimento);
-				depositosBatimento.setDeposito(depositosIdentificado);
-
-				batimento.getDepositosBatimento().add(depositosBatimento);
-			}
-			batimentoDAO.salvarBatimento(batimento);
-		}
-		return retornos;
-	}
-
 	/**
-	 * Aplicando a regra de data do batimento
-	 * 
-	 * @param arquivoRetornoGeradoHoje
+	 * Verifica se já foram gerados os arquivos de retorno pela CRA para os bancos
 	 * @return
 	 */
-	public LocalDate aplicarRegraDataBatimento(Boolean arquivoRetornoGeradoHoje) {
-
-		if (arquivoRetornoGeradoHoje.equals(false)) {
-			return new LocalDate();
-		} else if (arquivoRetornoGeradoHoje.equals(true)) {
-			Integer contadorDeDias = 1;
-			while (true) {
-				LocalDate proximoDiaUtil = new LocalDate().plusDays(contadorDeDias);
-				Date date = proximoDiaUtil.toDate();
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTime(date);
-
-				if (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
-					return proximoDiaUtil;
-				}
-				contadorDeDias++;
-			}
-		}
-		return null;
-	}
-
-	public List<Remessa> liberarRetornoBatimentoInstituicao(List<Remessa> retornoLiberados) {
-		return retornoDAO.liberarRetornoBatimento(retornoLiberados);
+	public Boolean verificarArquivoRetornoGeradoCra() {
+		Instituicao cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
+		return retornoDAO.verificarArquivoRetornoGeradoCra(cra);
 	}
 
 	/**
@@ -150,13 +79,11 @@ public class RetornoMediator extends BaseMediator {
 	 * @param usuarioAcao
 	 * @param retornos
 	 */
-	public void gerarRetornos(Usuario usuarioAcao, List<Remessa> retornos) {
+	public List<Arquivo> gerarRetornos(Usuario usuarioAcao, List<Remessa> retornos) {
 		HashMap<String, Arquivo> arquivosRetorno = new HashMap<String, Arquivo>();
-		this.cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
-		this.tipoArquivo = tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.RETORNO);
+		Instituicao instituicaoDestino = new Instituicao();
 
 		Arquivo arquivo = null;
-		Instituicao instituicaoDestino = new Instituicao();
 		for (Remessa retorno : retornos) {
 
 			retorno = retornoDAO.buscarPorPK(retorno);
@@ -172,36 +99,30 @@ public class RetornoMediator extends BaseMediator {
 			}
 		}
 		List<Arquivo> retornosArquivos = new ArrayList<Arquivo>(arquivosRetorno.values());
-		retornoDAO.gerarRetornos(usuarioAcao, retornosArquivos);
+		return retornoDAO.gerarRetornos(usuarioAcao, retornosArquivos);
 	}
 
-	private Arquivo criarNovoArquivoDeRetorno(Instituicao destino, Remessa retorno) {
+	private Arquivo criarNovoArquivoDeRetorno(Instituicao instituicaoDestino, Remessa retorno) {
+		Instituicao instituicaoCra = instituicaoDAO.buscarInstituicaoInicial("CRA");
+		TipoArquivo tipoArquivo = tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.RETORNO);
+
 		Arquivo arquivo = new Arquivo();
-		arquivo.setTipoArquivo(getTipoArquivo());
-		arquivo.setNomeArquivo(gerarNomeArquivoRetorno(retorno));
-		arquivo.setInstituicaoRecebe(destino);
-		arquivo.setInstituicaoEnvio(getCra());
+		arquivo.setTipoArquivo(tipoArquivo);
+		arquivo.setNomeArquivo(TipoArquivoEnum.generateNomeArquivoFebraban(TipoArquivoEnum.RETORNO, instituicaoDestino.getCodigoCompensacao(), ConfiguracaoBase.UM));
+		arquivo.setInstituicaoRecebe(instituicaoDestino);
+		arquivo.setInstituicaoEnvio(instituicaoCra);
 		arquivo.setDataEnvio(new LocalDate());
 		arquivo.setDataRecebimento(new LocalDate().toDate());
 		arquivo.setHoraEnvio(new LocalTime());
 		return arquivo;
 	}
 
-	private String gerarNomeArquivoRetorno(Remessa retorno) {
-		return TipoArquivoEnum.RETORNO.getConstante() + retorno.getCabecalho().getNumeroCodigoPortador() + gerarDataArquivo() + NUMERO_SEQUENCIAL_RETORNO;
-	}
-
-	private String gerarDataArquivo() {
-		SimpleDateFormat dataPadraArquivo = new SimpleDateFormat("ddMM.yy");
-		return dataPadraArquivo.format(new Date()).toString();
-	}
-
-	public Instituicao getCra() {
-		return cra;
-	}
-
-	public TipoArquivo getTipoArquivo() {
-		return tipoArquivo;
+	/**
+	 * @param retornoLiberados
+	 * @return
+	 */
+	public List<Remessa> liberarRetornoBatimentoInstituicao(List<Remessa> retornoLiberados) {
+		return retornoDAO.liberarRetornoBatimento(retornoLiberados);
 	}
 
 	/**
@@ -219,7 +140,6 @@ public class RetornoMediator extends BaseMediator {
 			if (batimentosDoDeposito.size() > 1) {
 				throw new InfraException("O arquivo de retorno possui um depósito vínculado a mais de um batimento! Não é possível retorná-lo ao batimento...");
 			}
-
 			deposito.setSituacaoDeposito(SituacaoDeposito.NAO_IDENTIFICADO);
 			batimentoDAO.atualizarDeposito(deposito);
 		}

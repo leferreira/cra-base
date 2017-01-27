@@ -39,14 +39,13 @@ public class ValidarTituloConfirmacao extends RegraTitulo {
 	@Override
 	protected void executar() {
 		if (arquivo.getRemessas() == null || arquivo.getRemessas().isEmpty()) {
-			erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_ARQUIVO_VAZIO_OU_FORA_DO_LAYOUT_DE_TRANSMISSAO));
+			this.erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_ARQUIVO_VAZIO_OU_FORA_DO_LAYOUT_DE_TRANSMISSAO));
 			return;
 		}
 
 		for (Remessa remessa : arquivo.getRemessas()) {
-
 			if (remessa.getTitulos() == null || remessa.getTitulos().isEmpty()) {
-				erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_ARQUIVO_ENVIADO_SEM_TITULOS));
+				this.erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_ARQUIVO_ENVIADO_SEM_TITULOS));
 			}
 
 			this.titulosProcessados = new ArrayList<Titulo>();
@@ -70,7 +69,7 @@ public class ValidarTituloConfirmacao extends RegraTitulo {
 			tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloConfirmacao.getTipoOcorrencia());
 			if (numeroProtocoloCartorio.equals(ZERO)) {
 				if (tipoOcorrencia == null) {
-					erros.add(new TituloException(CodigoErro.CARTORIO_TIPO_OCORRENCIA_INVALIDO, tituloConfirmacao.getNossoNumero(), numeroProtocoloCartorio,
+					this.erros.add(new TituloException(CodigoErro.CARTORIO_TIPO_OCORRENCIA_INVALIDO, tituloConfirmacao.getNossoNumero(), numeroProtocoloCartorio,
 							tituloConfirmacao.getNumeroSequencialArquivo()));
 				}
 			}
@@ -82,17 +81,17 @@ public class ValidarTituloConfirmacao extends RegraTitulo {
 			if (tipoOcorrencia != null) {
 				if (TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.equals(tipoOcorrencia)) {
 					if (codigoIrregularidade == null || codigoIrregularidade == CodigoIrregularidade.IRREGULARIDADE_0) {
-						erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE, tituloConfirmacao.getNossoNumero(),
+						this.erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE, tituloConfirmacao.getNossoNumero(),
 								numeroProtocoloCartorio, tituloConfirmacao.getNumeroSequencialArquivo()));
 					}
 				}
 			} else if (numeroProtocoloCartorio.equals(ZERO)) {
 				if (!TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.equals(tipoOcorrencia)) {
-					erros.add(new TituloException(CodigoErro.CARTORIO_PROTOCOLO_VAZIO_SEM_OCORRENCIA_DE_DEVOLUCAO, tituloConfirmacao.getNossoNumero(),
+					this.erros.add(new TituloException(CodigoErro.CARTORIO_PROTOCOLO_VAZIO_SEM_OCORRENCIA_DE_DEVOLUCAO, tituloConfirmacao.getNossoNumero(),
 							numeroProtocoloCartorio, tituloConfirmacao.getNumeroSequencialArquivo()));
 				}
 				if (codigoIrregularidade == null || codigoIrregularidade == CodigoIrregularidade.IRREGULARIDADE_0) {
-					erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE, tituloConfirmacao.getNossoNumero(),
+					this.erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE, tituloConfirmacao.getNossoNumero(),
 							numeroProtocoloCartorio, tituloConfirmacao.getNumeroSequencialArquivo()));
 				}
 			}
