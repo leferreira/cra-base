@@ -183,7 +183,7 @@ public class AdministracaoMediator extends BaseMediator {
 					titulosProcessados.add(titulos.get(i - 1));
 					total_titulos++;
 
-					if (titulosProcessados.size() >= 10000 || titulos.size() == total_titulos) {
+					if (titulosProcessados.size() >= 30000 || titulos.size() == total_titulos) {
 						RemessaCnpVO remessaCnpVO = new RemessaCnpVO();
 						remessaCnpVO.setCabecalhoCnpVO(cabecalho);
 						remessaCnpVO.setTitulosCnpVO(titulosProcessados);

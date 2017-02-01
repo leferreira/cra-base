@@ -76,6 +76,7 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		if (entidadeVO.getValorProtesto() != null) {
 			try {
 				BigDecimal valorProtesto = new BigDecimal(entidadeVO.getValorProtesto().trim().replace("\"", "").replace(".", "").replace(",", "."));
+				valorProtesto = valorProtesto.divide(new BigDecimal(100));
 				registro.setValorProtesto(valorProtesto);
 			} catch (Exception ex) {
 				registro.setValorProtesto(BigDecimal.ZERO);
@@ -140,7 +141,7 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		registro.setSequenciaRegistro("1");
 		return registro;
 	}
-
+	
 	@Override
 	public TituloCnpVO converter(RegistroCnp entidade, Class<TituloCnpVO> arquivoVO) {
 		TituloCnpVO tituloVO = new TituloCnpVO();
@@ -162,6 +163,7 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		tituloVO.setTipoDocumentoCredor(entidade.getTipoDocumentoCredor());
 		tituloVO.setValorProtesto(new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(entidade.getValorProtesto()));
 		if (tituloVO.getValorProtesto().contains("E")) {
+			System.out.println(tituloVO.getValorProtesto());
 			BigDecimal valorCorrigido = entidade.getValorProtesto().divide(new BigDecimal(100));
 			tituloVO.setValorProtesto(new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(valorCorrigido));
 		}
