@@ -10,7 +10,8 @@ public enum TipoDeposito {
 	DEPOSITO_CARTORIO_PARA_BANCO("Cartório para Bancos/Convênio"), 
 	DEPOSITO_CARTORIO_PARA_IEPTB("Cartório para o IEPTB"), 
 	DEPOSITO_TAXA_CRA("Taxa CRA"), 
-	OUTROS_DEPOSITOS("Outros depositos");
+	OUTROS_DEPOSITOS("Outros depositos"),
+	DEPOSITOS_ERRADOS("Depósitos Errados");
 	
 	private String label;
 	

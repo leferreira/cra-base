@@ -28,6 +28,6 @@ public class ConfiguracaoBase {
 	public static final String FECHA_CHAVE = "]";
 	public static final String CARACTER_INICIO_TXT = "0";
 	public static final String CARACTER_INICIO_XML = "<";
-	public static final String CONSTANTE_TIPO_DEPOSITO_CARTORIO = "CARTORIO";
+	public static final String DEPOSITO_CARTORIO = "CARTORIO";
 	public static final String CODIGO_IRREGULARIDADE_AUTORIZACAO_DESISTENCIA_PROTESTO = "00";
 }

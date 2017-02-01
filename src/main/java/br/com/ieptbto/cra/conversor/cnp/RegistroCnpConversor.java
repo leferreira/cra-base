@@ -129,8 +129,7 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		registro.setNumeroProtocoloCartorio(RemoverAcentosUtil.removeAcentos(entidadeVO.getNumeroProtocoloCartorio()));
 		if (entidadeVO.getDataCancelamentoProtesto() != null) {
 			try {
-				registro.setDataCancelamentoProtesto(
-						DataUtil.stringToLocalDate("ddMMyyyy", entidadeVO.getDataCancelamentoProtesto()).toDate());
+				registro.setDataCancelamentoProtesto(DataUtil.stringToLocalDate("ddMMyyyy", entidadeVO.getDataCancelamentoProtesto()).toDate());
 			} catch (Exception ex) {
 				registro.setDataCancelamentoProtesto(null);
 			}
@@ -161,7 +160,7 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		tituloVO.setTipoPessoaCredor(entidade.getTipoPessoaCredor());
 		tituloVO.setTipoDocumentoCredor(entidade.getTipoDocumentoCredor());
 		tituloVO.setValorProtesto(new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(entidade.getValorProtesto()));
-		if (tituloVO.getValorProtesto().contains("E")) {
+		if (tituloVO.getValorProtesto().toString().contains("E")) {
 			BigDecimal valorCorrigido = entidade.getValorProtesto().divide(new BigDecimal(100));
 			tituloVO.setValorProtesto(new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(valorCorrigido));
 		}
@@ -180,8 +179,7 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 		tituloVO.setNumeroCartorio(entidade.getNumeroCartorio());
 		tituloVO.setNumeroProtocoloCartorio(RemoverAcentosUtil.removeAcentos(entidade.getNumeroProtocoloCartorio()));
 		if (entidade.getDataCancelamentoProtesto() != null) {
-			tituloVO.setDataCancelamentoProtesto(
-					new DateConversor().getValorConvertidoParaString(new LocalDate(entidade.getDataCancelamentoProtesto())));
+			tituloVO.setDataCancelamentoProtesto(new DateConversor().getValorConvertidoParaString(new LocalDate(entidade.getDataCancelamentoProtesto())));
 		} else {
 			tituloVO.setDataCancelamentoProtesto("");
 		}

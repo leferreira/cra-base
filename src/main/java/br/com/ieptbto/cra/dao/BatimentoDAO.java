@@ -8,8 +8,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
@@ -21,11 +19,12 @@ import br.com.ieptbto.cra.entidade.BatimentoDeposito;
 import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.ViewBatimento;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
 import br.com.ieptbto.cra.enumeration.TipoBatimento;
-import br.com.ieptbto.cra.enumeration.TipoDeposito;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 
 @Repository
 public class BatimentoDAO extends AbstractBaseDAO {
@@ -82,9 +81,8 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		criteria.createAlias("instituicaoDestino", "instituicaoDestino");
 		criteria.createAlias("batimento.depositosBatimento", "depositosBatimento");
 		criteria.createAlias("depositosBatimento.deposito", "deposito");
-
 		criteria.add(Restrictions.eq("instituicaoDestino.tipoBatimento", TipoBatimento.BATIMENTO_REALIZADO_PELA_INSTITUICAO));
-		criteria.add(Restrictions.ne("deposito.numeroDocumento", CONSTANTE_TIPO_DEPOSITO_CARTORIO));
+		criteria.add(Restrictions.ne("deposito.numeroDocumento", ConfiguracaoBase.DEPOSITO_CARTORIO));
 
 		Disjunction disjunction = Restrictions.disjunction();
 		disjunction.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.CONFIRMADO));
@@ -95,8 +93,6 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		criteria.setProjection(Projections.distinct(Projections.property("batimento.remessa")));
 		return criteria.list();
 	}
-
-
 	
 	/**
 	 * @param batimento
@@ -108,11 +104,12 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		try {
 			Remessa remessa = remessaDAO.buscarPorPK(batimento.getRemessa());
 			remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);
-			if (remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)
-					|| remessa.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
+			
+			TipoBatimento tipoBatimento = remessa.getInstituicaoDestino().getTipoBatimento();
+			if (tipoBatimento.equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)
+					|| tipoBatimento.equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
 				remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
 			}
-
 			batimento.setRemessa(update(remessa));
 			batimento = save(batimento);
 			if (batimento.getDepositosBatimento() != null) {
@@ -188,66 +185,8 @@ public class BatimentoDAO extends AbstractBaseDAO {
 	 * @param deposito
 	 * @return
 	 */
-	public Deposito salvarDeposito(Deposito deposito) {
-		Transaction transaction = getBeginTransation();
-
-		try {
-			deposito = save(deposito);
-			if (deposito.getBatimentosDeposito() != null) {
-				for (BatimentoDeposito batimentoDeposito : deposito.getBatimentosDeposito()) {
-					Batimento batimento = batimentoDeposito.getBatimento();
-					Remessa retorno = batimento.getRemessa();
-
-					batimento.setRemessa(retorno);
-					batimento = save(batimento);
-
-					retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.AGUARDANDO_LIBERACAO);
-					if (retorno.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.BATIMENTO_REALIZADO_PELA_CRA)
-							|| retorno.getInstituicaoDestino().getTipoBatimento().equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
-						retorno.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
-					}
-					retorno.setBatimento(batimento);
-					update(retorno);
-
-					batimentoDeposito.setDeposito(deposito);
-					batimentoDeposito.setBatimento(batimento);
-					save(batimentoDeposito);
-				}
-			}
-			transaction.commit();
-		} catch (InfraException ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage());
-			throw new InfraException(ex.getMessage());
-		} catch (Exception ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage(), ex);
-			throw new InfraException("Não foi possível inserir os depósitos na base de dados! Favor entrar em contato com a CRA...");
-		}
-		return deposito;
-	}
-
-	public Deposito atualizarDeposito(Deposito deposito) {
-		Transaction transaction = getSession().beginTransaction();
-
-		try {
-			update(deposito);
-			transaction.commit();
-
-		} catch (InfraException ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage());
-			throw new InfraException(ex.getMessage());
-		} catch (Exception ex) {
-			logger.error(ex.getMessage(), ex);
-			transaction.rollback();
-			throw new InfraException("Não foi possível atualizar os depósitos na base de dados! Favor entrar em contato com a CRA...");
-		}
-		return deposito;
-	}
-
 	@SuppressWarnings("rawtypes")
-	public Remessa buscarRetornoCorrespondenteAoDeposito(Deposito deposito) {
+	public List<Remessa> buscarRetornoCorrespondenteAoDeposito(Deposito deposito) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT ret.remessa_id, sum(ret.valor_saldo_titulo) ");
 		sql.append("FROM tb_titulo AS tit ");
@@ -260,31 +199,23 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		sql.append("GROUP BY ret.remessa_id ");
 		sql.append("HAVING SUM(ret.valor_saldo_titulo)=" + deposito.getValorCredito().toString());
 
+		List<Remessa> arquivosRetorno = new ArrayList<>();
 		Query query = getSession().createSQLQuery(sql.toString());
-		List result = query.list();
-		if (result.size() > 1) {
-			return null;
-		}
-
-		Iterator iterator = result.iterator();
+		Iterator iterator = query.list().iterator();
 		while (iterator.hasNext()) {
 			Object[] posicao = (Object[]) iterator.next();
 			Integer id = Integer.class.cast(posicao[0]);
 			Criteria criteria = getCriteria(Remessa.class);
 			criteria.add(Restrictions.eq("id", id));
-			return Remessa.class.cast(criteria.uniqueResult());
+			arquivosRetorno.add(Remessa.class.cast(criteria.uniqueResult()));
 		}
-		return null;
+		return arquivosRetorno;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Deposito> buscarDepositosNaoIdentificados() {
-		Criteria criteria = getCriteria(Deposito.class);
-		criteria.addOrder(Order.asc("data"));
-		criteria.add(Restrictions.eq("situacaoDeposito", SituacaoDeposito.NAO_IDENTIFICADO));
-		return criteria.list();
-	}
-
+	/**
+	 * @param deposito
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public List<Batimento> buscarBatimentosDoDeposito(Deposito deposito) {
 		Criteria criteria = getCriteria(Batimento.class);
@@ -293,6 +224,10 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
+	/**
+	 * @param retorno
+	 * @return
+	 */
 	public Batimento buscarBatimentoDoRetorno(Remessa retorno) {
 		Criteria criteria = getCriteria(Batimento.class);
 		criteria.createAlias("depositosBatimento", "depositosBatimento");
@@ -301,34 +236,16 @@ public class BatimentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Deposito> consultarDepositos(Deposito deposito, LocalDate dataInicio, LocalDate dataFim) {
-		Criteria criteria = getCriteria(Deposito.class);
-
-		if (dataInicio != null) {
-			criteria.add(Restrictions.between("data", dataInicio, dataFim));
-		}
-		if (deposito.getNumeroDocumento() != null) {
-			criteria.add(Restrictions.ilike("numeroDocumento", deposito.getNumeroDocumento(), MatchMode.ANYWHERE));
-		}
-		if (deposito.getValorCredito() != null) {
-			criteria.add(Restrictions.eq("valorCredito", deposito.getValorCredito()));
-		}
-		if (deposito.getSituacaoDeposito() != null) {
-			criteria.add(Restrictions.eq("situacaoDeposito", deposito.getSituacaoDeposito()));
-		}
-		if (!deposito.getTipoDeposito().equals(TipoDeposito.NAO_INFORMADO)) {
-			criteria.add(Restrictions.eq("tipoDeposito", deposito.getTipoDeposito()));
-		}
-
-		criteria.addOrder(Order.asc("data"));
-		return criteria.list();
-	}
-
-	@SuppressWarnings("unchecked")
 	public List<Deposito> buscarDepositosPorBatimento(Batimento batimento) {
 		Criteria criteria = getCriteria(Deposito.class);
 		criteria.createAlias("batimentosDeposito", "batimentosDeposito");
 		criteria.add(Restrictions.eq("batimentosDeposito.batimento", batimento));
 		return criteria.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<ViewBatimento> buscarArquivosViewBatimento() {
+		Query query = getSession().getNamedQuery("findAllArquivosBatimento");
+		return query.list();
 	}
 }

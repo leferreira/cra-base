@@ -18,6 +18,7 @@ import br.com.ieptbto.cra.entidade.BatimentoDeposito;
 import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.ViewBatimento;
 
 @Service
 public class BatimentoMediator extends BaseMediator {
@@ -55,19 +56,46 @@ public class BatimentoMediator extends BaseMediator {
 	}
 
 	/**
+	 * @param retorno
+	 * @return
+	 */
+	public Batimento salvarBatimento(Remessa retorno) {
+		Instituicao cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
+		Boolean arquivoRetornoGeradoHoje = retornoDAO.verificarArquivoRetornoGeradoCra(cra);
+		
+		Batimento batimento = new Batimento();
+		batimento.setData(aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
+		batimento.setDataBatimento(new LocalDateTime());
+		batimento.setRemessa(retorno);
+		batimento.setDepositosBatimento(new ArrayList<BatimentoDeposito>());
+		for (Deposito depositosIdentificado : retorno.getListaDepositos()) {
+			BatimentoDeposito depositosBatimento = new BatimentoDeposito();
+			depositosBatimento.setBatimento(batimento);
+			depositosBatimento.setDeposito(depositosIdentificado);
+
+			batimento.getDepositosBatimento().add(depositosBatimento);
+		}
+		return batimentoDAO.salvarBatimento(batimento);
+	}
+	
+	/**
 	 * @param retornos
 	 * @return
 	 */
-	public List<Remessa> salvarBatimentos(List<Remessa> retornos) {
+	public List<Batimento> salvarBatimentos(List<ViewBatimento> arquivosBatimento) {
 		Instituicao cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
 		Boolean arquivoRetornoGeradoHoje = retornoDAO.verificarArquivoRetornoGeradoCra(cra);
-		for (Remessa retorno : retornos) {
+		
+		List<Batimento> batimentosProcessados = new ArrayList<>();
+		for (ViewBatimento batimentoArquivo : arquivosBatimento) {
+			Remessa retorno = batimentoDAO.buscarPorPK(batimentoArquivo.getIdRemessa_Remessa(), Remessa.class);
+			retorno.setListaDepositos(batimentoArquivo.getListaDepositos());
+			
 			Batimento batimento = new Batimento();
 			batimento.setData(aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
 			batimento.setDataBatimento(new LocalDateTime());
 			batimento.setRemessa(retorno);
 			batimento.setDepositosBatimento(new ArrayList<BatimentoDeposito>());
-
 			for (Deposito depositosIdentificado : retorno.getListaDepositos()) {
 				BatimentoDeposito depositosBatimento = new BatimentoDeposito();
 				depositosBatimento.setBatimento(batimento);
@@ -75,9 +103,9 @@ public class BatimentoMediator extends BaseMediator {
 
 				batimento.getDepositosBatimento().add(depositosBatimento);
 			}
-			batimentoDAO.salvarBatimento(batimento);
+			batimentosProcessados.add(batimentoDAO.salvarBatimento(batimento));
 		}
-		return retornos;
+		return batimentosProcessados;
 	}
 
 	/**
@@ -113,5 +141,12 @@ public class BatimentoMediator extends BaseMediator {
 	 */
 	public List<Deposito> buscarDepositosPorBatimento(Batimento batimento) {
 		return batimentoDAO.buscarDepositosPorBatimento(batimento);
+	}
+
+	/**
+	 * @return
+	 */
+	public List<ViewBatimento> buscarArquivosViewBatimento() {
+		return batimentoDAO.buscarArquivosViewBatimento();
 	}
 }

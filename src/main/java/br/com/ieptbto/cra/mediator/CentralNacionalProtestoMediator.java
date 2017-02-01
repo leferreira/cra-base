@@ -84,13 +84,12 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 		for (RemessaCnpVO remessaCnp : arquivoCnpVO.getRemessasCnpVO()) {
 			for (TituloCnpVO tituloCnpVO : remessaCnp.getTitulosCnpVO()) {
 				RegistroCnp registro = new RegistroCnpConversor().converter(RegistroCnp.class, tituloCnpVO);
-
 				if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
 					if (validarRegistroCnp.validarProtesto(registro)) {
 						if (loteProtesto == null) {
 							loteProtesto = criarLoteRegistros(instituicao, TipoRegistroCnp.PROTESTO);
-							loteProtesto.getRegistrosCnp().add(registro);
-						} else if (!loteProtesto.getRegistrosCnp().contains(registro)) {
+						} 
+						if (!loteProtesto.getRegistrosCnp().contains(registro)) {
 							loteProtesto.getRegistrosCnp().add(registro);
 						}
 					}
@@ -98,8 +97,8 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 					if (validarRegistroCnp.validarCancelamento(registro)) {
 						if (loteCancelamento == null) {
 							loteCancelamento = criarLoteRegistros(instituicao, TipoRegistroCnp.CANCELAMENTO);
-							loteCancelamento.getRegistrosCnp().add(registro);
-						} else if (!loteCancelamento.getRegistrosCnp().contains(registro)) {
+						}
+						if (!loteCancelamento.getRegistrosCnp().contains(registro)) {
 							loteCancelamento.getRegistrosCnp().add(registro);
 						}
 					}

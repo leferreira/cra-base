@@ -183,7 +183,7 @@ public class AdministracaoMediator extends BaseMediator {
 					titulosProcessados.add(titulos.get(i - 1));
 					total_titulos++;
 
-					if (titulosProcessados.size() >= 10000 || titulos.size() == total_titulos) {
+					if (titulosProcessados.size() >= 25000 || titulos.size() == total_titulos) {
 						RemessaCnpVO remessaCnpVO = new RemessaCnpVO();
 						remessaCnpVO.setCabecalhoCnpVO(cabecalho);
 						remessaCnpVO.setTitulosCnpVO(titulosProcessados);
@@ -207,7 +207,7 @@ public class AdministracaoMediator extends BaseMediator {
 							writer.flush();
 							writer.close();
 							File arquivo =
-									new File(ConfiguracaoBase.DIRETORIO_BASE + 991 + "_" + cartorio.getMunicipio().getNomeMunicipio() + i);
+									new File(ConfiguracaoBase.DIRETORIO_BASE + cartorio.getMunicipio().getNomeMunicipio() + i);
 							BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivo));
 							logger.info("Escrevendo os dados no arquivo... " + i);
 							bWrite.write(msg);

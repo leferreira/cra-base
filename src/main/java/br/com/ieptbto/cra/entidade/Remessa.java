@@ -223,7 +223,6 @@ public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
 	@Override
 	public void setFieldHandler(FieldHandler handler) {
 		this.handler = handler;
-
 	}
 
 	@Override

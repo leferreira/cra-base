@@ -28,22 +28,32 @@ import br.com.ieptbto.cra.processador.ProcessadorRemessaConveniada;
 public class ConvenioMediator extends BaseMediator {
 
 	@Autowired
-	private ProcessadorRemessaConveniada processadorRemessaConveniada;
+	TituloFiliadoDAO tituloFiliadoDAO;
 	@Autowired
-	private ProcessadorDesistenciaCancelamentoConveniada processadorDesistenciaCancelamentoConveniada;
+	ArquivoDAO arquivoDAO;
 	@Autowired
-	private TituloFiliadoDAO tituloFiliadoDAO;
+	CancelamentoDAO cancelamentoDAO;
 	@Autowired
-	private ArquivoDAO arquivoDAO;
+	AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
 	@Autowired
-	private CancelamentoDAO cancelamentoDAO;
+	ProcessadorRemessaConveniada processadorRemessaConveniada;
 	@Autowired
-	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
+	ProcessadorDesistenciaCancelamentoConveniada processadorDesistenciaCancelamentoConveniada;
 
-	public List<TituloFiliado> buscarTitulosConvenios() {
+	/**
+	 * Buscar títulos do convênio para geração de arquivos de remessa
+	 * @return
+	 */
+	public List<TituloFiliado> buscarTitulosConveniosGerarRemessa() {
 		return tituloFiliadoDAO.buscarTitulosConvenios();
 	}
 
+	/**
+	 * Gerador de Arquivos de Remessas de Convênios
+	 * @param usuario
+	 * @param listaTitulosConvenios
+	 * @return
+	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<Arquivo> gerarRemessas(Usuario usuario, List<TituloFiliado> listaTitulosConvenios) {
 		List<Arquivo> arquivos = processadorRemessaConveniada.processarRemessa(listaTitulosConvenios, usuario);
@@ -55,6 +65,12 @@ public class ConvenioMediator extends BaseMediator {
 		return arquivos;
 	}
 
+	/**
+	 * Gerador de Arquivos de Desistencias e Cancelamentos solicitados pelos convênios
+	 * @param user
+	 * @param solicitacoes
+	 * @return
+	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<Arquivo> gerarDesistenciasCancelamentosConvenio(Usuario user, List<SolicitacaoDesistenciaCancelamento> solicitacoes) {
 		List<Arquivo> arquivos = processadorDesistenciaCancelamentoConveniada.processaDesistenciasCancelamentos(solicitacoes, user);

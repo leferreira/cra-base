@@ -11,13 +11,13 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.dao.BatimentoDAO;
 import br.com.ieptbto.cra.dao.DepositoDAO;
-import br.com.ieptbto.cra.entidade.Batimento;
-import br.com.ieptbto.cra.entidade.BatimentoDeposito;
+import br.com.ieptbto.cra.dao.InstituicaoDAO;
+import br.com.ieptbto.cra.dao.RetornoDAO;
 import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -31,27 +31,28 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 public class DepositoMediator extends BaseMediator {
 
 	@Autowired
+	BatimentoMediator batimentoMediator;
+	@Autowired
 	DepositoDAO depositoDAO;
+	@Autowired
+	RetornoDAO retornoDAO;
+	@Autowired
+	BatimentoDAO batimentoDAO;
+	@Autowired
+	InstituicaoDAO instituicaoDAO;
 	private Usuario usuario;
 	private FileUpload fileUpload;
-	private List<Deposito> depositos;
-	private int numeroLinha;
+	private List<Deposito> depositosProcessados;
+	private List<Deposito> depositosConflitados;
+	private List<Remessa> retornosConflitados;
 	
-	/**
-	 * @param deposito
-	 * @return
-	 */
-	public List<Remessa> buscarArquivosRetornosVinculadosPorDeposito(Deposito deposito) {
-		return batimentoDAO.buscarArquivosRetornosVinculadosPorDeposito(deposito);
-	}
-
 	/**
 	 * Método para atualização de Depósitos
 	 * @param deposito
 	 * @return
 	 */
 	public Deposito atualizarDeposito(Deposito deposito) {
-		return batimentoDAO.atualizarDeposito(deposito);
+		return depositoDAO.atualizarDeposito(deposito);
 	}
 	
 	/**
@@ -59,7 +60,7 @@ public class DepositoMediator extends BaseMediator {
 	 * @return
 	 */
 	public List<Deposito> buscarDepositosNaoIdentificados() {
-		return batimentoDAO.buscarDepositosNaoIdentificados();
+		return depositoDAO.buscarDepositosNaoIdentificados();
 	}
 
 	/**
@@ -69,25 +70,48 @@ public class DepositoMediator extends BaseMediator {
 	 * @return
 	 */
 	public List<Deposito> consultarDepositos(Deposito deposito, LocalDate dataInicio, LocalDate dataFim) {
-		return batimentoDAO.consultarDepositos(deposito, dataInicio, dataFim);
+		return depositoDAO.consultarDepositos(deposito, dataInicio, dataFim);
 	}
-	
+
 	/**
 	 * Processar arquivo de extrados baixado do site do Bradesco em formato CSV
 	 * @param user
 	 * @param fileUpload
 	 */
-	public void processarExtrato(Usuario user, FileUpload fileUpload) {
+	public DepositoMediator processarDepositosExtrato(Usuario user, FileUpload fileUpload) {
 		this.usuario = user;
 		this.fileUpload = fileUpload;
-
-		converterDepositosExtrato();
-		vincularDepositosRetornosNaoConfirmados();
+		this.depositosConflitados = new ArrayList<>();
+		this.retornosConflitados = new ArrayList<>();
+		
+		this.depositosProcessados = converterDepositosExtrato();
+		for (Deposito deposito : depositosProcessados) {
+			deposito = depositoDAO.salvarDeposito(deposito);
+			List<Remessa> retornos = batimentoDAO.buscarRetornoCorrespondenteAoDeposito(deposito);
+			if (retornos.size() == 1) {
+				if (deposito.containsDepositosMesmoValor(depositosProcessados)) {
+					depositosConflitados.add(deposito);
+					if (!retornosConflitados.containsAll(retornos)) {
+						retornosConflitados.addAll(retornos);
+					}
+				} else {
+					for (Remessa remessa : retornos) {
+						remessa.setListaDepositos(new ArrayList<Deposito>());
+						remessa.getListaDepositos().add(deposito);
+						batimentoMediator.salvarBatimento(remessa);
+					}
+				}
+			} else if (retornos.size() > 1) {
+				depositosConflitados.add(deposito);
+				retornosConflitados.addAll(retornos);
+			}
+		}
+		return this;
 	}
 
-	private void converterDepositosExtrato() {
-		this.depositos = new ArrayList<>();
-		this.numeroLinha = 1;
+	private List<Deposito> converterDepositosExtrato() {
+		Integer numeroLinha = 1;
+		List<Deposito> depositos = new ArrayList<>();
 
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(this.fileUpload.getInputStream()));
@@ -107,15 +131,13 @@ public class DepositoMediator extends BaseMediator {
 							deposito.setLancamento(RemoverAcentosUtil.removeAcentos(dados[1]));
 							deposito.setNumeroDocumento(dados[2]);
 							deposito.setValorCredito(new BigDecimal(dados[3].trim().replace(".", "").replace(",", ".")));
-							
-							this.depositos.add(deposito);
+							depositos.add(deposito);
 						}
 					}
 				}
 				numeroLinha++;
 			}
 			reader.close();
-			
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 			throw new InfraException("Não foi possível abrir o arquivo enviado.");
@@ -123,36 +145,13 @@ public class DepositoMediator extends BaseMediator {
 			logger.error(e.getMessage(), e.getCause());
 			throw new InfraException("Não foi possível converter os dados da linha [ Nº " + numeroLinha + " ]. Verifique as informações do depósito...");
 		}
+		return depositos;
 	}
 	
-	private void vincularDepositosRetornosNaoConfirmados() {
-		Boolean arquivoRetornoGeradoHoje = retornoMediator.verificarArquivoRetornoGeradoCra();
-		
-		for (Deposito deposito : depositos) {
-			Remessa retorno = batimentoDAO.buscarRetornoCorrespondenteAoDeposito(deposito);
-			if (retorno != null) {
-				Batimento batimento = new Batimento();
-				batimento.setData(retornoMediator.aplicarRegraDataBatimento(arquivoRetornoGeradoHoje));
-				batimento.setDataBatimento(new LocalDateTime());
-				batimento.setRemessa(retorno);
-				
-				BatimentoDeposito batimentoDeposito = new BatimentoDeposito();
-				batimentoDeposito.setBatimento(batimento);
-				batimentoDeposito.setDeposito(deposito);
-				
-				List<BatimentoDeposito> depositosBatimento = new ArrayList<BatimentoDeposito>();
-				depositosBatimento.add(batimentoDeposito);
-				deposito.setBatimentosDeposito(depositosBatimento);
-				deposito.setSituacaoDeposito(SituacaoDeposito.IDENTIFICADO);
-			}
-			batimentoDAO.salvarDeposito(deposito);
-		}
-	}
-
 	private TipoDeposito verificaTipoDeposito(String dados[]) {
 		if (dados[2] != null) {
 			String numeroDocumento = RemoverAcentosUtil.removeAcentos(dados[2]);
-			if (numeroDocumento.toUpperCase().trim().equals(CONSTANTE_TIPO_DEPOSITO_CARTORIO))
+			if (numeroDocumento.toUpperCase().trim().equals(ConfiguracaoBase.DEPOSITO_CARTORIO))
 				return TipoDeposito.DEPOSITO_CARTORIO_PARA_BANCO;
 		}
 		return TipoDeposito.NAO_INFORMADO;
@@ -199,5 +198,37 @@ public class DepositoMediator extends BaseMediator {
 			}
 		}
 		return false;
+	}
+	
+	public List<Deposito> getDepositosProcessados() {
+		return depositosProcessados;
+	}
+	
+	public List<Deposito> getDepositosConflitados() {
+		return depositosConflitados;
+	}
+
+	public List<Remessa> getRetornosConflitados() {
+		return retornosConflitados;
+	}
+	
+	/**
+	 * Processar depósitos de valores em conflito com mais de 
+	 * um arquivo de retorno
+	 * @param user
+	 * @param fileUpload
+	 */
+	public List<Deposito> processarDepositosConflito(List<Deposito> depositos) {
+		for (Deposito deposito : depositos) {
+			
+			if (deposito.getRemessas() != null) {
+				for (Remessa retorno : deposito.getRemessas()){
+					retorno.setListaDepositos(new ArrayList<Deposito>());
+					retorno.getListaDepositos().add(deposito);
+					batimentoMediator.salvarBatimento(retorno);
+				}
+			}
+		}
+		return depositos;
 	}
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.BatimentoDAO;
+import br.com.ieptbto.cra.dao.DepositoDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.dao.RetornoDAO;
 import br.com.ieptbto.cra.dao.TipoArquivoDAO;
@@ -39,12 +40,14 @@ public class RetornoMediator extends BaseMediator {
 	RetornoDAO retornoDAO;
 	@Autowired
 	BatimentoDAO batimentoDAO;
+	@Autowired
+	DepositoDAO depositoDAO;
 
 	public Retorno carregarTituloRetornoPorPk(Integer id) {
 		return retornoDAO.buscarPorPK(id, Retorno.class);
 	}
 	
-	public Retorno carregarTituloRetornoPorId(Retorno retorno) {
+	public Retorno carregarTituloRetornoPorPk(Retorno retorno) {
 		return retornoDAO.buscarPorPK(retorno);
 	}
 
@@ -62,6 +65,10 @@ public class RetornoMediator extends BaseMediator {
 
 	public BigDecimal buscarValorDeCustasCartorio(Remessa retorno) {
 		return retornoDAO.buscarValorDeCustasCartorio(retorno);
+	}
+	
+	public List<Remessa> buscarArquivosRetornosVinculadosPorDeposito(Deposito deposito) {
+		return retornoDAO.buscarArquivosRetornosVinculadosPorDeposito(deposito);
 	}
 
 	/**
@@ -141,7 +148,7 @@ public class RetornoMediator extends BaseMediator {
 				throw new InfraException("O arquivo de retorno possui um depósito vínculado a mais de um batimento! Não é possível retorná-lo ao batimento...");
 			}
 			deposito.setSituacaoDeposito(SituacaoDeposito.NAO_IDENTIFICADO);
-			batimentoDAO.atualizarDeposito(deposito);
+			depositoDAO.atualizarDeposito(deposito);
 		}
 		batimentoDAO.removerBatimento(batimento);
 		return batimentoDAO.retornarArquivoRetornoParaBatimento(retorno);

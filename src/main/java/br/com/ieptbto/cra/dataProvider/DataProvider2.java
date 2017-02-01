@@ -1,9 +1,9 @@
 package br.com.ieptbto.cra.dataProvider;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilterStateLocator;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
@@ -12,31 +12,25 @@ import org.apache.wicket.model.IModel;
  * @author Thasso Araújo
  *
  */
-public abstract class DataProvider<T> extends SortableDataProvider<T, String> implements IFilterStateLocator<T> {
+public class DataProvider2<T> extends SortableDataProvider<T, String> {
 
 	/***/
 	private static final long serialVersionUID = 1L;
 
-	protected String genericFilter;
-	protected T filterState;
-	protected List<T> objects;
+	private List<T> objects;
 
-	public DataProvider(List<T> objects) {
-		this.objects = objects;
+	public DataProvider2(List<T> list) {
+		this.objects = list;
 	}
 
 	@Override
-	public abstract Iterator<? extends T> iterator(long first, long count);
-	
-	@Override
-	public abstract T getFilterState();
-	
-	@Override
-	public abstract void setFilterState(T state);
+	public Iterator<? extends T> iterator(long first, long count) {
+		return objects.iterator();
+	}
 
 	@Override
 	public long size() {
-		return this.objects.size();
+		return getList().size();
 	}
 
 	@Override
@@ -51,5 +45,12 @@ public abstract class DataProvider<T> extends SortableDataProvider<T, String> im
 				return object;
 			}
 		};
+	}
+
+	public List<T> getList() {
+		if (objects == null) {
+			objects = new ArrayList<T>();
+		}
+		return objects;
 	}
 }

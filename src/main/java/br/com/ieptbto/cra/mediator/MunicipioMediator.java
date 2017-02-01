@@ -13,12 +13,16 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 
 @Service
-public class MunicipioMediator {
+public class MunicipioMediator extends BaseMediator {
 
 	@Autowired
 	MunicipioDAO municipioDao;
 	@Autowired
 	InstituicaoDAO instituicaoDao;
+	
+	public List<Municipio> consultarMunicipios(String nomeMunicipio, String codigoIbge, String uf){
+		return municipioDao.consultarMunicipios(nomeMunicipio, codigoIbge, uf);
+	}
 
 	@Transactional(propagation=Propagation.NOT_SUPPORTED, readOnly=false)
 	public Municipio carregarMunicipio(Municipio municipio) {
@@ -53,7 +57,6 @@ public class MunicipioMediator {
 		if (nomeMunicipio == null) {
 			return null;
 		}
-
 		return municipioDao.buscarMunicipioPorNome(nomeMunicipio);
 	}
 

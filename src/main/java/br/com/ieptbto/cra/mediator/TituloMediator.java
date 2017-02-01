@@ -25,15 +25,19 @@ import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
  *
  */
 @Service
-public class TituloMediator {
+public class TituloMediator extends BaseMediator {
 
 	@Autowired
-	private TituloDAO tituloDAO;
+	TituloDAO tituloDAO;
 
-	public TituloRemessa carregarTituloRemessa(TituloRemessa titulo) {
+	public TituloRemessa buscarTituloPorPK(TituloRemessa titulo) {
 		return tituloDAO.buscarPorPK(titulo, TituloRemessa.class);
 	}
 
+	public TituloRemessa buscarTituloPorPK(Integer idTitulo) {
+		return tituloDAO.buscarPorPK(idTitulo, TituloRemessa.class);
+	}
+	
 	public Confirmacao buscarConfirmacao(TituloRemessa titulo) {
 		return tituloDAO.buscarConfirmacao(titulo);
 	}

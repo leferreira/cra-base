@@ -77,7 +77,7 @@ public class HistoricoMediator extends BaseMediator {
 	private void ocorrenciaRemessa(TituloRemessa titulo) {
 		Remessa remessa = titulo.getRemessa();
 		if (remessa != null) {
-			remessa = remessaMediator.carregarRemessaPorId(titulo.getRemessa());
+			remessa = remessaMediator.buscarRemessaPorPK(titulo.getRemessa());
 		}
 		addOcorrencia(TituloOcorrenciaBean.getOcorrenciaToRemessa(remessa));
 	}

@@ -3,6 +3,7 @@ package br.com.ieptbto.cra.dao;
 import java.text.Normalizer;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
@@ -26,18 +27,38 @@ public class MunicipioDAO extends AbstractBaseDAO {
 	public Municipio carregarMunicipio(Municipio municipio) {
 		return buscarPorPK(municipio, Municipio.class);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Municipio> consultarMunicipios(String nomeMunicipio, String codigoIbge, String uf) {
+		Criteria criteria = getCriteria(Municipio.class);
+		if (StringUtils.isNotBlank(nomeMunicipio)) {
+			criteria.add(Restrictions.ilike("nomeMunicipio", nomeMunicipio));
+		}
+		if (StringUtils.isNotBlank(codigoIbge)) {
+			criteria.add(Restrictions.ilike("codigoIBGE", codigoIbge));
+		}
+		if (StringUtils.isNotBlank(uf)) {
+			criteria.add(Restrictions.ilike("uf", uf));
+		}
+		criteria.addOrder(Order.asc("nomeMunicipio"));
+		return criteria.list();
+	}
 
+	/**
+	 * Salvar um novo municipio
+	 * @param municipio
+	 * @return
+	 */
 	public Municipio salvar(Municipio municipio) {
-		Municipio novoMunicipio = new Municipio();
 		Transaction transaction = getBeginTransation();
 		try {
 			municipio.setNomeMunicipioSemAcento(getNomeMunicipioSemAcento(municipio.getNomeMunicipio()));
-			novoMunicipio = save(municipio);
+			municipio = save(municipio);
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
 		}
-		return novoMunicipio;
+		return municipio;
 	}
 
 	private String getNomeMunicipioSemAcento(String nomeMunicipio) {

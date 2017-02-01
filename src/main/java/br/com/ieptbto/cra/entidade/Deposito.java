@@ -1,6 +1,7 @@
 package br.com.ieptbto.cra.entidade;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -13,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -46,7 +48,6 @@ public class Deposito extends AbstractEntidade<Deposito> {
 	private Usuario usuario;
 	private TipoDeposito tipoDeposito;
 	private SituacaoDeposito situacaoDeposito;
-	
 	private List<BatimentoDeposito> batimentosDeposito;
 	
 	@OneToMany(mappedBy = "deposito", fetch=FetchType.LAZY)
@@ -186,5 +187,29 @@ public class Deposito extends AbstractEntidade<Deposito> {
 			return 0;
 		}
 		return getId();
+	}
+	
+	private List<Remessa> remessas;
+	
+	@Transient
+	public List<Remessa> getRemessas(){
+		return this.remessas;
+	}
+	
+	public void setRemessas(List<Remessa> remessas){
+		this.remessas = remessas;
+	}
+
+	public boolean containsDepositosMesmoValor(List<Deposito> depositosProcessados) {
+		HashMap<String, Deposito> map = new HashMap<String, Deposito>();
+		while(depositosProcessados.iterator().hasNext()){
+			Deposito i = depositosProcessados.iterator().next();
+			if (!map.containsKey(i.getValorCredito().toString())) {
+				map.put(i.getValorCredito().toString(), i);
+			} else {
+				return true;
+			}
+		}
+		return false;
 	}
 }

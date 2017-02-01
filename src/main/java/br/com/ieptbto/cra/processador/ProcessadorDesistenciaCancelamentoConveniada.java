@@ -85,7 +85,7 @@ public class ProcessadorDesistenciaCancelamentoConveniada extends Processador {
 
 		for (SolicitacaoDesistenciaCancelamento solicitacao : solicitacoes) {
 			TituloRemessa titulo = solicitacao.getTituloRemessa();
-			titulo.setRemessa(remessaMediator.carregarRemessaPorId(titulo.getRemessa()));
+			titulo.setRemessa(remessaMediator.buscarRemessaPorPK(titulo.getRemessa()));
 
 			String key = new chaveTitulo(titulo.getCodigoPortador(), titulo.getRemessa().getCabecalho().getCodigoMunicipio()).toString();
 			if (solicitacao.getTipoSolicitacao() == TipoSolicitacaoDesistenciaCancelamento.SOLICITACAO_CANCELAMENTO_PROTESTO) {

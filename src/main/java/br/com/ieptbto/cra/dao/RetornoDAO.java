@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.BatimentoDeposito;
+import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
@@ -202,5 +203,14 @@ public class RetornoDAO extends AbstractBaseDAO {
 			return false;
 		}
 		return true;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Remessa> buscarArquivosRetornosVinculadosPorDeposito(Deposito deposito) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("batimento", "batimento");
+		criteria.createAlias("batimento.depositosBatimento", "depositosBatimento");
+		criteria.add(Restrictions.eq("depositosBatimento.deposito", deposito));
+		return criteria.list();
 	}
 }

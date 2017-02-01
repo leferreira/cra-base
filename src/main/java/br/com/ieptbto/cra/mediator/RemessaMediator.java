@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,12 +38,10 @@ import br.com.ieptbto.cra.util.DecoderString;
 @Service
 public class RemessaMediator extends BaseMediator {
 
-	protected static final Logger logger = Logger.getLogger(RemessaMediator.class);
-
 	@Autowired
-	private RemessaDAO remessaDAO;
+	RemessaDAO remessaDAO;
 	@Autowired
-	private TituloMediator tituloMediator;
+	TituloMediator tituloMediator;
 
 	@Transactional
 	public CabecalhoRemessa carregarCabecalhoRemessaPorId(CabecalhoRemessa cabecalhoRemessa) {
@@ -52,8 +49,13 @@ public class RemessaMediator extends BaseMediator {
 	}
 
 	@Transactional
-	public Remessa carregarRemessaPorId(Remessa remessa) {
+	public Remessa buscarRemessaPorPK(Remessa remessa) {
 		return remessaDAO.buscarPorPK(remessa, Remessa.class);
+	}
+	
+	@Transactional
+	public Remessa buscarRemessaPorPK(Integer id) {
+		return remessaDAO.buscarPorPK(id, Remessa.class);
 	}
 
 	@Transactional
@@ -72,7 +74,7 @@ public class RemessaMediator extends BaseMediator {
 	}
 
 	public Remessa alterarParaDevolvidoPelaCRA(Remessa remessa) {
-		remessa = carregarRemessaPorId(remessa);
+		remessa = buscarRemessaPorPK(remessa);
 		remessa.setDevolvidoPelaCRA(true);
 		remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
 		return remessaDAO.update(remessa);
