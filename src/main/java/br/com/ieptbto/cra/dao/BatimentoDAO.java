@@ -19,7 +19,7 @@ import br.com.ieptbto.cra.entidade.BatimentoDeposito;
 import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.ViewBatimento;
+import br.com.ieptbto.cra.entidade.ViewBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
 import br.com.ieptbto.cra.enumeration.TipoBatimento;
@@ -188,16 +188,10 @@ public class BatimentoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("rawtypes")
 	public List<Remessa> buscarRetornoCorrespondenteAoDeposito(Deposito deposito) {
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT ret.remessa_id, sum(ret.valor_saldo_titulo) ");
-		sql.append("FROM tb_titulo AS tit ");
-		sql.append("INNER JOIN tb_retorno AS ret ON tit.id_titulo=ret.titulo_id ");
-		sql.append("WHERE (ret.tipo_ocorrencia='1') AND ret.remessa_id IN (SELECT rem.id_remessa ");
-		sql.append("	FROM tb_remessa AS rem ");
-		sql.append("	INNER JOIN tb_arquivo AS arq ON rem.arquivo_id=arq.id_arquivo ");
-		sql.append("	INNER JOIN tb_tipo_arquivo AS tipo ON arq.tipo_arquivo_id = tipo.id_tipo_arquivo ");
-		sql.append("	WHERE rem.situacao_batimento_retorno = 'NAO_CONFIRMADO' AND tipo.id_tipo_arquivo = 3) ");
-		sql.append("GROUP BY ret.remessa_id ");
-		sql.append("HAVING SUM(ret.valor_saldo_titulo)=" + deposito.getValorCredito().toString());
+		sql.append("SELECT idremessa_remessa, totalValorlPagos ");
+		sql.append("FROM view_batimento_retorno ");
+		sql.append("WHERE situacaobatimento_remessa='NAO_CONFIRMADO' ");
+		sql.append("AND totalValorlPagos=" + deposito.getValorCredito().toString());
 
 		List<Remessa> arquivosRetorno = new ArrayList<>();
 		Query query = getSession().createSQLQuery(sql.toString());
@@ -243,9 +237,25 @@ public class BatimentoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
+	/**
+	 * consulta a view de BatimentoRetorno quanto aos arquivos de retorno 
+	 * que nãot tiveram o pagamento idenficado
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
-	public List<ViewBatimento> buscarArquivosViewBatimento() {
-		Query query = getSession().getNamedQuery("findAllArquivosBatimento");
+	public List<ViewBatimentoRetorno> buscarRetornoBatimentoNaoConfimados() {
+		Query query = getSession().getNamedQuery("findAllRetornoNaoConfirmados");
+		return query.list();
+	}
+	
+	/**
+	 * Consulta a view de RetornoBatimento quanto aos arquivos que estão
+	 *  aguardando liberação dos bancos
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<ViewBatimentoRetorno> buscarRetornoBatimentoAguardandoLiberacao() {
+		Query query = getSession().getNamedQuery("findAllRetornoAguardandoLiberacao");
 		return query.list();
 	}
 }

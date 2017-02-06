@@ -14,7 +14,7 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
  * @author Thasso Araújo
  *
  */
-public class MunicipioProvider extends DataProvider<Municipio>{
+public class MunicipioProvider extends DataProvider<Municipio> {
 
 	/***/
 	private static final long serialVersionUID = 1L;
@@ -54,5 +54,11 @@ public class MunicipioProvider extends DataProvider<Municipio>{
 		}
 		count = results.size();
 		return results.subList((int)first, (int)(first + count)).iterator();
+	}
+
+	@Override
+	public int compare(Municipio o1, Municipio o2) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

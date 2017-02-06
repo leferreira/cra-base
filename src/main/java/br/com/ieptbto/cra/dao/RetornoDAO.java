@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Projections;
@@ -20,6 +21,7 @@ import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.ViewBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
@@ -35,6 +37,17 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("situacaoBatimentoRetorno", SituacaoBatimentoRetorno.CONFIRMADO));
 		criteria.add(Restrictions.eq("situacao", false));
 		return criteria.list();
+	}
+	
+	/**
+	 * conusulta a view de Batimento Retorno e traz os arquivos de retorno já confirmados 
+	 * juntamente com os arquivos que não contém títulos pagos e já entram como confirmados 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<ViewBatimentoRetorno> buscarRetornoConfirmados() {
+		Query query = getSession().getNamedQuery("findAllRetornoConfirmados");
+		return query.list();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -52,7 +65,11 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PAGO.getConstante()));
 		criteria.add(Restrictions.eq("remessa", retorno));
 		criteria.setProjection(Projections.sum("saldoTitulo"));
-		return BigDecimal.class.cast(criteria.uniqueResult());
+		BigDecimal valor = BigDecimal.class.cast(criteria.uniqueResult());
+		if (valor == null || valor.equals(BigDecimal.ZERO)) {
+			return new BigDecimal(0);
+		}
+		return valor;
 	}
 
 	public BigDecimal buscarSomaValorTitulosPagosRemessas(Instituicao instituicao, LocalDate dataBatimento, boolean dataComoDataLimite) {
@@ -70,7 +87,11 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("remessa.situacao", false));
 		criteria.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PAGO.getConstante()));
 		criteria.setProjection(Projections.sum("saldoTitulo"));
-		return BigDecimal.class.cast(criteria.uniqueResult());
+		BigDecimal valor = BigDecimal.class.cast(criteria.uniqueResult());
+		if (valor == null || valor.equals(BigDecimal.ZERO)) {
+			return new BigDecimal(0);
+		}
+		return valor;
 	}
 
 	public BigDecimal buscarValorDeTitulosPagos(Arquivo retorno) {
@@ -79,14 +100,22 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("remessa.arquivo", retorno));
 		criteria.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PAGO.getConstante()));
 		criteria.setProjection(Projections.sum("saldoTitulo"));
-		return BigDecimal.class.cast(criteria.uniqueResult());
+		BigDecimal valor = BigDecimal.class.cast(criteria.uniqueResult());
+		if (valor == null || valor.equals(BigDecimal.ZERO)) {
+			return new BigDecimal(0);
+		}
+		return valor;
 	}
 
 	public BigDecimal buscarValorDemaisDespesas(Remessa retorno) {
 		Criteria criteria = getCriteria(Retorno.class);
 		criteria.add(Restrictions.eq("remessa", retorno));
 		criteria.setProjection(Projections.sum("valorDemaisDespesas"));
-		return BigDecimal.class.cast(criteria.uniqueResult());
+		BigDecimal valor = BigDecimal.class.cast(criteria.uniqueResult());
+		if (valor == null || valor.equals(BigDecimal.ZERO)) {
+			return new BigDecimal(0);
+		}
+		return valor;
 	}
 
 	public BigDecimal buscarValorDemaisDespesas(Arquivo retorno) {
@@ -94,7 +123,11 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.createAlias("remessa", "remessa");
 		criteria.add(Restrictions.eq("remessa.arquivo", retorno));
 		criteria.setProjection(Projections.sum("valorDemaisDespesas"));
-		return BigDecimal.class.cast(criteria.uniqueResult());
+		BigDecimal valor = BigDecimal.class.cast(criteria.uniqueResult());
+		if (valor == null || valor.equals(BigDecimal.ZERO)) {
+			return new BigDecimal(0);
+		}
+		return valor;
 	}
 
 	public BigDecimal buscarValorDeCustasCartorio(Remessa retorno) {
@@ -106,7 +139,11 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.add(disj);
 		criteria.add(Restrictions.eq("remessa", retorno));
 		criteria.setProjection(Projections.sum("valorCustaCartorio"));
-		return BigDecimal.class.cast(criteria.uniqueResult());
+		BigDecimal valor = BigDecimal.class.cast(criteria.uniqueResult());
+		if (valor == null || valor.equals(BigDecimal.ZERO)) {
+			return new BigDecimal(0);
+		}
+		return valor;
 	}
 
 	public BigDecimal buscarValorDeCustasCartorio(Arquivo retorno) {
@@ -119,7 +156,11 @@ public class RetornoDAO extends AbstractBaseDAO {
 		criteria.createAlias("remessa", "remessa");
 		criteria.add(Restrictions.eq("remessa.arquivo", retorno));
 		criteria.setProjection(Projections.sum("valorCustaCartorio"));
-		return BigDecimal.class.cast(criteria.uniqueResult());
+		BigDecimal valor = BigDecimal.class.cast(criteria.uniqueResult());
+		if (valor == null || valor.equals(BigDecimal.ZERO)) {
+			return new BigDecimal(0);
+		}
+		return valor;
 	}
 
 	/**

@@ -159,7 +159,7 @@ public class Deposito extends AbstractEntidade<Deposito> {
 	
 	@Override
 	public String toString() {
-		return DataUtil.localDateToString(getData()) + " - " + "R$ " + getValorCredito();
+		return DataUtil.localDateToString(getData()) + " - " + this.numeroDocumento + " - " + "R$ " + getValorCredito();
 	}
 
 	@Override

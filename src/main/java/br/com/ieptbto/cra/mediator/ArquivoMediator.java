@@ -58,29 +58,34 @@ import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 public class ArquivoMediator extends BaseMediator {
 
 	@Autowired
-	private ArquivoDAO arquivoDAO;
+	ArquivoDAO arquivoDAO;
 	@Autowired
-	private RemessaDAO remessaDAO;
+	RemessaDAO remessaDAO;
 	@Autowired
-	private TipoArquivoDAO tipoArquivoDAO;
+	TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
-	private InstituicaoDAO instituicaoDAO;
+	InstituicaoDAO instituicaoDAO;
 	@Autowired
-	private DesistenciaDAO desistenciaDAO;
+	DesistenciaDAO desistenciaDAO;
 	@Autowired
-	private CancelamentoDAO cancelamentoDAO;
+	CancelamentoDAO cancelamentoDAO;
 	@Autowired
-	private MunicipioDAO municipioDAO;
+	MunicipioDAO municipioDAO;
 	@Autowired
-	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
+	AutorizacaoCancelamentoDAO autorizacaoDAO;
 	@Autowired
-	private ProcessadorArquivo processadorArquivo;
+	ProcessadorArquivo processadorArquivo;
 	@Autowired
-	private ConversorRemessaArquivo conversorRemessaArquivo;
+	ConversorRemessaArquivo conversorRemessaArquivo;
 
 	@Transactional
-	public Arquivo carregarArquivoPorId(Arquivo arquivo) {
+	public Arquivo buscarArquivoPorPK(Arquivo arquivo) {
 		return arquivoDAO.buscarPorPK(arquivo, Arquivo.class);
+	}
+	
+	@Transactional
+	public Arquivo buscarArquivoPorPK(Integer id) {
+		return arquivoDAO.buscarPorPK(id, Arquivo.class);
 	}
 
 	public List<Arquivo> buscarArquivos(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim,
@@ -111,12 +116,10 @@ public class ArquivoMediator extends BaseMediator {
 	public Arquivo arquivosPendentes(Instituicao instituicao) {
 		instituicao.setMunicipio(municipioDAO.buscarPorPK(instituicao.getMunicipio(), Municipio.class));
 
-//		List<Remessa> remessas = remessaDAO.confirmacoesPendentes(instituicao);
-		List<Remessa> remessas = new ArrayList<>();
+		List<Remessa> remessas = remessaDAO.confirmacoesPendentes(instituicao);
 		List<DesistenciaProtesto> desistenciasProtesto = desistenciaDAO.buscarRemessaDesistenciaProtestoPendenteDownload(instituicao);
 		List<CancelamentoProtesto> cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoPendenteDownload(instituicao);
-		List<AutorizacaoCancelamento> autorizacaoCancelamento =
-				autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
+		List<AutorizacaoCancelamento> autorizacaoCancelamento = autorizacaoDAO.buscarRemessaAutorizacaoCancelamentoPendenteDownload(instituicao);
 
 		Arquivo arquivo = new Arquivo();
 		arquivo.setRemessas(remessas);

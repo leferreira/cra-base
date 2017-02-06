@@ -24,6 +24,7 @@ import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.ViewBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
 import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
@@ -55,6 +56,15 @@ public class RetornoMediator extends BaseMediator {
 		return retornoDAO.buscarRetornosConfirmados();
 	}
 
+	/**
+	 * conusulta a view de Batimento Retorno e traz os arquivos de retorno já confirmados 
+	 * juntamente com os arquivos que não contém títulos pagos e já entram como confirmados 
+	 * @return
+	 */
+	public List<ViewBatimentoRetorno> buscarRetornoConfirmados() {
+		return retornoDAO.buscarRetornoConfirmados();
+	}
+	
 	public BigDecimal buscarValorDeTitulosPagos(Remessa retorno) {
 		return retornoDAO.buscarValorDeTitulosPagos(retorno);
 	}
@@ -86,14 +96,13 @@ public class RetornoMediator extends BaseMediator {
 	 * @param usuarioAcao
 	 * @param retornos
 	 */
-	public List<Arquivo> gerarRetornos(Usuario usuarioAcao, List<Remessa> retornos) {
+	public List<Arquivo> gerarRetornos(Usuario usuarioAcao, List<ViewBatimentoRetorno> arquivos) {
 		HashMap<String, Arquivo> arquivosRetorno = new HashMap<String, Arquivo>();
 		Instituicao instituicaoDestino = new Instituicao();
 
 		Arquivo arquivo = null;
-		for (Remessa retorno : retornos) {
-
-			retorno = retornoDAO.buscarPorPK(retorno);
+		for (ViewBatimentoRetorno viewBatimentoRetorno : arquivos) {
+			Remessa retorno = retornoDAO.buscarPorPK(viewBatimentoRetorno.getIdRemessa_Remessa(), Remessa.class);
 			if (arquivo == null || !instituicaoDestino.equals(retorno.getInstituicaoDestino())) {
 				instituicaoDestino = retorno.getInstituicaoDestino();
 				arquivo = criarNovoArquivoDeRetorno(instituicaoDestino, retorno);

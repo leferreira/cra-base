@@ -16,11 +16,16 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
 @Entity
-@Table(name="VIEW_BATIMENTO")
+@Table(name="VIEW_BATIMENTO_RETORNO")
 @NamedNativeQueries({
-		@NamedNativeQuery(name = "findAllArquivosBatimento", query = "select * from view_batimento", resultClass = ViewBatimento.class) })
-public class ViewBatimento implements Serializable {
-
+		@NamedNativeQuery(name = "findAllRetornoNaoConfirmados", 
+					query = "select * from view_batimento_retorno where situacaobatimento_remessa='NAO_CONFIRMADO'", resultClass = ViewBatimentoRetorno.class),
+		@NamedNativeQuery(name = "findAllRetornoAguardandoLiberacao", 
+					query = "select * from view_batimento_retorno where situacaobatimento_remessa='AGUARDANDO_LIBERACAO'", resultClass = ViewBatimentoRetorno.class),
+		@NamedNativeQuery(name = "findAllRetornoConfirmados", 
+					query = "select * from view_batimento_retorno where situacaobatimento_remessa='CONFIRMADO'", resultClass = ViewBatimentoRetorno.class)})
+public class ViewBatimentoRetorno implements Serializable {
+	
 	/***/
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -30,6 +35,7 @@ public class ViewBatimento implements Serializable {
 	private LocalTime horaEnvio_Arquivo;
 	private Date dataRecebimento_Arquivo;
 	private Integer idRemessa_Remessa;
+	private String situacaoBatimento_Remessa;
 	private Integer idInstituicao_Cartorio;
 	private String nomeFantasia_Cartorio;
 	private Integer idMunicipio_Municipio;
@@ -102,6 +108,10 @@ public class ViewBatimento implements Serializable {
 	public String getCodigoCompensacao_Instituicao() {
 		return codigoCompensacao_Instituicao;
 	}
+	
+	public String getSituacaoBatimento_Remessa() {
+		return situacaoBatimento_Remessa;
+	}
 
 	public BigDecimal getTotalValorlPagos() {
 		return totalValorlPagos;
@@ -133,6 +143,10 @@ public class ViewBatimento implements Serializable {
 
 	public void setDataRecebimento_Arquivo(Date dataRecebimento_Arquivo) {
 		this.dataRecebimento_Arquivo = dataRecebimento_Arquivo;
+	}
+	
+	public void setSituacaoBatimento_Remessa(String situacaoBatimento_Remessa) {
+		this.situacaoBatimento_Remessa = situacaoBatimento_Remessa;
 	}
 
 	public void setIdRemessa_Remessa(Integer idRemessa_Remessa) {

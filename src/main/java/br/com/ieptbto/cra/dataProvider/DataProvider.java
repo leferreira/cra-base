@@ -1,5 +1,7 @@
 package br.com.ieptbto.cra.dataProvider;
 
+import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,7 +14,7 @@ import org.apache.wicket.model.IModel;
  * @author Thasso Araújo
  *
  */
-public abstract class DataProvider<T> extends SortableDataProvider<T, String> implements IFilterStateLocator<T> {
+public abstract class DataProvider<T> extends SortableDataProvider<T, String> implements IFilterStateLocator<T>, Comparator<T>, Serializable {
 
 	/***/
 	private static final long serialVersionUID = 1L;
@@ -33,7 +35,7 @@ public abstract class DataProvider<T> extends SortableDataProvider<T, String> im
 	
 	@Override
 	public abstract void setFilterState(T state);
-
+	
 	@Override
 	public long size() {
 		return this.objects.size();
@@ -51,5 +53,9 @@ public abstract class DataProvider<T> extends SortableDataProvider<T, String> im
 				return object;
 			}
 		};
+	}
+	
+	public List<T> getList() {
+		return this.objects;
 	}
 }

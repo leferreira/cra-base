@@ -40,14 +40,13 @@ public class CargaInicialPage extends WebPage {
 
 	public static void main(String[] args) {
 		BufferedReader reader = null;
-		File diretorio = new File("C:\\Users\\Thasso Araújo\\Documents\\jboss-as-7.1.1.Final\\ARQUIVOS_CRA\\7");
+		File diretorio = new File("C:\\Users\\Thasso Araújo\\Documents\\jboss-as-7.1.1.Final\\jboss-as-7.1.1.Final\\ARQUIVOS_CRA\\10");
 
 		try {
 			StringBuffer cnp = new StringBuffer();
 			cnp.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"yes\"?>");
 			cnp.append("<cnp>");
 			if (diretorio.exists()) {
-
 				for (File file : Arrays.asList(diretorio.listFiles())) {
 					reader = new BufferedReader(new FileReader(file));
 					System.out.println(file.getName());
@@ -62,7 +61,7 @@ public class CargaInicialPage extends WebPage {
 				}
 				cnp.append("</cnp>");
 				System.out.println("=============================================================");
-				File arquivo = new File("C:\\Users\\Thasso Araújo\\Documents\\jboss-as-7.1.1.Final\\ARQUIVOS_CRA\\" + "CNP-TO-20122016-7.xml");
+				File arquivo = new File("C:\\Users\\Thasso Araújo\\Documents\\jboss-as-7.1.1.Final\\jboss-as-7.1.1.Final\\ARQUIVOS_CRA\\" + "CNP-TO-01-02-2017-10.xml");
 				BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivo));
 				System.out.println("Escrevendo os dados no arquivo...");
 				bWrite.write(cnp.toString());

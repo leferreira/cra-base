@@ -18,7 +18,7 @@ import br.com.ieptbto.cra.entidade.BatimentoDeposito;
 import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.ViewBatimento;
+import br.com.ieptbto.cra.entidade.ViewBatimentoRetorno;
 
 @Service
 public class BatimentoMediator extends BaseMediator {
@@ -31,10 +31,11 @@ public class BatimentoMediator extends BaseMediator {
 	InstituicaoDAO instituicaoDAO;
 	
 	/**
+	 * Consulta a view BatimentoRetorno para arquivos que não tiveram o batimento confirmado
 	 * @return
 	 */
-	public List<Remessa> buscarRetornosParaBatimento() {
-		return batimentoDAO.buscarRetornosParaBatimento();
+	public List<ViewBatimentoRetorno> buscarRetornoBatimentoNaoConfimados() {
+		return batimentoDAO.buscarRetornoBatimentoNaoConfimados();
 	}
 
 	/**
@@ -46,7 +47,17 @@ public class BatimentoMediator extends BaseMediator {
 	public List<Remessa> buscarRetornosAguardandoLiberacao(Instituicao instiuicao, LocalDate dataBatimento, boolean dataComoDataLimite) {
 		return batimentoDAO.buscarRetornosAguardandoLiberacao(instiuicao, dataBatimento, dataComoDataLimite);
 	}
-
+	
+	/**
+	 * @param instiuicao
+	 * @param dataBatimento
+	 * @param dataComoDataLimite
+	 * @return
+	 */
+	public List<ViewBatimentoRetorno> buscarRetornoBatimentoAguardandoLiberacao() {
+		return batimentoDAO.buscarRetornoBatimentoAguardandoLiberacao();
+	}
+	
 	/**
 	 * @param dataBatimento
 	 * @return
@@ -82,12 +93,12 @@ public class BatimentoMediator extends BaseMediator {
 	 * @param retornos
 	 * @return
 	 */
-	public List<Batimento> salvarBatimentos(List<ViewBatimento> arquivosBatimento) {
+	public List<Batimento> salvarBatimentos(List<ViewBatimentoRetorno> arquivosBatimento) {
 		Instituicao cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
 		Boolean arquivoRetornoGeradoHoje = retornoDAO.verificarArquivoRetornoGeradoCra(cra);
 		
 		List<Batimento> batimentosProcessados = new ArrayList<>();
-		for (ViewBatimento batimentoArquivo : arquivosBatimento) {
+		for (ViewBatimentoRetorno batimentoArquivo : arquivosBatimento) {
 			Remessa retorno = batimentoDAO.buscarPorPK(batimentoArquivo.getIdRemessa_Remessa(), Remessa.class);
 			retorno.setListaDepositos(batimentoArquivo.getListaDepositos());
 			
@@ -141,12 +152,5 @@ public class BatimentoMediator extends BaseMediator {
 	 */
 	public List<Deposito> buscarDepositosPorBatimento(Batimento batimento) {
 		return batimentoDAO.buscarDepositosPorBatimento(batimento);
-	}
-
-	/**
-	 * @return
-	 */
-	public List<ViewBatimento> buscarArquivosViewBatimento() {
-		return batimentoDAO.buscarArquivosViewBatimento();
 	}
 }
