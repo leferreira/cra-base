@@ -1,7 +1,7 @@
 package br.com.ieptbto.cra.entidade;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -165,6 +165,7 @@ public class Deposito extends AbstractEntidade<Deposito> {
 	@Override
 	public int compareTo(Deposito entidade) {
 		CompareToBuilder compareTo = new CompareToBuilder();
+		compareTo.append(this.getId(), entidade.getId());
 		return compareTo.toComparison();
 	}
 	
@@ -175,6 +176,7 @@ public class Deposito extends AbstractEntidade<Deposito> {
 			EqualsBuilder equalsBuilder = new EqualsBuilder();
 			equalsBuilder.append(this.getId(), modalidade.getId());
 			equalsBuilder.append(this.getData(), modalidade.getData());
+			equalsBuilder.append(this.getIndexExtrato(), modalidade.getIndexExtrato());
 			equalsBuilder.append(this.getValorCredito(), modalidade.getValorCredito());
 			return equalsBuilder.isEquals();
 		}
@@ -199,15 +201,31 @@ public class Deposito extends AbstractEntidade<Deposito> {
 	public void setRemessas(List<Remessa> remessas){
 		this.remessas = remessas;
 	}
+	
+	private Integer indexExtrato;
+	
+	@Transient
+	public Integer getIndexExtrato() {
+		if (indexExtrato == null) {
+			this.indexExtrato = 1;
+		}
+		return indexExtrato;
+	}
+	
+	public void setIndexExtrato(Integer indexExtrato) {
+		this.indexExtrato = indexExtrato;
+	}
 
-	public boolean containsDepositosMesmoValor(List<Deposito> depositosProcessados) {
-		HashMap<String, Deposito> map = new HashMap<String, Deposito>();
-		while(depositosProcessados.iterator().hasNext()){
-			Deposito i = depositosProcessados.iterator().next();
-			if (!map.containsKey(i.getValorCredito().toString())) {
-				map.put(i.getValorCredito().toString(), i);
-			} else {
-				return true;
+	public boolean containsDepositosMesmoValor(List<Deposito> depositos) {
+		depositos.remove(this);
+		
+		Iterator<Deposito> iterate = depositos.iterator();
+		while(iterate.hasNext()){
+			Deposito i = iterate.next();
+			if (this.valorCredito.equals(i.getValorCredito())) {
+				if (this.getIndexExtrato() != i.getIndexExtrato()) {
+					return true;
+				}
 			}
 		}
 		return false;

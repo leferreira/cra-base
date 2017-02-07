@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -33,6 +34,8 @@ public class DepositoMediator extends BaseMediator {
 	@Autowired
 	BatimentoMediator batimentoMediator;
 	@Autowired
+	RemessaMediator remessaMediator;
+	@Autowired
 	DepositoDAO depositoDAO;
 	@Autowired
 	RetornoDAO retornoDAO;
@@ -42,7 +45,7 @@ public class DepositoMediator extends BaseMediator {
 	InstituicaoDAO instituicaoDAO;
 	private Usuario usuario;
 	private FileUpload fileUpload;
-	private List<Deposito> depositosProcessados;
+	private List<Deposito> depositos;
 	private List<Deposito> depositosConflitados;
 	private List<Remessa> retornosConflitados;
 	
@@ -84,11 +87,15 @@ public class DepositoMediator extends BaseMediator {
 		this.depositosConflitados = new ArrayList<>();
 		this.retornosConflitados = new ArrayList<>();
 		
-		this.depositosProcessados = converterDepositosExtrato();
-		for (Deposito deposito : depositosProcessados) {
+		List<Object> retornosPendetesDepositos = batimentoDAO.buscarRetornoCorrespondenteAoDeposito();
+		this.depositos = converterDepositosExtrato();
+
+		for (Deposito deposito : depositos) {
 			deposito = depositoDAO.salvarDeposito(deposito);
-			List<Remessa> retornos = batimentoDAO.buscarRetornoCorrespondenteAoDeposito(deposito);
+			List<Remessa> retornos = verificarExistenciaArquivoComMesmoValor(retornosPendetesDepositos, deposito); 
 			if (retornos.size() == 1) {
+				List<Deposito> depositosProcessados = new ArrayList<>();
+				depositosProcessados.addAll(depositos);
 				if (deposito.containsDepositosMesmoValor(depositosProcessados)) {
 					depositosConflitados.add(deposito);
 					if (!retornosConflitados.containsAll(retornos)) {
@@ -105,9 +112,25 @@ public class DepositoMediator extends BaseMediator {
 				depositosConflitados.add(deposito);
 				retornosConflitados.addAll(retornos);
 			}
+			retornos = null;
 		}
 		return this;
 	}
+	
+	private List<Remessa> verificarExistenciaArquivoComMesmoValor(List<Object> retornosPendetesDepositos, Deposito deposito) {
+		List<Remessa> arquivosRetorno = new ArrayList<Remessa>();
+		Iterator<Object> iterator = retornosPendetesDepositos.iterator();
+		while (iterator.hasNext()) {
+			Object[] object = (Object[]) iterator.next();
+			Integer id = Integer.class.cast(object[0]);
+			BigDecimal valor = BigDecimal.class.cast(object[1]);
+			if (valor.equals(deposito.getValorCredito())) {
+				arquivosRetorno.add(remessaMediator.buscarRemessaPorPK(id));
+			}
+		}
+		return arquivosRetorno;
+	}
+
 
 	private List<Deposito> converterDepositosExtrato() {
 		Integer numeroLinha = 1;
@@ -131,6 +154,7 @@ public class DepositoMediator extends BaseMediator {
 							deposito.setLancamento(RemoverAcentosUtil.removeAcentos(dados[1]));
 							deposito.setNumeroDocumento(dados[2]);
 							deposito.setValorCredito(new BigDecimal(dados[3].trim().replace(".", "").replace(",", ".")));
+							deposito.setIndexExtrato(numeroLinha);
 							depositos.add(deposito);
 						}
 					}
@@ -200,8 +224,8 @@ public class DepositoMediator extends BaseMediator {
 		return false;
 	}
 	
-	public List<Deposito> getDepositosProcessados() {
-		return depositosProcessados;
+	public List<Deposito> getDepositos() {
+		return depositos;
 	}
 	
 	public List<Deposito> getDepositosConflitados() {

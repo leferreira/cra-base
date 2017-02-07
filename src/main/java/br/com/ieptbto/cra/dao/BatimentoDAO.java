@@ -1,7 +1,6 @@
 package br.com.ieptbto.cra.dao;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -185,25 +184,14 @@ public class BatimentoDAO extends AbstractBaseDAO {
 	 * @param deposito
 	 * @return
 	 */
-	@SuppressWarnings("rawtypes")
-	public List<Remessa> buscarRetornoCorrespondenteAoDeposito(Deposito deposito) {
+	@SuppressWarnings("unchecked")
+	public List<Object> buscarRetornoCorrespondenteAoDeposito() {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT idremessa_remessa, totalValorlPagos ");
 		sql.append("FROM view_batimento_retorno ");
 		sql.append("WHERE situacaobatimento_remessa='NAO_CONFIRMADO' ");
-		sql.append("AND totalValorlPagos=" + deposito.getValorCredito().toString());
-
-		List<Remessa> arquivosRetorno = new ArrayList<>();
 		Query query = getSession().createSQLQuery(sql.toString());
-		Iterator iterator = query.list().iterator();
-		while (iterator.hasNext()) {
-			Object[] posicao = (Object[]) iterator.next();
-			Integer id = Integer.class.cast(posicao[0]);
-			Criteria criteria = getCriteria(Remessa.class);
-			criteria.add(Restrictions.eq("id", id));
-			arquivosRetorno.add(Remessa.class.cast(criteria.uniqueResult()));
-		}
-		return arquivosRetorno;
+		return query.list();
 	}
 
 	/**
