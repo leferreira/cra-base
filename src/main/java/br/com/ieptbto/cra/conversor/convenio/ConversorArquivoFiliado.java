@@ -142,7 +142,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 			String linha = reader.readLine();
 			int cont = 2;
 			while ((linha = reader.readLine()) != null) {
-				String dados[] = linha.split(Pattern.quote(";"));
+				String dados[] = linha.replace(";-", ";").replace("--", " ").split(Pattern.quote(";"));
 				if (dados.length >= getLayoutfiliado().size()) {
 					LinhaTemplateLayout mapaCampos = TemplateLayoutEmpresa.getTemplate(dados, getLayoutfiliado(), getErros());
 
@@ -166,7 +166,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		}
 		converterTemplate(listaCampos, arquivo);
 	}
-
+	
 	private void converterTemplate(Map<String, List<List<TemplateLayoutEmpresa>>> listaRegistros, Arquivo arquivo) {
 		TituloRemessa titulo = new TituloRemessa();
 		List<TituloRemessa> listaTitulos = new ArrayList<>();

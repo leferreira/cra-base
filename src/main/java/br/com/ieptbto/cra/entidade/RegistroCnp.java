@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.envers.Audited;
 
@@ -27,7 +28,9 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
  */
 @Entity
 @Audited
-@Table(name = "TB_REGISTRO_CNP")
+@Table(name = "TB_REGISTRO_CNP", uniqueConstraints=
+	@UniqueConstraint(columnNames={"tipo_registro_cnp", "cidade_devedor", "numero_protocolo_cartorio", 
+		"numero_documento_devedor", "digito_controle_documento_devedor"}))
 @org.hibernate.annotations.Table(appliesTo = "TB_REGISTRO_CNP")
 public class RegistroCnp extends AbstractEntidade<RegistroCnp> {
 
@@ -36,7 +39,6 @@ public class RegistroCnp extends AbstractEntidade<RegistroCnp> {
 	private int id;
 	private LoteCnp loteCnp;
 	private TipoRegistroCnp tipoRegistroCnp;
-
 	private String codigoRegistro;
 	private String tipoInformacao;
 	private String codigoOperacao;

@@ -42,15 +42,15 @@ public class BatimentoRetornoProvider extends DataProvider<ViewBatimentoRetorno>
 		List<ViewBatimentoRetorno> results = new ArrayList<ViewBatimentoRetorno>();
 		for (ViewBatimentoRetorno batimento : this.objects) {
 			if (StringUtils.isNotBlank(genericFilter)) {
-				if (RemoverAcentosUtil.removeAcentos(batimento.getNomeFantasia_Cartorio()).toUpperCase().contains(genericFilter.toUpperCase())) {
+				if (RemoverAcentosUtil.removeAcentos(batimento.getNomeFantasia_Cartorio()).toUpperCase().contains(RemoverAcentosUtil.removeAcentos(genericFilter).toUpperCase())) {
 					results.add(batimento);
 				} else if (batimento.getNomeArquivo_Arquivo().toUpperCase().contains(genericFilter.toUpperCase())) {
 					results.add(batimento);
 				} else if (DataUtil.localDateToString(batimento.getDataEnvio_Arquivo()).contains(genericFilter.toUpperCase())) {
 					results.add(batimento);
-				} else if (batimento.getTotalValorlPagos().toString().contains(genericFilter.replace(",", "."))) {
+				} else if (batimento.getTotalValorlPagos().toString().contains(genericFilter.replace(".", "").replace(",", "."))) {
 					results.add(batimento);
-				} else if (batimento.getTotalCustasCartorio().toString().contains(genericFilter.replace(",", "."))) {
+				} else if (batimento.getTotalCustasCartorio().toString().contains(genericFilter.replace(".", "").replace(",", "."))) {
 					results.add(batimento);
 				}
 			}
@@ -61,7 +61,6 @@ public class BatimentoRetornoProvider extends DataProvider<ViewBatimentoRetorno>
 
 	@Override
 	public int compare(ViewBatimentoRetorno o1, ViewBatimentoRetorno o2) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 }
