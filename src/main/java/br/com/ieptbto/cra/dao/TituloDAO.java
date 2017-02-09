@@ -414,7 +414,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.createAlias("cabecalho", "cabecalho");
 		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", codigoIBGE));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
-		criteria.add(Restrictions.like("tipoOcorrencia", TipoOcorrencia.PROTESTADO.getConstante(), MatchMode.EXACT));
+		criteria.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PROTESTADO.getConstante()));
 		List<Retorno> retornos = criteria.list();
 		for (Retorno retorno : retornos) {
 			if (Integer.valueOf(retorno.getCodigoPortador()) < 800) {
@@ -431,12 +431,10 @@ public class TituloDAO extends AbstractBaseDAO {
 		criteria.createAlias("titulo", "titulo");
 		criteria.createAlias("remessa", "remessa");
 		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio",
-				pedidoDesistenciaCancelamento.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
+		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedidoDesistenciaCancelamento.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
 		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
 		criteria.add(Restrictions.eq("dataProtocolo", pedidoDesistenciaCancelamento.getDataProtocolagem()));
 		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
-
 		if (confirmacao == null) {
 			return null;
 		}

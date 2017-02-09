@@ -31,8 +31,7 @@ import br.com.ieptbto.cra.util.DecoderString;
 public class TituloFiliadoMediator extends BaseMediator {
 
 	@Autowired
-	private TituloFiliadoDAO tituloFiliadoDAO;
-
+	TituloFiliadoDAO tituloFiliadoDAO;
 	private FileUpload fileUpload;
 	private String pathInstituicaoTemp;
 	private String pathUsuarioTemp;
@@ -60,6 +59,7 @@ public class TituloFiliadoMediator extends BaseMediator {
 			titulo = tituloFiliadoDAO.salvar(titulo);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
+			throw new InfraException("Não foi possível salvar os dados do título. Favor entrar em contato com o IEPTB-TO...");
 		}
 		return titulo;
 	}

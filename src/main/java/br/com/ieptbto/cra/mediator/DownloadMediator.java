@@ -307,8 +307,7 @@ public class DownloadMediator extends BaseMediator {
 	 */
 	public File baixarOficioDesistenciaCancelamento(String nossoNumero, TipoSolicitacaoDesistenciaCancelamento tipoSolicitacao,
 			CodigoIrregularidade irregularidade) {
-		SolicitacaoDesistenciaCancelamento solicitacao =
-				cancelamentoDAO.buscarSolicitacaoDesistenciaCancelamento(nossoNumero, tipoSolicitacao, irregularidade);
+		SolicitacaoDesistenciaCancelamento solicitacao = cancelamentoDAO.buscarSolicitacaoDesistenciaCancelamento(nossoNumero, tipoSolicitacao, irregularidade);
 
 		if (solicitacao == null) {
 			return null;
@@ -318,10 +317,9 @@ public class DownloadMediator extends BaseMediator {
 				+ tituloRemessa.getNumeroTitulo().replace("\\", "").replace("/", "");
 		try {
 			DecoderString decoderString = new DecoderString();
-			decoderString.decode(solicitacao.getDocumentoAnexoAsString(), ConfiguracaoBase.DIRETORIO_TEMP_BASE,
+			decoderString.decode(solicitacao.getDocumentoAnexoAsString(), ConfiguracaoBase.DIRETORIO_TEMP_BASE, nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+			return new File(ConfiguracaoBase.DIRETORIO_TEMP_BASE + ConfiguracaoBase.BARRA + 
 					nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
-			return new File(
-					ConfiguracaoBase.DIRETORIO_TEMP_BASE + ConfiguracaoBase.BARRA + nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 
 		} catch (FileNotFoundException e) {
 			logger.info(e);

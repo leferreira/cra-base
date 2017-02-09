@@ -34,7 +34,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class TituloFiliadoDAO extends AbstractBaseDAO {
 
 	@Autowired
-	private AvalistaDAO avalistaDAO;
+	AvalistaDAO avalistaDAO;
 
 	public TituloFiliado salvar(TituloFiliado titulo) {
 		Transaction transaction = getBeginTransation();
@@ -59,6 +59,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível salvar os dados do título. Favor entrar em contato com o IEPTB-TO...");
 		}
 		return titulo;
 	}

@@ -37,7 +37,6 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 
 	@Autowired
 	FabricaRegraValidacaoCNP validarRegistroCnp;
-	private Object resultado;
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void salvarLiberacaoLoteCnp(LoteCnp lote) {
@@ -263,7 +262,7 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(LoteCnp.class);
 		criteria.add(Restrictions.eq("instituicaoOrigem", instituicao));
 		criteria.setProjection(Projections.max("sequencialLiberacao"));
-		resultado = criteria.uniqueResult();
+		Object resultado = criteria.uniqueResult();
 
 		String sequencial = "0";
 		if (resultado != null) {
