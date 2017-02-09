@@ -45,10 +45,6 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 			registro.setNumeroDocumentoCredor(CpfCnpjUtil.buscarNumeroDocumento(documentoCredor));
 			registro.setComplementoDocumentoCredor(CpfCnpjUtil.buscarComplementoDocumento(documentoCredor));
 			registro.setDigitoControleDocumentoCredor(CpfCnpjUtil.calcularDigitoControle(documentoCredor));
-		} else {
-			registro.setNumeroDocumentoCredor("");
-			registro.setComplementoDocumentoCredor("");
-			registro.setDigitoControleDocumentoCredor("");
 		}
 		if (entidadeVO.getEnderecoCredor().length() > 45) {
 			registro.setEnderecoCredor(RemoverAcentosUtil.removeAcentos(entidadeVO.getEnderecoCredor().substring(0, 44)));
@@ -100,11 +96,7 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 			registro.setNumeroDocumentoDevedor(CpfCnpjUtil.buscarNumeroDocumento(documentoDevedor));
 			registro.setComplementoDocumentoDevedor(CpfCnpjUtil.buscarComplementoDocumento(documentoDevedor));
 			registro.setDigitoControleDocumentoDevedor(CpfCnpjUtil.calcularDigitoControle(documentoDevedor));
-		} else {
-			registro.setNumeroDocumentoDevedor("");
-			registro.setComplementoDocumentoDevedor("");
-			registro.setDigitoControleDocumentoDevedor("");
-		}
+		} 
 		if (entidadeVO.getNumeroDocumentoDevedor() != null) {
 			if (entidadeVO.getNumeroDocumentoDevedor().replace(" ", "").trim().length() > 11) {
 				registro.setTipoPessoaDevedor("J");

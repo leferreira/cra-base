@@ -64,11 +64,11 @@ public class CpfCnpjUtil {
 				complemento = numeroDocumento.substring(8, 12);
 			}
 		}
-		// System.out.println("Complemento = " + complemento);
 		return complemento;
 	}
 
 	public static String buscarNumeroDocumento(String numeroDocumento) {
+		int legth = numeroDocumento.length();
 		numeroDocumento = verificarCaracterIndevido(numeroDocumento);
 
 		String documento = "";
@@ -90,8 +90,7 @@ public class CpfCnpjUtil {
 				}
 			}
 		}
-		// System.out.println("Numero Documento = " + documento);
-		return documento;
+		return StringUtils.leftPad(documento, legth, "0");
 	}
 
 	public static String calcularDigitoControle(String numeroDocumento) {
@@ -120,7 +119,6 @@ public class CpfCnpjUtil {
 				digitoControle = digitoControle.concat(digito2.toString());
 			}
 		}
-		// System.out.println("Digito COntrole = " + digitoControle);
 		return digitoControle;
 	}
 

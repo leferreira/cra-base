@@ -3,6 +3,7 @@ package br.com.ieptbto.cra.entidade;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -50,7 +51,7 @@ public class LoteCnp extends AbstractEntidade<LoteCnp> {
 		return id;
 	}
 
-	@OneToMany(mappedBy = "loteCnp", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "loteCnp", fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
 	public List<RegistroCnp> getRegistrosCnp() {
 		return registrosCnp;
 	}

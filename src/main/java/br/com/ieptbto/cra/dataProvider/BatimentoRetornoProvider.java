@@ -37,7 +37,7 @@ public class BatimentoRetornoProvider extends DataProvider<ViewBatimentoRetorno>
 	@Override
 	public Iterator<ViewBatimentoRetorno> iterator(long first, long count) {
 		if (StringUtils.isBlank(genericFilter)) {
-			 return this.objects.subList((int)first, (int)(first + count)).iterator();
+			return this.objects.subList((int)first, (int)(first + count)).iterator();
 		}
 		List<ViewBatimentoRetorno> results = new ArrayList<ViewBatimentoRetorno>();
 		for (ViewBatimentoRetorno batimento : this.objects) {

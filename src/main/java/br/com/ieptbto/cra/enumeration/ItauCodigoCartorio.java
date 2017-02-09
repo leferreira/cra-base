@@ -49,7 +49,7 @@ public enum ItauCodigoCartorio {
 								DARCINOPOLIS("1706506", "627432", 32),
 								DIANOPOLIS("1707009", "627408", 8),
 								DIVINOPOLIS_DO_TOCANTINS("1707108", "086710", 10),
-								DOIS_IRMAOS("1707207", "161504", 4),
+								DOIS_IRMAOS("1707207", "161505", 5),
 								DUERE("1707306", "627433", 33),
 								ESPERANTINA("1707405", "086421", 21),
 								FATIMA("1707553", "086711", 11),

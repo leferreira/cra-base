@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.envers.Audited;
@@ -427,5 +428,12 @@ public class RegistroCnp extends AbstractEntidade<RegistroCnp> {
 	@Override
 	public int compareTo(RegistroCnp entidade) {
 		return 0;
+	}	
+	
+	@Transient
+	public String getDescricaoRegistroDuplicado(){
+		return "<li> <span>Nº Sequencial do Registro " + this.getSequenciaRegistro() + ": " + this.getNomeDevedor() 
+				+ " [TipoRegistro =" + this.getTipoRegistroCnp() + "] [NumeroProtocoloCartorio=" + this.getNumeroProtocoloCartorio() + "] "
+				+ " [DocumentoDevedor=" + this.getNumeroDocumentoDevedor() + this.getComplementoDocumentoDevedor() + this.getDigitoControleDocumentoDevedor() + "];</span></li>";
 	}
 }

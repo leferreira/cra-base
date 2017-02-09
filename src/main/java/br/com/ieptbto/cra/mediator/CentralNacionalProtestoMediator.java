@@ -22,6 +22,7 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.LoteCnp;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.RegistroCnp;
+import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoCnpVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoCnpVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaCnpVO;
@@ -42,11 +43,11 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 public class CentralNacionalProtestoMediator extends BaseMediator {
 
 	@Autowired
+	FabricaRegraValidacaoCNP validarRegistroCnp;
+	@Autowired
 	CentralNancionalProtestoDAO centralNancionalProtestoDAO;
 	@Autowired
 	MunicipioDAO municipioDAO;
-	@Autowired
-	FabricaRegraValidacaoCNP validarRegistroCnp;
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<Instituicao> consultarCartoriosCentralNacionalProtesto() {
@@ -77,56 +78,31 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 	 * @return
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public LoteCnp processarLoteDiario(Instituicao instituicao, ArquivoCnpVO arquivoCnpVO) {
-		LoteCnp loteProtesto = null;
-		LoteCnp loteCancelamento = null;
+	public LoteCnp processarLoteDiario(Usuario user, ArquivoCnpVO arquivoCnpVO) {
+		LoteCnp lote = new LoteCnp();
+		lote.setDataRecebimento(new LocalDate().toDate());
+		lote.setInstituicaoOrigem(user.getInstituicao());
+		lote.setRegistrosCnp(new ArrayList<RegistroCnp>());
 
 		for (RemessaCnpVO remessaCnp : arquivoCnpVO.getRemessasCnpVO()) {
 			for (TituloCnpVO tituloCnpVO : remessaCnp.getTitulosCnpVO()) {
 				RegistroCnp registro = new RegistroCnpConversor().converter(RegistroCnp.class, tituloCnpVO);
 				if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
 					if (validarRegistroCnp.validarProtesto(registro)) {
-						if (loteProtesto == null) {
-							loteProtesto = criarLoteRegistros(instituicao, TipoRegistroCnp.PROTESTO);
-						} 
-						if (!loteProtesto.getRegistrosCnp().contains(registro)) {
-							loteProtesto.getRegistrosCnp().add(registro);
+						if (!lote.getRegistrosCnp().contains(registro)) {
+							lote.getRegistrosCnp().add(registro);
 						}
 					}
 				} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
 					if (validarRegistroCnp.validarCancelamento(registro)) {
-						if (loteCancelamento == null) {
-							loteCancelamento = criarLoteRegistros(instituicao, TipoRegistroCnp.CANCELAMENTO);
-						}
-						if (!loteCancelamento.getRegistrosCnp().contains(registro)) {
-							loteCancelamento.getRegistrosCnp().add(registro);
+						if (!lote.getRegistrosCnp().contains(registro)) {
+							lote.getRegistrosCnp().add(registro);
 						}
 					}
 				}
 			}
 		}
-
-		LoteCnp loteCnp = new LoteCnp();
-		loteCnp.setDataRecebimento(new LocalDate().toDate());
-		loteCnp.setInstituicaoOrigem(instituicao);
-		loteCnp.setRegistrosCnp(new ArrayList<RegistroCnp>());
-		if (loteProtesto != null && !loteProtesto.getRegistrosCnp().isEmpty()) {
-			loteCnp.getRegistrosCnp().addAll(centralNancionalProtestoDAO.salvarLoteProtesto(loteProtesto));
-		}
-		if (loteCancelamento != null && !loteCancelamento.getRegistrosCnp().isEmpty()) {
-			loteCnp.getRegistrosCnp().addAll(centralNancionalProtestoDAO.salvarLoteCancelamento(loteCancelamento));
-		}
-		return loteCnp;
-	}
-
-	private LoteCnp criarLoteRegistros(Instituicao instituicao, TipoRegistroCnp tipoRegistros) {
-		LoteCnp loteCnp = new LoteCnp();
-		loteCnp.setDataRecebimento(new LocalDate().toDate());
-		loteCnp.setInstituicaoOrigem(instituicao);
-		loteCnp.setRegistrosCnp(new ArrayList<RegistroCnp>());
-		loteCnp.setStatus(false);
-		loteCnp.setLote5anos(false);
-		return loteCnp;
+		return centralNancionalProtestoDAO.salvarLoteRegistrosCnp(user, lote);
 	}
 
 	/**

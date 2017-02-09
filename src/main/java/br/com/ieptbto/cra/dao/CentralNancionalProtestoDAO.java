@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.exception.ConstraintViolationException;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -19,6 +23,8 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.LoteCnp;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.RegistroCnp;
+import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.regra.FabricaRegraValidacaoCNP;
@@ -75,62 +81,68 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public List<RegistroCnp> salvarLoteProtesto(LoteCnp loteProtesto) {
-		Transaction transaction = getBeginTransation();
-		List<RegistroCnp> registroProcessados = new ArrayList<RegistroCnp>();
+	public LoteCnp salvarLoteRegistrosCnp(Usuario user, LoteCnp lote) {
+		Session session = getSession();
+		Transaction transaction = session.beginTransaction();
 
-		Instituicao instituicao = loteProtesto.getInstituicaoOrigem();
 		try {
-			loteProtesto = save(loteProtesto);
-
-			for (RegistroCnp registroCnp : loteProtesto.getRegistrosCnp()) {
-				if (registroCnp.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
-					RegistroCnp registroProtesto = buscarRegistroProtesto(instituicao, registroCnp);
-					if (registroProtesto == null) {
-						registroCnp.setLoteCnp(loteProtesto);
-						save(registroCnp);
-						registroProcessados.add(registroCnp);
-					}
-				}
-			}
+			lote = save(lote);
 			transaction.commit();
+			
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
+			return null;
 		}
-		return registroProcessados;
-	}
+		
+		List<RegistroCnp> registrosSalvos = new ArrayList<>();
+		String descricao = StringUtils.EMPTY;
+		for (RegistroCnp registro : lote.getRegistrosCnp()) {
+			transaction = session.beginTransaction(); 
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public List<RegistroCnp> salvarLoteCancelamento(LoteCnp loteCancelamento) {
-		Transaction transaction = getBeginTransation();
-		List<RegistroCnp> registroProcessados = new ArrayList<RegistroCnp>();
+			if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
+				registro.setLoteCnp(lote);
 
-		Instituicao instituicao = loteCancelamento.getInstituicaoOrigem();
-		try {
-			loteCancelamento = save(loteCancelamento);
+				try {
+					registro = save(registro);
+					transaction.commit();
+				} catch (ConstraintViolationException ex) {
+					transaction.rollback();
+					session.clear();
+					descricao = descricao.concat(registro.getDescricaoRegistroDuplicado());
+				}
+			} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
+				RegistroCnp registroProtesto = buscarRegistroProtesto(lote.getInstituicaoOrigem(), registro);
+				if (registroProtesto != null) {
+					registro.setDataProtesto(registroProtesto.getDataProtesto());
+					registro.setValorProtesto(registroProtesto.getValorProtesto());
+					registro.setLoteCnp(lote);
 
-			for (RegistroCnp registroCnp : loteCancelamento.getRegistrosCnp()) {
-				if (registroCnp.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
-					RegistroCnp registroProtesto = buscarRegistroProtesto(instituicao, registroCnp);
-					if (registroProtesto != null) {
-						RegistroCnp registroCancelamento = buscarRegistroCancelamento(instituicao, registroCnp);
-						if (registroCancelamento == null) {
-							registroCnp.setDataProtesto(registroProtesto.getDataProtesto());
-							registroCnp.setValorProtesto(registroProtesto.getValorProtesto());
-							registroCnp.setLoteCnp(loteCancelamento);
-							save(registroCnp);
-							registroProcessados.add(registroCnp);
-						}
+					try {
+						registro = save(registro);
+						transaction.commit();
+					} catch (ConstraintViolationException ex) {
+						transaction.rollback();
+						session.clear();
+						descricao = descricao.concat(registro.getDescricaoRegistroDuplicado());
 					}
 				}
 			}
-			transaction.commit();
-		} catch (Exception ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage(), ex);
+			if (registro != null && registro.getId() != 0) { 
+				registrosSalvos.add(registro);
+			}
 		}
-		return registroProcessados;
+		lote.setRegistrosCnp(null);
+		if (StringUtils.isNotBlank(descricao)) {
+			loggerCra.alert(user, CraAcao.ENVIO_ARQUIVO_CENTRAL_NACIONAL_PROTESTO, 
+					"Registros da Central Nacional de Protesto rejeitados por duplicidade:</span>"
+					+ "<ul>" + 	descricao + "</ul>");
+		}
+		if (registrosSalvos.isEmpty()) {
+			return null;
+		}
+		lote.setRegistrosCnp(registrosSalvos);
+		return lote;
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
@@ -293,15 +305,20 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public RegistroCnp buscarRegistroProtesto(Instituicao instituicao, RegistroCnp registro) {
-		Criteria criteria = getCriteria(RegistroCnp.class);
-		criteria.createAlias("loteCnp", "loteCnp");
-		criteria.add(Restrictions.eq("tipoRegistroCnp", TipoRegistroCnp.PROTESTO));
-		criteria.add(Restrictions.eq("numeroDocumentoDevedor", registro.getNumeroDocumentoDevedor()));
-		criteria.add(Restrictions.eq("digitoControleDocumentoDevedor", registro.getDigitoControleDocumentoDevedor()));
-		criteria.add(Restrictions.eq("numeroProtocoloCartorio", registro.getNumeroProtocoloCartorio()));
-		criteria.add(Restrictions.eq("loteCnp.instituicaoOrigem", instituicao));
-		criteria.setMaxResults(1);
-		return RegistroCnp.class.cast(criteria.uniqueResult());
+		Query query = getSession().createQuery("select r from RegistroCnp r "
+				+ "inner join r.loteCnp l "
+				+ "where r.tipoRegistroCnp= :tipoRegistroCnp "
+				+ "and r.numeroDocumentoDevedor= :numeroDocumentoDevedor "
+				+ "and r.digitoControleDocumentoDevedor= :digitoControleDocumentoDevedor "
+				+ "and r.numeroProtocoloCartorio= :numeroProtocoloCartorio "
+				+ "and l.instituicaoOrigem= :instituicaoOrigem ");
+		query.setParameter("tipoRegistroCnp", TipoRegistroCnp.PROTESTO);
+		query.setParameter("numeroDocumentoDevedor", registro.getNumeroDocumentoDevedor());
+		query.setParameter("digitoControleDocumentoDevedor", registro.getDigitoControleDocumentoDevedor());
+		query.setParameter("numeroProtocoloCartorio", registro.getNumeroProtocoloCartorio());
+		query.setParameter("instituicaoOrigem", instituicao);
+		query.setMaxResults(1);
+		return RegistroCnp.class.cast(query.uniqueResult());
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
