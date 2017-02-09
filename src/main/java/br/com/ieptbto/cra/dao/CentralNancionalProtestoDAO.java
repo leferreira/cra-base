@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -24,7 +23,6 @@ import br.com.ieptbto.cra.entidade.LoteCnp;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.RegistroCnp;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.regra.FabricaRegraValidacaoCNP;
@@ -96,7 +94,6 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		}
 		
 		List<RegistroCnp> registrosSalvos = new ArrayList<>();
-		String descricao = StringUtils.EMPTY;
 		for (RegistroCnp registro : lote.getRegistrosCnp()) {
 			transaction = session.beginTransaction(); 
 
@@ -109,7 +106,8 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 				} catch (ConstraintViolationException ex) {
 					transaction.rollback();
 					session.clear();
-					descricao = descricao.concat(registro.getDescricaoRegistroDuplicado());
+					logger.info("Registro de Protesto Rejeitado por Duplicidade: " + registro.getNomeDevedor() + " [NumeroProtocoloCartorio=" + registro.getNumeroProtocoloCartorio() + "] " 
+							+ " [DocumentoDevedor=" + registro.getNumeroDocumentoDevedor() + registro.getComplementoDocumentoDevedor() + registro.getDigitoControleDocumentoDevedor() + "]");
 				}
 			} else if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.CANCELAMENTO)) {
 				RegistroCnp registroProtesto = buscarRegistroProtesto(lote.getInstituicaoOrigem(), registro);
@@ -124,7 +122,8 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 					} catch (ConstraintViolationException ex) {
 						transaction.rollback();
 						session.clear();
-						descricao = descricao.concat(registro.getDescricaoRegistroDuplicado());
+						logger.info("Registro de Cancelamento Rejeitado por Duplicidade: " + registro.getNomeDevedor() + " [NumeroProtocoloCartorio=" + registro.getNumeroProtocoloCartorio() + "] " 
+						+ " [DocumentoDevedor=" + registro.getNumeroDocumentoDevedor() + registro.getComplementoDocumentoDevedor() + registro.getDigitoControleDocumentoDevedor() + "]");
 					}
 				}
 			}
@@ -133,11 +132,6 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 			}
 		}
 		lote.setRegistrosCnp(null);
-		if (StringUtils.isNotBlank(descricao)) {
-			loggerCra.alert(user, CraAcao.ENVIO_ARQUIVO_CENTRAL_NACIONAL_PROTESTO, 
-					"Registros da Central Nacional de Protesto rejeitados por duplicidade:</span>"
-					+ "<ul>" + 	descricao + "</ul>");
-		}
 		if (registrosSalvos.isEmpty()) {
 			return null;
 		}
