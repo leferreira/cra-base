@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -26,7 +27,8 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
  */
 @Entity
 @Audited
-@Table(name = "TB_FILIADO")
+@Table(name = "TB_FILIADO", uniqueConstraints=
+@UniqueConstraint(columnNames={"instituicao_id", "cpf_cnpj"}))
 @org.hibernate.annotations.Table(appliesTo = "TB_FILIADO")
 public class Filiado extends AbstractEntidade<Filiado> {
 
@@ -132,6 +134,9 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	}
 
 	public void setRazaoSocial(String razaoSocial) {
+		if (razaoSocial.length() > 44) {
+			razaoSocial = razaoSocial.substring(0, 44); 
+		}
 		this.razaoSocial = razaoSocial;
 	}
 
@@ -140,10 +145,16 @@ public class Filiado extends AbstractEntidade<Filiado> {
 	}
 
 	public void setEndereco(String endereco) {
+		if (endereco.length() > 44) {
+			endereco = endereco.substring(0, 44); 
+		}
 		this.endereco = endereco;
 	}
 
 	public void setCep(String cep) {
+		if (cep.length() > 9) {
+			cep = cep.substring(0, 9); 
+		}
 		this.cep = cep;
 	}
 

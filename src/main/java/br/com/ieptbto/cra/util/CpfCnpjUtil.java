@@ -9,6 +9,7 @@ public class CpfCnpjUtil {
 
 	private static int calcularDigito(String str, int[] peso) {
 		str = verificarCaracterIndevido(str);
+		
 		int soma = 0;
 		for (int indice = str.length() - 1, digito; indice >= 0; indice--) {
 			digito = Integer.parseInt(str.substring(indice, indice + 1));
@@ -27,9 +28,12 @@ public class CpfCnpjUtil {
 				|| cpf.equals("88888888888") || cpf.equals("99999999999") || (cpf.length() != 11))
 			return false;
 
-		Integer digito1 = calcularDigito(cpf.substring(0, 9), pesoCPF);
-		Integer digito2 = calcularDigito(cpf.substring(0, 9) + digito1, pesoCPF);
-		return cpf.equals(cpf.substring(0, 9) + digito1.toString() + digito2.toString());
+		String digito = cpf.substring(0, 9).trim();
+		if (StringUtils.isBlank(digito)) return false;
+		
+		Integer digito1 = calcularDigito(digito, pesoCPF);
+		Integer digito2 = calcularDigito(digito + digito1, pesoCPF);
+		return cpf.equals(digito + digito1.toString() + digito2.toString());
 	}
 
 	public static boolean isValidCNPJ(String cnpj) {
@@ -42,13 +46,16 @@ public class CpfCnpjUtil {
 				|| cnpj.equals("77777777777777") || cnpj.equals("88888888888888") || cnpj.equals("99999999999999") || (cnpj.length() != 14))
 			return false;
 
-		Integer digito1 = calcularDigito(cnpj.substring(0, 12), pesoCNPJ);
-		Integer digito2 = calcularDigito(cnpj.substring(0, 12) + digito1, pesoCNPJ);
-		return cnpj.equals(cnpj.substring(0, 12) + digito1.toString() + digito2.toString());
+		String digito = cnpj.substring(0, 12).trim();
+		if (StringUtils.isBlank(digito.trim())) return false;
+
+		Integer digito1 = calcularDigito(digito, pesoCNPJ);
+		Integer digito2 = calcularDigito(digito + digito1, pesoCNPJ);
+		return cnpj.equals(digito + digito1.toString() + digito2.toString());
 	}
 
 	public static void main(String[] args) {
-		System.out.println(CpfCnpjUtil.isValidCNPJ("02991501000102"));
+		System.out.println(CpfCnpjUtil.isValidCPF("04789764109"));
 	}
 
 	public static String buscarComplementoDocumento(String numeroDocumento) {

@@ -35,12 +35,11 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 	private static final String UF_CRA = "TO";
 
 	@Autowired
-	private TituloDAO tituloDao;
+	TituloDAO tituloDao;
 	@Autowired
-	private InstrumentoProtestoDAO instrumentoDao;
+	InstrumentoProtestoDAO instrumentoDao;
 	@Autowired
-	private RegraAgenciaDestino regraAgenciaDestino;
-
+	RegraAgenciaDestino regraAgenciaDestino;
 	private List<Retorno> titulosProtestados;
 	private List<EtiquetaSLIP> etiquetas;
 	private List<EnvelopeSLIP> envelopes;

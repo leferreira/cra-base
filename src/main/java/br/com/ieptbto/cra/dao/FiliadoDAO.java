@@ -85,7 +85,6 @@ public class FiliadoDAO extends AbstractBaseDAO {
 		if (instituicao.getId() == 0) {
 			return new ArrayList<Filiado>();
 		}
-
 		if (instituicao.getTipoInstituicao().getTipoInstituicao() != TipoInstituicaoCRA.CRA) {
 			criteria.add(Restrictions.eq("instituicaoConvenio", instituicao));
 		}
@@ -124,5 +123,13 @@ public class FiliadoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("filiado", filiado));
 		criteria.add(Restrictions.eq("setorPadraoFiliado", true));
 		return SetorFiliado.class.cast(criteria.uniqueResult());
+	}
+
+	public Filiado buscarFiliadoConvenioPorCpfCnpj(Instituicao convenio, String cnpjCpf) {
+		Criteria criteria = getCriteria(Filiado.class);
+		criteria.add(Restrictions.eq("instituicaoConvenio", convenio));
+		criteria.add(Restrictions.eq("cnpjCpf", cnpjCpf));
+		criteria.setMaxResults(1);
+		return Filiado.class.cast(criteria.uniqueResult());
 	}
 }

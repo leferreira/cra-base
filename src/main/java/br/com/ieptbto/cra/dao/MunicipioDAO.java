@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 @Repository
 public class MunicipioDAO extends AbstractBaseDAO {
@@ -82,9 +83,9 @@ public class MunicipioDAO extends AbstractBaseDAO {
 	public Municipio buscarMunicipioPorNome(String nomeMunicipio) {
 		Criteria criteria = getCriteria(Municipio.class);
 		Criterion restrict1 = Restrictions.ilike("nomeMunicipio", nomeMunicipio, MatchMode.EXACT);
-		Criterion restrict2 = Restrictions.ilike("nomeMunicipioSemAcento", nomeMunicipio, MatchMode.EXACT);
+		Criterion restrict2 = Restrictions.ilike("nomeMunicipioSemAcento", RemoverAcentosUtil.removeAcentos(nomeMunicipio), MatchMode.EXACT);
 		criteria.add(Restrictions.or(restrict1, restrict2));
-
+		criteria.setMaxResults(1);
 		return Municipio.class.cast(criteria.uniqueResult());
 	}
 
