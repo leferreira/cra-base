@@ -16,8 +16,8 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -44,7 +44,7 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 
 	@SuppressWarnings("unchecked")
 	public List<DesistenciaProtesto> buscarDesistenciaProtesto(String nomeArquivo, Instituicao portador, Instituicao cartorio,
-			LocalDate dataInicio, LocalDate dataFim, List<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+			LocalDate dataInicio, LocalDate dataFim, List<TipoArquivoFebraban> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(DesistenciaProtesto.class);
 		criteria.createAlias("remessaDesistenciaProtesto", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
@@ -55,7 +55,7 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 		if (tiposArquivo != null && !tiposArquivo.isEmpty()) {
 			criteria.createAlias("arquivo.tipoArquivo", "tipo");
 			Disjunction disjunction = Restrictions.disjunction();
-			for (TipoArquivoEnum tipo : tiposArquivo) {
+			for (TipoArquivoFebraban tipo : tiposArquivo) {
 				disjunction.add(Restrictions.eq("tipo.tipoArquivo", tipo));
 			}
 			criteria.add(disjunction);
@@ -72,10 +72,10 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", cartorio.getMunicipio().getCodigoIBGE()));
 		}
 
-		if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
+		if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CARTORIO)) {
 			criteria.createAlias("cabecalhoCartorio", "cabecalho");
 			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", usuario.getInstituicao().getMunicipio().getCodigoIBGE()));
-		} else if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
+		} else if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.INSTITUICAO_FINANCEIRA)) {
 			criteria.createAlias("remessa.cabecalho", "cabecalhoArquivo");
 			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", usuario.getInstituicao().getCodigoCompensacao()));
 		}
@@ -87,9 +87,9 @@ public class DesistenciaDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(DesistenciaProtesto.class);
 		criteria.createAlias("cabecalhoCartorio", "cabecalho");
 
-		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
+		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CARTORIO)) {
 			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", instituicao.getMunicipio().getCodigoIBGE()));
-		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.INSTITUICAO_FINANCEIRA)) {
 			criteria.createAlias("remessaDesistenciaProtesto", "remessaDesistenciaProtesto");
 			criteria.createAlias("remessaDesistenciaProtesto.cabecalho", "cabecalhoArquivo");
 			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", instituicao.getCodigoCompensacao()));

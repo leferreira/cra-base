@@ -51,27 +51,21 @@ public enum CodigoErro {
 						CRA_ARQUIVO_CORROMPIDO_NUMERO_SEQUENCIAL_DO_REGISTRO_NO_TRAILLER_NAO_ESTA_CONTINUO_FALTOU_REGISTRO(" 2121",
 								"Arquivo corrompido. Número sequencial do registro no trailler (XXX) não está contínuo. Faltou registro (XXX)."),
 						CRA_ARQUIVO_CORROMPIDO_SOMA_DE_REGISTROS_DE_TRANSACAO_EXISTENTES_NO_ARQUIVO_NAO_CONFERE_COM_TOTAL_INFORMADO_NO_HEADER(
-								" 2122",
-								"Arquivo corrompido. Soma de registros de transação existentes no arquivo não confere com total informado no header."),
+								" 2122", "Arquivo corrompido. Soma de registros de transação existentes no arquivo não confere com total informado no header."),
 						CRA_ARQUIVO_CORROMPIDO_SOMATÓRIO_DO_SALDO_NO_TRAILLER_NAO_CONFERE_COM_SOMATORIO_DOS_SALDOS_DOS_TITULOS(" 2123",
 								"Arquivo corrompido. Somatório do saldo no trailler (XXX) não confere com somatório dos saldos dos títulos (XXX)."),
 						CRA_ARQUIVO_CORROMPIDO_NUMERO_SEQUENCIAL_DO_REGISTRO_NO_HEADER_DO_CARTORIO_NAO_ESTA_CONTINUO_FALTOU_REGISTRO(
-								" 2124",
-								"Arquivo corrompido. Número sequencial do registro no header do cartório (XXX) não está contínuo. Faltou registro (XXX)."),
+								" 2124", "Arquivo corrompido. Número sequencial do registro no header do cartório (XXX) não está contínuo. Faltou registro (XXX)."),
 						CRA_ARQUIVO_CORROMPIDO_SOLICITACAO_NAO_E_DE_DESISTENCIA(" 2125",
 								"Arquivo corrompido. Solicitação não é de desistência (S)."),
 						CRA_ARQUIVO_CORROMPIDO_NUMERO_SEQUENCIAL_DO_REGISTRO_NO_TRAILLER_DO_CARTORIO_NAO_ESTA_CONTINUO_FALTOU_REGISTRO(
-								" 2126",
-								"Arquivo corrompido. Número sequencial do registro no trailler do cartório (XXX) não está contínuo. Faltou registro (XXX)."),
+								" 2126", "Arquivo corrompido. Número sequencial do registro no trailler do cartório (XXX) não está contínuo. Faltou registro (XXX)."),
 						CRA_ARQUIVO_CORROMPIDO_SOMA_DE_SOLICITACOES_DO_CARTORIO_NAO_CONFERE_COM_TOTAL_INFORMADO_NO_HEADER_DO_CARTORIO(
-								" 2127",
-								"Arquivo corrompido. Soma de solicitações do cartório (XXX) não confere com total informado no header do cartório (XXX)."),
+								" 2127", "Arquivo corrompido. Soma de solicitações do cartório (XXX) não confere com total informado no header do cartório (XXX)."),
 						CRA_ARQUIVO_CORROMPIDO_TOTAL_DE_REGISTROS_INFORMADO_NO_TRAILLER_NAO_CONFERE_COM_A_SOMA_DOS_TOTAIS_INFORMADOS_NO_HEADER_DO_ARQUIVO(
-								" 2128",
-								"Arquivo corrompido. Total de registros informado no trailler (XXX) não confere com a soma dos totais informados no header do arquivo (XXX)."),
+								" 2128", "Arquivo corrompido. Total de registros informado no trailler (XXX) não confere com a soma dos totais informados no header do arquivo (XXX)."),
 						CRA_ARQUIVO_CORROMPIDO_SOMA_DE_REGISTROS_EXISTENTES_NO_ARQUIVO_NAO_CONFERE_COM_TOTAL_INFORMADO_NO_HEADER_DO_ARQUIVO(
-								" 2129",
-								"Arquivo corrompido. Soma de registros existentes no arquivo (XXX) não confere com total informado no header do arquivo (XXX)."),
+								" 2129", "Arquivo corrompido. Soma de registros existentes no arquivo (XXX) não confere com total informado no header do arquivo (XXX)."),
 						CRA_CODIGO_DO_MUNICIPIO_NAO_INFORMADO(" 2130", "Código do município não informado."),
 						CRA_NAO_EXISTE_MUNICIPIO_COM_O_CODIGO_INFORMADO_NA_CRA(" 2131",
 								"Não existe município com o código informado (XXX) na CRA."),
@@ -128,7 +122,7 @@ public enum CodigoErro {
 						CARTORIO_QUANTIDADE_REGISTROS_INVALIDO("005", "Quantidade de Registros inválido"),
 						CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO("006",
 								"Código do Município inválido ou difere da instituição do usuário"),
-						CARTORIO_AGÊNCIA_CENTRALIZADORA_INVALIDA("007", "Agência Centralizadora ou é inválida para este apresentante"),
+						CARTORIO_AGÊNCIA_CENTRALIZADORA_INVALIDA("007", "Agência Centralizadora é inválida para este apresentante"),
 						CARTORIO_ARQUIVO_VAZIO_OU_FORA_DO_LAYOUT_DE_TRANSMISSAO("010", "Arquivo vazio ou fora do layout de transmissão"),
 						CARTORIO_ARQUIVO_ENVIADO_SEM_TITULOS("100", "Arquivo enviado vazio ou não contém títulos"),
 						CARTORIO_TITULO_NAO_ENCONTRADO("101", "Título não encontrado ou informações inválidas"),

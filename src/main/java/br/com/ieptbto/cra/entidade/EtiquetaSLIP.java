@@ -19,7 +19,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.enumeration.BancoTipoRegraBasicaInstrumento;
+import br.com.ieptbto.cra.enumeration.regra.RegraBasicaInstrumentoBanco;
 
 /**
  * @author Thasso
@@ -242,7 +242,7 @@ public class EtiquetaSLIP extends AbstractEntidade<EtiquetaSLIP> {
 		this.setNomeCedenteFavorecido(retorno.getTitulo().getNomeCedenteFavorecido());
 		this.setNomeSacadorVendedor(retorno.getTitulo().getNomeDevedor());
 		this.setDocumentoSacador(retorno.getTitulo().getNumeroIdentificacaoDevedor());
-		if (retorno.getCodigoPortador() == BancoTipoRegraBasicaInstrumento.BANCO_DO_BRASIL.getCodigoPortador()) {
+		if (retorno.getCodigoPortador() == RegraBasicaInstrumentoBanco.BANCO_DO_BRASIL.getCodigoPortador()) {
 			this.setNossoNumero(retorno.getTitulo().getAgenciaCodigoCedente().substring(13, 15) + retorno.getTitulo().getNossoNumero());
 		} else {
 			this.setNossoNumero(retorno.getTitulo().getNossoNumero());

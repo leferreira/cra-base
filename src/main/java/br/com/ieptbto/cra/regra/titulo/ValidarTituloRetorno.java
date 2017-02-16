@@ -10,8 +10,8 @@ import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
-import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
+import br.com.ieptbto.cra.enumeration.regra.CodigoIrregularidade;
+import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 import br.com.ieptbto.cra.exception.TituloException;
@@ -25,14 +25,12 @@ import br.com.ieptbto.cra.exception.TituloException;
 public class ValidarTituloRetorno extends RegraTitulo {
 
 	private static final String SEFAZ = "801";
-	private List<Titulo> titulosProcessados;
 
 	@Override
 	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		this.arquivo = arquivo;
 		this.usuario = usuario;
 		this.erros = erros;
-		this.titulosProcessados = null;
 
 		executar();
 	}
@@ -45,17 +43,18 @@ public class ValidarTituloRetorno extends RegraTitulo {
 		}
 
 		for (Remessa remessa : arquivo.getRemessas()) {
-
 			if (remessa.getTitulos() == null || remessa.getTitulos().isEmpty()) {
 				erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_ARQUIVO_ENVIADO_SEM_TITULOS));
 			}
 
-			this.titulosProcessados = new ArrayList<Titulo>();
+			List<Titulo> titulosProcessados = new ArrayList<Titulo>();
 			for (Titulo titulo : remessa.getTitulos()) {
-				Retorno tituloRetorno = Retorno.class.cast(titulo);
-
-				verificarTipoOcorrenciaProtocoloCodigoIrregularidade(tituloRetorno);
-				verificarDuplicidadeDeTitulosNoArquivo(tituloRetorno);
+				if (Retorno.class.isInstance(titulo)) {
+					Retorno tituloRetorno = Retorno.class.cast(titulo);
+					
+					verificarTipoOcorrenciaProtocoloCodigoIrregularidade(tituloRetorno);
+					verificarDuplicidadeDeTitulosNoArquivo(titulosProcessados, tituloRetorno);
+				}
 			}
 		}
 	}
@@ -66,8 +65,8 @@ public class ValidarTituloRetorno extends RegraTitulo {
 		if (tituloRetorno.getTipoOcorrencia() != null) {
 			tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloRetorno.getTipoOcorrencia());
 			if (tipoOcorrencia == null) {
-				erros.add(new TituloException(CodigoErro.CARTORIO_TIPO_OCORRENCIA_INVALIDO, tituloRetorno.getNossoNumero(), numeroProtocoloCartorio,
-						tituloRetorno.getNumeroSequencialArquivo()));
+				erros.add(new TituloException(CodigoErro.CARTORIO_TIPO_OCORRENCIA_INVALIDO, tituloRetorno.getNossoNumero(), 
+						numeroProtocoloCartorio, tituloRetorno.getNumeroSequencialArquivo()));
 			}
 		}
 
@@ -88,11 +87,11 @@ public class ValidarTituloRetorno extends RegraTitulo {
 		}
 	}
 
-	private void verificarDuplicidadeDeTitulosNoArquivo(Retorno tituloRetorno) {
+	private void verificarDuplicidadeDeTitulosNoArquivo(List<Titulo> titulosProcessados, Retorno tituloRetorno) {
 		Integer numeroProtocoloCartorio = Integer.valueOf(tituloRetorno.getNumeroProtocoloCartorio().trim());
 		if (titulosProcessados.contains(tituloRetorno)) {
-			erros.add(new TituloException(CodigoErro.CARTORIO_TITULOS_DUPLICADOS_NO_ARQUIVO, tituloRetorno.getNossoNumero(), numeroProtocoloCartorio,
-					tituloRetorno.getNumeroSequencialArquivo()));
+			erros.add(new TituloException(CodigoErro.CARTORIO_TITULOS_DUPLICADOS_NO_ARQUIVO, tituloRetorno.getNossoNumero(), 
+					numeroProtocoloCartorio, tituloRetorno.getNumeroSequencialArquivo()));
 		} else {
 			titulosProcessados.add(tituloRetorno);
 		}

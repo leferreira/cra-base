@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.TipoInstituicaoDAO;
 import br.com.ieptbto.cra.entidade.TipoInstituicao;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 
 /**
  * @author Thasso Araújo
@@ -17,13 +17,13 @@ import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 public class TipoInstituicaoMediator {
 
 	@Autowired
-	private TipoInstituicaoDAO tipoInstituicaoDao;
+	TipoInstituicaoDAO tipoInstituicaoDao;
 
 	public TipoInstituicao alterarPermissoesTipoInstituicao(TipoInstituicao tipoInstituicao) {
 		return tipoInstituicaoDao.alterar(tipoInstituicao);
 	}
 
-	public TipoInstituicao buscarTipoInstituicao(TipoInstituicaoCRA tipoInstituicao) {
+	public TipoInstituicao buscarTipoInstituicao(TipoInstituicaoSistema tipoInstituicao) {
 		return tipoInstituicaoDao.buscarTipoInstituicao(tipoInstituicao);
 	}
 

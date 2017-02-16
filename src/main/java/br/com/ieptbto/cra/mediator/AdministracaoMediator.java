@@ -33,9 +33,9 @@ import br.com.ieptbto.cra.entidade.vo.CabecalhoCnpVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaCnpVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeCnpVO;
 import br.com.ieptbto.cra.entidade.vo.TituloCnpVO;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DataUtil;
@@ -45,37 +45,54 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 public class AdministracaoMediator extends BaseMediator {
 
 	@Autowired
-	private AdministracaoDAO administracaoDAO;
+	AdministracaoDAO administracaoDAO;
 	@Autowired
-	private InstituicaoDAO instituicaoDAO;
+	InstituicaoDAO instituicaoDAO;
 	@Autowired
-	private CentralNancionalProtestoDAO centralNancionalProtestoDAO;
+	CentralNancionalProtestoDAO centralNancionalProtestoDAO;
 
-	public List<Arquivo> buscarArquivosParaRemover(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim,
-			ArrayList<TipoArquivoEnum> tiposArquivo) {
-		return administracaoDAO.buscarArquivosRemover(arquivo, tiposArquivo, municipio, dataInicio, dataFim);
+	/**
+	 * Consultar arquivos para remover
+	 * @param arquivo
+	 * @param municipio
+	 * @param dataInicio
+	 * @param dataFim
+	 * @param tiposArquivo
+	 * @return
+	 */
+	public List<Arquivo> consultarArquivosParaRemover(Arquivo arquivo, Municipio municipio, LocalDate dataInicio, LocalDate dataFim, ArrayList<TipoArquivoFebraban> tiposArquivo) {
+		return administracaoDAO.consultarArquivosParaRemover(arquivo, tiposArquivo, municipio, dataInicio, dataFim);
 	}
 
-	public void removerArquivo(Arquivo arquivo) {
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
+	/**
+	 * Remover arquivo Remessa, Confirmação e Retorno de Cartórios/Instituições
+	 * 
+	 * @param arquivo
+	 */
+	public Arquivo removerArquivo(Arquivo arquivo) {
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.REMESSA)) {
 			administracaoDAO.removerRemessa(arquivo);
 		}
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
-			if (arquivo.getInstituicaoEnvio().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.CONFIRMACAO)) {
+			if (arquivo.getInstituicaoEnvio().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
 				administracaoDAO.removerConfirmacaoCRA(arquivo);
 			} else {
 				administracaoDAO.removerConfirmacaoCartorio(arquivo);
 			}
 		}
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-			if (arquivo.getInstituicaoEnvio().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.RETORNO)) {
+			if (arquivo.getInstituicaoEnvio().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
 				administracaoDAO.removerRetornoCRA(arquivo);
 			} else {
 				administracaoDAO.removerRetornoCartorio(arquivo);
 			}
 		}
+		return arquivo;
 	}
 
+	/**
+	 *Método para geração de Arquivos 5 anos da CNp-TO 
+	 */
 	public void gerarArquivo5AnosTocantins() {
 		File diretorioBase = new File(ConfiguracaoBase.DIRETORIO_BASE);
 		if (!diretorioBase.exists()) {
@@ -255,7 +272,7 @@ public class AdministracaoMediator extends BaseMediator {
 
 	private RodapeCnpVO getRodapeCnpVO(Integer sequencial) {
 		RodapeCnpVO rodape = new RodapeCnpVO();
-		rodape.setCodigoRegistro(TipoRegistro.RODAPE.getConstante());
+		rodape.setCodigoRegistro(TipoIdentificacaoRegistro.RODAPE.getConstante());
 		rodape.setSequenciaRegistro(Integer.toString(sequencial));
 		return rodape;
 	}

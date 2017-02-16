@@ -13,7 +13,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.joda.time.LocalDate;
 
-import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 
 /**
  * 
@@ -24,7 +24,7 @@ import br.com.ieptbto.cra.enumeration.TipoRegistro;
 @MappedSuperclass
 public abstract class Titulo<T> extends AbstractEntidade<T> {
 
-	private TipoRegistro identificacaoRegistro;
+	private TipoIdentificacaoRegistro identificacaoRegistro;
 	private String codigoPortador;
 	private String numeroTitulo;
 	private String nossoNumero;
@@ -57,7 +57,7 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 	}
 
 	@Column(name = "IDENTIFICACAO_REGISTRO_ID")
-	public TipoRegistro getIdentificacaoRegistro() {
+	public TipoIdentificacaoRegistro getIdentificacaoRegistro() {
 		return identificacaoRegistro;
 	}
 
@@ -265,7 +265,7 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 		this.valorGravacaoEletronica = valorGravacaoEletronica;
 	}
 
-	public void setIdentificacaoRegistro(TipoRegistro identificacaoRegistro) {
+	public void setIdentificacaoRegistro(TipoIdentificacaoRegistro identificacaoRegistro) {
 		this.identificacaoRegistro = identificacaoRegistro;
 	}
 

@@ -14,8 +14,8 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
 import br.com.ieptbto.cra.enumeration.CraAcao;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoLog;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -72,7 +72,7 @@ public class LogCra extends AbstractEntidade<LogCra> {
 	@Column(name = "INSTITUICAO", length = 45)
 	public String getInstituicao() {
 		if (instituicao == null) {
-			instituicao = TipoInstituicaoCRA.CRA.getLabel();
+			instituicao = TipoInstituicaoSistema.CRA.getLabel();
 		}
 		return instituicao;
 	}

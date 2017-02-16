@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
@@ -25,18 +26,17 @@ import br.com.ieptbto.cra.entidade.PedidoDesistencia;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
-import br.com.ieptbto.cra.entidade.TipoInstituicao;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.view.ViewArquivoPendente;
 import br.com.ieptbto.cra.enumeration.CraAcao;
-import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
-import br.com.ieptbto.cra.enumeration.StatusRemessa;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.StatusDownload;
 import br.com.ieptbto.cra.enumeration.TipoBatimento;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
+import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.DesistenciaCancelamentoException;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -51,20 +51,28 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class ArquivoDAO extends AbstractBaseDAO {
 
 	@Autowired
-	private TituloDAO tituloDAO;
+	TituloDAO tituloDAO;
 
+	/**
+	 * Salvar arquivo
+	 * 
+	 * @param arquivo
+	 * @param usuario
+	 * @param erros
+	 * @return
+	 */
 	public Arquivo salvar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		Arquivo arquivoProcessado = arquivo;
 		Transaction transaction = getSession().beginTransaction();
 
-		TipoArquivoEnum tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
+		TipoArquivoFebraban tipoArquivo = arquivo.getTipoArquivo().getTipoArquivo();
 		try {
 			StatusArquivo statusArquivo = save(arquivo.getStatusArquivo());
 			arquivo.setStatusArquivo(statusArquivo);
 			arquivo = save(arquivo);
 
-			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo) || TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)
-					|| TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
+			if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo) || TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo)
+					|| TipoArquivoFebraban.RETORNO.equals(tipoArquivo)) {
 
 				salvarRemessaConfirmacaoRetorno(arquivo, usuario, erros, transaction);
 				if (!erros.isEmpty()) {
@@ -75,12 +83,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					return arquivoProcessado;
 				}
 
-			} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
+			} else if (TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
 				salvarDesistenciaProtesto(arquivo, usuario, erros, transaction);
 
-			} else if (TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
+			} else if (TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
 				throw new InfraException("Não foi possivel enviar o Cancelamento de Protesto! Entre em contato com a CRA!");
-			} else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
+			} else if (TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
 				throw new InfraException("Não foi possivel enviar a Autorização de Cancelamento! Entre em contato com a CRA!");
 			}
 			transaction.commit();
@@ -108,9 +116,9 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			remessa.setArquivoGeradoProBanco(arquivo);
 			remessa.setDataRecebimento(new LocalDate());
 			remessa.setInstituicaoOrigem(arquivo.getInstituicaoEnvio());
-			setDevolvidoPelaCRA(remessa);
-			setStatusRemessa(arquivo.getInstituicaoEnvio().getTipoInstituicao(), remessa);
-			setSituacaoLiberadoProBancoEBatimentoRetorno(arquivo, remessa);
+			remessa.setDevolvidoPelaCRA(false);
+			remessa.setStatusRemessaPorTipoInstituicaoEnvio();
+			remessa.setConfirmacaoRetornoPendenteLiberacao();
 			save(remessa);
 			for (Titulo titulo : remessa.getTitulos()) {
 				titulo.setRemessa(remessa);
@@ -136,7 +144,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
 				}
 			}
-			if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+			if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.RETORNO)) {
 				if (retornoContemTituloPago.equals(false) || remessa.getInstituicaoDestino().getTipoBatimento()
 						.equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
 					remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
@@ -210,23 +218,28 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 	private CraAcao getTipoAcaoEnvio(Arquivo arquivo) {
 		CraAcao tipoAcao = null;
-		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo);
-		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA)) {
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo);
+		if (tipoArquivo.equals(TipoArquivoFebraban.REMESSA)) {
 			tipoAcao = CraAcao.ENVIO_ARQUIVO_REMESSA;
-		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO)) {
+		} else if (tipoArquivo.equals(TipoArquivoFebraban.CONFIRMACAO)) {
 			tipoAcao = CraAcao.ENVIO_ARQUIVO_CONFIRMACAO;
-		} else if (tipoArquivo.equals(TipoArquivoEnum.RETORNO)) {
+		} else if (tipoArquivo.equals(TipoArquivoFebraban.RETORNO)) {
 			tipoAcao = CraAcao.ENVIO_ARQUIVO_RETORNO;
-		} else if (tipoArquivo.equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
+		} else if (tipoArquivo.equals(TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO)) {
 			tipoAcao = CraAcao.ENVIO_ARQUIVO_DESISTENCIA_PROTESTO;
-		} else if (tipoArquivo.equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)) {
+		} else if (tipoArquivo.equals(TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO)) {
 			tipoAcao = CraAcao.ENVIO_ARQUIVO_CANCELAMENTO_PROTESTO;
-		} else if (tipoArquivo.equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
+		} else if (tipoArquivo.equals(TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO)) {
 			tipoAcao = CraAcao.ENVIO_ARQUIVO_AUTORIZACAO_CANCELAMENTO;
 		}
 		return tipoAcao;
 	}
 
+	/**
+	 * Atualizar dados de status do arquivo
+	 * @param arquivo
+	 * @return
+	 */
 	public Arquivo alterarStatusArquivo(Arquivo arquivo) {
 		Transaction transaction = getBeginTransation();
 
@@ -242,31 +255,6 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			throw new InfraException("Não foi possível inserir esses dados na base.");
 		}
 		return arquivo;
-	}
-
-	private void setDevolvidoPelaCRA(Remessa remessa) {
-		if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
-			remessa.setDevolvidoPelaCRA(false);
-		}
-	}
-
-	private void setStatusRemessa(TipoInstituicao tipoInstituicao, Remessa remessa) {
-		if (tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)
-				|| tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
-			remessa.setStatusRemessa(StatusRemessa.AGUARDANDO);
-		} else if (tipoInstituicao.getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
-			remessa.setStatusRemessa(StatusRemessa.ENVIADO);
-		}
-	}
-
-	private void setSituacaoLiberadoProBancoEBatimentoRetorno(Arquivo arquivo, Remessa remessa) {
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)
-				|| arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
-			remessa.setSituacao(false);
-			if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
-				remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.NAO_CONFIRMADO);
-			}
-		}
 	}
 
 	@Transactional(readOnly = true)
@@ -381,12 +369,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	}
 
 	public List<Arquivo> buscarArquivos(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim,
-			TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoEnum> tiposArquivo,
-			List<SituacaoArquivo> situacoesArquivos) {
+			TipoInstituicaoSistema tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoFebraban> tiposArquivo,
+			List<StatusDownload> situacoesArquivos) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.createAlias("tipoArquivo", "tipoArquivo");
 
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
 			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", usuario.getInstituicao()),
 					Restrictions.eq("instituicaoRecebe", usuario.getInstituicao())));
 		}
@@ -402,8 +390,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		if (!situacoesArquivos.isEmpty()) {
 			Disjunction disjunction = Restrictions.disjunction();
 			criteria.createAlias("statusArquivo", "statusArquivo");
-			for (SituacaoArquivo status : situacoesArquivos) {
-				disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", status));
+			for (StatusDownload status : situacoesArquivos) {
+				disjunction.add(Restrictions.eq("statusArquivo.statusDownload", status));
 			}
 			criteria.add(disjunction);
 		}
@@ -412,7 +400,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 		if (!tiposArquivo.isEmpty()) {
 			Disjunction disjunction = Restrictions.disjunction();
-			for (TipoArquivoEnum tipoArquivo : tiposArquivo) {
+			for (TipoArquivoFebraban tipoArquivo : tiposArquivo) {
 				disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipoArquivo));
 			}
 			criteria.add(disjunction);
@@ -420,20 +408,20 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		if (dataInicio != null) {
 			criteria.add(Restrictions.between("dataEnvio", dataInicio, dataFim));
 		}
-		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO));
-		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO));
-		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO));
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO));
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO));
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO));
 		criteria.addOrder(Order.desc("dataEnvio"));
 		return criteria.list();
 	}
 
 	public List<Arquivo> buscarArquivosDesistenciaCancelamento(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim,
-			TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoEnum> tiposArquivo,
-			List<SituacaoArquivo> situacoesArquivos) {
+			TipoInstituicaoSistema tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoFebraban> tiposArquivo,
+			List<StatusDownload> situacoesArquivos) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.createAlias("tipoArquivo", "tipoArquivo");
 
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
 			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", usuario.getInstituicao()),
 					Restrictions.eq("instituicaoRecebe", usuario.getInstituicao())));
 		}
@@ -449,8 +437,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		if (!situacoesArquivos.isEmpty()) {
 			Disjunction disjunction = Restrictions.disjunction();
 			criteria.createAlias("statusArquivo", "statusArquivo");
-			for (SituacaoArquivo status : situacoesArquivos) {
-				disjunction.add(Restrictions.eq("statusArquivo.situacaoArquivo", status));
+			for (StatusDownload status : situacoesArquivos) {
+				disjunction.add(Restrictions.eq("statusArquivo.statusDownload", status));
 			}
 			criteria.add(disjunction);
 		}
@@ -459,7 +447,7 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 		if (!tiposArquivo.isEmpty()) {
 			Disjunction disjunction = Restrictions.disjunction();
-			for (TipoArquivoEnum tipoArquivo : tiposArquivo) {
+			for (TipoArquivoFebraban tipoArquivo : tiposArquivo) {
 				disjunction.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipoArquivo));
 			}
 			criteria.add(disjunction);
@@ -467,9 +455,9 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		if (dataInicio != null) {
 			criteria.add(Restrictions.between("dataEnvio", dataInicio, dataFim));
 		}
-		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.REMESSA));
-		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.CONFIRMACAO));
-		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoEnum.RETORNO));
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoFebraban.REMESSA));
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoFebraban.CONFIRMACAO));
+		criteria.add(Restrictions.ne("tipoArquivo.tipoArquivo", TipoArquivoFebraban.RETORNO));
 		criteria.addOrder(Order.desc("dataEnvio"));
 		return criteria.list();
 	}
@@ -481,5 +469,76 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		criteria.add(Restrictions.eq("nomeArquivo", nomeArquivo));
 		criteria.setMaxResults(1);
 		return Arquivo.class.cast(criteria.uniqueResult());
+	}
+	
+	/**
+	 * @param instituicao
+	 * @return 
+	 */
+	public List<ViewArquivoPendente> consultarArquivosPendentes(Instituicao instituicao) {
+		List<ViewArquivoPendente> resultados = new ArrayList<>();
+		
+		Query query = getSession().getNamedQuery("findRemessasPendentes");
+		resultados.addAll(query.list());
+		
+		query = getSession().getNamedQuery("findDesistenciasPendentes");
+		resultados.addAll(query.list());
+		
+		query = getSession().getNamedQuery("findCancelamentosPendentes");
+		resultados.addAll(query.list());
+		
+		query = getSession().getNamedQuery("findAutorizacoesPendentes");
+		resultados.addAll(query.list());
+		return resultados;
+	}
+
+	/**
+	 * @param instituicao
+	 * @return
+	 */
+	public List<ViewArquivoPendente> consultarArquivosPendentesCartorio(Instituicao instituicao) {
+		List<ViewArquivoPendente> resultados = new ArrayList<>();
+			
+		Query query = getSession().getNamedQuery("findRemessasPendentesCartorio");
+		query.setParameter("id", instituicao.getId());
+		resultados.addAll(query.list());
+		
+		query = getSession().getNamedQuery("findDesistenciasPendentesCartorio");
+		query.setParameter("id", instituicao.getId());
+		resultados.addAll(query.list());
+		
+		query = getSession().getNamedQuery("findCancelamentosPendentesCartorio");
+		query.setParameter("id", instituicao.getId());
+		resultados.addAll(query.list());
+		
+		query = getSession().getNamedQuery("findAutorizacoesPendentesCartorio");
+		query.setParameter("id", instituicao.getId());
+		resultados.addAll(query.list());
+		return resultados;
+	}
+
+	/**
+	 * @param instituicao
+	 * @return
+	 */
+	public List<ViewArquivoPendente> consultarArquivosPendentesBancoConvenio(Instituicao instituicao) {
+		List<ViewArquivoPendente> resultados = new ArrayList<>();
+		
+		Query query = getSession().getNamedQuery("findRemessasPendentesInstituicao");
+		query.setParameter("id", instituicao.getId());
+		resultados.addAll(query.list());
+		
+		query = getSession().getNamedQuery("findDesistenciasPendentesInstituicao");
+		query.setParameter("id", instituicao.getId());
+		resultados.addAll(query.list());
+		
+		query = getSession().getNamedQuery("findCancelamentosPendentesInstituicao");
+		query.setParameter("id", instituicao.getId());
+		resultados.addAll(query.list());
+		
+		query = getSession().getNamedQuery("findAutorizacoesPendentesInstituicao");
+		query.setParameter("id", instituicao.getId());
+		resultados.addAll(query.list());
+		return resultados;
 	}
 }

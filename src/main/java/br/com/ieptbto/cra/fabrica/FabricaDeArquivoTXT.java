@@ -10,13 +10,13 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.conversor.AbstractFabricaDeArquivo;
 import br.com.ieptbto.cra.conversor.BigDecimalConversor;
-import br.com.ieptbto.cra.conversor.arquivo.CabecalhoConversor;
-import br.com.ieptbto.cra.conversor.arquivo.ConfirmacaoConversor;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorCabecalho;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorCancelamentoProtesto;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorDesistenciaProtesto;
-import br.com.ieptbto.cra.conversor.arquivo.RetornoConversor;
-import br.com.ieptbto.cra.conversor.arquivo.RodapeConversor;
-import br.com.ieptbto.cra.conversor.arquivo.TituloConversor;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorConfirmacao;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorDesistenciaCancelamento;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorRetorno;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorRodape;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorTitulo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Remessa;
@@ -30,7 +30,7 @@ import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.gerador.GeradorDeArquivosTXT;
 
 @SuppressWarnings("rawtypes")
@@ -38,16 +38,15 @@ import br.com.ieptbto.cra.gerador.GeradorDeArquivosTXT;
 public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 	@Autowired
-	private FabricaRemessaConfirmacaoRetorno fabricaRemessaConfirmacaoRetorno;
+	FabricaRemessaConfirmacaoRetorno fabricaRemessaConfirmacaoRetorno;
 	@Autowired
-	private FabricaDesistenciaCancelamento fabricaDesistenciaCancelamento;
-
+	FabricaDesistenciaCancelamento fabricaDesistenciaCancelamento;
 	@Autowired
-	private GeradorDeArquivosTXT geradorDeArquivosTXT;
+	GeradorDeArquivosTXT geradorDeArquivosTXT;
 	@Autowired
-	private ConversorDesistenciaProtesto conversorDesistenciaProtesto;
+	ConversorDesistenciaCancelamento conversorDesistenciaCancelamento;
 	@Autowired
-	private ConversorCancelamentoProtesto conversorCancelamentoProtesto;
+	ConversorCancelamentoProtesto conversorCancelamentoProtesto;
 
 	private static final String PRIMEIRO_DEVEDOR = "1";
 
@@ -56,14 +55,14 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		this.arquivo = arquivo;
 		this.erros = erros;
 
-		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo);
-		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo) || TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo);
+		if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo) || TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoFebraban.RETORNO.equals(tipoArquivo)) {
 			return fabricaRemessaConfirmacaoRetorno.processarRemessaConfirmacaoRetorno(getFile(), getArquivo(), getErros());
-		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
+		} else if (TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
 			return fabricaDesistenciaCancelamento.processarDesistenciaProtesto(getFile(), getArquivo(), getErros());
-		} else if (TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
+		} else if (TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
 			return null;
-		} else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
+		} else if (TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
 			return null;
 		} else {
 			return null;
@@ -74,24 +73,24 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		this.file = file;
 		this.arquivo = remessa.getArquivo();
 
-		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(remessa.getArquivo());
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(remessa.getArquivo());
 
 		RemessaVO remessaVO = new RemessaVO();
 		remessaVO.setTitulos(new ArrayList<TituloVO>());
 		BigDecimal valorTotalTitulos = BigDecimal.ZERO;
-		remessaVO.setCabecalho(new CabecalhoConversor().converter(remessa.getCabecalho(), CabecalhoVO.class));
-		remessaVO.setRodapes(new RodapeConversor().converter(remessa.getRodape(), RodapeVO.class));
+		remessaVO.setCabecalho(new ConversorCabecalho().converter(remessa.getCabecalho(), CabecalhoVO.class));
+		remessaVO.setRodapes(new ConversorRodape().converter(remessa.getRodape(), RodapeVO.class));
 
 		int contSequencial = 2;
 		int quantidadeTitulos = 0;
 		for (Titulo titulo : remessa.getTitulos()) {
 			TituloVO tituloVO = new TituloVO();
-			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
-				tituloVO = new TituloConversor().converter(TituloRemessa.class.cast(titulo), TituloVO.class);
-			} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)) {
-				tituloVO = new ConfirmacaoConversor().converter(Confirmacao.class.cast(titulo), TituloVO.class);
-			} else if (TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
-				tituloVO = new RetornoConversor().converter(Retorno.class.cast(titulo), TituloVO.class);
+			if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
+				tituloVO = new ConversorTitulo().converter(TituloRemessa.class.cast(titulo), TituloVO.class);
+			} else if (TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo)) {
+				tituloVO = new ConversorConfirmacao().converter(Confirmacao.class.cast(titulo), TituloVO.class);
+			} else if (TipoArquivoFebraban.RETORNO.equals(tipoArquivo)) {
+				tituloVO = new ConversorRetorno().converter(Retorno.class.cast(titulo), TituloVO.class);
 			}
 			if (tituloVO.getNumeroControleDevedor() != null && tituloVO.getNumeroControleDevedor().trim().equals(PRIMEIRO_DEVEDOR)) {
 				quantidadeTitulos++;
@@ -118,24 +117,24 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
 		for (Remessa remessa : remessas) {
-			TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(remessa.getArquivo());
+			TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(remessa.getArquivo());
 
 			RemessaVO remessaVO = new RemessaVO();
 			remessaVO.setTitulos(new ArrayList<TituloVO>());
 			BigDecimal valorTotalTitulos = BigDecimal.ZERO;
 
-			remessaVO.setCabecalho(new CabecalhoConversor().converter(remessa.getCabecalho(), CabecalhoVO.class));
-			remessaVO.setRodapes(new RodapeConversor().converter(remessa.getRodape(), RodapeVO.class));
+			remessaVO.setCabecalho(new ConversorCabecalho().converter(remessa.getCabecalho(), CabecalhoVO.class));
+			remessaVO.setRodapes(new ConversorRodape().converter(remessa.getRodape(), RodapeVO.class));
 
 			int contSequencial = 2;
 			for (Titulo titulo : remessa.getTitulos()) {
 				TituloVO tituloVO = new TituloVO();
-				if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
-					tituloVO = new TituloConversor().converter(TituloRemessa.class.cast(titulo), TituloVO.class);
-				} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)) {
-					tituloVO = new ConfirmacaoConversor().converter(Confirmacao.class.cast(titulo), TituloVO.class);
-				} else if (TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
-					tituloVO = new RetornoConversor().converter(Retorno.class.cast(titulo), TituloVO.class);
+				if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
+					tituloVO = new ConversorTitulo().converter(TituloRemessa.class.cast(titulo), TituloVO.class);
+				} else if (TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo)) {
+					tituloVO = new ConversorConfirmacao().converter(Confirmacao.class.cast(titulo), TituloVO.class);
+				} else if (TipoArquivoFebraban.RETORNO.equals(tipoArquivo)) {
+					tituloVO = new ConversorRetorno().converter(Retorno.class.cast(titulo), TituloVO.class);
 				}
 				tituloVO.setNumeroSequencialArquivo(String.valueOf(contSequencial));
 				valorTotalTitulos = valorTotalTitulos.add(titulo.getSaldoTitulo());
@@ -151,13 +150,12 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 			remessasVO.add(remessaVO);
 		}
-
 		gerarTXT(file, remessasVO);
 		return file;
 	}
 
 	public File fabricaArquivoDesistenciaProtestoTXT(File file, RemessaDesistenciaProtesto remessa) {
-		return geradorDeArquivosTXT.gerar(conversorDesistenciaProtesto.converterParaVO(remessa), file);
+		return geradorDeArquivosTXT.gerar(conversorDesistenciaCancelamento.converterParaVO(remessa), file);
 	}
 
 	public File fabricaArquivoCancelamentoProtestoTXT(File file, RemessaCancelamentoProtesto remessa) {

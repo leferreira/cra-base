@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -14,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.bean.TituloFormBean;
+import br.com.ieptbto.cra.beans.TituloBean;
 import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Confirmacao;
@@ -27,13 +28,13 @@ import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.BancoCentralizadoraCodigoCartorio;
-import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
+import br.com.ieptbto.cra.entidade.view.ViewTitulo;
+import br.com.ieptbto.cra.enumeration.regra.CodigoIrregularidade;
+import br.com.ieptbto.cra.enumeration.regra.RegraAgenciaCentralizadoraCodigoCartorio;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
+import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.error.CodigoErro;
-import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.exception.TituloException;
 import br.com.ieptbto.cra.mediator.DesistenciaProtestoMediator;
 
@@ -46,20 +47,35 @@ import br.com.ieptbto.cra.mediator.DesistenciaProtestoMediator;
 public class TituloDAO extends AbstractBaseDAO {
 
 	@Autowired
-	private DesistenciaProtestoMediator desistenciaProtestoMediator;
+	DesistenciaProtestoMediator desistenciaProtestoMediator;
 
-	public Confirmacao buscarConfirmacao(TituloRemessa titulo) {
+	/**
+	 * Buscar Confirmação por títulos
+	 * @param titulo
+	 * @return
+	 */
+	public Confirmacao buscarConfirmacaoPorTitulo(TituloRemessa titulo) {
 		Criteria criteria = getCriteria(Confirmacao.class);
 		criteria.add(Restrictions.eq("titulo", titulo));
 		return Confirmacao.class.cast(criteria.uniqueResult());
 	}
 
-	public Retorno buscarRetorno(TituloRemessa titulo) {
+	/**
+	 * Buscar Retorno por Título
+	 * @param titulo
+	 * @return
+	 */
+	public Retorno buscarRetornoPorTitulo(TituloRemessa titulo) {
 		Criteria criteria = getCriteria(Retorno.class);
 		criteria.add(Restrictions.eq("titulo", titulo));
 		return Retorno.class.cast(criteria.uniqueResult());
 	}
 
+	/**
+	 * Busca o título principal para outros devedores
+	 * @param confirmacao
+	 * @return
+	 */
 	public Retorno buscarRetornoTituloDevedorPrincipal(Confirmacao confirmacao) {
 		Integer numeroProtocolo = Integer.parseInt(confirmacao.getNumeroProtocoloCartorio().trim());
 
@@ -74,13 +90,13 @@ public class TituloDAO extends AbstractBaseDAO {
 		return Retorno.class.cast(criteria.uniqueResult());
 	}
 
-	public List<TituloRemessa> buscarTitulos(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
-			Instituicao bancoConvenio, Instituicao cartorio, TituloFormBean titulo) {
+	public List<TituloRemessa> buscarTitulos(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
+			Instituicao bancoConvenio, Instituicao cartorio, TituloBean titulo) {
 		Instituicao instituicaoUsuario = usuario.getInstituicao();
 
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
-		if (!instituicaoUsuario.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+		if (!instituicaoUsuario.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
 			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoUsuario),
 					Restrictions.eq("remessa.instituicaoDestino", instituicaoUsuario)));
 		}
@@ -138,19 +154,22 @@ public class TituloDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public TituloRemessa buscarTituloPorChave(TituloRemessa titulo) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.add(Restrictions.eq("dataCadastro", titulo.getDataCadastro()));
-		criteria.add(Restrictions.eq("codigoPortador", titulo.getCodigoPortador()));
-		criteria.add(Restrictions.eq("nossoNumero", titulo.getNossoNumero()));
-		if (titulo.getNumeroTitulo() != null) {
-			criteria.add(Restrictions.eq("numeroTitulo", titulo.getNumeroTitulo()));
-		}
-		TituloRemessa tituloRemessa = TituloRemessa.class.cast(criteria.uniqueResult());
-		if (tituloRemessa == null) {
-			throw new InfraException("O Título [ Nosso Número : " + titulo.getNossoNumero() + " ] não existe na CRA !");
-		}
-		return tituloRemessa;
+	public List<ViewTitulo> consultarViewTitulosPorIdRemessa(Integer id) {
+		Query query = getSession().getNamedQuery("findTitulosPorIdRemessaRemessa");
+		query.setParameter("id", id);
+		return query.list();
+	}
+	
+	public List<ViewTitulo> consultarViewTitulosConfirmacaoPorIdRemessa(Integer id) {
+		Query query = getSession().getNamedQuery("findTitulosPorIdRemessaConfirmacao");
+		query.setParameter("id", id);
+		return query.list();
+	}
+	
+	public List<ViewTitulo> consultarViewTitulosRetornoPorIdRemessa(Integer id) {
+		Query query = getSession().getNamedQuery("findTitulosPorIdRemessaRetorno");
+		query.setParameter("id", id);
+		return query.list();
 	}
 
 	public List<Titulo> carregarTitulosGenerico(Arquivo arquivo) {
@@ -228,9 +247,9 @@ public class TituloDAO extends AbstractBaseDAO {
 		TituloRemessa titulo = buscarTituloConfirmacaoSalvo(instituicao, tituloConfirmacao, erros);
 
 		try {
-			BancoCentralizadoraCodigoCartorio banco = BancoCentralizadoraCodigoCartorio.getBanco(tituloConfirmacao.getCodigoPortador());
+			RegraAgenciaCentralizadoraCodigoCartorio banco = RegraAgenciaCentralizadoraCodigoCartorio.getBanco(tituloConfirmacao.getCodigoPortador());
 			if (banco != null) {
-				if (banco.equals(BancoCentralizadoraCodigoCartorio.ITAU)) {
+				if (banco.equals(RegraAgenciaCentralizadoraCodigoCartorio.ITAU)) {
 					Integer codigoCartorio = banco.getCodigoCartorio(titulo.getRemessa().getCabecalho().getCodigoMunicipio());
 					if (codigoCartorio != 0) {
 						tituloConfirmacao.setCodigoCartorio(codigoCartorio);
@@ -277,9 +296,9 @@ public class TituloDAO extends AbstractBaseDAO {
 		TituloRemessa titulo = buscarTituloRetornoSalvo(instituicao, tituloRetorno, erros);
 
 		try {
-			BancoCentralizadoraCodigoCartorio banco = BancoCentralizadoraCodigoCartorio.getBanco(tituloRetorno.getCodigoPortador());
+			RegraAgenciaCentralizadoraCodigoCartorio banco = RegraAgenciaCentralizadoraCodigoCartorio.getBanco(tituloRetorno.getCodigoPortador());
 			if (banco != null) {
-				if (banco.equals(BancoCentralizadoraCodigoCartorio.ITAU)) {
+				if (banco.equals(RegraAgenciaCentralizadoraCodigoCartorio.ITAU)) {
 					Integer codigoCartorio = banco.getCodigoCartorio(titulo.getRemessa().getCabecalho().getCodigoMunicipio());
 					if (codigoCartorio != 0) {
 						tituloRetorno.setCodigoCartorio(codigoCartorio);
@@ -309,7 +328,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	private void verificarProtestoIndevidoERetirado(TituloRemessa titulo, Retorno tituloRetorno, List<Exception> erros) {
 		TipoOcorrencia tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloRetorno.getTipoOcorrencia());
 
-		if (!titulo.getRemessa().getInstituicaoOrigem().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
+		if (!titulo.getRemessa().getInstituicaoOrigem().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CONVENIO)) {
 			if (TipoOcorrencia.PROTESTADO.equals(tipoOcorrencia) || TipoOcorrencia.RETIRADO.equals(tipoOcorrencia)) {
 				List<PedidoDesistencia> pedidosDesistencia = desistenciaProtestoMediator.buscarPedidosDesistenciaProtestoPorTitulo(titulo);
 
@@ -485,12 +504,12 @@ public class TituloDAO extends AbstractBaseDAO {
 	public List<TituloRemessa> carregarTitulos(Remessa remessa) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 
-		if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
+		if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.REMESSA)) {
 			criteria.add(Restrictions.eq("remessa", remessa));
-		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
+		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.CONFIRMACAO)) {
 			criteria.createAlias("confirmacao", "confirmacao");
 			criteria.add(Restrictions.eq("confirmacao.remessa", remessa));
-		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+		} else if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.RETORNO)) {
 			criteria.createAlias("retorno", "retorno");
 			criteria.add(Restrictions.eq("retorno.remessa", remessa));
 		}

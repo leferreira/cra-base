@@ -11,8 +11,7 @@ import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.enumeration.EnumerationSimNao;
-import br.com.ieptbto.cra.enumeration.CraServiceEnum;
+import br.com.ieptbto.cra.enumeration.CraServices;
 
 /**
  * @author Thasso Aráujo
@@ -27,8 +26,8 @@ public class CraServiceConfig extends AbstractEntidade<CraServiceConfig> {
 	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
-	private CraServiceEnum craService;
-	private EnumerationSimNao ativo;
+	private CraServices craService;
+	private boolean status;
 
 	@Override
 	@Id
@@ -40,26 +39,25 @@ public class CraServiceConfig extends AbstractEntidade<CraServiceConfig> {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "CRA_SERVICE", length = 150)
-	public CraServiceEnum getCraService() {
+	public CraServices getCraService() {
 		return craService;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "ATIVO", length = 150)
-	public EnumerationSimNao getAtivo() {
-		return ativo;
+	@Column(name = "STATUS", length = 150)
+	public boolean getStatus() {
+		return status;
 	}
 
 	public void setId(int id) {
 		this.id = id;
 	}
 
-	public void setCraService(CraServiceEnum craService) {
+	public void setCraService(CraServices craService) {
 		this.craService = craService;
 	}
 
-	public void setAtivo(EnumerationSimNao ativo) {
-		this.ativo = ativo;
+	public void setStatus(boolean status) {
+		this.status = status;
 	}
 
 	@Override

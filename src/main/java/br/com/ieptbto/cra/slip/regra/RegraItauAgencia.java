@@ -1,7 +1,7 @@
 package br.com.ieptbto.cra.slip.regra;
 
 import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.enumeration.AgenciasEspeciaisItau;
+import br.com.ieptbto.cra.enumeration.regra.RegraAgenciasEspeciaisItau;
 
 /**
  * @author Thasso Araújo
@@ -17,7 +17,7 @@ public class RegraItauAgencia extends RegraAgenciaBanco {
 
 	private String aplicarRegraAgencia0933(TituloRemessa titulo) {
 		String agenciaItauUnibanco = titulo.getAgenciaCodigoCedente().substring(0, 3);
-		if (agenciaItauUnibanco.equals(AgenciasEspeciaisItau.AGENCIA_0933.getAgencia())) {
+		if (agenciaItauUnibanco.equals(RegraAgenciasEspeciaisItau.AGENCIA_0933.getAgencia())) {
 			setAgencia(titulo.getNumeroTitulo().substring(0,3));
 			return getAgencia();
 		}

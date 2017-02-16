@@ -17,6 +17,11 @@ import br.com.ieptbto.cra.entidade.TituloFiliado;
 @Repository
 public class AvalistaDAO extends AbstractBaseDAO {
 
+	/**
+	 * Salva ou atualiza os dados de um avalista
+	 * @param avalista
+	 * @return
+	 */
 	public Avalista saveOrUpdate(Avalista avalista) {
 		Avalista novoAvalista = new Avalista();
 		try {
@@ -31,7 +36,12 @@ public class AvalistaDAO extends AbstractBaseDAO {
 		return novoAvalista;
 	}
 
-	public void remover(Avalista avalista) {
+	/**
+	 * Removar avalista
+	 * 
+	 * @param avalista
+	 */
+	public Avalista remover(Avalista avalista) {
 		Transaction transaction = getBeginTransation();
 		try {
 			delete(avalista);
@@ -40,8 +50,15 @@ public class AvalistaDAO extends AbstractBaseDAO {
 			transaction.rollback();
 			logger.error(ex.getMessage(), ex);
 		}
+		return avalista;
 	}
 
+	/**
+	 * Busca avalistas cadastrados e vínculados por título filiado
+	 * 
+	 * @param titulo
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public List<Avalista> buscarAvalistasPorTitulo(TituloFiliado titulo) {
 		Criteria criteria = getCriteria(Avalista.class);

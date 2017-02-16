@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 
 /**
  * 
@@ -57,7 +57,7 @@ public class TipoArquivoDAO extends AbstractBaseDAO {
 	}
 
 	@Transactional(readOnly = true)
-	public TipoArquivo buscarPorTipoArquivo(TipoArquivoEnum tipoArquivo) {
+	public TipoArquivo buscarPorTipoArquivo(TipoArquivoFebraban tipoArquivo) {
 		Criteria criteria = getCriteria(TipoArquivo.class);
 		criteria.add(Restrictions.eq("tipoArquivo", tipoArquivo));
 		criteria.addOrder(Order.asc("id"));
@@ -66,26 +66,26 @@ public class TipoArquivoDAO extends AbstractBaseDAO {
 
 	public TipoArquivo buscarTipoArquivo(Arquivo arquivo) {
 		Criteria criteria = getCriteria(TipoArquivo.class);
-		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo.getNomeArquivo().toUpperCase());
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo.getNomeArquivo().toUpperCase());
 		criteria.add(Restrictions.eq("tipoArquivo", tipoArquivo));
 		return TipoArquivo.class.cast(criteria.uniqueResult());
 	}
 
 	public TipoArquivo buscarTipoArquivo(String nomeArquivo) {
 		Criteria criteria = getCriteria(TipoArquivo.class);
-		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(nomeArquivo.toUpperCase());
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(nomeArquivo.toUpperCase());
 		criteria.add(Restrictions.eq("tipoArquivo", tipoArquivo));
 		return TipoArquivo.class.cast(criteria.uniqueResult());
 	}
 
 	public void inserirTipoArquivo(String tipo) {
 		TipoArquivo tipoArquivo = new TipoArquivo();
-		tipoArquivo.setTipoArquivo(TipoArquivoEnum.getTipoArquivoEnum(tipo));
+		tipoArquivo.setTipoArquivo(TipoArquivoFebraban.getTipoArquivoFebraban(tipo));
 
 		salvar(tipoArquivo);
 	}
 
-	public Long buscarSequencialProximoArquivo(Instituicao instituicaoEnvio, TipoArquivoEnum tipoArquivo) {
+	public Long buscarSequencialProximoArquivo(Instituicao instituicaoEnvio, TipoArquivoFebraban tipoArquivo) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.createAlias("tipoArquivo", "tipoArquivo");
 		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", tipoArquivo));

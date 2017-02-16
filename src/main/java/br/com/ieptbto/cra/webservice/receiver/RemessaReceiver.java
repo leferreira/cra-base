@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
 
-import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivoVO;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -33,13 +33,13 @@ import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.ArquivoMediator;
 import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 import br.com.ieptbto.cra.util.DataUtil;
-import br.com.ieptbto.cra.webservice.VO.ComarcaDetalhamentoSerpro;
-import br.com.ieptbto.cra.webservice.VO.Descricao;
-import br.com.ieptbto.cra.webservice.VO.Detalhamento;
-import br.com.ieptbto.cra.webservice.VO.Mensagem;
-import br.com.ieptbto.cra.webservice.VO.MensagemCra;
-import br.com.ieptbto.cra.webservice.VO.MensagemXml;
-import br.com.ieptbto.cra.webservice.VO.MensagemXmlSerpro;
+import br.com.ieptbto.cra.webservice.vo.AbstractMensagemVO;
+import br.com.ieptbto.cra.webservice.vo.ComarcaDetalhamentoSerproVO;
+import br.com.ieptbto.cra.webservice.vo.DescricaoVO;
+import br.com.ieptbto.cra.webservice.vo.DetalhamentoVO;
+import br.com.ieptbto.cra.webservice.vo.MensagemVO;
+import br.com.ieptbto.cra.webservice.vo.MensagemXmlSerproVO;
+import br.com.ieptbto.cra.webservice.vo.MensagemXmlVO;
 
 /**
  * @author Thasso Araújo
@@ -49,17 +49,17 @@ import br.com.ieptbto.cra.webservice.VO.MensagemXmlSerpro;
 public class RemessaReceiver extends AbstractArquivoReceiver {
 
 	@Autowired
-	private ArquivoMediator arquivoMediator;
+	ArquivoMediator arquivoMediator;
 
 	@Override
-	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {
+	public AbstractMensagemVO receber(Usuario usuario, String nomeArquivo, String dados) {
 		ArquivoRemessaVO arquivoRemessaVO = null;
 		if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.SERPRO)) {
 			arquivoRemessaVO = converterStringArquivoVOSerpro(dados);
 		} else {
 			arquivoRemessaVO = converterStringArquivoVO(dados);
 		}
-		List<RemessaVO> remessasVO = ConversorArquivoVO.conversorParaArquivoRemessa(arquivoRemessaVO);
+		List<RemessaVO> remessasVO = ConversorArquivo.conversorParaArquivoRemessa(arquivoRemessaVO);
 
 		List<Exception> erros = new ArrayList<Exception>();
 		Arquivo arquivo = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo, erros);
@@ -137,11 +137,11 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 		return arquivo;
 	}
 
-	private MensagemXml gerarRespostaSucesso(Arquivo arquivo, Usuario usuario) {
-		List<Mensagem> mensagens = new ArrayList<Mensagem>();
-		MensagemXml mensagemXml = new MensagemXml();
-		Descricao descricao = new Descricao();
-		Detalhamento detalhamento = new Detalhamento();
+	private MensagemXmlVO gerarRespostaSucesso(Arquivo arquivo, Usuario usuario) {
+		List<MensagemVO> mensagens = new ArrayList<MensagemVO>();
+		MensagemXmlVO mensagemXml = new MensagemXmlVO();
+		DescricaoVO descricao = new DescricaoVO();
+		DetalhamentoVO detalhamento = new DetalhamentoVO();
 		detalhamento.setMensagem(mensagens);
 
 		mensagemXml.setDescricao(descricao);
@@ -150,13 +150,13 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 		mensagemXml.setDescricaoFinal(CodigoErro.CRA_SUCESSO.getDescricao());
 
 		descricao.setDataEnvio(LocalDateTime.now().toString(DataUtil.PADRAO_FORMATACAO_DATAHORASEG));
-		descricao.setTipoArquivo(Descricao.XML_UPLOAD_REMESSA);
+		descricao.setTipoArquivo(DescricaoVO.XML_UPLOAD_REMESSA);
 		descricao.setDataMovimento(arquivo.getDataEnvio().toString(DataUtil.PADRAO_FORMATACAO_DATA));
 		descricao.setPortador(arquivo.getInstituicaoEnvio().getCodigoCompensacao());
 		descricao.setUsuario(usuario.getNome());
 
 		for (Remessa remessa : arquivo.getRemessas()) {
-			Mensagem mensagem = new Mensagem();
+			MensagemVO mensagem = new MensagemVO();
 			mensagem.setCodigo(CodigoErro.CRA_SUCESSO.getCodigo());
 			mensagem.setMunicipio(remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE());
 			mensagem.setDescricao("Município: " + remessa.getInstituicaoDestino().getMunicipio().getCodigoIBGE().toString() + " - "
@@ -167,13 +167,13 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 		return mensagemXml;
 	}
 
-	private MensagemXmlSerpro gerarRespostaSerproSucesso(Arquivo arquivo, Usuario usuario) {
-		MensagemXmlSerpro mensagemSerpro = new MensagemXmlSerpro();
+	private MensagemXmlSerproVO gerarRespostaSerproSucesso(Arquivo arquivo, Usuario usuario) {
+		MensagemXmlSerproVO mensagemSerpro = new MensagemXmlSerproVO();
 		mensagemSerpro.setNomeArquivo(arquivo.getNomeArquivo());
 
-		List<ComarcaDetalhamentoSerpro> listaComarcas = new ArrayList<ComarcaDetalhamentoSerpro>();
+		List<ComarcaDetalhamentoSerproVO> listaComarcas = new ArrayList<ComarcaDetalhamentoSerproVO>();
 		for (Remessa remessa : arquivo.getRemessas()) {
-			ComarcaDetalhamentoSerpro comarcaDetalhamento = new ComarcaDetalhamentoSerpro();
+			ComarcaDetalhamentoSerproVO comarcaDetalhamento = new ComarcaDetalhamentoSerproVO();
 			comarcaDetalhamento.setCodigoMunicipio(remessa.getCabecalho().getCodigoMunicipio());
 			comarcaDetalhamento
 					.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
@@ -189,7 +189,7 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 		return mensagemSerpro;
 	}
 
-	private MensagemCra gerarRespostaErrosRemessa(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+	private AbstractMensagemVO gerarRespostaErrosRemessa(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.SERPRO)) {
 			return gerarRespostaSerproErrosRemessa(arquivo, usuario, erros);
 		}
@@ -197,11 +197,11 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 		return gerarRespostaErro(arquivo, usuario, erros);
 	}
 
-	private MensagemCra gerarRespostaErro(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
-		List<Mensagem> mensagens = new ArrayList<Mensagem>();
-		MensagemXml mensagemXml = new MensagemXml();
-		Descricao descricao = new Descricao();
-		Detalhamento detalhamento = new Detalhamento();
+	private AbstractMensagemVO gerarRespostaErro(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+		List<MensagemVO> mensagens = new ArrayList<MensagemVO>();
+		MensagemXmlVO mensagemXml = new MensagemXmlVO();
+		DescricaoVO descricao = new DescricaoVO();
+		DetalhamentoVO detalhamento = new DetalhamentoVO();
 		detalhamento.setMensagem(mensagens);
 
 		mensagemXml.setDescricao(descricao);
@@ -210,7 +210,7 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 		mensagemXml.setDescricaoFinal(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao());
 
 		descricao.setDataEnvio(LocalDateTime.now().toString(DataUtil.PADRAO_FORMATACAO_DATAHORASEG));
-		descricao.setTipoArquivo(Descricao.XML_UPLOAD_CONFIRMACAO);
+		descricao.setTipoArquivo(DescricaoVO.XML_UPLOAD_CONFIRMACAO);
 		descricao.setDataMovimento(arquivo.getDataEnvio().toString(DataUtil.PADRAO_FORMATACAO_DATA));
 		descricao.setPortador(arquivo.getInstituicaoEnvio().getCodigoCompensacao());
 		descricao.setUsuario(usuario.getNome());
@@ -220,7 +220,7 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 		for (Exception ex : erros) {
 			if (CabecalhoRodapeException.class.isInstance(ex)) {
 				CabecalhoRodapeException exception = CabecalhoRodapeException.class.cast(ex);
-				Mensagem mensagem = new Mensagem();
+				MensagemVO mensagem = new MensagemVO();
 				mensagem.setCodigo(exception.getCodigoErro().getCodigo());
 				mensagem.setDescricao(exception.getDescricao());
 				mensagem.setMunicipio(exception.getCodigoMunicipio());
@@ -236,16 +236,16 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 		return mensagemXml;
 	}
 
-	private MensagemCra gerarRespostaSerproErrosRemessa(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
-		MensagemXmlSerpro mensagemSerpro = new MensagemXmlSerpro();
+	private AbstractMensagemVO gerarRespostaSerproErrosRemessa(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
+		MensagemXmlSerproVO mensagemSerpro = new MensagemXmlSerproVO();
 		mensagemSerpro.setNomeArquivo(arquivo.getNomeArquivo());
-		mensagemSerpro.setComarca(new ArrayList<ComarcaDetalhamentoSerpro>());
+		mensagemSerpro.setComarca(new ArrayList<ComarcaDetalhamentoSerproVO>());
 
 		for (Exception ex : erros) {
 			if (CabecalhoRodapeException.class.isInstance(ex)) {
 				CabecalhoRodapeException exception = CabecalhoRodapeException.class.cast(ex);
 
-				ComarcaDetalhamentoSerpro comarcaDetalhamento = new ComarcaDetalhamentoSerpro();
+				ComarcaDetalhamentoSerproVO comarcaDetalhamento = new ComarcaDetalhamentoSerproVO();
 				comarcaDetalhamento.setCodigoMunicipio(exception.getCodigoMunicipio());
 				comarcaDetalhamento
 						.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));

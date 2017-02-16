@@ -24,9 +24,9 @@ import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -37,12 +37,12 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class RemessaDAO extends AbstractBaseDAO {
 
-	public List<Remessa> buscarRemessaAvancado(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
-			Instituicao bancoConvenio, Instituicao cartorio, List<TipoArquivoEnum> tiposArquivo, List<SituacaoArquivo> situacoesArquivos) {
+	public List<Remessa> buscarRemessaAvancado(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
+			Instituicao bancoConvenio, Instituicao cartorio, List<TipoArquivoFebraban> tiposArquivo, List<StatusDownload> situacoesArquivos) {
 		Criteria criteria = getCriteria(Remessa.class);
 		criteria.createAlias("arquivo", "a");
 
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
 			criteria.add(Restrictions.or(Restrictions.eq("instituicaoDestino", usuario.getInstituicao()),
 					Restrictions.eq("instituicaoOrigem", usuario.getInstituicao())));
 		}
@@ -52,15 +52,15 @@ public class RemessaDAO extends AbstractBaseDAO {
 		if (!tiposArquivo.isEmpty()) {
 			criteria.createAlias("a.tipoArquivo", "tipo");
 			Disjunction disjunction = Restrictions.disjunction();
-			for (TipoArquivoEnum tipo : tiposArquivo) {
+			for (TipoArquivoFebraban tipo : tiposArquivo) {
 				disjunction.add(Restrictions.eq("tipo.tipoArquivo", tipo));
 			}
 			criteria.add(disjunction);
 		}
 		if (!situacoesArquivos.isEmpty()) {
 			Disjunction disj = Restrictions.disjunction();
-			for (SituacaoArquivo situacao : situacoesArquivos) {
-				disj.add(Restrictions.eq("statusRemessa", situacao));
+			for (StatusDownload situacao : situacoesArquivos) {
+				disj.add(Restrictions.eq("statusDownload", situacao));
 			}
 			criteria.add(disj);
 		}
@@ -111,15 +111,15 @@ public class RemessaDAO extends AbstractBaseDAO {
 
 		Hibernate.initialize(instituicao.getTipoInstituicao());
 		StringBuffer sql = new StringBuffer();
-		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
 			sql.append(
 					"SELECT t.remessa_id from TB_TITULO t INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa LEFT OUTER JOIN tb_confirmacao AS conf ON t.id_titulo=conf.titulo_id WHERE conf.id_confirmacao is null AND rem.arquivo_id>18088 GROUP BY t.remessa_id ORDER BY t.remessa_id ASC");
-		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CARTORIO)) {
 			sql.append(
 					"SELECT t.remessa_id from TB_TITULO t INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa LEFT OUTER JOIN tb_confirmacao AS conf ON t.id_titulo=conf.titulo_id WHERE conf.id_confirmacao is null AND rem.instituicao_destino_id= "
 							+ instituicao.getId() + " AND rem.arquivo_id>18088 GROUP BY t.remessa_id ORDER BY t.remessa_id ASC");
-		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)
-				|| instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.INSTITUICAO_FINANCEIRA)
+				|| instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CONVENIO)) {
 			sql.append(
 					"SELECT t.remessa_id from TB_TITULO t INNER JOIN tb_remessa rem ON t.remessa_id=rem.id_remessa LEFT OUTER JOIN tb_confirmacao AS conf ON t.id_titulo=conf.titulo_id WHERE conf.id_confirmacao is null AND rem.instituicao_origem_id= "
 							+ instituicao.getId() + " AND rem.arquivo_id>18088 GROUP BY t.remessa_id ORDER BY t.remessa_id ASC");

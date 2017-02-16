@@ -6,7 +6,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 
 /**
  * 
@@ -42,7 +42,7 @@ public class CabecalhoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(CabecalhoRemessa.class);
 		criteria.add(Restrictions.eq("numeroCodigoPortador", cabecalhoRemessa.getNumeroCodigoPortador()));
 		criteria.add(Restrictions.eq("codigoMunicipio", cabecalhoRemessa.getCodigoMunicipio()));
-		criteria.add(Restrictions.eq("identificacaoTransacaoTipo", TipoArquivoEnum.RETORNO.getIdentificacaoTransacaoCabecalho()));
+		criteria.add(Restrictions.eq("identificacaoTransacaoTipo", TipoArquivoFebraban.RETORNO.getIdentificacaoTransacaoCabecalho()));
 		criteria.setMaxResults(1);
 		criteria.addOrder(Order.desc("id"));
 		return CabecalhoRemessa.class.cast(criteria.uniqueResult());
@@ -52,7 +52,7 @@ public class CabecalhoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(CabecalhoRemessa.class);
 		criteria.add(Restrictions.eq("numeroCodigoPortador", codigoPortador));
 		criteria.add(Restrictions.eq("codigoMunicipio", codigoMunicipio));
-		criteria.add(Restrictions.eq("identificacaoTransacaoTipo", TipoArquivoEnum.REMESSA.getIdentificacaoTransacaoCabecalho()));
+		criteria.add(Restrictions.eq("identificacaoTransacaoTipo", TipoArquivoFebraban.REMESSA.getIdentificacaoTransacaoCabecalho()));
 		criteria.setMaxResults(1);
 		criteria.addOrder(Order.desc("id"));
 		return CabecalhoRemessa.class.cast(criteria.uniqueResult());
@@ -62,7 +62,7 @@ public class CabecalhoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(CabecalhoRemessa.class);
 		criteria.add(Restrictions.eq("numeroCodigoPortador", cabecalhoRemessa.getNumeroCodigoPortador()));
 		criteria.add(Restrictions.eq("codigoMunicipio", cabecalhoRemessa.getCodigoMunicipio()));
-		criteria.add(Restrictions.eq("identificacaoTransacaoTipo", TipoArquivoEnum.REMESSA.getIdentificacaoTransacaoCabecalho()));
+		criteria.add(Restrictions.eq("identificacaoTransacaoTipo", TipoArquivoFebraban.REMESSA.getIdentificacaoTransacaoCabecalho()));
 		criteria.setMaxResults(1);
 		criteria.addOrder(Order.desc("id"));
 		return CabecalhoRemessa.class.cast(criteria.uniqueResult());

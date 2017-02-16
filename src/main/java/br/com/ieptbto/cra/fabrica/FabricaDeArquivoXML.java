@@ -19,8 +19,8 @@ import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
 
 import br.com.ieptbto.cra.conversor.AbstractFabricaDeArquivo;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivoVO;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorDesistenciaProtesto;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivo;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorDesistenciaCancelamento;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorRemessaArquivo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.vo.ArquivoDesistenciaProtestoVO;
@@ -30,7 +30,7 @@ import br.com.ieptbto.cra.entidade.vo.ConfirmacaoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RetornoVO;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.TipoArquivoMediator;
@@ -44,11 +44,11 @@ import br.com.ieptbto.cra.mediator.TipoArquivoMediator;
 public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 
 	@Autowired
-	private TipoArquivoMediator tipoArquivoMediator;
+	TipoArquivoMediator tipoArquivoMediator;
 	@Autowired
-	private ConversorRemessaArquivo conversorRemessaArquivo;
+	ConversorRemessaArquivo conversorRemessaArquivo;
 	@Autowired
-	private ConversorDesistenciaProtesto conversorDesistenciaProtesto;
+	ConversorDesistenciaCancelamento conversorDesistenciaCancelamento;
 
 	/**
 	 * @param arquivoFisico
@@ -57,25 +57,20 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 	 * @return
 	 */
 	public Arquivo converter(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
-		if (TipoArquivoEnum.REMESSA.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
+		if (TipoArquivoFebraban.REMESSA.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
 			return converterRemessa(arquivoFisico, arquivo, erros);
-		} else if (TipoArquivoEnum.CONFIRMACAO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
+		} else if (TipoArquivoFebraban.CONFIRMACAO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
 			return converterConfirmacao(arquivoFisico, arquivo, erros);
-		} else if (TipoArquivoEnum.RETORNO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
+		} else if (TipoArquivoFebraban.RETORNO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
 			return converterRetorno(arquivoFisico, arquivo, erros);
-		} else if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
+		} else if (TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
 			return converterDesistenciaProtesto(arquivoFisico, arquivo, erros);
-		} else if (TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
-			logger.error(
-					"Não é possível o envio de arquivos do tipo Cancelamento de Protesto desta forma. Favor entrar em contato com a CRA....");
-			throw new InfraException(
-					"Não é possível o envio de arquivos do tipo Cancelamento de Protesto desta forma. Favor entrar em contato com a CRA...");
-
-		} else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
-			logger.error(
-					"Não é possível o envio de arquivos do tipo Autorização de Cancelamento desta forma. Favor entrar em contato com a CRA...");
-			throw new InfraException(
-					"Não é possível o envio de arquivos do tipo Autorização de Cancelamento desta forma. Favor entrar em contato com a CRA...");
+		} else if (TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
+			logger.error("Não é possível o envio de arquivos do tipo Cancelamento de Protesto desta forma. Favor entrar em contato com a CRA....");
+			throw new InfraException("Não é possível o envio de arquivos do tipo Cancelamento de Protesto desta forma. Favor entrar em contato com a CRA...");
+		} else if (TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO.equals(arquivo.getTipoArquivo().getTipoArquivo())) {
+			logger.error("Não é possível o envio de arquivos do tipo Autorização de Cancelamento desta forma. Favor entrar em contato com a CRA...");
+			throw new InfraException("Não é possível o envio de arquivos do tipo Autorização de Cancelamento desta forma. Favor entrar em contato com a CRA...");
 		}
 		return null;
 	}
@@ -105,7 +100,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 
 			InputStream xml = new ByteArrayInputStream(xmlGerado.getBytes());
 			arquivoVO = (ArquivoDesistenciaProtestoVO) unmarshaller.unmarshal(new InputSource(xml));
-			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO));
+			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO));
 		} catch (JAXBException e) {
 			System.out.println(e.getMessage());
 			logger.error(e.getMessage(), e.getCause());
@@ -114,7 +109,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 			logger.error(e.getMessage(), e.getCause());
 			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		}
-		return conversorDesistenciaProtesto.converterParaArquivo(arquivoVO, arquivo, erros);
+		return conversorDesistenciaCancelamento.converterParaArquivo(arquivoVO, arquivo, erros);
 	}
 
 	private Arquivo converterRetorno(File arquivoFisico, Arquivo arquivo, List<Exception> erros) {
@@ -132,7 +127,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 
 			InputStream xml = new ByteArrayInputStream(xmlGerado.getBytes());
 			arquivoVO = (RetornoVO) unmarshaller.unmarshal(new InputSource(xml));
-			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.RETORNO));
+			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoFebraban.RETORNO));
 
 		} catch (JAXBException e) {
 			logger.error(e.getMessage(), e.getCause());
@@ -142,7 +137,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		}
 		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
-		remessasVO.add(ConversorArquivoVO.conversorParaArquivoRetorno(arquivoVO));
+		remessasVO.add(ConversorArquivo.conversorParaArquivoRetorno(arquivoVO));
 		return conversorRemessaArquivo.converterParaArquivo(remessasVO, arquivo, erros);
 	}
 
@@ -163,7 +158,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 
 			InputStream xml = new ByteArrayInputStream(xmlGerado.getBytes());
 			arquivoVO = (ConfirmacaoVO) unmarshaller.unmarshal(new InputSource(xml));
-			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.CONFIRMACAO));
+			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoFebraban.CONFIRMACAO));
 
 		} catch (JAXBException e) {
 			logger.error(e.getMessage(), e.getCause());
@@ -173,7 +168,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		}
 		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
-		remessasVO.add(ConversorArquivoVO.conversorParaArquivoConfirmacao(arquivoVO));
+		remessasVO.add(ConversorArquivo.conversorParaArquivoConfirmacao(arquivoVO));
 		return conversorRemessaArquivo.converterParaArquivo(remessasVO, arquivo, erros);
 	}
 
@@ -235,7 +230,7 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 			logger.error(e.getMessage(), e);
 			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		}
-		List<RemessaVO> remessasVO = ConversorArquivoVO.conversorParaArquivoRemessa(arquivoVO);
+		List<RemessaVO> remessasVO = ConversorArquivo.conversorParaArquivoRemessa(arquivoVO);
 		return conversorRemessaArquivo.converterParaArquivo(remessasVO, arquivo, erros);
 	}
 }

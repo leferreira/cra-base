@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 
 /**
  * @author Thasso Araújo
@@ -219,7 +219,7 @@ public class CabecalhoCnpVO extends AbstractArquivoVO {
 
 	@Override
 	public String getIdentificacaoRegistro() {
-		return TipoRegistro.CABECALHO.getConstante();
+		return TipoIdentificacaoRegistro.CABECALHO.getConstante();
 	}
 
 	public String getEndereco() {

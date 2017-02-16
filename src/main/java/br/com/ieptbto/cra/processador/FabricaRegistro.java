@@ -10,7 +10,7 @@ import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
-import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 import br.com.ieptbto.cra.util.CraConstructorUtils;
@@ -26,16 +26,16 @@ public class FabricaRegistro extends Processador {
 	private static final Map<String, Class<? extends AbstractArquivoVO>> TIPOS_ARQUIVOS;
 	static {
 		HashMap<String, Class<? extends AbstractArquivoVO>> map = new HashMap<String, Class<? extends AbstractArquivoVO>>();
-		map.put(TipoRegistro.TITULO.getConstante(), TituloVO.class);
-		map.put(TipoRegistro.CABECALHO.getConstante(), CabecalhoVO.class);
-		map.put(TipoRegistro.RODAPE.getConstante(), RodapeVO.class);
+		map.put(TipoIdentificacaoRegistro.TITULO.getConstante(), TituloVO.class);
+		map.put(TipoIdentificacaoRegistro.CABECALHO.getConstante(), CabecalhoVO.class);
+		map.put(TipoIdentificacaoRegistro.RODAPE.getConstante(), RodapeVO.class);
 
 		TIPOS_ARQUIVOS = Collections.unmodifiableMap(map);
 	}
 
 	private String linha;
 	private String tipoReg;
-	private TipoRegistro tipoRegistro;
+	private TipoIdentificacaoRegistro tipoRegistro;
 
 	/**
 	 * @param linha
@@ -47,7 +47,7 @@ public class FabricaRegistro extends Processador {
 		validarTamanhoLinha(linha);
 		this.tipoReg = StringUtils.left(linha, 1);
 		this.linha = linha;
-		this.tipoRegistro = TipoRegistro.get(linha);
+		this.tipoRegistro = TipoIdentificacaoRegistro.get(linha);
 	}
 
 	/**
@@ -98,7 +98,7 @@ public class FabricaRegistro extends Processador {
 		return CraConstructorUtils.newInstance(classRegistro);
 	}
 
-	public TipoRegistro getTipoRegistro() {
+	public TipoIdentificacaoRegistro getTipoIdentificacaoRegistro() {
 		return tipoRegistro;
 	}
 }

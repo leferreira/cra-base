@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import br.com.ieptbto.cra.entidade.LayoutFiliado;
-import br.com.ieptbto.cra.enumeration.CampoLayout;
+import br.com.ieptbto.cra.enumeration.CampoLayoutPersonalizado;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.CpfCnpjUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
@@ -18,9 +18,9 @@ public class TemplateLayoutEmpresa {
 	private static final Logger logger = Logger.getLogger(TemplateLayoutEmpresa.class);
 
 	private String valor;
-	private CampoLayout campo;
+	private CampoLayoutPersonalizado campo;
 
-	public TemplateLayoutEmpresa(String valor, CampoLayout campo) {
+	public TemplateLayoutEmpresa(String valor, CampoLayoutPersonalizado campo) {
 		this.valor = valor;
 		this.campo = campo;
 	}
@@ -29,7 +29,7 @@ public class TemplateLayoutEmpresa {
 		return valor;
 	}
 
-	public CampoLayout getCampo() {
+	public CampoLayoutPersonalizado getCampo() {
 		return campo;
 	}
 
@@ -37,7 +37,7 @@ public class TemplateLayoutEmpresa {
 		this.valor = valor;
 	}
 
-	public void setCampo(CampoLayout campo) {
+	public void setCampo(CampoLayoutPersonalizado campo) {
 		this.campo = campo;
 	}
 
@@ -49,13 +49,13 @@ public class TemplateLayoutEmpresa {
 				if (listaLayout.getOrdem() == i + 1) {
 					TemplateLayoutEmpresa template = new TemplateLayoutEmpresa(dados[i], listaLayout.getCampo());
 					listaCampos.add(template);
-					if (listaLayout.getCampo().equals(CampoLayout.CIDADEDEVEDOR) && StringUtils.isNotBlank(dados[i])) {
+					if (listaLayout.getCampo().equals(CampoLayoutPersonalizado.CIDADEDEVEDOR) && StringUtils.isNotBlank(dados[i])) {
 						cidade = RemoverAcentosUtil.removeAcentos(dados[i].trim());
-					} else if (listaLayout.getCampo().equals(CampoLayout.CIDADEDEVEDOR) && StringUtils.isBlank(dados[i])) {
+					} else if (listaLayout.getCampo().equals(CampoLayoutPersonalizado.CIDADEDEVEDOR) && StringUtils.isBlank(dados[i])) {
 						cidade = "Palmas";
 						logger.error("cidade não informada. " + Arrays.toString(dados));
 					}
-					if (listaLayout.getCampo().equals(CampoLayout.NUMEROIDENTIFICACAODEVEDOR) && StringUtils.isNotBlank(dados[i])) {
+					if (listaLayout.getCampo().equals(CampoLayoutPersonalizado.NUMEROIDENTIFICACAODEVEDOR) && StringUtils.isNotBlank(dados[i])) {
 						if (dados[i] != null) {
 							dados[i] = dados[i].replace(".", "").replace("-", "").replace("/", "").trim();
 						}
@@ -87,7 +87,7 @@ public class TemplateLayoutEmpresa {
 		if (bool == false) {
 			System.out.println("Documento inválido = " + dados);
 		}
-		listaCampos.add(new TemplateLayoutEmpresa(tipo, CampoLayout.TIPOIDENTIFICACAODEVEDOR));
+		listaCampos.add(new TemplateLayoutEmpresa(tipo, CampoLayoutPersonalizado.TIPOIDENTIFICACAODEVEDOR));
 		return dados;
 	}
 }

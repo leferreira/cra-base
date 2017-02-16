@@ -10,7 +10,7 @@ import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 
@@ -45,13 +45,12 @@ public class RegraDuplicidade extends RegraEntrada {
 
 	private void verificarDuplicidade() {
 		if (this.file != null) {
-
-			TipoArquivoEnum tipoArquivo = null;
+			TipoArquivoFebraban tipoArquivo = null;
 
 			if (arquivo.getNomeArquivo().length() == 12) {
-				tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo.getNomeArquivo().substring(0, 1));
+				tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo.getNomeArquivo().substring(0, 1));
 			} else if (arquivo.getNomeArquivo().length() == 13) {
-				tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo.getNomeArquivo().substring(0, 2));
+				tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo.getNomeArquivo().substring(0, 2));
 			} else {
 				throw new InfraException("Não foi possível identificar o tipo do arquivo ! Verifique o nome do arquivo !");
 			}
@@ -61,14 +60,14 @@ public class RegraDuplicidade extends RegraEntrada {
 		}
 	}
 
-	private Instituicao buscarInstituicaoEnvioArquivo(TipoArquivoEnum tipoArquivo) {
+	private Instituicao buscarInstituicaoEnvioArquivo(TipoArquivoFebraban tipoArquivo) {
 
-		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA)) {
+		if (tipoArquivo.equals(TipoArquivoFebraban.REMESSA)) {
 			return instituicaoMediator.getInstituicaoPorCodigoPortador(arquivo.getNomeArquivo().substring(1, 4));
-		} else if (tipoArquivo.equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO) || tipoArquivo.equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)
-				|| tipoArquivo.equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
+		} else if (tipoArquivo.equals(TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO) || tipoArquivo.equals(TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO)
+				|| tipoArquivo.equals(TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO)) {
 			return instituicaoMediator.getInstituicaoPorCodigoPortador(arquivo.getNomeArquivo().substring(2, 5));
-		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO) || tipoArquivo.equals(TipoArquivoEnum.RETORNO)) {
+		} else if (tipoArquivo.equals(TipoArquivoFebraban.CONFIRMACAO) || tipoArquivo.equals(TipoArquivoFebraban.RETORNO)) {
 			return instituicaoMediator.getCartorioPorCodigoIBGE(arquivo.getRemessas().get(0).getCabecalho().getCodigoMunicipio());
 		} else {
 			throw new InfraException("Não foi possível validar a duplicidade do arquivo !");

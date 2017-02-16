@@ -31,7 +31,7 @@ public class InstituicaoMediator {
 	}
 
 	public boolean isInstituicaoNaoExiste(Instituicao instituicao) {
-		Instituicao instituicaoNova = instituicaoDAO.buscarInstituicao(instituicao.getNomeFantasia());
+		Instituicao instituicaoNova = instituicaoDAO.buscarInstituicaoPorNomeFantasia(instituicao.getNomeFantasia());
 		if (instituicaoNova == null) {
 			return true;
 		}
@@ -115,7 +115,7 @@ public class InstituicaoMediator {
 	}
 
 	public Instituicao buscarCRA() {
-		return instituicaoDAO.buscarInstituicao("CRA");
+		return instituicaoDAO.buscarInstituicaoPorNomeFantasia("CRA");
 	}
 
 	public Instituicao buscarInstituicaoPorNomeCidade(String cidade) {

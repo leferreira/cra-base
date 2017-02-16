@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 
 /**
  * @author Thasso Araújo
@@ -34,9 +33,5 @@ public abstract class RegraTitulo {
 
 	public void setErros(List<Exception> erros) {
 		this.erros = erros;
-	}
-
-	public TipoArquivoEnum getTipoArquivo(Arquivo arquivo) {
-		return arquivo.getTipoArquivo().getTipoArquivo();
 	}
 }

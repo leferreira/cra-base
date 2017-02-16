@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.TipoArquivoDAO;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 
 /**
  * @author Thasso Araújo
@@ -27,7 +27,7 @@ public class TipoArquivoMediator {
 		return tipoArquivoDao.buscarTiposArquivo();
 	}
 
-	public TipoArquivo buscarTipoPorNome(TipoArquivoEnum tipoArquivo) {
+	public TipoArquivo buscarTipoPorNome(TipoArquivoFebraban tipoArquivo) {
 		return tipoArquivoDao.buscarPorTipoArquivo(tipoArquivo);
 	}
 }

@@ -16,8 +16,8 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.processador.ProcessadorDesistenciaCancelamentoConveniada;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.processador.ProcessadorDesistenciaCancelamentoConvenio;
 import br.com.ieptbto.cra.processador.ProcessadorRemessaConveniada;
 
 /**
@@ -38,7 +38,7 @@ public class ConvenioMediator extends BaseMediator {
 	@Autowired
 	ProcessadorRemessaConveniada processadorRemessaConveniada;
 	@Autowired
-	ProcessadorDesistenciaCancelamentoConveniada processadorDesistenciaCancelamentoConveniada;
+	ProcessadorDesistenciaCancelamentoConvenio processadorDesistenciaCancelamentoConveniada;
 
 	/**
 	 * Buscar títulos do convênio para geração de arquivos de remessa
@@ -76,13 +76,12 @@ public class ConvenioMediator extends BaseMediator {
 		List<Arquivo> arquivos = processadorDesistenciaCancelamentoConveniada.processaDesistenciasCancelamentos(solicitacoes, user);
 
 		for (Arquivo arquivo : arquivos) {
-
-			TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo);
-			if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
+			TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo);
+			if (TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
 				arquivoDAO.salvar(arquivo, user, new ArrayList<Exception>());
-			} else if (TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
+			} else if (TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
 				cancelamentoDAO.salvarCancelamento(arquivo, user, new ArrayList<Exception>());
-			} else if (TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
+			} else if (TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
 				autorizacaoCancelamentoDAO.salvarAutorizacao(arquivo, user, new ArrayList<Exception>());
 			}
 		}

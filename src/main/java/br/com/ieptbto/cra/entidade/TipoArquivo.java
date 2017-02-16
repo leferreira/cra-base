@@ -14,7 +14,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalTime;
 
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 
 /**
  * 
@@ -31,7 +31,7 @@ public class TipoArquivo extends AbstractEntidade<TipoArquivo> {
 	private static final long serialVersionUID = 1L;
 
 	private int id;
-	private TipoArquivoEnum tipoArquivo;
+	private TipoArquivoFebraban tipoArquivo;
 	private LocalTime horaEnvioInicio;
 	private LocalTime horaEnvioFim;
 
@@ -44,7 +44,7 @@ public class TipoArquivo extends AbstractEntidade<TipoArquivo> {
 
 	@Column(name = "TIPO_ARQUIVO", unique = true)
 	@Enumerated(EnumType.STRING)
-	public TipoArquivoEnum getTipoArquivo() {
+	public TipoArquivoFebraban getTipoArquivo() {
 		return tipoArquivo;
 	}
 
@@ -70,7 +70,7 @@ public class TipoArquivo extends AbstractEntidade<TipoArquivo> {
 		this.id = id;
 	}
 
-	public void setTipoArquivo(TipoArquivoEnum tipoArquivo) {
+	public void setTipoArquivo(TipoArquivoFebraban tipoArquivo) {
 		this.tipoArquivo = tipoArquivo;
 	}
 

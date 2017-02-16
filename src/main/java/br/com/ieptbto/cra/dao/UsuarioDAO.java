@@ -42,7 +42,7 @@ public class UsuarioDAO extends AbstractBaseDAO {
 	public void incluirUsuarioDeTeste() {
 		Usuario usuario = new Usuario();
 		instituicaoDAO.inserirInstituicaoInicial("Palmas");
-		Instituicao cra = instituicaoDAO.buscarInstituicao("CRA");
+		Instituicao cra = instituicaoDAO.buscarInstituicaoPorNomeFantasia("CRA");
 		GrupoUsuario grupo = grupoUsuarioDAO.buscarGrupoInicial("Super Administrador");
 		Transaction transaction = getBeginTransation();
 		try {

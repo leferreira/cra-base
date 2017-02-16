@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
 
-import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivoVO;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -27,11 +27,11 @@ import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.exception.TituloException;
 import br.com.ieptbto.cra.mediator.ArquivoMediator;
 import br.com.ieptbto.cra.util.DataUtil;
-import br.com.ieptbto.cra.webservice.VO.Descricao;
-import br.com.ieptbto.cra.webservice.VO.Detalhamento;
-import br.com.ieptbto.cra.webservice.VO.Mensagem;
-import br.com.ieptbto.cra.webservice.VO.MensagemCra;
-import br.com.ieptbto.cra.webservice.VO.MensagemXml;
+import br.com.ieptbto.cra.webservice.vo.AbstractMensagemVO;
+import br.com.ieptbto.cra.webservice.vo.DescricaoVO;
+import br.com.ieptbto.cra.webservice.vo.DetalhamentoVO;
+import br.com.ieptbto.cra.webservice.vo.MensagemVO;
+import br.com.ieptbto.cra.webservice.vo.MensagemXmlVO;
 
 /**
  * @author Thasso Araújo
@@ -41,12 +41,12 @@ import br.com.ieptbto.cra.webservice.VO.MensagemXml;
 public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 
 	@Autowired
-	private ArquivoMediator arquivoMediator;
+	ArquivoMediator arquivoMediator;
 
 	@Override
-	public MensagemCra receber(Usuario usuario, String nomeArquivo, String dados) {
+	public AbstractMensagemVO receber(Usuario usuario, String nomeArquivo, String dados) {
 		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
-		remessasVO.add(ConversorArquivoVO.conversorParaArquivoConfirmacao(converterStringArquivoVO(dados, nomeArquivo)));
+		remessasVO.add(ConversorArquivo.conversorParaArquivoConfirmacao(converterStringArquivoVO(dados, nomeArquivo)));
 
 		List<Exception> erros = new ArrayList<Exception>();
 		Arquivo arquivo = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo, erros);
@@ -79,11 +79,11 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 		return arquivo;
 	}
 
-	private MensagemXml gerarRespostaSucesso(Arquivo arquivo, Usuario usuario) {
-		List<Mensagem> mensagens = new ArrayList<Mensagem>();
-		MensagemXml mensagemXml = new MensagemXml();
-		Descricao descricao = new Descricao();
-		Detalhamento detalhamento = new Detalhamento();
+	private MensagemXmlVO gerarRespostaSucesso(Arquivo arquivo, Usuario usuario) {
+		List<MensagemVO> mensagens = new ArrayList<MensagemVO>();
+		MensagemXmlVO mensagemXml = new MensagemXmlVO();
+		DescricaoVO descricao = new DescricaoVO();
+		DetalhamentoVO detalhamento = new DetalhamentoVO();
 		detalhamento.setMensagem(mensagens);
 
 		mensagemXml.setDescricao(descricao);
@@ -92,13 +92,13 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 		mensagemXml.setDescricaoFinal(CodigoErro.CRA_SUCESSO.getDescricao());
 
 		descricao.setDataEnvio(LocalDateTime.now().toString(DataUtil.PADRAO_FORMATACAO_DATAHORASEG));
-		descricao.setTipoArquivo(Descricao.XML_UPLOAD_CONFIRMACAO);
+		descricao.setTipoArquivo(DescricaoVO.XML_UPLOAD_CONFIRMACAO);
 		descricao.setDataMovimento(arquivo.getDataEnvio().toString(DataUtil.PADRAO_FORMATACAO_DATA));
 		descricao.setPortador(arquivo.getInstituicaoEnvio().getCodigoCompensacao());
 		descricao.setUsuario(usuario.getNome());
 
 		for (Remessa remessa : arquivo.getRemessas()) {
-			Mensagem mensagem = new Mensagem();
+			MensagemVO mensagem = new MensagemVO();
 			mensagem.setCodigo(CodigoErro.CRA_SUCESSO.getCodigo());
 			mensagem.setMunicipio(remessa.getCabecalho().getCodigoMunicipio());
 			mensagem.setDescricao("Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
@@ -108,11 +108,11 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 		return mensagemXml;
 	}
 
-	private MensagemCra gerarRespostaErrosConfirmacao(Arquivo arquivo, Usuario usuario, List<Exception> erros, String dados) {
-		List<Mensagem> mensagens = new ArrayList<Mensagem>();
-		MensagemXml mensagemXml = new MensagemXml();
-		Descricao descricao = new Descricao();
-		Detalhamento detalhamento = new Detalhamento();
+	private AbstractMensagemVO gerarRespostaErrosConfirmacao(Arquivo arquivo, Usuario usuario, List<Exception> erros, String dados) {
+		List<MensagemVO> mensagens = new ArrayList<MensagemVO>();
+		MensagemXmlVO mensagemXml = new MensagemXmlVO();
+		DescricaoVO descricao = new DescricaoVO();
+		DetalhamentoVO detalhamento = new DetalhamentoVO();
 		detalhamento.setMensagem(mensagens);
 
 		mensagemXml.setDescricao(descricao);
@@ -121,7 +121,7 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 		mensagemXml.setDescricaoFinal(CodigoErro.CRA_ERRO_NO_PROCESSAMENTO_DO_ARQUIVO.getDescricao());
 
 		descricao.setDataEnvio(LocalDateTime.now().toString(DataUtil.PADRAO_FORMATACAO_DATAHORASEG));
-		descricao.setTipoArquivo(Descricao.XML_UPLOAD_CONFIRMACAO);
+		descricao.setTipoArquivo(DescricaoVO.XML_UPLOAD_CONFIRMACAO);
 		descricao.setDataMovimento(arquivo.getDataEnvio().toString(DataUtil.PADRAO_FORMATACAO_DATA));
 		descricao.setPortador(arquivo.getInstituicaoEnvio().getCodigoCompensacao());
 		descricao.setUsuario(usuario.getNome());
@@ -131,7 +131,7 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 		for (Exception ex : erros) {
 			if (TituloException.class.isInstance(ex)) {
 				TituloException exception = TituloException.class.cast(ex);
-				Mensagem mensagem = new Mensagem();
+				MensagemVO mensagem = new MensagemVO();
 				mensagem.setCodigo(exception.getCodigoErro().getCodigo());
 				mensagem.setDescricao(exception.getDescricao());
 				mensagem.setNossoNumero(exception.getNossoNumero());
@@ -145,7 +145,7 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 			}
 			if (CabecalhoRodapeException.class.isInstance(ex)) {
 				CabecalhoRodapeException exception = CabecalhoRodapeException.class.cast(ex);
-				Mensagem mensagem = new Mensagem();
+				MensagemVO mensagem = new MensagemVO();
 				mensagem.setCodigo(exception.getCodigoErro().getCodigo());
 				mensagem.setDescricao(exception.getDescricao());
 				mensagens.add(mensagem);

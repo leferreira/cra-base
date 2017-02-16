@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
-import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
@@ -526,6 +526,6 @@ public class TituloCnpVO extends AbstractArquivoVO {
 
 	@Override
 	public String getIdentificacaoRegistro() {
-		return TipoRegistro.TITULO.getConstante();
+		return TipoIdentificacaoRegistro.TITULO.getConstante();
 	}
 }

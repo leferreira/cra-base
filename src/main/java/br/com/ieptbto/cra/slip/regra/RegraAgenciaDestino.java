@@ -9,8 +9,8 @@ import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
 import br.com.ieptbto.cra.entidade.AgenciaBradesco;
 import br.com.ieptbto.cra.entidade.AgenciaCAF;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.enumeration.BancoTipoRegraBasicaInstrumento;
 import br.com.ieptbto.cra.enumeration.TipoRegraInstrumento;
+import br.com.ieptbto.cra.enumeration.regra.RegraBasicaInstrumentoBanco;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -39,19 +39,18 @@ public class RegraAgenciaDestino {
 	}
 
 	private void processar() {
-		BancoTipoRegraBasicaInstrumento bancoTipoRegra =
-				BancoTipoRegraBasicaInstrumento.getBancoRegraBasicaInstrumento(getTitulo().getCodigoPortador());
+		RegraBasicaInstrumentoBanco bancoTipoRegra = RegraBasicaInstrumentoBanco.getBancoRegraBasicaInstrumento(getTitulo().getCodigoPortador());
 
 		if (bancoTipoRegra != null) {
-			if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.ITAU)) {
+			if (bancoTipoRegra.equals(RegraBasicaInstrumentoBanco.ITAU)) {
 				aplicarRegraItau();
-			} else if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BRADESCO)) {
+			} else if (bancoTipoRegra.equals(RegraBasicaInstrumentoBanco.BRADESCO)) {
 				aplicarRegraBradesco();
-			} else if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BANCO_DO_BRASIL)) {
+			} else if (bancoTipoRegra.equals(RegraBasicaInstrumentoBanco.BANCO_DO_BRASIL)) {
 				aplicarRegraBB(bancoTipoRegra);
-			} else if (bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.SANTANDER) || bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.HSBC)
-					|| bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.MERCANTIL) || bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BRB)
-					|| bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.BIC) || bancoTipoRegra.equals(BancoTipoRegraBasicaInstrumento.SAFRA)) {
+			} else if (bancoTipoRegra.equals(RegraBasicaInstrumentoBanco.SANTANDER) || bancoTipoRegra.equals(RegraBasicaInstrumentoBanco.HSBC)
+					|| bancoTipoRegra.equals(RegraBasicaInstrumentoBanco.MERCANTIL) || bancoTipoRegra.equals(RegraBasicaInstrumentoBanco.BRB)
+					|| bancoTipoRegra.equals(RegraBasicaInstrumentoBanco.BIC) || bancoTipoRegra.equals(RegraBasicaInstrumentoBanco.SAFRA)) {
 				aplicarRegraOutros(bancoTipoRegra);
 			}
 		} else {
@@ -62,10 +61,10 @@ public class RegraAgenciaDestino {
 	private void aplicarRegraItau() {
 		String agenciaItau = new RegraItauAgencia().aplicarRegraEspecifica(getTitulo());
 		if (agenciaItau == null) {
-			agenciaItau = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.ITAU);
+			agenciaItau = aplicarRegraBasica(RegraBasicaInstrumentoBanco.ITAU);
 		}
 
-		AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaItau, BancoTipoRegraBasicaInstrumento.ITAU);
+		AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaCAFPorCodigoRegra(agenciaItau, RegraBasicaInstrumentoBanco.ITAU);
 		if (agenciaCAF != null) {
 			setAgenciaDestino(agenciaCAF.getCodigoAgencia());
 			setMunicipioDestino(agenciaCAF.getNomeAgencia());
@@ -79,14 +78,14 @@ public class RegraAgenciaDestino {
 
 	private void aplicarRegraBradesco() {
 		String agenciaBradesco = new RegraBradescoAgencia().aplicarRegraEspecifica(getTitulo());
-		AgenciaBradesco agenciaDePara = arquivoDeParaDAO.buscarAgenciaArquivoDeParaBradesco(getTitulo());
+		AgenciaBradesco agenciaDePara = arquivoDeParaDAO.buscarAgenciaBradescoPorTitulo(getTitulo());
 
 		if (agenciaDePara != null) {
 			setAgenciaDestino(agenciaDePara.getAgenciaDestino());
 
 		} else {
-			agenciaBradesco = aplicarRegraBasica(BancoTipoRegraBasicaInstrumento.BRADESCO);
-			AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaBradesco, BancoTipoRegraBasicaInstrumento.BRADESCO);
+			agenciaBradesco = aplicarRegraBasica(RegraBasicaInstrumentoBanco.BRADESCO);
+			AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaCAFPorCodigoRegra(agenciaBradesco, RegraBasicaInstrumentoBanco.BRADESCO);
 
 			if (agenciaCAF != null) {
 				setAgenciaDestino(agenciaCAF.getCodigoAgencia());
@@ -100,29 +99,27 @@ public class RegraAgenciaDestino {
 		}
 	}
 
-	private void aplicarRegraBB(BancoTipoRegraBasicaInstrumento bancoRegra) {
+	private void aplicarRegraBB(RegraBasicaInstrumentoBanco bancoRegra) {
 		String numeroContrato = new RegraBancoDoBrasilAgencia().aplicarRegraEspecifica(getTitulo());
-		AgenciaBancoDoBrasil agenciaBB = arquivoDeParaDAO.buscarAgenciaArquivoBancoDoBrasil(numeroContrato);
+		AgenciaBancoDoBrasil agenciaBB = arquivoDeParaDAO.buscarAgenciaBancoDoBrasilPorContrato(numeroContrato);
 		if (agenciaBB == null) {
-			new InfraException(
-					"Não foi possível identificar a agência Banco do Brasil para o título Nosso Número " + getTitulo().getNossoNumero() + ".");
+			new InfraException("Não foi possível identificar a agência Banco do Brasil para o título Nosso Número " + getTitulo().getNossoNumero() + ".");
 		} else {
 
-			AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agenciaBB.getAgenciaDestino(), bancoRegra);
+			AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaCAFPorCodigoRegra(agenciaBB.getAgenciaDestino(), bancoRegra);
 			if (agenciaCAF != null) {
 				setAgenciaDestino(agenciaCAF.getCodigoAgencia());
 				setMunicipioDestino(agenciaCAF.getCidade());
 				setUfDestino(agenciaCAF.getUf());
 			} else {
-				new InfraException(
-						"Não foi possível identificar a agência Banco do Brasil para o título Nosso Número " + getTitulo().getNossoNumero() + ".");
+				new InfraException("Não foi possível identificar a agência Banco do Brasil para o título Nosso Número " + getTitulo().getNossoNumero() + ".");
 			}
 		}
 	}
 
-	private void aplicarRegraOutros(BancoTipoRegraBasicaInstrumento bancoTipoRegra) {
+	private void aplicarRegraOutros(RegraBasicaInstrumentoBanco bancoTipoRegra) {
 		String agencia = aplicarRegraBasica(bancoTipoRegra);
-		AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaArquivoCAF(agencia, bancoTipoRegra);
+		AgenciaCAF agenciaCAF = arquivoDeParaDAO.buscarAgenciaCAFPorCodigoRegra(agencia, bancoTipoRegra);
 
 		if (agenciaCAF != null) {
 			setAgenciaDestino(agenciaCAF.getCodigoAgencia());
@@ -135,7 +132,7 @@ public class RegraAgenciaDestino {
 		}
 	}
 
-	private String aplicarRegraBasica(BancoTipoRegraBasicaInstrumento bancoTipoRegra) {
+	private String aplicarRegraBasica(RegraBasicaInstrumentoBanco bancoTipoRegra) {
 		TipoRegraInstrumento tipoRegra = bancoTipoRegra.getTipoRegraBasicaInstrumento();
 		return getTitulo().getAgenciaCodigoCedente().substring(tipoRegra.getPosicaoInicialCampo(), tipoRegra.getPosicaoFinalCampo());
 	}

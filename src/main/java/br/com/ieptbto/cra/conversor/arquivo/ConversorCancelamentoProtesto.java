@@ -29,25 +29,25 @@ public class ConversorCancelamentoProtesto {
 		RemessaDesistenciaProtestoVO remessaVO = new RemessaDesistenciaProtestoVO();
 		remessaVO.setPedidoDesistencias(new ArrayList<DesistenciaProtestoVO>());
 
-		remessaVO.setCabecalhoArquivo(new CabecalhoArquivoDesistenciaProtestoConversor().converter(remessaCancelamentoProtesto.getCabecalho(), CabecalhoArquivoDesistenciaProtestoVO.class));
+		remessaVO.setCabecalhoArquivo(new ConversorCabecalhoArquivoDesistenciaCancelamento().converter(remessaCancelamentoProtesto.getCabecalho(), CabecalhoArquivoDesistenciaProtestoVO.class));
 
-		remessaVO.setRodapeArquivo(new RodapeArquivoDesistenciaProtestoVOConversor().converter(remessaCancelamentoProtesto.getRodape(),
+		remessaVO.setRodapeArquivo(new ConversorRodapeArquivoDesistenciaCancelamento().converter(remessaCancelamentoProtesto.getRodape(),
 		        RodapeArquivoDesistenciaProtestoVO.class));
 
 		for (CancelamentoProtesto cancelamento : remessaCancelamentoProtesto.getCancelamentoProtesto()) {
 			DesistenciaProtestoVO cancelamentoVO = new DesistenciaProtestoVO();
 			cancelamentoVO.setRegistroDesistenciaProtesto(new ArrayList<RegistroDesistenciaProtestoVO>());
 			cancelamentoVO.setRegistroDesistenciaProtesto(new ArrayList<RegistroDesistenciaProtestoVO>());
-			cancelamentoVO.setCabecalhoCartorio(new CabecalhoCartorioDesistenciaProtestoConversor().converter(
+			cancelamentoVO.setCabecalhoCartorio(new ConversorCabecalhoCartorioDesistenciaCancelamento().converter(
 			        cancelamento.getCabecalhoCartorio(), CabecalhoCartorioDesistenciaProtestoVO.class));
 
 			for (PedidoCancelamento pedido : cancelamento.getCancelamentos()) {
-				RegistroDesistenciaProtestoVO registro = new RegistroCancelamentoProtestoConversor().converter(pedido, RegistroDesistenciaProtestoVO.class);
+				RegistroDesistenciaProtestoVO registro = new ConversorRegistroCancelamentoProtesto().converter(pedido, RegistroDesistenciaProtestoVO.class);
 				registro.setSolicitacaoCancelamentoSustacao("C");
 				cancelamentoVO.getRegistroDesistenciaProtesto().add(registro);
 			}
 
-			cancelamentoVO.setRodapeCartorio(new RodapeCartorioDesistenciaProtestoConversor().converter(cancelamento.getRodapeCartorio(),
+			cancelamentoVO.setRodapeCartorio(new ConversorRodapeCartorioDesistenciaCancelamento().converter(cancelamento.getRodapeCartorio(),
 			        RodapeCartorioDesistenciaProtestoVO.class));
 			remessaVO.getPedidoDesistencias().add(cancelamentoVO);
 		}
@@ -58,25 +58,25 @@ public class ConversorCancelamentoProtesto {
 		RemessaDesistenciaProtestoVO remessaVO = new RemessaDesistenciaProtestoVO();
 		remessaVO.setPedidoDesistencias(new ArrayList<DesistenciaProtestoVO>());
 
-		remessaVO.setCabecalhoArquivo(new CabecalhoArquivoDesistenciaProtestoConversor().converter(remessaAutorizacaoCancelamento.getCabecalho(), CabecalhoArquivoDesistenciaProtestoVO.class));
+		remessaVO.setCabecalhoArquivo(new ConversorCabecalhoArquivoDesistenciaCancelamento().converter(remessaAutorizacaoCancelamento.getCabecalho(), CabecalhoArquivoDesistenciaProtestoVO.class));
 
-		remessaVO.setRodapeArquivo(new RodapeArquivoDesistenciaProtestoVOConversor().converter(remessaAutorizacaoCancelamento.getRodape(),
+		remessaVO.setRodapeArquivo(new ConversorRodapeArquivoDesistenciaCancelamento().converter(remessaAutorizacaoCancelamento.getRodape(),
 		        RodapeArquivoDesistenciaProtestoVO.class));
 
 		for (AutorizacaoCancelamento ac : remessaAutorizacaoCancelamento.getAutorizacaoCancelamento()) {
 			DesistenciaProtestoVO acVO = new DesistenciaProtestoVO();
 			acVO.setRegistroDesistenciaProtesto(new ArrayList<RegistroDesistenciaProtestoVO>());
 			acVO.setRegistroDesistenciaProtesto(new ArrayList<RegistroDesistenciaProtestoVO>());
-			acVO.setCabecalhoCartorio(new CabecalhoCartorioDesistenciaProtestoConversor().converter(
+			acVO.setCabecalhoCartorio(new ConversorCabecalhoCartorioDesistenciaCancelamento().converter(
 			        ac.getCabecalhoCartorio(), CabecalhoCartorioDesistenciaProtestoVO.class));
 
 			for (PedidoAutorizacaoCancelamento pedido : ac.getAutorizacoesCancelamentos()) {
-				RegistroDesistenciaProtestoVO registro = new RegistroAutorizacaoCancelamentoConversor().converter(pedido, RegistroDesistenciaProtestoVO.class);
+				RegistroDesistenciaProtestoVO registro = new ConversorRegistroAutorizacaoCancelamento().converter(pedido, RegistroDesistenciaProtestoVO.class);
 				registro.setSolicitacaoCancelamentoSustacao("S");
 				acVO.getRegistroDesistenciaProtesto().add(registro);
 			}
 
-			acVO.setRodapeCartorio(new RodapeCartorioDesistenciaProtestoConversor().converter(ac.getRodapeCartorio(),
+			acVO.setRodapeCartorio(new ConversorRodapeCartorioDesistenciaCancelamento().converter(ac.getRodapeCartorio(),
 			        RodapeCartorioDesistenciaProtestoVO.class));
 			remessaVO.getPedidoDesistencias().add(acVO);
 		}

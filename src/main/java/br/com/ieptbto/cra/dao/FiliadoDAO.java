@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import br.com.ieptbto.cra.entidade.Filiado;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.SetorFiliado;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -85,7 +85,7 @@ public class FiliadoDAO extends AbstractBaseDAO {
 		if (instituicao.getId() == 0) {
 			return new ArrayList<Filiado>();
 		}
-		if (instituicao.getTipoInstituicao().getTipoInstituicao() != TipoInstituicaoCRA.CRA) {
+		if (instituicao.getTipoInstituicao().getTipoInstituicao() != TipoInstituicaoSistema.CRA) {
 			criteria.add(Restrictions.eq("instituicaoConvenio", instituicao));
 		}
 		criteria.addOrder(Order.asc("razaoSocial"));

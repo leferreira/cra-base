@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 
@@ -21,12 +21,12 @@ public class ValidarCabecalho extends RegraValidacao {
 	@Override
 	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 
-		TipoArquivoEnum tipoArquivo = getTipoArquivo(arquivo);
-		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo);
+		if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
 			validarQuantidadeRegistrosArquivo(arquivo, usuario, erros);
-		} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)) {
+		} else if (TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo)) {
 			verificarCamposEmBrancoEQuantidadeDeRegistros(arquivo, usuario, erros);
-		} else if (TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
+		} else if (TipoArquivoFebraban.RETORNO.equals(tipoArquivo)) {
 			verificarCamposEmBrancoEQuantidadeDeRegistros(arquivo, usuario, erros);
 		}
 	}

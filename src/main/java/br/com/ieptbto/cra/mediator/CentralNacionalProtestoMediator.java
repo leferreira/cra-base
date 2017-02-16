@@ -28,8 +28,8 @@ import br.com.ieptbto.cra.entidade.vo.CabecalhoCnpVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaCnpVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeCnpVO;
 import br.com.ieptbto.cra.entidade.vo.TituloCnpVO;
-import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.regra.FabricaRegraValidacaoCNP;
 import br.com.ieptbto.cra.util.DataUtil;
@@ -77,12 +77,14 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 	 * @param arquivoCnpVO
 	 * @return
 	 */
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = false)
 	public LoteCnp processarLoteDiario(Usuario user, ArquivoCnpVO arquivoCnpVO) {
 		LoteCnp lote = new LoteCnp();
 		lote.setDataRecebimento(new LocalDate().toDate());
 		lote.setInstituicaoOrigem(user.getInstituicao());
 		lote.setRegistrosCnp(new ArrayList<RegistroCnp>());
+		lote.setLote5anos(false);
+		lote.setStatus(false);
 
 		for (RemessaCnpVO remessaCnp : arquivoCnpVO.getRemessasCnpVO()) {
 			for (TituloCnpVO tituloCnpVO : remessaCnp.getTitulosCnpVO()) {
@@ -228,7 +230,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 
 	private RodapeCnpVO getRodapeCnpVO(Integer sequencial) {
 		RodapeCnpVO rodape = new RodapeCnpVO();
-		rodape.setCodigoRegistro(TipoRegistro.RODAPE.getConstante());
+		rodape.setCodigoRegistro(TipoIdentificacaoRegistro.RODAPE.getConstante());
 		rodape.setSequenciaRegistro(Integer.toString(sequencial));
 		return rodape;
 	}
@@ -335,7 +337,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 			String linha;
 			while ((linha = reader.readLine()) != null) {
 
-				if (linha.substring(0, 1).trim().equals(TipoRegistro.TITULO.getConstante())) {
+				if (linha.substring(0, 1).trim().equals(TipoIdentificacaoRegistro.TITULO.getConstante())) {
 					RegistroCnp registro = RegistroCnpConversor.converterLinhaSerasa(linha);
 					if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
 						if (validarRegistroCnp.validarProtesto(registro)) {

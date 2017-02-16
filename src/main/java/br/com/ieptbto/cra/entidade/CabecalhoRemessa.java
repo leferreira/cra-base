@@ -19,7 +19,7 @@ import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
-import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -38,7 +38,7 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> implements Fie
 	private int id;
 	private Remessa remessa;
 
-	private TipoRegistro identificacaoRegistro;
+	private TipoIdentificacaoRegistro identificacaoRegistro;
 	private String numeroCodigoPortador;
 	private String nomePortador;
 	private LocalDate dataMovimento;
@@ -72,7 +72,7 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> implements Fie
 	}
 
 	@Column(name = "TIPO_REGISTRO_ID")
-	public TipoRegistro getIdentificacaoRegistro() {
+	public TipoIdentificacaoRegistro getIdentificacaoRegistro() {
 		return identificacaoRegistro;
 	}
 
@@ -186,7 +186,7 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> implements Fie
 		this.remessa = remessa;
 	}
 
-	public void setIdentificacaoRegistro(TipoRegistro identificacaoRegistro) {
+	public void setIdentificacaoRegistro(TipoIdentificacaoRegistro identificacaoRegistro) {
 		this.identificacaoRegistro = identificacaoRegistro;
 	}
 
@@ -255,7 +255,7 @@ public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> implements Fie
 		cabecalho.setCodigoMunicipio(cabecalhoVO.getCodigoMunicipio().trim());
 		cabecalho.setComplementoRegistro(cabecalhoVO.getComplementoRegistro());
 		cabecalho.setDataMovimento(verificaDataMovimento(cabecalhoVO.getDataMovimento()));
-		cabecalho.setIdentificacaoRegistro(TipoRegistro.get(cabecalhoVO.getIdentificacaoRegistro()));
+		cabecalho.setIdentificacaoRegistro(TipoIdentificacaoRegistro.get(cabecalhoVO.getIdentificacaoRegistro()));
 		cabecalho.setIdentificacaoTransacaoDestinatario(cabecalhoVO.getIdentificacaoTransacaoDestinatario());
 		cabecalho.setIdentificacaoTransacaoRemetente(cabecalhoVO.getIdentificacaoTransacaoRemetente());
 		cabecalho.setIdentificacaoTransacaoTipo(cabecalhoVO.getIdentificacaoTransacaoTipo());

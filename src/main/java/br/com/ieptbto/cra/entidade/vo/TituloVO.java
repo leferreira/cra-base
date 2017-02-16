@@ -18,7 +18,7 @@ import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
-import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
+import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
@@ -774,8 +774,8 @@ public class TituloVO extends AbstractArquivoVO {
 		}
 
 		if (!titulo.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-			tituloVO.setValorGravacaoEletronica(
-					new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(titulo.getRemessa().getInstituicaoDestino().getValorConfirmacao()));
+			tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(
+					titulo.getRemessa().getInstituicaoDestino().getValorConfirmacao()));
 		}
 		return tituloVO;
 	}

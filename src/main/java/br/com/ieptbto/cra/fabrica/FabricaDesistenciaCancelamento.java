@@ -12,11 +12,11 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.conversor.arquivo.CabecalhoArquivoDesistenciaProtestoConversor;
-import br.com.ieptbto.cra.conversor.arquivo.CabecalhoCartorioDesistenciaProtestoConversor;
-import br.com.ieptbto.cra.conversor.arquivo.RegistroDesistenciaProtestoConversor;
-import br.com.ieptbto.cra.conversor.arquivo.RodapeArquivoDesistenciaProtestoVOConversor;
-import br.com.ieptbto.cra.conversor.arquivo.RodapeCartorioDesistenciaProtestoConversor;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorCabecalhoArquivoDesistenciaCancelamento;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorCabecalhoCartorioDesistenciaCancelamento;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorRegistroDesistenciaProtesto;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorRodapeArquivoDesistenciaCancelamento;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorRodapeCartorioDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoArquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoCartorio;
@@ -87,34 +87,32 @@ public class FabricaDesistenciaCancelamento {
 
 		if (TipoRegistroDesistenciaProtesto.HEADER_APRESENTANTE.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			CabecalhoArquivoDesistenciaProtestoVO cabecalhoVO = CabecalhoArquivoDesistenciaProtestoVO.class.cast(registro);
-			CabecalhoArquivo cabecalhoArquivo = new CabecalhoArquivoDesistenciaProtestoConversor().converter(CabecalhoArquivo.class, cabecalhoVO);
+			CabecalhoArquivo cabecalhoArquivo = new ConversorCabecalhoArquivoDesistenciaCancelamento().converter(CabecalhoArquivo.class, cabecalhoVO);
 			remessa.setCabecalho(cabecalhoArquivo);
 
 		} else if (TipoRegistroDesistenciaProtesto.HEADER_CARTORIO.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			desistenciaProtesto = new DesistenciaProtesto();
 			desistenciaProtesto.setDesistencias(new ArrayList<PedidoDesistencia>());
 			CabecalhoCartorioDesistenciaProtestoVO cabecalhoCartorioVO = CabecalhoCartorioDesistenciaProtestoVO.class.cast(registro);
-			CabecalhoCartorio cabecalhoCartorio =
-					new CabecalhoCartorioDesistenciaProtestoConversor().converter(CabecalhoCartorio.class, cabecalhoCartorioVO);
+			CabecalhoCartorio cabecalhoCartorio = new ConversorCabecalhoCartorioDesistenciaCancelamento().converter(CabecalhoCartorio.class, cabecalhoCartorioVO);
 			desistenciaProtesto.setCabecalhoCartorio(cabecalhoCartorio);
 
 		} else if (TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			RegistroDesistenciaProtestoVO tituloDesistenciaProtesto = RegistroDesistenciaProtestoVO.class.cast(registro);
-			PedidoDesistencia pedidoDesistencia =
-					new RegistroDesistenciaProtestoConversor().converter(PedidoDesistencia.class, tituloDesistenciaProtesto);
+			PedidoDesistencia pedidoDesistencia = new ConversorRegistroDesistenciaProtesto().converter(PedidoDesistencia.class, tituloDesistenciaProtesto);
 			desistenciaProtesto.getDesistencias().add(pedidoDesistencia);
 			pedidoDesistencia.setDesistenciaProtesto(desistenciaProtesto);
 
 		} else if (TipoRegistroDesistenciaProtesto.TRAILLER_CARTORIO.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			RodapeCartorioDesistenciaProtestoVO rodapeCartorioVO = RodapeCartorioDesistenciaProtestoVO.class.cast(registro);
-			RodapeCartorio rodapeCartorio = new RodapeCartorioDesistenciaProtestoConversor().converter(RodapeCartorio.class, rodapeCartorioVO);
+			RodapeCartorio rodapeCartorio = new ConversorRodapeCartorioDesistenciaCancelamento().converter(RodapeCartorio.class, rodapeCartorioVO);
 			desistenciaProtesto.setRodapeCartorio(rodapeCartorio);
 			remessa.getDesistenciaProtesto().add(desistenciaProtesto);
 			desistenciaProtesto.setRemessaDesistenciaProtesto(remessa);
 
 		} else if (TipoRegistroDesistenciaProtesto.TRAILLER_APRESENTANTE.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			RodapeArquivoDesistenciaProtestoVO rodapeArquivoVO = RodapeArquivoDesistenciaProtestoVO.class.cast(registro);
-			RodapeArquivo rodapeArquivo = new RodapeArquivoDesistenciaProtestoVOConversor().converter(RodapeArquivo.class, rodapeArquivoVO);
+			RodapeArquivo rodapeArquivo = new ConversorRodapeArquivoDesistenciaCancelamento().converter(RodapeArquivo.class, rodapeArquivoVO);
 			remessa.setRodape(rodapeArquivo);
 
 		} else {

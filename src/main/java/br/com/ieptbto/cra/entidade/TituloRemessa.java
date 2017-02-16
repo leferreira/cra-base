@@ -26,10 +26,10 @@ import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
-import br.com.ieptbto.cra.conversor.arquivo.TituloConversor;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorTitulo;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
-import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
-import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
+import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
@@ -493,11 +493,11 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	}
 
 	public static TituloRemessa parseTituloVO(TituloVO tituloVO) {
-		return new TituloConversor().converter(TituloRemessa.class, tituloVO);
+		return new ConversorTitulo().converter(TituloRemessa.class, tituloVO);
 	}
 
 	public void parseTituloFiliado(TituloFiliado tituloFiliado) {
-		this.setIdentificacaoRegistro(TipoRegistro.TITULO);
+		this.setIdentificacaoRegistro(TipoIdentificacaoRegistro.TITULO);
 		this.setAgenciaCodigoCedente(tituloFiliado.getFiliado().getCodigoFiliado());
 		this.setCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
 		this.setNomeCedenteFavorecido(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getRazaoSocial()));
@@ -532,7 +532,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	}
 
 	public void parseAvalista(TituloFiliado tituloFiliado, Avalista avalista) {
-		this.setIdentificacaoRegistro(TipoRegistro.TITULO);
+		this.setIdentificacaoRegistro(TipoIdentificacaoRegistro.TITULO);
 		this.setAgenciaCodigoCedente(tituloFiliado.getFiliado().getCodigoFiliado());
 		this.setCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
 		this.setNomeCedenteFavorecido(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getRazaoSocial()));

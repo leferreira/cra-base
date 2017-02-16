@@ -8,7 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.bean.TituloOcorrenciaBean;
+import br.com.ieptbto.cra.beans.TituloOcorrenciaBean;
 import br.com.ieptbto.cra.entidade.Batimento;
 import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Deposito;
@@ -22,7 +22,7 @@ import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
-import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
+import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 
 /**
  * @author Thasso Araújo
@@ -38,17 +38,21 @@ public class HistoricoMediator extends BaseMediator {
 	@Autowired
 	TituloMediator tituloMediator;
 	@Autowired
+	ConfirmacaoMediator confirmacaoMediator;
+	@Autowired
+	RetornoMediator retornoMediator;
+	@Autowired
 	DesistenciaProtestoMediator desistenciaMediator;
 	@Autowired
 	CancelamentoProtestoMediator cancelamentoProtestoMediator;
 	@Autowired
 	AutorizacaoCancelamentoMediator autorizacaoCancelamentoMediator;
 	@Autowired
+	SolicitacaoDesistenciaCancelamentoMediator solicitacaoMediator;
+	@Autowired
 	BatimentoMediator batimentoMediator;
 	@Autowired
 	InstrumentoProtestoMediator instrumentoMediator;
-	@Autowired
-	RetornoMediator retornoMediator;
 
 	private List<TituloOcorrenciaBean> ocorrenciasTitulo;
 
@@ -85,7 +89,7 @@ public class HistoricoMediator extends BaseMediator {
 	private void ocorrenciaConfirmacao(TituloRemessa titulo) {
 		Confirmacao confirmacao = titulo.getConfirmacao();
 		if (confirmacao != null) {
-			confirmacao = tituloMediator.carregarTituloConfirmacao(confirmacao);
+			confirmacao = confirmacaoMediator.carregarTituloConfirmacao(confirmacao);
 			addOcorrencia(TituloOcorrenciaBean.getOcorrenciaToRemessa(confirmacao.getRemessa()));
 
 			// Confirmação liberada para banco
@@ -98,7 +102,7 @@ public class HistoricoMediator extends BaseMediator {
 	private void ocorrenciaRetornoBatimentoDepositosSlips(TituloRemessa titulo) {
 		Retorno retorno = titulo.getRetorno();
 		if (retorno != null) {
-			retorno = tituloMediator.carregarTituloRetorno(retorno);
+			retorno = retornoMediator.carregarTituloRetorno(retorno);
 			addOcorrencia(TituloOcorrenciaBean.getOcorrenciaToRemessa(retorno.getRemessa()));
 
 			if (retorno.getRemessa().getBatimento() != null) {
@@ -137,8 +141,7 @@ public class HistoricoMediator extends BaseMediator {
 	}
 
 	private void ocorrenciaSolicitacaoDesistenciaCancelamento(TituloRemessa titulo) {
-		List<SolicitacaoDesistenciaCancelamento> solicitacoesDesistenciasCancelamentos =
-						cancelamentoProtestoMediator.buscarSolicitacoesDesistenciasCancelamentoPorTitulo(titulo);
+		List<SolicitacaoDesistenciaCancelamento> solicitacoesDesistenciasCancelamentos = solicitacaoMediator.buscarSolicitacoesDesistenciasCancelamentoPorTitulo(titulo);
 		if (solicitacoesDesistenciasCancelamentos != null && !solicitacoesDesistenciasCancelamentos.isEmpty()) {
 			for (SolicitacaoDesistenciaCancelamento solicitacao : solicitacoesDesistenciasCancelamentos) {
 				addOcorrencia(TituloOcorrenciaBean.getOcorrenciaToSolicitacaoDesistenciaCancelamento(solicitacao));
@@ -148,8 +151,7 @@ public class HistoricoMediator extends BaseMediator {
 
 	private void ocorrenciaAutorizacoes(TituloRemessa titulo) {
 		if (titulo.getPedidosAutorizacaoCancelamento() != null) {
-			List<PedidoAutorizacaoCancelamento> pedidosAutorizacao =
-							autorizacaoCancelamentoMediator.buscarPedidosAutorizacaoCancelamentoPorTitulo(titulo);
+			List<PedidoAutorizacaoCancelamento> pedidosAutorizacao = autorizacaoCancelamentoMediator.buscarPedidosAutorizacaoCancelamentoPorTitulo(titulo);
 			for (PedidoAutorizacaoCancelamento pedido : pedidosAutorizacao) {
 				addOcorrencia(TituloOcorrenciaBean.getOcorrenciaToAutorizacaoCanlamento(pedido.getAutorizacaoCancelamento()));
 			}
@@ -168,8 +170,7 @@ public class HistoricoMediator extends BaseMediator {
 
 	private void ocorrenciaTituloFiliado(TituloRemessa titulo) {
 		if (new Integer(titulo.getCodigoPortador()) > 799) {
-			TituloFiliado tituloFiliado =
-							tituloFiliadoMediator.buscarTituloFiliadoProcessadoNaCra(titulo.getNossoNumero(), titulo.getNumeroTitulo());
+			TituloFiliado tituloFiliado = tituloFiliadoMediator.buscarTituloFiliadoProcessadoNaCra(titulo.getNossoNumero(), titulo.getNumeroTitulo());
 			if (tituloFiliado != null) {
 				addOcorrencia(TituloOcorrenciaBean.getOcorrenciaToTituloFiliado(tituloFiliado));
 			}

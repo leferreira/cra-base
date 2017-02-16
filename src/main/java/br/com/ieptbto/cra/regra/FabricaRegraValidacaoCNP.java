@@ -28,6 +28,7 @@ public class FabricaRegraValidacaoCNP {
 		String numeroDocumentoDevedor = registro.getNumeroDocumentoDevedor().trim() + registro.getComplementoDocumentoDevedor().trim()
 				+ registro.getDigitoControleDocumentoDevedor().trim();
 		if (!CpfCnpjUtil.isValidCNPJ(numeroDocumentoDevedor) && !CpfCnpjUtil.isValidCPF(numeroDocumentoDevedor)) {
+			System.out.println("Documento Inválido = " + numeroDocumentoDevedor);
 			return false;
 		}
 		if (registro.getDataProtesto() == null) {
@@ -61,6 +62,7 @@ public class FabricaRegraValidacaoCNP {
 		String numeroDocumentoDevedor = registro.getNumeroDocumentoDevedor().trim() + registro.getComplementoDocumentoDevedor().trim()
 				+ registro.getDigitoControleDocumentoDevedor().trim();
 		if (!CpfCnpjUtil.isValidCNPJ(numeroDocumentoDevedor) && !CpfCnpjUtil.isValidCPF(numeroDocumentoDevedor)) {
+			System.out.println("Documento Inválido = " + numeroDocumentoDevedor);
 			return false;
 		}
 		if (Integer.valueOf(registro.getNumeroDocumentoDevedor()) == 0) {

@@ -13,11 +13,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.conversor.arquivo.CabecalhoConversor;
-import br.com.ieptbto.cra.conversor.arquivo.ConfirmacaoConversor;
-import br.com.ieptbto.cra.conversor.arquivo.RetornoConversor;
-import br.com.ieptbto.cra.conversor.arquivo.RodapeConversor;
-import br.com.ieptbto.cra.conversor.arquivo.TituloConversor;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorCabecalho;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorConfirmacao;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorRetorno;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorRodape;
+import br.com.ieptbto.cra.conversor.arquivo.ConversorTitulo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Confirmacao;
@@ -31,8 +31,8 @@ import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.processador.FabricaRegistro;
@@ -92,33 +92,33 @@ public class FabricaRemessaConfirmacaoRetorno {
 	private void setRegistro(String linha, Remessa remessa) {
 		AbstractArquivoVO registro = FabricaRegistro.getInstance(linha).criarRegistro();
 
-		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(remessa.getArquivo());
-		if (TipoRegistro.CABECALHO.getConstante().equals(registro.getIdentificacaoRegistro())) {
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(remessa.getArquivo());
+		if (TipoIdentificacaoRegistro.CABECALHO.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			CabecalhoVO cabecalhoVO = CabecalhoVO.class.cast(registro);
-			CabecalhoRemessa cabecalho = new CabecalhoConversor().converter(CabecalhoRemessa.class, cabecalhoVO);
+			CabecalhoRemessa cabecalho = new ConversorCabecalho().converter(CabecalhoRemessa.class, cabecalhoVO);
 			cabecalho.setRemessa(remessa);
 			remessa.setCabecalho(cabecalho);
 			remessa.setInstituicaoDestino(getInstituicaoDeDestino(cabecalho));
 			remessa.setInstituicaoOrigem(getArquivo().getInstituicaoEnvio());
 
-		} else if (TipoRegistro.TITULO.getConstante().equals(registro.getIdentificacaoRegistro())) {
+		} else if (TipoIdentificacaoRegistro.TITULO.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			TituloVO tituloVO = TituloVO.class.cast(registro);
 			Titulo titulo = null;
-			if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
-				titulo = new TituloConversor().converter(TituloRemessa.class, tituloVO);
-			} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo)) {
-				titulo = new ConfirmacaoConversor().converter(Confirmacao.class, tituloVO);
-			} else if (TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
-				titulo = new RetornoConversor().converter(Retorno.class, tituloVO);
+			if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
+				titulo = new ConversorTitulo().converter(TituloRemessa.class, tituloVO);
+			} else if (TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo)) {
+				titulo = new ConversorConfirmacao().converter(Confirmacao.class, tituloVO);
+			} else if (TipoArquivoFebraban.RETORNO.equals(tipoArquivo)) {
+				titulo = new ConversorRetorno().converter(Retorno.class, tituloVO);
 			}
 			if (titulo != null) {
 				titulo.setRemessa(remessa);
 				remessa.getTitulos().add(titulo);
 			}
 
-		} else if (TipoRegistro.RODAPE.getConstante().equals(registro.getIdentificacaoRegistro())) {
+		} else if (TipoIdentificacaoRegistro.RODAPE.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			RodapeVO rodapeVO = RodapeVO.class.cast(registro);
-			Rodape rodape = new RodapeConversor().converter(Rodape.class, rodapeVO);
+			Rodape rodape = new ConversorRodape().converter(Rodape.class, rodapeVO);
 			remessa.setRodape(rodape);
 			rodape.setRemessa(remessa);
 
@@ -129,8 +129,8 @@ public class FabricaRemessaConfirmacaoRetorno {
 	}
 
 	private Instituicao getInstituicaoDeDestino(CabecalhoRemessa cabecalho) {
-		if (TipoArquivoEnum.CONFIRMACAO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))
-				|| TipoArquivoEnum.RETORNO.equals(TipoArquivoEnum.getTipoArquivoEnum(getArquivo().getNomeArquivo()))) {
+		if (TipoArquivoFebraban.CONFIRMACAO.equals(TipoArquivoFebraban.getTipoArquivoFebraban(getArquivo().getNomeArquivo()))
+				|| TipoArquivoFebraban.RETORNO.equals(TipoArquivoFebraban.getTipoArquivoFebraban(getArquivo().getNomeArquivo()))) {
 			return instituicaoMediator.getInstituicaoPorCodigoPortador(cabecalho.getNumeroCodigoPortador());
 		} else {
 			return instituicaoMediator.getCartorioPorCodigoIBGE(cabecalho.getCodigoMunicipio());

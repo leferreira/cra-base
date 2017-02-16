@@ -10,8 +10,8 @@ import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
-import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
+import br.com.ieptbto.cra.enumeration.regra.CodigoIrregularidade;
+import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 import br.com.ieptbto.cra.exception.TituloException;
@@ -24,14 +24,11 @@ import br.com.ieptbto.cra.exception.TituloException;
 @Service
 public class ValidarTituloConfirmacao extends RegraTitulo {
 
-	private List<Titulo> titulosProcessados;
-
 	@Override
 	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		this.arquivo = arquivo;
 		this.usuario = usuario;
 		this.erros = erros;
-		this.titulosProcessados = null;
 
 		executar();
 	}
@@ -48,12 +45,14 @@ public class ValidarTituloConfirmacao extends RegraTitulo {
 				this.erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_ARQUIVO_ENVIADO_SEM_TITULOS));
 			}
 
-			this.titulosProcessados = new ArrayList<Titulo>();
+			List<Titulo> titulosProcessados = new ArrayList<Titulo>();
 			for (Titulo titulo : remessa.getTitulos()) {
-				Confirmacao tituloConfirmacao = Confirmacao.class.cast(titulo);
-
-				verificarTipoOcorrenciaProtocoloCodigoIrregularidade(tituloConfirmacao);
-				verificarDuplicidadeDeTitulosNoArquivo(tituloConfirmacao);
+				if (Confirmacao.class.isInstance(titulo)) {
+					Confirmacao tituloConfirmacao = Confirmacao.class.cast(titulo);
+					
+					verificarTipoOcorrenciaProtocoloCodigoIrregularidade(tituloConfirmacao);
+					verificarDuplicidadeDeTitulosNoArquivo(titulosProcessados, tituloConfirmacao);
+				}
 			}
 		}
 	}
@@ -69,8 +68,8 @@ public class ValidarTituloConfirmacao extends RegraTitulo {
 			tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloConfirmacao.getTipoOcorrencia());
 			if (numeroProtocoloCartorio.equals(ZERO)) {
 				if (tipoOcorrencia == null) {
-					this.erros.add(new TituloException(CodigoErro.CARTORIO_TIPO_OCORRENCIA_INVALIDO, tituloConfirmacao.getNossoNumero(), numeroProtocoloCartorio,
-							tituloConfirmacao.getNumeroSequencialArquivo()));
+					this.erros.add(new TituloException(CodigoErro.CARTORIO_TIPO_OCORRENCIA_INVALIDO, tituloConfirmacao.getNossoNumero(), 
+							numeroProtocoloCartorio, tituloConfirmacao.getNumeroSequencialArquivo()));
 				}
 			}
 		}
@@ -99,11 +98,11 @@ public class ValidarTituloConfirmacao extends RegraTitulo {
 
 	}
 
-	private void verificarDuplicidadeDeTitulosNoArquivo(Confirmacao tituloConfirmacao) {
+	private void verificarDuplicidadeDeTitulosNoArquivo(List<Titulo> titulosProcessados, Confirmacao tituloConfirmacao) {
 		Integer numeroProtocoloCartorio = Integer.valueOf(tituloConfirmacao.getNumeroProtocoloCartorio().trim());
 		if (titulosProcessados.contains(tituloConfirmacao)) {
-			erros.add(new TituloException(CodigoErro.CARTORIO_TITULOS_DUPLICADOS_NO_ARQUIVO, tituloConfirmacao.getNossoNumero(), numeroProtocoloCartorio,
-					tituloConfirmacao.getNumeroSequencialArquivo()));
+			erros.add(new TituloException(CodigoErro.CARTORIO_TITULOS_DUPLICADOS_NO_ARQUIVO, tituloConfirmacao.getNossoNumero(), 
+					numeroProtocoloCartorio, tituloConfirmacao.getNumeroSequencialArquivo()));
 		} else {
 			titulosProcessados.add(tituloConfirmacao);
 		}

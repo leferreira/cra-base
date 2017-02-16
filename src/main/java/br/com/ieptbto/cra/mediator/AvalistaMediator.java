@@ -14,15 +14,26 @@ import br.com.ieptbto.cra.entidade.TituloFiliado;
  *
  */
 @Service
-public class AvalistaMediator {
+public class AvalistaMediator extends BaseMediator {
 
 	@Autowired
-	private AvalistaDAO avalistaDAO;
+	AvalistaDAO avalistaDAO;
 
-	public void removerAvalista(Avalista avalista) {
-		avalistaDAO.remover(avalista);
+	/**
+	 * Removar avalista
+	 * 
+	 * @param avalista
+	 */
+	public Avalista removerAvalista(Avalista avalista) {
+		return avalistaDAO.remover(avalista);
 	}
 
+	/**
+	 * Busca avalistas cadastrados e vínculados por título filiado
+	 * 
+	 * @param titulo
+	 * @return
+	 */
 	public List<Avalista> buscarAvalistasPorTitulo(TituloFiliado titulo) {
 		return avalistaDAO.buscarAvalistasPorTitulo(titulo);
 	}

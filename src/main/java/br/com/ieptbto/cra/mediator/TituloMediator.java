@@ -6,7 +6,7 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.bean.TituloFormBean;
+import br.com.ieptbto.cra.beans.TituloBean;
 import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Anexo;
 import br.com.ieptbto.cra.entidade.Arquivo;
@@ -17,8 +17,10 @@ import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.view.ViewTitulo;
 import br.com.ieptbto.cra.enumeration.TipoCampo51;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 
 /**
  * @author Thasso Araújo
@@ -37,43 +39,40 @@ public class TituloMediator extends BaseMediator {
 	public TituloRemessa buscarTituloPorPK(Integer idTitulo) {
 		return tituloDAO.buscarPorPK(idTitulo, TituloRemessa.class);
 	}
-	
-	public Confirmacao buscarConfirmacao(TituloRemessa titulo) {
-		return tituloDAO.buscarConfirmacao(titulo);
-	}
 
-	public Confirmacao carregarTituloConfirmacao(Confirmacao confirmacao) {
-		return tituloDAO.buscarPorPK(confirmacao, Confirmacao.class);
-	}
-
-	public Retorno buscarRetorno(TituloRemessa titulo) {
-		return tituloDAO.buscarRetorno(titulo);
-	}
-
+	/**
+	 * Busca o título principal para outros devedores
+	 * @param confirmacao
+	 * @return
+	 */
 	public Retorno buscarRetornoTituloDevedorPrincipal(Confirmacao confirmacao) {
 		return tituloDAO.buscarRetornoTituloDevedorPrincipal(confirmacao);
 	}
-
-	public Retorno carregarTituloRetorno(Retorno retorno) {
-		return tituloDAO.buscarPorPK(retorno, Retorno.class);
-	}
-
+	
 	public List<TituloRemessa> carregarTitulos(Remessa remessa) {
 		return tituloDAO.carregarTitulos(remessa);
 	}
 
-	public List<TituloRemessa> buscarTitulos(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
-			Instituicao bancoConvenio, Instituicao cartorio, TituloFormBean titulo) {
+	public List<ViewTitulo> consultarViewTitulosPorRemessa(Remessa remessa) {
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(remessa.getArquivo());
+		if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
+			return tituloDAO.consultarViewTitulosPorIdRemessa(remessa.getId());
+		} else if (TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo)) {
+			return tituloDAO.consultarViewTitulosConfirmacaoPorIdRemessa(remessa.getId());
+		} else if (TipoArquivoFebraban.RETORNO.equals(tipoArquivo)) {
+			return tituloDAO.consultarViewTitulosRetornoPorIdRemessa(remessa.getId());
+		}
+		return null;
+	}
+
+	public List<TituloRemessa> buscarTitulos(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
+			Instituicao bancoConvenio, Instituicao cartorio, TituloBean titulo) {
 		return tituloDAO.buscarTitulos(usuario, dataInicio, dataFim, tipoInstituicao, bancoConvenio, cartorio, titulo);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public List<Titulo> carregarTitulosGenerico(Arquivo arquivo) {
 		return tituloDAO.carregarTitulosGenerico(arquivo);
-	}
-
-	public TituloRemessa buscarTituloPorChave(TituloRemessa titulo) {
-		return tituloDAO.buscarTituloPorChave(titulo);
 	}
 
 	public TituloRemessa buscarTituloRemessaPorDadosRetorno(Retorno tituloRetorno) {

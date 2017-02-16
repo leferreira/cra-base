@@ -77,7 +77,7 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		return loteCnp;
 	}
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = false)
 	public LoteCnp salvarLoteRegistrosCnp(Usuario user, LoteCnp lote) {
 		Session session = getSession();
 		Transaction transaction = session.beginTransaction();
@@ -94,7 +94,9 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		
 		List<RegistroCnp> registrosSalvos = new ArrayList<>();
 		for (RegistroCnp registro : lote.getRegistrosCnp()) {
-			transaction = session.beginTransaction(); 
+			if (!transaction.isActive()) {
+				transaction = session.beginTransaction(); 
+			}
 
 			if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
 				registro.setLoteCnp(lote);

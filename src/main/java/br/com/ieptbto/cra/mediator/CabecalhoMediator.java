@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.CabecalhoDAO;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 
 /**
  * 
@@ -16,7 +16,7 @@ import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 public class CabecalhoMediator {
 
 	@Autowired
-	private CabecalhoDAO cabecalhoDAO;
+	CabecalhoDAO cabecalhoDAO;
 
 	/**
 	 * Verificar se o sequencial do cabecalho é único para aquele banco
@@ -25,7 +25,7 @@ public class CabecalhoMediator {
 	 * @return
 	 */
 	public boolean isSequencialValido(CabecalhoRemessa cabecalhoRemessa) {
-		if (TipoArquivoEnum.REMESSA.equals(cabecalhoRemessa.getRemessa().getArquivo().getTipoArquivo().getTipoArquivo())) {
+		if (TipoArquivoFebraban.REMESSA.equals(cabecalhoRemessa.getRemessa().getArquivo().getTipoArquivo().getTipoArquivo())) {
 			return cabecalhoDAO.isSequencialUnicoPorBanco(cabecalhoRemessa);
 		}
 		return true;

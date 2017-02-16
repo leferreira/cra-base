@@ -1,8 +1,6 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.joda.time.LocalDate;
@@ -13,13 +11,16 @@ import org.springframework.stereotype.Service;
 import br.com.ieptbto.cra.dao.ConfirmacaoDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.dao.TipoArquivoDAO;
+import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Confirmacao;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
+import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 
 /**
  * @author thasso
@@ -28,31 +29,41 @@ import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 @Service
 public class ConfirmacaoMediator extends BaseMediator {
 
-	private static final int NUMERO_SEQUENCIAL_CONFIRMACAO = 1;
-
 	@Autowired
-	private ConfirmacaoDAO confirmacaoDAO;
+	ConfirmacaoDAO confirmacaoDAO;
 	@Autowired
-	private InstituicaoDAO instituicaoDAO;
+	TituloDAO tituloDAO;
 	@Autowired
-	private TipoArquivoDAO tipoArquivoDAO;
+	InstituicaoDAO instituicaoDAO;
+	@Autowired
+	TipoArquivoDAO tipoArquivoDAO;
 
-	private Instituicao cra;
-	private TipoArquivo tipoArquivo;
+	public Confirmacao buscarConfirmacaoPorTitulo(TituloRemessa titulo) {
+		return tituloDAO.buscarConfirmacaoPorTitulo(titulo);
+	}
 
+	public Confirmacao carregarTituloConfirmacao(Confirmacao confirmacao) {
+		return tituloDAO.buscarPorPK(confirmacao, Confirmacao.class);
+	}
+	
+	/**
+	 * Busca os arquivo de confirmação para serem envaminhados aos bancos
+	 * @return
+	 */
 	public List<Remessa> buscarConfirmacoesPendentesDeEnvio() {
 		return confirmacaoDAO.buscarConfirmacoesPendentesDeEnvio();
 	}
 
-	public Boolean verificarArquivoConfirmacaoGeradoCra() {
-		this.cra = instituicaoDAO.buscarInstituicaoInicial("CRA");
-		return confirmacaoDAO.verificarArquivoConfirmacaoGeradoCra(getCra());
+	public Boolean verificarArquivoConfirmacaoCra() {
+		Instituicao cra = instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoSistema.CRA.toString());
+		return confirmacaoDAO.verificarArquivoConfirmacaoCra(cra);
 	}
 
-	public void gerarConfirmacoes(Usuario usuarioCorrente, List<Remessa> confirmacoesParaEnvio) {
-		this.cra = instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString());
-		this.tipoArquivo = tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.CONFIRMACAO);
-
+	/**
+	 * @param usuarioCorrente
+	 * @param confirmacoesParaEnvio
+	 */
+	public List<Arquivo> gerarConfirmacoes(Usuario usuarioCorrente, List<Remessa> confirmacoesParaEnvio) {
 		List<Arquivo> arquivosDeConfirmacao = new ArrayList<Arquivo>();
 		Arquivo arquivo = null;
 		Instituicao instituicaoDestino = new Instituicao();
@@ -70,35 +81,21 @@ public class ConfirmacaoMediator extends BaseMediator {
 				}
 			}
 		}
-		confirmacaoDAO.salvarArquivosDeConfirmacaoGerados(usuarioCorrente, arquivosDeConfirmacao);
+		return confirmacaoDAO.salvarArquivosDeConfirmacaoGerados(usuarioCorrente, arquivosDeConfirmacao);
 	}
 
-	private Arquivo criarNovoArquivoDeConfirmacao(Instituicao destino, Remessa confirmacao) {
+	private Arquivo criarNovoArquivoDeConfirmacao(Instituicao instituicaoDestino, Remessa confirmacao) {
+		Instituicao cra = instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoSistema.CRA.toString());
+		TipoArquivo tipoArquivo = tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoFebraban.CONFIRMACAO);
+		
 		Arquivo arquivo = new Arquivo();
-		arquivo.setTipoArquivo(getTipoArquivo());
-		arquivo.setNomeArquivo(gerarNomeArquivoConfirmacao(confirmacao));
-		arquivo.setInstituicaoRecebe(destino);
-		arquivo.setInstituicaoEnvio(getCra());
+		arquivo.setTipoArquivo(tipoArquivo);
+		arquivo.setNomeArquivo(TipoArquivoFebraban.generateNomeArquivoFebraban(TipoArquivoFebraban.CONFIRMACAO, instituicaoDestino.getCodigoCompensacao(), ConfiguracaoBase.UM));
+		arquivo.setInstituicaoRecebe(instituicaoDestino);
+		arquivo.setInstituicaoEnvio(cra);
 		arquivo.setDataEnvio(new LocalDate());
 		arquivo.setHoraEnvio(new LocalTime());
 		arquivo.setDataRecebimento(new LocalDate().toDate());
 		return arquivo;
-	}
-
-	private String gerarNomeArquivoConfirmacao(Remessa confirmacao) {
-		return TipoArquivoEnum.CONFIRMACAO.getConstante() + confirmacao.getCabecalho().getNumeroCodigoPortador() + gerarDataArquivo()
-				+ NUMERO_SEQUENCIAL_CONFIRMACAO;
-	}
-
-	private String gerarDataArquivo() {
-		return new SimpleDateFormat("ddMM.yy").format(new Date()).toString();
-	}
-
-	public Instituicao getCra() {
-		return cra;
-	}
-
-	public TipoArquivo getTipoArquivo() {
-		return tipoArquivo;
 	}
 }

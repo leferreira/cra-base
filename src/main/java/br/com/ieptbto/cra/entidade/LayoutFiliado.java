@@ -13,8 +13,8 @@ import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.enumeration.CampoLayout;
-import br.com.ieptbto.cra.enumeration.TipoArquivoLayoutEmpresa;
+import br.com.ieptbto.cra.enumeration.CampoLayoutPersonalizado;
+import br.com.ieptbto.cra.enumeration.LayoutArquivo;
 
 /**
  * 
@@ -30,12 +30,12 @@ public class LayoutFiliado extends AbstractEntidade<LayoutFiliado> {
 
 	private int id;
 	private Instituicao empresa;
-	private CampoLayout campo;
+	private CampoLayoutPersonalizado campo;
 	private Integer ordem;
 	private Integer posicaoInicio;
 	private Integer posicaoFim;
 	private String descricaoCampo;
-	private TipoArquivoLayoutEmpresa tipoArquivo;
+	private LayoutArquivo layoutArquivo;
 
 	@Override
 	@Id
@@ -58,14 +58,14 @@ public class LayoutFiliado extends AbstractEntidade<LayoutFiliado> {
 
 	@Column(name = "CAMPO")
 	@Enumerated(EnumType.STRING)
-	public CampoLayout getCampo() {
+	public CampoLayoutPersonalizado getCampo() {
 		return campo;
 	}
 
-	@Column(name = "TIPO_ARQUIVO")
+	@Column(name = "LAYOUT_ARQUIVO")
 	@Enumerated(EnumType.STRING)
-	public TipoArquivoLayoutEmpresa getTipoArquivo() {
-		return tipoArquivo;
+	public LayoutArquivo getLayoutArquivo() {
+		return layoutArquivo;
 	}
 
 	@Column(name = "ORDEM")
@@ -107,12 +107,12 @@ public class LayoutFiliado extends AbstractEntidade<LayoutFiliado> {
 		this.posicaoFim = posicaoFim;
 	}
 
-	public void setCampo(CampoLayout campo) {
+	public void setCampo(CampoLayoutPersonalizado campo) {
 		this.campo = campo;
 	}
 
-	public void setTipoArquivo(TipoArquivoLayoutEmpresa tipoArquivo) {
-		this.tipoArquivo = tipoArquivo;
+	public void setLayoutArquivo(LayoutArquivo tipoArquivo) {
+		this.layoutArquivo = tipoArquivo;
 	}
 
 	@Override

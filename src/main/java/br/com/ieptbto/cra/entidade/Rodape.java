@@ -21,7 +21,7 @@ import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
-import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -39,7 +39,7 @@ public class Rodape extends AbstractEntidade<Rodape> implements FieldHandled {
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private Remessa remessa;
-	private TipoRegistro identificacaoRegistro;
+	private TipoIdentificacaoRegistro identificacaoRegistro;
 	private String numeroCodigoPortador;
 	private String nomePortador;
 	private LocalDate dataMovimento;
@@ -73,7 +73,7 @@ public class Rodape extends AbstractEntidade<Rodape> implements FieldHandled {
 	}
 
 	@Column(name = "IDENTIFICACAO_REGISTRO")
-	public TipoRegistro getIdentificacaoRegistro() {
+	public TipoIdentificacaoRegistro getIdentificacaoRegistro() {
 		return identificacaoRegistro;
 	}
 
@@ -149,7 +149,7 @@ public class Rodape extends AbstractEntidade<Rodape> implements FieldHandled {
 		this.remessa = remessa;
 	}
 
-	public void setIdentificacaoRegistro(TipoRegistro identificacaoRegistro) {
+	public void setIdentificacaoRegistro(TipoIdentificacaoRegistro identificacaoRegistro) {
 		this.identificacaoRegistro = identificacaoRegistro;
 	}
 
@@ -185,7 +185,7 @@ public class Rodape extends AbstractEntidade<Rodape> implements FieldHandled {
 		Rodape rodape = new Rodape();
 		rodape.setComplementoRegistro(rodapeVO.getComplementoRegistro());
 		rodape.setDataMovimento(verificaDataMovimento(rodapeVO.getDataMovimento()));
-		rodape.setIdentificacaoRegistro(TipoRegistro.get(rodapeVO.getIdentificacaoRegistro()));
+		rodape.setIdentificacaoRegistro(TipoIdentificacaoRegistro.get(rodapeVO.getIdentificacaoRegistro()));
 		rodape.setNomePortador(rodapeVO.getNomePortador());
 		rodape.setNumeroCodigoPortador(rodapeVO.getNumeroCodigoPortador());
 		rodape.setNumeroSequencialRegistroArquivo(rodapeVO.getNumeroSequencialRegistroArquivo());

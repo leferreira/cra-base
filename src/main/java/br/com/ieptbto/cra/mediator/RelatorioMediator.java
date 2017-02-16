@@ -17,13 +17,12 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.bean.TituloTaxaCraBean;
 import br.com.ieptbto.cra.dao.RelatorioDAO;
 import br.com.ieptbto.cra.dao.TaxaCraDAO;
 import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
+import br.com.ieptbto.cra.entidade.view.ViewTitulo;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.XlsUtil;
 
@@ -35,14 +34,14 @@ import br.com.ieptbto.cra.util.XlsUtil;
 public class RelatorioMediator extends BaseMediator {
 
 	@Autowired
-	private RelatorioDAO relatorioDAO;
+	RelatorioDAO relatorioDAO;
 	@Autowired
-	private TaxaCraDAO taxaCraDAO;
+	TaxaCraDAO taxaCraDAO;
 
 	private File arquivoFisico;
 	private FileUpload file;
 
-	public List<TituloRemessa> relatorioTitulosPorSituacao(SituacaoTituloRelatorio situacaoTitulo, TipoInstituicaoCRA tipoInstituicao, Instituicao instituicao,
+	public List<ViewTitulo> relatorioTitulosPorSituacao(SituacaoTituloRelatorio situacaoTitulo, TipoInstituicaoSistema tipoInstituicao, Instituicao instituicao,
 			Instituicao cartorio, LocalDate dataInicio, LocalDate dataFim) {
 
 		if (situacaoTitulo.equals(SituacaoTituloRelatorio.GERAL)) {
@@ -75,20 +74,7 @@ public class RelatorioMediator extends BaseMediator {
 		return null;
 	}
 
-	public List<TituloTaxaCraBean> relatorioTitulosPagosTaxaCra(Instituicao convenio, Instituicao cartorio, LocalDate dataInicio, LocalDate dataFim) {
-		List<TituloRemessa> titulosRemessa = relatorioDAO.relatorioTitulosPagos(dataInicio, dataFim, TipoInstituicaoCRA.CONVENIO, convenio, cartorio);
-
-		List<TituloTaxaCraBean> titulos = new ArrayList<TituloTaxaCraBean>();
-		for (TituloRemessa tituloRemessa : titulosRemessa) {
-			TituloTaxaCraBean titulo = new TituloTaxaCraBean();
-			titulo.parseToTituloRemessa(tituloRemessa);
-			titulo.setTaxaCra(taxaCraDAO.buscarTaxaCraVigente(tituloRemessa.getRetorno().getDataOcorrencia()));
-			titulos.add(titulo);
-		}
-		return titulos;
-	}
-
-	public List<TituloRemessa> relatorioTitulosPlanilhaPendencias(FileUpload fileUpload) {
+	public List<ViewTitulo> relatorioTitulosPlanilhaPendencias(FileUpload fileUpload) {
 		this.file = fileUpload;
 
 		if (getFile() == null) {
@@ -119,7 +105,7 @@ public class RelatorioMediator extends BaseMediator {
 			Sheet worksheet = planilha.getSheetAt(0);
 			Row row;
 
-			List<TituloRemessa> titulos = new ArrayList<TituloRemessa>();
+			List<ViewTitulo> titulos = new ArrayList<ViewTitulo>();
 			for (int i = 3; i <= worksheet.getLastRowNum(); i++) {
 				row = worksheet.getRow(i);
 				if (row != null) {
@@ -128,7 +114,7 @@ public class RelatorioMediator extends BaseMediator {
 						String numeroProtocolo = XlsUtil.getCellToString(row, 4);
 
 						if (!Strings.isEmpty(nossoNumero) || !Strings.isEmpty(numeroProtocolo)) {
-							TituloRemessa titulo = relatorioDAO.relatorioTitulosPendentes(nossoNumero, numeroProtocolo);
+							ViewTitulo titulo = relatorioDAO.relatorioTitulosPendentes(nossoNumero, numeroProtocolo);
 							if (titulo != null) {
 								titulos.add(titulo);
 							}

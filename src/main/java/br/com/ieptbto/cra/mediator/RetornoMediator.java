@@ -15,6 +15,7 @@ import br.com.ieptbto.cra.dao.DepositoDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.dao.RetornoDAO;
 import br.com.ieptbto.cra.dao.TipoArquivoDAO;
+import br.com.ieptbto.cra.dao.TituloDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Batimento;
 import br.com.ieptbto.cra.entidade.BatimentoDeposito;
@@ -23,11 +24,12 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
+import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.entidade.ViewBatimentoRetorno;
+import br.com.ieptbto.cra.entidade.view.ViewBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.exception.InfraException;
 
 @Service
@@ -37,6 +39,8 @@ public class RetornoMediator extends BaseMediator {
 	InstituicaoDAO instituicaoDAO;
 	@Autowired
 	TipoArquivoDAO tipoArquivoDAO;
+	@Autowired
+	TituloDAO tituloDAO;
 	@Autowired
 	RetornoDAO retornoDAO;
 	@Autowired
@@ -50,6 +54,14 @@ public class RetornoMediator extends BaseMediator {
 	
 	public Retorno carregarTituloRetornoPorPk(Retorno retorno) {
 		return retornoDAO.buscarPorPK(retorno);
+	}
+
+	public Retorno buscarRetornoPorTitulo(TituloRemessa titulo) {
+		return tituloDAO.buscarRetornoPorTitulo(titulo);
+	}
+	
+	public Retorno carregarTituloRetorno(Retorno retorno) {
+		return tituloDAO.buscarPorPK(retorno, Retorno.class);
 	}
 
 	public List<Remessa> buscarRetornosConfirmados() {
@@ -120,11 +132,11 @@ public class RetornoMediator extends BaseMediator {
 
 	private Arquivo criarNovoArquivoDeRetorno(Instituicao instituicaoDestino, Remessa retorno) {
 		Instituicao instituicaoCra = instituicaoDAO.buscarInstituicaoInicial("CRA");
-		TipoArquivo tipoArquivo = tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoEnum.RETORNO);
+		TipoArquivo tipoArquivo = tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoFebraban.RETORNO);
 
 		Arquivo arquivo = new Arquivo();
 		arquivo.setTipoArquivo(tipoArquivo);
-		arquivo.setNomeArquivo(TipoArquivoEnum.generateNomeArquivoFebraban(TipoArquivoEnum.RETORNO, instituicaoDestino.getCodigoCompensacao(), ConfiguracaoBase.UM));
+		arquivo.setNomeArquivo(TipoArquivoFebraban.generateNomeArquivoFebraban(TipoArquivoFebraban.RETORNO, instituicaoDestino.getCodigoCompensacao(), ConfiguracaoBase.UM));
 		arquivo.setInstituicaoRecebe(instituicaoDestino);
 		arquivo.setInstituicaoEnvio(instituicaoCra);
 		arquivo.setDataEnvio(new LocalDate());

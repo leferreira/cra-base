@@ -25,7 +25,9 @@ import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
-import br.com.ieptbto.cra.enumeration.StatusRemessa;
+import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 
 /**
  * @author Thasso Araújo
@@ -51,7 +53,7 @@ public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
 	private Rodape rodape;
 	private List<Titulo> titulos;
 	private Batimento batimento;
-	private StatusRemessa statusRemessa;
+	private StatusDownload statusDownload;
 	private SituacaoBatimentoRetorno situacaoBatimentoRetorno;
 	private Boolean situacao;
 	private Boolean devolvidoPelaCRA;
@@ -188,10 +190,10 @@ public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
 		this.rodape = rodape;
 	}
 
-	@Column(name = "STATUS_REMESSA")
+	@Column(name = "STATUS_DOWNLOAD")
 	@Enumerated(EnumType.STRING)
-	public StatusRemessa getStatusRemessa() {
-		return statusRemessa;
+	public StatusDownload getStatusDownload() {
+		return statusDownload;
 	}
 
 	private List<Deposito> listaDepositos;
@@ -205,8 +207,8 @@ public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
 		this.listaDepositos = listaDepositos;
 	}
 
-	public void setStatusRemessa(StatusRemessa statusRemessa) {
-		this.statusRemessa = statusRemessa;
+	public void setStatusDownload(StatusDownload statusDownload) {
+		this.statusDownload = statusDownload;
 	}
 
 	public Boolean getDevolvidoPelaCRA() {
@@ -218,6 +220,23 @@ public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
 
 	public void setDevolvidoPelaCRA(Boolean devolvidoPelaCRA) {
 		this.devolvidoPelaCRA = devolvidoPelaCRA;
+	}
+	
+	public void setStatusRemessaPorTipoInstituicaoEnvio() {
+		TipoInstituicao tipoInstituicaoEnvio = this.getInstituicaoOrigem().getTipoInstituicao();
+		if (tipoInstituicaoEnvio.getTipoInstituicao() == TipoInstituicaoSistema.INSTITUICAO_FINANCEIRA
+				|| tipoInstituicaoEnvio.getTipoInstituicao() == TipoInstituicaoSistema.CONVENIO) {
+			this.statusDownload = StatusDownload.AGUARDANDO;
+		} else
+			this.statusDownload = StatusDownload.ENVIADO;
+	}
+
+	public void setConfirmacaoRetornoPendenteLiberacao() {
+		TipoArquivo tipoArquivo = this.getArquivo().getTipoArquivo();
+		if (tipoArquivo.getTipoArquivo() == TipoArquivoFebraban.CONFIRMACAO || tipoArquivo.getTipoArquivo() == TipoArquivoFebraban.RETORNO) {
+			this.situacao = false;
+		} else
+			this.situacao = true;
 	}
 
 	@Override

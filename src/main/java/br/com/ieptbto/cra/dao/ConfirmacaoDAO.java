@@ -15,8 +15,8 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -27,68 +27,72 @@ import br.com.ieptbto.cra.exception.InfraException;
 @Repository
 public class ConfirmacaoDAO extends AbstractBaseDAO {
 
-    public void salvarArquivosDeConfirmacaoGerados(Usuario usuario, List<Arquivo> arquivosDeConfirmacao) {
-	Transaction transaction = getBeginTransation();
+	/**
+	 * Salva os arquivos de confirmações gerados pela a CRA para as Instituições
+	 * @param usuario
+	 * @param confirmacoes
+	 * @return
+	 */
+	public List<Arquivo> salvarArquivosDeConfirmacaoGerados(Usuario usuario, List<Arquivo> confirmacoes) {
+		Transaction transaction = getBeginTransation();
 
-	try {
-	    for (Arquivo confirmacao : arquivosDeConfirmacao) {
-		StatusArquivo status = new StatusArquivo();
-		status.setData(new LocalDateTime());
-		status.setSituacaoArquivo(SituacaoArquivo.AGUARDANDO);
+		try {
+			for (Arquivo arquivo : confirmacoes) {
+				StatusArquivo status = new StatusArquivo();
+				status.setData(new LocalDateTime());
+				status.setStatusDownload(StatusDownload.AGUARDANDO);
 
-		confirmacao.setUsuarioEnvio(usuario);
-		confirmacao.setStatusArquivo(save(status));
-		save(confirmacao);
+				arquivo.setUsuarioEnvio(usuario);
+				arquivo.setStatusArquivo(save(status));
+				save(arquivo);
 
-		for (Remessa remessa : confirmacao.getRemessas()) {
-		    remessa.setSituacao(true);
-		    remessa.setArquivoGeradoProBanco(confirmacao);
-		    update(remessa);
+				for (Remessa remessa : arquivo.getRemessas()) {
+					remessa.setSituacao(true);
+					remessa.setArquivoGeradoProBanco(arquivo);
+					update(remessa);
+				}
+			}
+			transaction.commit();
+			logger.info("As confirmações foram geradas pelo usuário  " + usuario.getLogin() + "e foram inseridas na base ");
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.error(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível gerar os arquivos de confirmação.");
 		}
-
-		logger.info("O arquivo " + confirmacao.getNomeArquivo() + " foi inserido na base com sucesso!");
-	    }
-	    transaction.commit();
-	    logger.info("As confirmações foram geradas pelo usuário  " + usuario.getLogin()
-		    + "e foram inseridas na base ");
-	} catch (Exception ex) {
-	    transaction.rollback();
-	    logger.error(ex.getMessage(), ex);
-	    throw new InfraException("Não foi possível gerar os arquivos de confirmação.");
+		return confirmacoes;
 	}
-    }
 
-    public List<Remessa> buscarConfirmacoesPendentesDeEnvio() {
-	Criteria criteria = getCriteria(Remessa.class);
-	criteria.createAlias("arquivo", "arquivo");
-	criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
-	criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.CONFIRMACAO));
-	criteria.add(Restrictions.eq("situacao", false));
-	criteria.addOrder(Order.asc("instituicaoDestino"));
-	return criteria.list();
-    }
-
-    public List<Remessa> buscarConfirmacoesPendentesPorInstituicao(Instituicao instituicaoDestino) {
-	Criteria criteria = getCriteria(Remessa.class);
-	criteria.createAlias("arquivo", "arquivo");
-	criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
-	criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.CONFIRMACAO));
-	criteria.add(Restrictions.eq("situacao", false));
-	criteria.add(Restrictions.eq("instituicaoDestino", instituicaoDestino));
-	return criteria.list();
-    }
-
-    public Boolean verificarArquivoConfirmacaoGeradoCra(Instituicao cra) {
-	Criteria criteria = getCriteria(Arquivo.class);
-	criteria.createAlias("tipoArquivo", "tipoArquivo");
-	criteria.add(Restrictions.eq("dataEnvio", new LocalDate()));
-	criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.CONFIRMACAO));
-	criteria.add(Restrictions.eq("instituicaoEnvio", cra));
-
-	List<Arquivo> arquivosRetornoCRA = criteria.list();
-	if (arquivosRetornoCRA.isEmpty()) {
-	    return false;
+	public List<Remessa> buscarConfirmacoesPendentesDeEnvio() {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "arquivo");
+		criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
+		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoFebraban.CONFIRMACAO));
+		criteria.add(Restrictions.eq("situacao", false));
+		criteria.addOrder(Order.asc("instituicaoDestino"));
+		return criteria.list();
 	}
-	return true;
-    }
+
+	public List<Remessa> buscarConfirmacoesPendentesPorInstituicao(Instituicao instituicaoDestino) {
+		Criteria criteria = getCriteria(Remessa.class);
+		criteria.createAlias("arquivo", "arquivo");
+		criteria.createAlias("arquivo.tipoArquivo", "tipoArquivo");
+		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoFebraban.CONFIRMACAO));
+		criteria.add(Restrictions.eq("situacao", false));
+		criteria.add(Restrictions.eq("instituicaoDestino", instituicaoDestino));
+		return criteria.list();
+	}
+
+	public Boolean verificarArquivoConfirmacaoCra(Instituicao cra) {
+		Criteria criteria = getCriteria(Arquivo.class);
+		criteria.createAlias("tipoArquivo", "tipoArquivo");
+		criteria.add(Restrictions.eq("dataEnvio", new LocalDate()));
+		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoFebraban.CONFIRMACAO));
+		criteria.add(Restrictions.eq("instituicaoEnvio", cra));
+
+		List<Arquivo> arquivosRetornoCRA = criteria.list();
+		if (arquivosRetornoCRA.isEmpty()) {
+			return false;
+		}
+		return true;
+	}
 }

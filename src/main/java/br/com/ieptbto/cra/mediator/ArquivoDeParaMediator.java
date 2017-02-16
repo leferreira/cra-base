@@ -9,9 +9,8 @@ import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
 import br.com.ieptbto.cra.entidade.AgenciaBradesco;
 import br.com.ieptbto.cra.entidade.AgenciaCAF;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.enumeration.BancoTipoRegraBasicaInstrumento;
-import br.com.ieptbto.cra.enumeration.BooleanSimNao;
 import br.com.ieptbto.cra.enumeration.PadraoArquivoDePara;
+import br.com.ieptbto.cra.enumeration.regra.RegraBasicaInstrumentoBanco;
 import br.com.ieptbto.cra.processador.ProcessadorArquivoDeParaBB;
 import br.com.ieptbto.cra.slip.ArquivoBradesco;
 import br.com.ieptbto.cra.slip.ArquivoCAF;
@@ -28,8 +27,15 @@ public class ArquivoDeParaMediator extends BaseMediator {
 	@Autowired
 	ProcessadorArquivoDeParaBB processadorArquivoDeParaBB;
 
-	public void processarArquivo(FileUpload uploadedFile, PadraoArquivoDePara padraoArquivo, BooleanSimNao limparBase) {
-		if (limparBase.getBool()) {
+	/**
+	 * Processador de arquivo De/Para de Agências
+	 * 
+	 * @param uploadedFile
+	 * @param padraoArquivo
+	 * @param limparBase
+	 */
+	public void processarArquivo(FileUpload uploadedFile, PadraoArquivoDePara padraoArquivo, boolean limparBase) {
+		if (limparBase) {
 			limparBasesAgencias(padraoArquivo);
 		}
 
@@ -56,15 +62,34 @@ public class ArquivoDeParaMediator extends BaseMediator {
 		}
 	}
 
-	public AgenciaBancoDoBrasil buscarAgenciaArquivoBancoDoBrasil(String numeroContrato) {
-		return deParaDAO.buscarAgenciaArquivoBancoDoBrasil(numeroContrato);
+	/**
+	 * Buscar agência do Banco do Brasil de acordo com o núemro do contrato
+	 * 
+	 * @param numeroContrato
+	 * @return
+	 */
+	public AgenciaBancoDoBrasil buscarAgenciaBancoDoBrasilPorContrato(String numeroContrato) {
+		return deParaDAO.buscarAgenciaBancoDoBrasilPorContrato(numeroContrato);
 	}
 
-	public AgenciaBradesco buscarAgenciaArquivoDeParaBradesco(TituloRemessa tituloRemessa) {
-		return deParaDAO.buscarAgenciaArquivoDeParaBradesco(tituloRemessa);
+	/**
+	 * Buscar agência do Banco Bradesco de acordo com os dados de título
+	 * 
+	 * @param tituloRemessa
+	 * @return
+	 */
+	public AgenciaBradesco buscarAgenciaBradescoPorTitulo(TituloRemessa tituloRemessa) {
+		return deParaDAO.buscarAgenciaBradescoPorTitulo(tituloRemessa);
 	}
 
-	public AgenciaCAF buscarAgenciaArquivoCAF(String agencia, BancoTipoRegraBasicaInstrumento bancoTipo) {
-		return deParaDAO.buscarAgenciaArquivoCAF(agencia, bancoTipo);
+	/**
+	 * Buscar agência CAF por código da agência e tipoRegra
+	 * 
+	 * @param agencia
+	 * @param bancoTipo
+	 * @return
+	 */
+	public AgenciaCAF buscarAgenciaCAFPorCodigoRegra(String agencia, RegraBasicaInstrumentoBanco bancoTipo) {
+		return deParaDAO.buscarAgenciaCAFPorCodigoRegra(agencia, bancoTipo);
 	}
 }

@@ -21,11 +21,11 @@ import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Retorno;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.entidade.ViewBatimentoRetorno;
-import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
+import br.com.ieptbto.cra.entidade.view.ViewBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
+import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.exception.InfraException;
 
 @Repository
@@ -176,7 +176,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 			for (Arquivo arquivo : arquivosRetorno) {
 				StatusArquivo status = new StatusArquivo();
 				status.setData(new LocalDateTime());
-				status.setSituacaoArquivo(SituacaoArquivo.AGUARDANDO);
+				status.setStatusDownload(StatusDownload.AGUARDANDO);
 
 				arquivo.setUsuarioEnvio(usuario);
 				arquivo.setStatusArquivo(save(status));
@@ -236,7 +236,7 @@ public class RetornoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.createAlias("tipoArquivo", "tipoArquivo");
 		criteria.add(Restrictions.eq("dataEnvio", new LocalDate()));
-		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoEnum.RETORNO));
+		criteria.add(Restrictions.eq("tipoArquivo.tipoArquivo", TipoArquivoFebraban.RETORNO));
 		criteria.add(Restrictions.eq("instituicaoEnvio", cra));
 		criteria.setMaxResults(1);
 		Arquivo arquivoRetornoCRA = Arquivo.class.cast(criteria.uniqueResult());

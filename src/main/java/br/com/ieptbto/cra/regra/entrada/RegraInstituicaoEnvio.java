@@ -10,7 +10,7 @@ import br.com.ieptbto.cra.conversor.enumeration.ErroValidacao;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.TipoInstituicaoMediator;
 
@@ -26,7 +26,7 @@ public class RegraInstituicaoEnvio extends RegraEntrada {
 	TipoInstituicaoMediator tipoInstituicaoMediator;
 
 	private Instituicao instituicao;
-	private TipoArquivoEnum tipoArquivo;
+	private TipoArquivoFebraban tipoArquivo;
 
 	@Override
 	public void validar(File file, Arquivo arquivo, Usuario usuario, List<Exception> erros) {
@@ -79,11 +79,11 @@ public class RegraInstituicaoEnvio extends RegraEntrada {
 		this.instituicao = instituicao;
 	}
 
-	public TipoArquivoEnum getTipoArquivo() {
+	public TipoArquivoFebraban getTipoArquivo() {
 		return tipoArquivo;
 	}
 
-	public void setTipoArquivo(TipoArquivoEnum tipoArquivo) {
+	public void setTipoArquivo(TipoArquivoFebraban tipoArquivo) {
 		this.tipoArquivo = tipoArquivo;
 	}
 }

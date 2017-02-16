@@ -23,8 +23,8 @@ import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.CraAcao;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.DesistenciaCancelamentoException;
 import br.com.ieptbto.cra.exception.InfraException;
@@ -55,7 +55,7 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 
 		try {
 			arquivo.setStatusArquivo(save(arquivo.getStatusArquivo()));
-			arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
+			arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoSistema.CRA.toString()));
 
 			arquivoSalvo = save(arquivo);
 			List<PedidoAutorizacaoCancelamento> pedidosAutorizacaoErros = new ArrayList<PedidoAutorizacaoCancelamento>();
@@ -146,7 +146,7 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 
 	@SuppressWarnings("unchecked")
 	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(String nomeArquivo, Instituicao portador, Instituicao cartorio,
-			LocalDate dataInicio, LocalDate dataFim, List<TipoArquivoEnum> tiposArquivo, Usuario usuario) {
+			LocalDate dataInicio, LocalDate dataFim, List<TipoArquivoFebraban> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(AutorizacaoCancelamento.class);
 		criteria.createAlias("remessaAutorizacaoCancelamento", "remessa");
 		criteria.createAlias("remessa.arquivo", "arquivo");
@@ -157,7 +157,7 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 		if (tiposArquivo != null && !tiposArquivo.isEmpty()) {
 			criteria.createAlias("arquivo.tipoArquivo", "tipo");
 			Disjunction disjunction = Restrictions.disjunction();
-			for (TipoArquivoEnum tipo : tiposArquivo) {
+			for (TipoArquivoFebraban tipo : tiposArquivo) {
 				disjunction.add(Restrictions.eq("tipo.tipoArquivo", tipo));
 			}
 			criteria.add(disjunction);
@@ -174,10 +174,10 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", cartorio.getMunicipio().getCodigoIBGE()));
 		}
 
-		if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
+		if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CARTORIO)) {
 			criteria.createAlias("cabecalhoCartorio", "cabecalho");
 			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", usuario.getInstituicao().getMunicipio().getCodigoIBGE()));
-		} else if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
+		} else if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.INSTITUICAO_FINANCEIRA)) {
 			criteria.createAlias("remessa.cabecalho", "cabecalhoArquivo");
 			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", usuario.getInstituicao().getCodigoCompensacao()));
 		}
@@ -189,9 +189,9 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 		Criteria criteria = getCriteria(AutorizacaoCancelamento.class);
 		criteria.createAlias("cabecalhoCartorio", "cabecalho");
 
-		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
+		if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CARTORIO)) {
 			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", instituicao.getMunicipio().getCodigoIBGE()));
-		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
+		} else if (instituicao.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.INSTITUICAO_FINANCEIRA)) {
 			criteria.createAlias("remessaAutorizacaoCancelamento", "remessaAutorizacaoCancelamento");
 			criteria.createAlias("remessaAutorizacaoCancelamento.cabecalho", "cabecalhoArquivo");
 			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", instituicao.getCodigoCompensacao()));

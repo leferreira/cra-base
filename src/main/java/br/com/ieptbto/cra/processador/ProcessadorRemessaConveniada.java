@@ -28,10 +28,9 @@ import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.EspecieTituloEntradaManual;
-import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
-import br.com.ieptbto.cra.enumeration.StatusRemessa;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import br.com.ieptbto.cra.mediator.AvalistaMediator;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.mediator.RemessaMediator;
@@ -110,7 +109,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		remessa.setRodape(setRodape(tituloFiliado, listaTitulos));
 		remessa.getCabecalho().setRemessa(remessa);
 		remessa.getRodape().setRemessa(remessa);
-		remessa.setStatusRemessa(StatusRemessa.AGUARDANDO);
+		remessa.setStatusDownload(StatusDownload.AGUARDANDO);
 
 		int numeroControleDevedor = 2;
 		for (Avalista avalista : avalistaMediator.buscarAvalistasPorTitulo(tituloFiliado)) {
@@ -132,7 +131,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 		arquivo.setInstituicaoEnvio(remessa.getInstituicaoOrigem());
 		arquivo.setInstituicaoRecebe(instituicaoMediator.buscarCRA());
 		arquivo.setNomeArquivo(gerarNomeArquivo(remessa.getInstituicaoOrigem()));
-		arquivo.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoEnum.REMESSA));
+		arquivo.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoFebraban.REMESSA));
 		arquivo.setUsuarioEnvio(getUsuario());
 		arquivo.setStatusArquivo(gerarStatusArquivo());
 		arquivo.setRemessas(new ArrayList<Remessa>());
@@ -144,12 +143,12 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private StatusArquivo gerarStatusArquivo() {
 		StatusArquivo status = new StatusArquivo();
 		status.setData(new LocalDateTime());
-		status.setSituacaoArquivo(SituacaoArquivo.ENVIADO);
+		status.setStatusDownload(StatusDownload.ENVIADO);
 		return status;
 	}
 
 	private String gerarNomeArquivo(Instituicao instituicao) {
-		return TipoArquivoEnum.REMESSA.getConstante() + instituicao.getCodigoCompensacao() + gerarDataArquivo() + NUMERO_SEQUENCIAL_REMESSA;
+		return TipoArquivoFebraban.REMESSA.getConstante() + instituicao.getCodigoCompensacao() + gerarDataArquivo() + NUMERO_SEQUENCIAL_REMESSA;
 	}
 
 	private String gerarDataArquivo() {
@@ -237,11 +236,9 @@ public class ProcessadorRemessaConveniada extends Processador {
 		titulo.setNumeroSequencialArquivo(Integer.toString(remessa.getTitulos().size() + 2));
 		remessa.getTitulos().add(titulo);
 
-		BigDecimal somatorioQtdRemessa =
-				new BigDecimal(quantidadeRegistros + quantidadeTitulos + quantidadeOriginais + quantidadeIndicacoes);
+		BigDecimal somatorioQtdRemessa = new BigDecimal(quantidadeRegistros + quantidadeTitulos + quantidadeOriginais + quantidadeIndicacoes);
 		remessa.getRodape().setSomatorioQtdRemessa(somatorioQtdRemessa);
-		remessa.getRodape().setNumeroSequencialRegistroArquivo(
-				Integer.toString(Integer.parseInt(remessa.getRodape().getNumeroSequencialRegistroArquivo()) + 1));
+		remessa.getRodape().setNumeroSequencialRegistroArquivo(Integer.toString(Integer.parseInt(remessa.getRodape().getNumeroSequencialRegistroArquivo()) + 1));
 	}
 
 	private Instituicao setInstituicaoDestino(TituloFiliado tituloFiliado) {
@@ -251,7 +248,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private Rodape setRodape(TituloFiliado tituloFiliado, List<Titulo> titulos) {
 		Rodape rodape = new Rodape();
 		rodape.setDataMovimento(new LocalDate());
-		rodape.setIdentificacaoRegistro(TipoRegistro.RODAPE);
+		rodape.setIdentificacaoRegistro(TipoIdentificacaoRegistro.RODAPE);
 		rodape.setNomePortador(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getInstituicaoConvenio().getRazaoSocial()));
 		rodape.setNumeroCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
 		rodape.getSomatorioQtdRemessa().add(new BigDecimal(3));
@@ -263,18 +260,16 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private CabecalhoRemessa setCabecalho(TituloFiliado tituloFiliado, Instituicao instituicaoDestino) {
 		CabecalhoRemessa cabecalho = new CabecalhoRemessa();
 		cabecalho.setDataMovimento(new LocalDate());
-		cabecalho.setAgenciaCentralizadora(
-				StringUtils.leftPad(tituloFiliado.getFiliado().getInstituicaoConvenio().getAgenciaCentralizadora(), 6, "0"));
+		cabecalho.setAgenciaCentralizadora(StringUtils.leftPad(tituloFiliado.getFiliado().getInstituicaoConvenio().getAgenciaCentralizadora(), 6, "0"));
 		cabecalho.setCodigoMunicipio(tituloFiliado.getPracaProtesto().getCodigoIBGE());
-		cabecalho.setIdentificacaoRegistro(TipoRegistro.CABECALHO);
+		cabecalho.setIdentificacaoRegistro(TipoIdentificacaoRegistro.CABECALHO);
 		cabecalho.setIdentificacaoTransacaoRemetente("BFO");
 		cabecalho.setIdentificacaoTransacaoDestinatario("SDT");
 		cabecalho.setIdentificacaoTransacaoTipo("TPR");
 		cabecalho.setNomePortador(RemoverAcentosUtil.removeAcentos(tituloFiliado.getFiliado().getInstituicaoConvenio().getRazaoSocial()));
 		cabecalho.setNumeroCodigoPortador(tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao());
 		cabecalho.setNumeroSequencialRegistroArquivo("0001");
-		cabecalho
-				.setNumeroSequencialRemessa(gerarNumeroSequencial(tituloFiliado.getFiliado().getInstituicaoConvenio(), instituicaoDestino));
+		cabecalho.setNumeroSequencialRemessa(gerarNumeroSequencial(tituloFiliado.getFiliado().getInstituicaoConvenio(), instituicaoDestino));
 		cabecalho.setVersaoLayout("043");
 		cabecalho.setQtdTitulosRemessa(1);
 		cabecalho.setQtdRegistrosRemessa(1);

@@ -22,8 +22,8 @@ import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
 import br.com.ieptbto.cra.enumeration.TipoSolicitacaoDesistenciaCancelamento;
+import br.com.ieptbto.cra.enumeration.regra.CodigoIrregularidade;
 
 /**
  * @author Thasso Araújo

@@ -23,7 +23,6 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.enumeration.EnumerationSimNao;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.TipoBatimento;
 import br.com.ieptbto.cra.enumeration.TipoCampo51;
@@ -34,6 +33,7 @@ import br.com.ieptbto.cra.enumeration.TipoCampo51;
 @org.hibernate.annotations.Table(appliesTo = "TB_INSTITUICAO")
 public class Instituicao extends AbstractEntidade<Instituicao> {
 
+	/***/
     private static final long serialVersionUID = 1L;
     private int id;
     private String nomeFantasia;
@@ -60,7 +60,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
     private Boolean verificacaoManual;
     private Municipio municipio;
     private TipoCampo51 tipoCampo51;
-    private EnumerationSimNao permitidoSetoresConvenio;
+    private boolean setoresConvenio;
     private TipoBatimento tipoBatimento;
     private LayoutPadraoXML layoutPadraoXML;
     private TipoInstituicao tipoInstituicao;
@@ -189,13 +189,9 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
         return codigoCartorio;
     }
 
-    @Column(name = "PERMITIDO_SETORES_CONVENIO")
-    @Enumerated(EnumType.STRING)
-    public EnumerationSimNao getPermitidoSetoresConvenio() {
-        if (permitidoSetoresConvenio == null) {
-            permitidoSetoresConvenio = EnumerationSimNao.NAO;
-        }
-        return permitidoSetoresConvenio;
+    @Column(name = "SETORES_CONVENIO")
+    public boolean getSetoresConvenio() {
+        return setoresConvenio;
     }
 
     @Column(name = "TELEFONE", length = 20)
@@ -236,8 +232,8 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
         this.versao = versao;
     }
 
-    public void setPermitidoSetoresConvenio(EnumerationSimNao permitidoSetoresConvenio) {
-        this.permitidoSetoresConvenio = permitidoSetoresConvenio;
+    public void setSetoresConvenio(boolean setoresConvenio) {
+        this.setoresConvenio = setoresConvenio;
     }
 
     public void setCodigoCompensacao(String codigoCompensacao) {

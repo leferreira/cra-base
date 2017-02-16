@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DataUtil;
@@ -43,9 +43,9 @@ public class RegraNomeArquivo extends RegraEntrada {
 				throw new InfraException(Erro.EXTENSAO_NOME_ARQUIVO_INVALIDA.getMensagemErro());
 			}
 
-			if (arquivo.getNomeArquivo().startsWith(TipoArquivoEnum.REMESSA.getConstante())
-					|| arquivo.getNomeArquivo().startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())
-					|| arquivo.getNomeArquivo().startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
+			if (arquivo.getNomeArquivo().startsWith(TipoArquivoFebraban.REMESSA.getConstante())
+					|| arquivo.getNomeArquivo().startsWith(TipoArquivoFebraban.CONFIRMACAO.getConstante())
+					|| arquivo.getNomeArquivo().startsWith(TipoArquivoFebraban.RETORNO.getConstante())) {
 				if (tamanhoNome != 12) {
 					logger.error(Erro.TAMANHO_NOME_ARQUIVO_INVALIDO.getMensagemErro());
 					throw new InfraException(Erro.TAMANHO_NOME_ARQUIVO_INVALIDO.getMensagemErro());
@@ -57,9 +57,9 @@ public class RegraNomeArquivo extends RegraEntrada {
 					logger.error(Erro.DATA_NOME_ARQUIVO_INVALIDA.getMensagemErro());
 					throw new InfraException(Erro.DATA_NOME_ARQUIVO_INVALIDA.getMensagemErro());
 				}
-			} else if (arquivo.getNomeArquivo().startsWith(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.getConstante())
-					|| arquivo.getNomeArquivo().startsWith(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.getConstante())
-					|| arquivo.getNomeArquivo().startsWith(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.getConstante())) {
+			} else if (arquivo.getNomeArquivo().startsWith(TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO.getConstante())
+					|| arquivo.getNomeArquivo().startsWith(TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO.getConstante())
+					|| arquivo.getNomeArquivo().startsWith(TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO.getConstante())) {
 				if (tamanhoNome != 13) {
 					logger.error(Erro.TAMANHO_NOME_ARQUIVO_INVALIDO.getMensagemErro());
 					throw new InfraException(Erro.TAMANHO_NOME_ARQUIVO_INVALIDO.getMensagemErro());

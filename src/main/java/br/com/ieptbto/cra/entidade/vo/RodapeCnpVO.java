@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import br.com.ieptbto.cra.enumeration.TipoRegistro;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 
 /**
  * @author Thasso Araújo
@@ -53,6 +53,6 @@ public class RodapeCnpVO extends AbstractArquivoVO {
 
 	@Override
 	public String getIdentificacaoRegistro() {
-		return TipoRegistro.RODAPE.getConstante();
+		return TipoIdentificacaoRegistro.RODAPE.getConstante();
 	}
 }

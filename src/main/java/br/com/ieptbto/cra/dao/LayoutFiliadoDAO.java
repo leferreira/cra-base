@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.LayoutFiliado;
-import br.com.ieptbto.cra.enumeration.TipoArquivoLayoutEmpresa;
+import br.com.ieptbto.cra.enumeration.LayoutArquivo;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -42,13 +42,13 @@ public class LayoutFiliadoDAO extends AbstractBaseDAO {
 		List<LayoutFiliado> lista = new ArrayList<>();
 
 		criteria.setProjection(
-		        Projections.projectionList().add(Projections.groupProperty("empresa")).add(Projections.groupProperty("tipoArquivo")));
+		        Projections.projectionList().add(Projections.groupProperty("empresa")).add(Projections.groupProperty("layoutArquivo")));
 
 		for (Object objetos : criteria.list()) {
 			Object[] objeto = (Object[]) objetos;
 			LayoutFiliado layout = new LayoutFiliado();
 			layout.setEmpresa(Instituicao.class.cast(objeto[0]));
-			layout.setTipoArquivo(TipoArquivoLayoutEmpresa.get(String.valueOf(objeto[1])));
+			layout.setLayoutArquivo(LayoutArquivo.get(String.valueOf(objeto[1])));
 			lista.add(layout);
 		}
 

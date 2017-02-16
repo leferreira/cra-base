@@ -9,8 +9,8 @@ import br.com.ieptbto.cra.conversor.BigDecimalConversor;
 import br.com.ieptbto.cra.conversor.DateConversor;
 import br.com.ieptbto.cra.entidade.RegistroCnp;
 import br.com.ieptbto.cra.entidade.vo.TituloCnpVO;
-import br.com.ieptbto.cra.enumeration.TipoRegistro;
 import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import br.com.ieptbto.cra.util.CpfCnpjUtil;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
@@ -24,7 +24,7 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 	@Override
 	public RegistroCnp converter(Class<RegistroCnp> entidade, TituloCnpVO entidadeVO) {
 		RegistroCnp registro = new RegistroCnp();
-		registro.setCodigoRegistro(TipoRegistro.TITULO.getConstante());
+		registro.setCodigoRegistro(TipoIdentificacaoRegistro.TITULO.getConstante());
 		registro.setTipoInformacao(entidadeVO.getTipoInformacao());
 		if (entidadeVO.getTipoInformacao().trim().equals("P")) {
 			registro.setTipoRegistroCnp(TipoRegistroCnp.PROTESTO);
@@ -184,7 +184,7 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 
 	public static RegistroCnp converterLinhaCSV(String[] dados) {
 		RegistroCnp registro = new RegistroCnp();
-		registro.setCodigoRegistro(TipoRegistro.TITULO.getConstante());
+		registro.setCodigoRegistro(TipoIdentificacaoRegistro.TITULO.getConstante());
 		registro.setTipoInformacao(RemoverAcentosUtil.removeAcentos(dados[0].replace("\"", "")));
 		if (registro.getTipoInformacao().trim().equals("P")) {
 			registro.setTipoRegistroCnp(TipoRegistroCnp.PROTESTO);
@@ -312,7 +312,7 @@ public class RegistroCnpConversor extends AbstractConversorArquivo<TituloCnpVO, 
 
 	public static RegistroCnp converterLinhaSerasa(String linha) {
 		RegistroCnp registro = new RegistroCnp();
-		registro.setCodigoRegistro(TipoRegistro.TITULO.getConstante());
+		registro.setCodigoRegistro(TipoIdentificacaoRegistro.TITULO.getConstante());
 		registro.setTipoInformacao(RemoverAcentosUtil.removeAcentos(linha.substring(1, 2).replace("\"", "")));
 		if (registro.getTipoInformacao().trim().equals("P")) {
 			registro.setTipoRegistroCnp(TipoRegistroCnp.PROTESTO);

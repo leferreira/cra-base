@@ -23,8 +23,8 @@ import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
 import br.com.ieptbto.cra.enumeration.TipoCampo51;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.mediator.TituloMediator;
 
@@ -76,10 +76,10 @@ public class ConversorRemessaArquivo {
 	}
 
 	private Instituicao getInstituicaoDestino(CabecalhoVO cabecalho) {
-		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(arquivo);
-		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo);
+		if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
 			return instituicaoMediator.getCartorioPorCodigoIBGE(cabecalho.getCodigoMunicipio());
-		} else if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
+		} else if (TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoFebraban.RETORNO.equals(tipoArquivo)) {
 			return instituicaoMediator.getInstituicaoPorCodigoPortador(cabecalho.getNumeroCodigoPortador());
 		}
 		return null;
@@ -89,13 +89,13 @@ public class ConversorRemessaArquivo {
 		List<Titulo> titulos = new ArrayList<Titulo>();
 		Titulo titulo = null;
 		for (TituloVO tituloVO : titulosVO) {
-			if (TipoArquivoEnum.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-				titulo = new TituloConversor().converter(TituloRemessa.class, tituloVO);
+			if (TipoArquivoFebraban.REMESSA.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				titulo = new ConversorTitulo().converter(TituloRemessa.class, tituloVO);
 				verificarAnexoComplementoRegistro(remessa.getInstituicaoOrigem(), TituloRemessa.class.cast(titulo), tituloVO);
-			} else if (TipoArquivoEnum.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-				titulo = new ConfirmacaoConversor().converter(Confirmacao.class, tituloVO);
-			} else if (TipoArquivoEnum.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
-				titulo = new RetornoConversor().converter(Retorno.class, tituloVO);
+			} else if (TipoArquivoFebraban.CONFIRMACAO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				titulo = new ConversorConfirmacao().converter(Confirmacao.class, tituloVO);
+			} else if (TipoArquivoFebraban.RETORNO.equals(remessa.getArquivo().getTipoArquivo().getTipoArquivo())) {
+				titulo = new ConversorRetorno().converter(Retorno.class, tituloVO);
 			}
 			titulo.setRemessa(remessa);
 			titulos.add(titulo);

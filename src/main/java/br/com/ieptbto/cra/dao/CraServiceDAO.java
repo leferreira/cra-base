@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.CraServiceConfig;
-import br.com.ieptbto.cra.enumeration.CraServiceEnum;
+import br.com.ieptbto.cra.enumeration.CraServices;
 
 @Repository
 public class CraServiceDAO extends AbstractBaseDAO {
@@ -49,7 +49,7 @@ public class CraServiceDAO extends AbstractBaseDAO {
 	}
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public CraServiceConfig verificarServicoIndisponivel(CraServiceEnum craService) {
+	public CraServiceConfig verificarServicoIndisponivel(CraServices craService) {
 		Criteria criteria = getCriteria(CraServiceConfig.class);
 		criteria.add(Restrictions.eq("craService", craService));
 		return CraServiceConfig.class.cast(criteria.uniqueResult());

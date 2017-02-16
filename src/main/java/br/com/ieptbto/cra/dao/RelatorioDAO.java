@@ -2,20 +2,16 @@ package br.com.ieptbto.cra.dao;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.sql.JoinType;
+import org.hibernate.Query;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.enumeration.TipoOcorrencia;
+import br.com.ieptbto.cra.entidade.view.ViewTitulo;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
+import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 
 /**
@@ -26,300 +22,240 @@ import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 @Repository
 public class RelatorioDAO extends AbstractBaseDAO {
 
-	public List<TituloRemessa> relatorioTitulosGeral(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio,
+	public List<ViewTitulo> relatorioTitulosGeral(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao, 
+			Instituicao bancoConvenio, Instituicao cartorio) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT v ");
+		sql.append("FROM ViewTitulo v ");
+		sql.append("WHERE v.dataRecebimento_Arquivo_Remessa BETWEEN :dataInicio AND :dataFim ");
+		
+		if (bancoConvenio != null && cartorio == null) {
+			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+		}
+		if (cartorio != null && bancoConvenio == null) {
+			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
+		}
+		if (bancoConvenio != null && cartorio != null) {
+			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
+		}
+		if (tipoInstituicao != null && bancoConvenio == null) {
+			sql.append("AND v.tipoInstituicao_Instituicao = " + tipoInstituicao.getConstante() + " ");
+		}
+		sql.append("ORDER BY v.nomeFantasia_Instituicao, v.nomeMunicipio_Municipio, v.id_TituloRemessa ASC");
+		Query query = getSession().createQuery(sql.toString());
+		query.setDate("dataInicio", dataInicio.toDate());
+		query.setDate("dataFim", dataFim.toDate());
+		return query.list();
+	}
+
+	public List<ViewTitulo> relatorioTitulosSemConfirmacao(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
+			Instituicao bancoConvenio, Instituicao cartorio) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT v ");
+		sql.append("FROM ViewTitulo v ");
+		sql.append("WHERE v.dataRecebimento_Arquivo_Remessa BETWEEN :dataInicio AND :dataFim ");
+		sql.append("AND v.id_Confirmacao IS NULL ");
+		
+		if (bancoConvenio != null && cartorio == null) {
+			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+		}
+		if (cartorio != null && bancoConvenio == null) {
+			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
+		}
+		if (bancoConvenio != null && cartorio != null) {
+			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
+		}
+		if (tipoInstituicao != null && bancoConvenio == null) {
+			sql.append("AND v.tipoInstituicao_Instituicao = " + tipoInstituicao.getConstante() + " ");
+		}
+		sql.append("ORDER BY v.nomeFantasia_Instituicao, v.nomeMunicipio_Municipio, v.id_TituloRemessa ASC");
+		Query query = getSession().createQuery(sql.toString());
+		query.setDate("dataInicio", dataInicio.toDate());
+		query.setDate("dataFim", dataFim.toDate());
+		return query.list();
+	}
+
+	public List<ViewTitulo> relatorioTitulosConfirmadosSemRetorno(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
+			Instituicao bancoConvenio, Instituicao cartorio) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT v ");
+		sql.append("FROM ViewTitulo v ");
+		sql.append("WHERE v.dataRecebimento_Arquivo_Remessa BETWEEN :dataInicio AND :dataFim ");
+		sql.append("AND v.situacaoTitulo = '" + TipoOcorrencia.ABERTO + "' ");
+		sql.append("AND v.numeroControleDevedor_TituloRemessa = " + Integer.valueOf(ConfiguracaoBase.UM) + " ");
+		
+		if (bancoConvenio != null && cartorio == null) {
+			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+		}
+		if (cartorio != null && bancoConvenio == null) {
+			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
+		}
+		if (bancoConvenio != null && cartorio != null) {
+			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
+		}
+		if (tipoInstituicao != null && bancoConvenio == null) {
+			sql.append("AND v.tipoInstituicao_Instituicao = " + tipoInstituicao.getConstante() + " ");
+		}
+		sql.append("ORDER BY v.nomeFantasia_Instituicao, v.nomeMunicipio_Municipio, v.id_TituloRemessa ASC");
+		Query query = getSession().createQuery(sql.toString());
+		query.setDate("dataInicio", dataInicio.toDate());
+		query.setDate("dataFim", dataFim.toDate());
+		return query.list();
+	}
+
+	public List<ViewTitulo> relatorioTitulosRetorno(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao, Instituicao bancoConvenio,
 			Instituicao cartorio) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("confirmacao", "confirmacao", JoinType.LEFT_OUTER_JOIN);
-		criteria.createAlias("retorno", "retorno", JoinType.LEFT_OUTER_JOIN);
-
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT v ");
+		sql.append("FROM ViewTitulo v ");
+		sql.append("WHERE v.dataRecebimento_Arquivo_Remessa BETWEEN :dataInicio AND :dataFim ");
+		sql.append("AND v.id_Retorno IS NOT NULL ");
+		
 		if (bancoConvenio != null && cartorio == null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
-			criteria.createAlias("remessa.instituicaoDestino", "instituicaoDestino");
-			criteria.createAlias("instituicaoDestino.municipio", "municipio");
-			criteria.addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
+			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
 		}
 		if (cartorio != null && bancoConvenio == null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-			criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("id"));
+			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (bancoConvenio != null && cartorio != null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
-			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.addOrder(Order.asc("id"));
+			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (tipoInstituicao != null && bancoConvenio == null) {
-			if (bancoConvenio == null && cartorio == null) {
-				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
-			}
-			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
-			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
+			sql.append("AND v.tipoInstituicao_Instituicao = " + tipoInstituicao.getConstante() + " ");
 		}
-		criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
-		return criteria.list();
+		sql.append("ORDER BY v.nomeFantasia_Instituicao, v.nomeMunicipio_Municipio, v.id_TituloRemessa ASC");
+		Query query = getSession().createQuery(sql.toString());
+		query.setDate("dataInicio", dataInicio.toDate());
+		query.setDate("dataFim", dataFim.toDate());
+		return query.list();
 	}
 
-	public List<TituloRemessa> relatorioTitulosSemConfirmacao(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
-			Instituicao bancoConvenio, Instituicao cartorio) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("confirmacao", "confirmacao", JoinType.LEFT_OUTER_JOIN);
-
-		if (bancoConvenio != null && cartorio == null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
-			criteria.createAlias("remessa.instituicaoDestino", "instituicaoDestino");
-			criteria.createAlias("instituicaoDestino.municipio", "municipio");
-			criteria.addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
-		}
-		if (cartorio != null && bancoConvenio == null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-			criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("id"));
-		}
-		if (bancoConvenio != null && cartorio != null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
-			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.addOrder(Order.asc("id"));
-		}
-		if (tipoInstituicao != null && bancoConvenio == null) {
-			if (bancoConvenio == null && cartorio == null) {
-				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
-			}
-			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
-			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
-		}
-		criteria.add(Restrictions.isNull("confirmacao.id"));
-		criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
-		return criteria.list();
-	}
-
-	public List<TituloRemessa> relatorioTitulosConfirmadosSemRetorno(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
-			Instituicao bancoConvenio, Instituicao cartorio) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("confirmacao", "confirmacao");
-		criteria.createAlias("retorno", "retorno", JoinType.LEFT_OUTER_JOIN);
-
-		if (bancoConvenio != null && cartorio == null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
-			criteria.createAlias("remessa.instituicaoDestino", "instituicaoDestino");
-			criteria.createAlias("instituicaoDestino.municipio", "municipio");
-			criteria.addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
-		}
-		if (cartorio != null && bancoConvenio == null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-			criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("id"));
-		}
-		if (bancoConvenio != null && cartorio != null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
-			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.addOrder(Order.asc("id"));
-		}
-		if (tipoInstituicao != null && bancoConvenio == null) {
-			if (cartorio == null) {
-				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-				criteria.createAlias("remessa.instituicaoDestino", "instituicaoDestino");
-				criteria.createAlias("instituicaoDestino.municipio", "municipio");
-				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
-			}
-			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
-			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
-		}
-		criteria.add(Restrictions.isNull("retorno.id"));
-		criteria.add(Restrictions.ne("confirmacao.tipoOcorrencia", TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante()));
-		criteria.add(Restrictions.ne("confirmacao.numeroProtocoloCartorio", ConfiguracaoBase.ZERO));
-		criteria.add(Restrictions.eq("numeroControleDevedor", Integer.valueOf(ConfiguracaoBase.UM)));
-		criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
-		return criteria.list();
-	}
-
-	public List<TituloRemessa> relatorioTitulosRetorno(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio,
+	public List<ViewTitulo> relatorioTitulosPagos(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao, Instituicao bancoConvenio,
 			Instituicao cartorio) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("confirmacao", "confirmacao");
-		criteria.createAlias("retorno", "retorno");
-
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT v ");
+		sql.append("FROM ViewTitulo v ");
+		sql.append("WHERE v.dataRecebimento_Arquivo_Remessa BETWEEN :dataInicio AND :dataFim ");
+		sql.append("AND v.situacaoTitulo = '" + TipoOcorrencia.PAGO + "' ");
+		
 		if (bancoConvenio != null && cartorio == null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
-			criteria.createAlias("remessa.instituicaoDestino", "instituicaoDestino");
-			criteria.createAlias("instituicaoDestino.municipio", "municipio");
-			criteria.addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
+			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
 		}
 		if (cartorio != null && bancoConvenio == null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-			criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("id"));
+			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (bancoConvenio != null && cartorio != null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
-			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.addOrder(Order.asc("id"));
+			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (tipoInstituicao != null && bancoConvenio == null) {
-			if (cartorio == null) {
-				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
-			}
-			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
-			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
+			sql.append("AND v.tipoInstituicao_Instituicao = " + tipoInstituicao.getConstante() + " ");
 		}
-		criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
-		return criteria.list();
+		sql.append("ORDER BY v.nomeFantasia_Instituicao, v.nomeMunicipio_Municipio, v.id_TituloRemessa ASC");
+		Query query = getSession().createQuery(sql.toString());
+		query.setDate("dataInicio", dataInicio.toDate());
+		query.setDate("dataFim", dataFim.toDate());
+		return query.list();
 	}
 
-	public List<TituloRemessa> relatorioTitulosPagos(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio,
-			Instituicao cartorio) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("confirmacao", "confirmacao");
-		criteria.createAlias("retorno", "retorno");
-
-		if (bancoConvenio != null && cartorio == null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
-			criteria.createAlias("remessa.instituicaoDestino", "instituicaoDestino");
-			criteria.createAlias("instituicaoDestino.municipio", "municipio");
-			criteria.addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("retorno.dataOcorrencia")).addOrder(Order.asc("id"));
-		}
-		if (cartorio != null && bancoConvenio == null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-			criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("retorno.dataOcorrencia")).addOrder(Order.asc("id"));
-		}
-		if (bancoConvenio != null && cartorio != null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
-			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.addOrder(Order.asc("retorno.dataOcorrencia")).addOrder(Order.asc("id"));
-		}
-		if (tipoInstituicao != null && bancoConvenio == null) {
-			if (cartorio == null) {
-				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
-			}
-			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
-			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
-		}
-		criteria.add(Restrictions.eq("retorno.tipoOcorrencia", TipoOcorrencia.PAGO.getConstante()));
-		criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
-		return criteria.list();
-	}
-
-	public List<TituloRemessa> relatorioTitulosProtestados(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
+	public List<ViewTitulo> relatorioTitulosProtestados(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
 			Instituicao bancoConvenio, Instituicao cartorio) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("confirmacao", "confirmacao");
-		criteria.createAlias("retorno", "retorno");
-
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT v ");
+		sql.append("FROM ViewTitulo v ");
+		sql.append("WHERE v.dataRecebimento_Arquivo_Remessa BETWEEN :dataInicio AND :dataFim ");
+		sql.append("AND v.situacaoTitulo = '" + TipoOcorrencia.PROTESTADO + "' ");
+		
 		if (bancoConvenio != null && cartorio == null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
-			criteria.createAlias("remessa.instituicaoDestino", "instituicaoDestino");
-			criteria.createAlias("instituicaoDestino.municipio", "municipio");
-			criteria.addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
+			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
 		}
 		if (cartorio != null && bancoConvenio == null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-			criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("id"));
+			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (bancoConvenio != null && cartorio != null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
-			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.addOrder(Order.asc("id"));
+			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (tipoInstituicao != null && bancoConvenio == null) {
-			if (bancoConvenio == null && cartorio == null) {
-				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
-			}
-			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
-			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
+			sql.append("AND v.tipoInstituicao_Instituicao = " + tipoInstituicao.getConstante() + " ");
 		}
-		criteria.add(Restrictions.eq("retorno.tipoOcorrencia", TipoOcorrencia.PROTESTADO.getConstante()));
-		criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
-		return criteria.list();
+		sql.append("ORDER BY v.nomeFantasia_Instituicao, v.nomeMunicipio_Municipio, v.id_TituloRemessa ASC");
+		Query query = getSession().createQuery(sql.toString());
+		query.setDate("dataInicio", dataInicio.toDate());
+		query.setDate("dataFim", dataFim.toDate());
+		return query.list();
 	}
 
-	public List<TituloRemessa> relatorioTitulosRetiradosDevolvidos(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
+	public List<ViewTitulo> relatorioTitulosRetiradosDevolvidos(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
 			Instituicao bancoConvenio, Instituicao cartorio) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("confirmacao", "confirmacao");
-		criteria.createAlias("retorno", "retorno");
-
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT v ");
+		sql.append("FROM ViewTitulo v ");
+		sql.append("WHERE v.dataRecebimento_Arquivo_Remessa BETWEEN :dataInicio AND :dataFim ");
+		sql.append("AND ( v.situacaoTitulo = '" + TipoOcorrencia.RETIRADO + "' "
+				+ "	OR v.situacaoTitulo = '" + TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS + "' "
+				+ "	OR v.situacaoTitulo = '" + TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_COM_CUSTAS + "' "
+				+ ") ");
+		
 		if (bancoConvenio != null && cartorio == null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
-			criteria.createAlias("remessa.instituicaoDestino", "instituicaoDestino");
-			criteria.createAlias("instituicaoDestino.municipio", "municipio");
-			criteria.addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
+			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
 		}
 		if (cartorio != null && bancoConvenio == null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-			criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("id"));
+			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (bancoConvenio != null && cartorio != null) {
-			criteria.add(Restrictions.eq("remessa.instituicaoOrigem", bancoConvenio));
-			criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
-			criteria.addOrder(Order.asc("id"));
+			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (tipoInstituicao != null && bancoConvenio == null) {
-			if (cartorio == null) {
-				criteria.createAlias("remessa.instituicaoOrigem", "instituicaoOrigem");
-				criteria.addOrder(Order.asc("instituicaoOrigem.nomeFantasia")).addOrder(Order.asc("municipio.nomeMunicipio")).addOrder(Order.asc("id"));
-			}
-			criteria.createAlias("instituicaoOrigem.tipoInstituicao", "tipoInstituicao");
-			criteria.add(Restrictions.eq("tipoInstituicao.tipoInstituicao", tipoInstituicao));
+			sql.append("AND v.tipoInstituicao_Instituicao = " + tipoInstituicao.getConstante() + " ");
 		}
-		Disjunction dijuncao = Restrictions.disjunction();
-		dijuncao.add(Restrictions.eq("retorno.tipoOcorrencia", TipoOcorrencia.RETIRADO.getConstante()));
-		dijuncao.add(Restrictions.eq("retorno.tipoOcorrencia", TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante()));
-		dijuncao.add(Restrictions.eq("retorno.tipoOcorrencia", TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_COM_CUSTAS.getConstante()));
-		criteria.add(dijuncao);
-		criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
-		return criteria.list();
+		sql.append("ORDER BY v.nomeFantasia_Instituicao, v.nomeMunicipio_Municipio, v.id_TituloRemessa ASC");
+		Query query = getSession().createQuery(sql.toString());
+		query.setDate("dataInicio", dataInicio.toDate());
+		query.setDate("dataFim", dataFim.toDate());
+		return query.list();
 	}
 
-	public List<TituloRemessa> relatorioTitulosDesistenciaProtesto(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
+	public List<ViewTitulo> relatorioTitulosDesistenciaProtesto(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
 			Instituicao instituicao, Instituicao cartorio) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
-		TipoInstituicaoCRA tipoInstituicaoParametro = instituicao.getTipoInstituicao().getTipoInstituicao();
-		if (tipoInstituicaoParametro.equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA) || tipoInstituicaoParametro.equals(TipoInstituicaoCRA.CONVENIO)) {
+		TipoInstituicaoSistema tipoInstituicaoParametro = instituicao.getTipoInstituicao().getTipoInstituicao();
+		if (tipoInstituicaoParametro.equals(TipoInstituicaoSistema.INSTITUICAO_FINANCEIRA) || tipoInstituicaoParametro.equals(TipoInstituicaoSistema.CONVENIO)) {
 
-		} else if (tipoInstituicaoParametro.equals(TipoInstituicaoCRA.CARTORIO)) {
+		} else if (tipoInstituicaoParametro.equals(TipoInstituicaoSistema.CARTORIO)) {
 
 		}
 		return criteria.list();
 	}
 
-	public List<TituloRemessa> relatorioTitulosAutorizacaoCancelamento(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
+	public List<ViewTitulo> relatorioTitulosAutorizacaoCancelamento(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
 			Instituicao instituicao, Instituicao cartorio) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
-		TipoInstituicaoCRA tipoInstituicaoParametro = instituicao.getTipoInstituicao().getTipoInstituicao();
-		if (tipoInstituicaoParametro.equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA) || tipoInstituicaoParametro.equals(TipoInstituicaoCRA.CONVENIO)) {
+		TipoInstituicaoSistema tipoInstituicaoParametro = instituicao.getTipoInstituicao().getTipoInstituicao();
+		if (tipoInstituicaoParametro.equals(TipoInstituicaoSistema.INSTITUICAO_FINANCEIRA) || tipoInstituicaoParametro.equals(TipoInstituicaoSistema.CONVENIO)) {
 
-		} else if (tipoInstituicaoParametro.equals(TipoInstituicaoCRA.CARTORIO)) {
+		} else if (tipoInstituicaoParametro.equals(TipoInstituicaoSistema.CARTORIO)) {
 
 		}
 		return criteria.list();
 	}
 
-	public TituloRemessa relatorioTitulosPendentes(String nossoNumero, String numeroProtocoloCartorio) {
-		Criteria criteria = getCriteria(TituloRemessa.class);
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("confirmacao", "confirmacao");
-		criteria.createAlias("retorno", "retorno", JoinType.LEFT_OUTER_JOIN);
-
-		if (numeroProtocoloCartorio != null && numeroProtocoloCartorio != StringUtils.EMPTY) {
-			criteria.add(Restrictions.eq("confirmacao.numeroProtocoloCartorio", numeroProtocoloCartorio));
-		}
-		if (nossoNumero != null && nossoNumero != StringUtils.EMPTY) {
-			criteria.add(Restrictions.ilike("nossoNumero", nossoNumero, MatchMode.ANYWHERE));
-		}
-		return TituloRemessa.class.cast(criteria.uniqueResult());
+	public ViewTitulo relatorioTitulosPendentes(String nossoNumero, String numeroProtocoloCartorio) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT v ");
+		sql.append("FROM ViewTitulo v ");
+		sql.append("WHERE v.numeroProtocoloCartorio_Confirmacao LIKE :protocolo ");
+		sql.append("AND v. LIKE :nossoNumero ");
+		sql.append("ORDER BY v.dataRecebimento_Arquivo_Remessa DESC ");
+		Query query = getSession().createQuery(sql.toString());
+		query.setText("protocolo", "%" + numeroProtocoloCartorio + "%");
+		query.setText("nossoNumero", "%" + nossoNumero + "%" );
+		query.setMaxResults(1);
+		return ViewTitulo.class.cast(query.uniqueResult());
 	}
 }

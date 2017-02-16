@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDateTime;
 
-import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
+import br.com.ieptbto.cra.enumeration.StatusDownload;
 
 /**
  * 
@@ -30,7 +30,7 @@ public class StatusArquivo extends AbstractEntidade<StatusArquivo> {
 
 	private int id;
 	private LocalDateTime data;
-	private SituacaoArquivo situacaoArquivo;
+	private StatusDownload statusDownload;
 
 	@Override
 	@Id
@@ -40,10 +40,10 @@ public class StatusArquivo extends AbstractEntidade<StatusArquivo> {
 		return this.id;
 	}
 
-	@Column(name = "SITUACAO_ARQUIVO")
+	@Column(name = "STATUS_DOWNLOAD")
 	@Enumerated(EnumType.STRING)
-	public SituacaoArquivo getSituacaoArquivo() {
-		return situacaoArquivo;
+	public StatusDownload getStatusDownload() {
+		return statusDownload;
 	}
 
 	@Column(name = "DATA")
@@ -59,8 +59,8 @@ public class StatusArquivo extends AbstractEntidade<StatusArquivo> {
 		this.data = data;
 	}
 
-	public void setSituacaoArquivo(SituacaoArquivo situacaoArquivo) {
-		this.situacaoArquivo = situacaoArquivo;
+	public void setStatusDownload(StatusDownload statusDownload) {
+		this.statusDownload = statusDownload;
 	}
 
 	@Override

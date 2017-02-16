@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import br.com.ieptbto.cra.entidade.ViewBatimentoRetorno;
+import br.com.ieptbto.cra.entidade.view.ViewBatimentoRetorno;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 

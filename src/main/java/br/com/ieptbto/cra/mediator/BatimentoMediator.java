@@ -18,7 +18,7 @@ import br.com.ieptbto.cra.entidade.BatimentoDeposito;
 import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.ViewBatimentoRetorno;
+import br.com.ieptbto.cra.entidade.view.ViewBatimentoRetorno;
 
 @Service
 public class BatimentoMediator extends BaseMediator {

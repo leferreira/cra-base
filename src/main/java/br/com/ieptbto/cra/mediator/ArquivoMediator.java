@@ -41,12 +41,12 @@ import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.view.ViewArquivoPendente;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.enumeration.LayoutArquivo;
-import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
-import br.com.ieptbto.cra.enumeration.StatusRemessa;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 
@@ -89,15 +89,15 @@ public class ArquivoMediator extends BaseMediator {
 	}
 
 	public List<Arquivo> buscarArquivos(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim,
-			TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoEnum> tiposArquivo,
-			List<SituacaoArquivo> situacoesArquivos) {
+			TipoInstituicaoSistema tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoFebraban> tiposArquivo,
+			List<StatusDownload> situacoesArquivos) {
 		return arquivoDAO.buscarArquivos(usuario, nomeArquivo, dataInicio, dataFim, tipoInstituicao, bancoConvenio, tiposArquivo,
 				situacoesArquivos);
 	}
 
 	public List<Arquivo> buscarArquivosDesistenciaCancelamento(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim,
-			TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoEnum> tiposArquivo,
-			List<SituacaoArquivo> situacoesArquivos) {
+			TipoInstituicaoSistema tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoFebraban> tiposArquivo,
+			List<StatusDownload> situacoesArquivos) {
 		return arquivoDAO.buscarArquivosDesistenciaCancelamento(usuario, nomeArquivo, dataInicio, dataFim, tipoInstituicao, bancoConvenio,
 				tiposArquivo, situacoesArquivos);
 	}
@@ -133,6 +133,26 @@ public class ArquivoMediator extends BaseMediator {
 		remessaCancelamento.setCancelamentoProtesto(cancelamentoProtesto);
 		arquivo.setRemessaCancelamentoProtesto(remessaCancelamento);
 		return arquivo;
+	}
+	
+	/**
+	 * Arquivos de Remessa, Desistencia e Cancelamentos pendentes dos cartórios
+	 * 
+	 * @param instituicao
+	 * @return
+	 */
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
+	public List<ViewArquivoPendente> consultarViewArquivosPendentes(Instituicao instituicao) {
+		TipoInstituicaoSistema tipoInstituicao = instituicao.getTipoInstituicao().getTipoInstituicao();
+		if (TipoInstituicaoSistema.CRA == tipoInstituicao) {
+			return arquivoDAO.consultarArquivosPendentes(instituicao);
+		} else if (TipoInstituicaoSistema.CARTORIO == tipoInstituicao) {
+			return arquivoDAO.consultarArquivosPendentesCartorio(instituicao);
+		} else if (TipoInstituicaoSistema.INSTITUICAO_FINANCEIRA == tipoInstituicao 
+						|| TipoInstituicaoSistema.CONVENIO == tipoInstituicao) {
+			return arquivoDAO.consultarArquivosPendentesBancoConvenio(instituicao);
+		}
+		return null;
 	}
 
 	/**
@@ -193,7 +213,7 @@ public class ArquivoMediator extends BaseMediator {
 		Arquivo arquivo = new Arquivo();
 		arquivo.setNomeArquivo(nomeArquivo);
 		arquivo.setTipoArquivo(tipoArquivoDAO.buscarTipoArquivo(nomeArquivo));
-		arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicao(TipoInstituicaoCRA.CRA.toString()));
+		arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoSistema.CRA.toString()));
 		arquivo.setUsuarioEnvio(usuario);
 		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
 		arquivo.setStatusArquivo(setStatusArquivo());
@@ -210,20 +230,20 @@ public class ArquivoMediator extends BaseMediator {
 	}
 
 	private Instituicao getInstituicaoEnvioArquivo(Usuario usuario, FileUpload uploadedFile) {
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
 			return usuario.getInstituicao();
 		}
 
 		String nomeArquivo = uploadedFile.getClientFileName();
-		TipoArquivoEnum tipoArquivo = TipoArquivoEnum.getTipoArquivoEnum(nomeArquivo);
-		if (TipoArquivoEnum.REMESSA.equals(tipoArquivo)) {
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(nomeArquivo);
+		if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
 			return instituicaoDAO.getInstituicaoPorCodigo(nomeArquivo.substring(1, 4));
 		}
-		if (TipoArquivoEnum.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoEnum.RETORNO.equals(tipoArquivo)) {
+		if (TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoFebraban.RETORNO.equals(tipoArquivo)) {
 			return identificarMunicipioEnvioPeloCabecalho(uploadedFile);
 		}
-		if (TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo) || TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)
-				|| TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
+		if (TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo) || TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)
+				|| TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
 			return instituicaoDAO.getInstituicaoPorCodigo(nomeArquivo.substring(2, 5));
 		} else {
 			throw new InfraException("Não é possível identificar o nome do arquivo ou não segue os padrões FEBRABAN.");
@@ -251,16 +271,15 @@ public class ArquivoMediator extends BaseMediator {
 					}
 				}
 			} else {
-				throw new InfraException(
-						"Não foi possível identificar o layout do arquivo. Os dados internos podem estar ilegíveis ou não segue o manual FEBRABAN.");
+				throw new InfraException("Não foi possível identificar o layout do arquivo. Os dados internos podem estar ilegíveis ou não segue o manual FEBRABAN.");
 			}
 			reader.close();
 
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			logger.info(e.getMessage(), e);
 			throw new InfraException("Não foi possível ler o cabeçalho do arquivo enviado! Por favor entre em contato com o IEPTB!");
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info(e.getMessage(), e);
 			throw new InfraException("Não foi possível ler o cabeçalho do arquivo enviado! Por favor entre em contato com o IEPTB!");
 		}
 
@@ -277,7 +296,7 @@ public class ArquivoMediator extends BaseMediator {
 	private StatusArquivo setStatusArquivo() {
 		StatusArquivo status = new StatusArquivo();
 		status.setData(new LocalDateTime());
-		status.setSituacaoArquivo(SituacaoArquivo.ENVIADO);
+		status.setStatusDownload(StatusDownload.ENVIADO);
 		return status;
 	}
 
@@ -296,15 +315,15 @@ public class ArquivoMediator extends BaseMediator {
 	public RemessaVO buscarRemessaParaCartorio(Usuario usuario, String nomeArquivo) {
 		Remessa remessa = null;
 		logger.info("Usuario " + usuario.getLogin() + " está buscando a remessa " + nomeArquivo + " na CRA.");
-		if (nomeArquivo.startsWith(TipoArquivoEnum.REMESSA.getConstante())) {
+		if (nomeArquivo.startsWith(TipoArquivoFebraban.REMESSA.getConstante())) {
 			remessa = remessaDAO.baixarArquivoCartorioRemessa(usuario.getInstituicao(), nomeArquivo);
 		}
 
 		if (remessa == null || remessa.getDevolvidoPelaCRA()) {
 			return null;
 		}
-		if (!StatusRemessa.RECEBIDO.equals(remessa.getStatusRemessa())) {
-			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
+		if (!StatusDownload.RECEBIDO.equals(remessa.getStatusDownload())) {
+			remessa.setStatusDownload(StatusDownload.RECEBIDO);
 			remessaDAO.alterarSituacaoRemessa(remessa);
 		}
 
@@ -327,21 +346,21 @@ public class ArquivoMediator extends BaseMediator {
 	public List<RemessaVO> buscarArquivos(String nomeArquivo, Instituicao instituicao) {
 		Arquivo arquivo = null;
 
-		if (nomeArquivo.startsWith(TipoArquivoEnum.REMESSA.getConstante())) {
+		if (nomeArquivo.startsWith(TipoArquivoFebraban.REMESSA.getConstante())) {
 			arquivo = arquivoDAO.buscarArquivoInstituicaoRemessa(nomeArquivo, instituicao);
 			return conversorRemessaArquivo.converterArquivoVO(arquivo.getRemessas());
-		} else if (nomeArquivo.startsWith(TipoArquivoEnum.CONFIRMACAO.getConstante())) {
+		} else if (nomeArquivo.startsWith(TipoArquivoFebraban.CONFIRMACAO.getConstante())) {
 			arquivo = arquivoDAO.buscarArquivoInstituicaoConfirmacao(nomeArquivo, instituicao);
-		} else if (nomeArquivo.startsWith(TipoArquivoEnum.RETORNO.getConstante())) {
+		} else if (nomeArquivo.startsWith(TipoArquivoFebraban.RETORNO.getConstante())) {
 			arquivo = arquivoDAO.buscarArquivoInstituicaoRetorno(nomeArquivo, instituicao);
 		}
 		if (arquivo == null) {
 			return new ArrayList<RemessaVO>();
 		}
 		if (arquivo.getStatusArquivo() != null) {
-			if (!SituacaoArquivo.RECEBIDO.equals(arquivo.getStatusArquivo().getSituacaoArquivo())) {
+			if (!StatusDownload.RECEBIDO.equals(arquivo.getStatusArquivo().getStatusDownload())) {
 				StatusArquivo statusArquivo = new StatusArquivo();
-				statusArquivo.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
+				statusArquivo.setStatusDownload(StatusDownload.RECEBIDO);
 				statusArquivo.setData(new LocalDateTime());
 				arquivo.setStatusArquivo(statusArquivo);
 				arquivoDAO.alterarStatusArquivo(arquivo);

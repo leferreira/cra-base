@@ -31,13 +31,12 @@ import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.CodigoIrregularidade;
 import br.com.ieptbto.cra.enumeration.CraAcao;
-import br.com.ieptbto.cra.enumeration.SituacaoArquivo;
-import br.com.ieptbto.cra.enumeration.StatusRemessa;
-import br.com.ieptbto.cra.enumeration.TipoArquivoEnum;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.StatusDownload;
 import br.com.ieptbto.cra.enumeration.TipoSolicitacaoDesistenciaCancelamento;
+import br.com.ieptbto.cra.enumeration.regra.CodigoIrregularidade;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 import br.com.ieptbto.cra.util.DecoderString;
@@ -46,17 +45,17 @@ import br.com.ieptbto.cra.util.DecoderString;
 public class DownloadMediator extends BaseMediator {
 
 	@Autowired
-	private ArquivoDAO arquivoDAO;
+	ArquivoDAO arquivoDAO;
 	@Autowired
-	private RemessaDAO remessaDAO;
+	RemessaDAO remessaDAO;
 	@Autowired
-	private DesistenciaDAO desistenciaDAO;
+	DesistenciaDAO desistenciaDAO;
 	@Autowired
-	private CancelamentoDAO cancelamentoDAO;
+	CancelamentoDAO cancelamentoDAO;
 	@Autowired
-	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
+	AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
 	@Autowired
-	private ProcessadorArquivo processadorArquivo;
+	ProcessadorArquivo processadorArquivo;
 
 	/**
 	 * Download de arquivos TXT de Instituições e Convênios
@@ -67,20 +66,20 @@ public class DownloadMediator extends BaseMediator {
 	 */
 	public File baixarArquivoTXT(Usuario usuario, Arquivo arquivo) {
 		List<Remessa> remessas = null;
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
-				&& !arquivo.getStatusArquivo().getSituacaoArquivo().equals(SituacaoArquivo.ENVIADO)) {
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)
+				&& !arquivo.getStatusArquivo().getStatusDownload().equals(StatusDownload.ENVIADO)) {
 			StatusArquivo status = new StatusArquivo();
 			status.setData(new LocalDateTime());
-			status.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
+			status.setStatusDownload(StatusDownload.RECEBIDO);
 			arquivo.setStatusArquivo(status);
 			arquivoDAO.alterarStatusArquivo(arquivo);
 		}
 
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.REMESSA)) {
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.REMESSA)) {
 			remessas = arquivoDAO.baixarArquivoInstituicaoRemessa(arquivo);
-		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CONFIRMACAO)) {
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.CONFIRMACAO)) {
 			remessas = arquivoDAO.baixarArquivoInstituicaoConfirmacao(arquivo);
-		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.RETORNO)) {
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.RETORNO)) {
 			remessas = arquivoDAO.baixarArquivoInstituicaoRetorno(arquivo);
 		}
 		return processadorArquivo.baixarRemessaConfirmacaoRetornoTXT(arquivo, remessas, usuario);
@@ -95,22 +94,21 @@ public class DownloadMediator extends BaseMediator {
 	 */
 	public File baixarDesistenciaCancelamentoTXT(Usuario usuario, Arquivo arquivo) {
 
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
-				&& !arquivo.getStatusArquivo().getSituacaoArquivo().equals(SituacaoArquivo.ENVIADO)) {
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)
+				&& !arquivo.getStatusArquivo().getStatusDownload().equals(StatusDownload.ENVIADO)) {
 			StatusArquivo status = new StatusArquivo();
 			status.setData(new LocalDateTime());
-			status.setSituacaoArquivo(SituacaoArquivo.RECEBIDO);
+			status.setStatusDownload(StatusDownload.RECEBIDO);
 			arquivo.setStatusArquivo(status);
 			arquivoDAO.alterarStatusArquivo(arquivo);
 		}
 
-		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.DEVOLUCAO_DE_PROTESTO)) {
+		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO)) {
 			return null;
-		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.CANCELAMENTO_DE_PROTESTO)) {
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO)) {
 			return null;
-		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoEnum.AUTORIZACAO_DE_CANCELAMENTO)) {
-			RemessaAutorizacaoCancelamento remessaAutorizacaoCancelamento =
-					autorizacaoCancelamentoDAO.buscarRemessasAutorizacaoCancelamento(arquivo);
+		} else if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO)) {
+			RemessaAutorizacaoCancelamento remessaAutorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessasAutorizacaoCancelamento(arquivo);
 			return processadorArquivo.baixarAutorizacaoCancelamentoTXT(remessaAutorizacaoCancelamento, usuario);
 		}
 		return null;
@@ -124,24 +122,24 @@ public class DownloadMediator extends BaseMediator {
 	 * @return
 	 */
 	public File baixarRemessaTXT(Usuario usuario, Remessa remessa) {
-		TipoInstituicaoCRA tipoInstituicaoUsuario = usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao();
-		if (!tipoInstituicaoUsuario.equals(TipoInstituicaoCRA.CRA) && !remessa.getStatusRemessa().equals(StatusRemessa.ENVIADO)) {
+		TipoInstituicaoSistema tipoInstituicaoUsuario = usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao();
+		if (!tipoInstituicaoUsuario.equals(TipoInstituicaoSistema.CRA) && !remessa.getStatusDownload().equals(StatusDownload.ENVIADO)) {
 			remessa = remessaDAO.buscarPorPK(remessa, Remessa.class);
-			remessa.setStatusRemessa(StatusRemessa.RECEBIDO);
+			remessa.setStatusDownload(StatusDownload.RECEBIDO);
 			remessaDAO.alterarSituacaoRemessa(remessa);
 			loggerCra.sucess(usuario, CraAcao.DOWNLOAD_ARQUIVO_REMESSA, "Arquivo de Remessa " + remessa.getArquivo().getNomeArquivo()
 					+ " recebido com sucesso " + "por " + usuario.getInstituicao() + ", via aplicação.");
 		}
-		if (tipoInstituicaoUsuario.equals(TipoInstituicaoCRA.CARTORIO) && remessa.getDevolvidoPelaCRA().equals(true)) {
+		if (tipoInstituicaoUsuario.equals(TipoInstituicaoSistema.CARTORIO) && remessa.getDevolvidoPelaCRA().equals(true)) {
 			throw new InfraException("O arquivo " + remessa.getArquivo().getNomeArquivo() + " já foi devolvido pela CRA !");
 		}
 
-		TipoArquivoEnum tipoArquivo = remessa.getArquivo().getTipoArquivo().getTipoArquivo();
-		if (tipoArquivo.equals(TipoArquivoEnum.REMESSA)) {
+		TipoArquivoFebraban tipoArquivo = remessa.getArquivo().getTipoArquivo().getTipoArquivo();
+		if (tipoArquivo.equals(TipoArquivoFebraban.REMESSA)) {
 			remessa = remessaDAO.baixarArquivoCartorioRemessa(remessa);
-		} else if (tipoArquivo.equals(TipoArquivoEnum.CONFIRMACAO)) {
+		} else if (tipoArquivo.equals(TipoArquivoFebraban.CONFIRMACAO)) {
 			remessa = remessaDAO.baixarArquivoCartorioConfirmacao(remessa);
-		} else if (tipoArquivo.equals(TipoArquivoEnum.RETORNO)) {
+		} else if (tipoArquivo.equals(TipoArquivoFebraban.RETORNO)) {
 			remessa = remessaDAO.baixarArquivoCartorioRetorno(remessa);
 		}
 		return processadorArquivo.baixarRemessaConfirmacaoRetornoTXT(remessa, usuario);
@@ -158,7 +156,7 @@ public class DownloadMediator extends BaseMediator {
 		File file = null;
 
 		try {
-			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
+			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)
 					&& desistenciaProtesto.getDownload() == false) {
 				desistenciaDAO.alterarSituacaoDesistenciaProtesto(desistenciaProtesto, true);
 			}
@@ -183,7 +181,7 @@ public class DownloadMediator extends BaseMediator {
 			remessa.setArquivo(desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo());
 			file = processadorArquivo.baixarDesistenciaTXT(remessa, usuario);
 
-			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
 				loggerCra.sucess(usuario, CraAcao.DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO,
 						"Arquivo " + desistenciaProtesto.getRemessaDesistenciaProtesto().getArquivo().getNomeArquivo()
 								+ ", recebido com sucesso por " + usuario.getInstituicao().getNomeFantasia() + ".");
@@ -191,8 +189,7 @@ public class DownloadMediator extends BaseMediator {
 		} catch (Exception ex) {
 			logger.info(ex.getMessage(), ex);
 			loggerCra.error(usuario, CraAcao.DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO, "Erro Download Manual: " + ex.getMessage(), ex);
-			throw new InfraException(
-					"Não foi possível fazer o download do arquivo de Desistência de Protesto! Entre em contato com a CRA !");
+			throw new InfraException("Não foi possível fazer o download do arquivo de Desistência de Protesto! Entre em contato com a CRA !");
 		}
 		return file;
 	}
@@ -208,7 +205,7 @@ public class DownloadMediator extends BaseMediator {
 		File file = null;
 
 		try {
-			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
+			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)
 					&& cancelamentoProtesto.getDownload() == false) {
 				cancelamentoDAO.alterarSituacaoCancelamentoProtesto(cancelamentoProtesto, true);
 			}
@@ -233,7 +230,7 @@ public class DownloadMediator extends BaseMediator {
 			remessa.setArquivo(cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo());
 			file = processadorArquivo.baixarCancelamentoTXT(remessa, usuario);
 
-			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
 				loggerCra.sucess(usuario, CraAcao.DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO,
 						"Arquivo " + cancelamentoProtesto.getRemessaCancelamentoProtesto().getArquivo().getNomeArquivo()
 								+ ", recebido com sucesso por " + usuario.getInstituicao().getNomeFantasia() + ".");
@@ -241,8 +238,7 @@ public class DownloadMediator extends BaseMediator {
 		} catch (Exception ex) {
 			logger.info(ex.getMessage(), ex);
 			loggerCra.error(usuario, CraAcao.DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO, "Erro Download Manual: " + ex.getMessage(), ex);
-			throw new InfraException(
-					"Não foi possível fazer o download do arquivo de Cancelamento de Protesto! Entre em contato com a CRA !");
+			throw new InfraException("Não foi possível fazer o download do arquivo de Cancelamento de Protesto! Entre em contato com a CRA !");
 		}
 		return file;
 	}
@@ -258,7 +254,7 @@ public class DownloadMediator extends BaseMediator {
 		File file = null;
 
 		try {
-			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
+			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)
 					&& autorizacaoCancelamento.getDownload() == false) {
 				autorizacaoCancelamentoDAO.alterarSituacaoAutorizacaoCancelamento(autorizacaoCancelamento, true);
 			}
@@ -283,7 +279,7 @@ public class DownloadMediator extends BaseMediator {
 			remessa.setArquivo(autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo());
 			file = processadorArquivo.baixarAutorizacaoCancelamentoTXT(remessa, usuario);
 
-			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
 				loggerCra.sucess(usuario, CraAcao.DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO,
 						"Arquivo " + autorizacaoCancelamento.getRemessaAutorizacaoCancelamento().getArquivo().getNomeArquivo()
 								+ ", recebido com sucesso por " + usuario.getInstituicao().getNomeFantasia() + ".");
@@ -291,8 +287,7 @@ public class DownloadMediator extends BaseMediator {
 		} catch (Exception ex) {
 			logger.info(ex.getMessage(), ex);
 			loggerCra.error(usuario, CraAcao.DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO, "Erro Download Manual: " + ex.getMessage(), ex);
-			throw new InfraException(
-					"Não foi possível fazer o download do arquivo de Autorização de Cancelamento! Entre em contato com a CRA !");
+			throw new InfraException("Não foi possível fazer o download do arquivo de Autorização de Cancelamento! Entre em contato com a CRA !");
 		}
 		return file;
 	}
