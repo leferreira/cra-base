@@ -342,7 +342,7 @@ public class ProcessadorDesistenciaCancelamentoConvenio extends Processador {
 		if (tipo == TipoSolicitacaoDesistenciaCancelamento.SOLICITACAO_DESISTENCIA_PROTESTO_IRREGULARIDADE) {
 			pedidoDesistencia.setReservado(solicitacao.getCodigoIrregularidade().getCodigoIrregularidade());
 		} else {
-			pedidoDesistencia.setReservado(ConfiguracaoBase.CODIGO_IRREGULARIDADE_AUTORIZACAO_DESISTENCIA_PROTESTO);
+			pedidoDesistencia.setReservado(ConfiguracaoBase.CODIGO_AUTORIZACAO_DEVOLUCAO);
 		}
 		return pedidoDesistencia;
 	}

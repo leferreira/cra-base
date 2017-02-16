@@ -22,6 +22,7 @@ import br.com.ieptbto.cra.entidade.vo.CartorioDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.ComarcaDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.entidade.vo.TituloDesistenciaCancelamentoSerproVO;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
+import br.com.ieptbto.cra.enumeration.regra.CodigoIrregularidade;
 import br.com.ieptbto.cra.util.DataUtil;
 
 @Service
@@ -70,9 +71,10 @@ public class ConversorCancelamentoSerpro {
 					registro.setNumeroTitulo(titulo.getNumeroTitulo());
 					registro.setNomePrimeiroDevedor(titulo.getNomeDevedor());
 					registro.setValorTitulo(new BigDecimal(titulo.getValorTitulo()));
-					registro.setSolicitacaoCancelamentoSustacao("S");
+					registro.setSolicitacaoCancelamentoSustacao("C");
+					registro.setReservado(CodigoIrregularidade.IRREGULARIDADE_60.getCodigoIrregularidade());
 					registro.setSequenciaRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
-
+					
 					this.sequenciaRegistro = getSequenciaRegistro() + 1;
 					this.somatorioValor = getSomatorioValor().add(registro.getValorTitulo());
 					pedidosCancelamento.add(registro);
