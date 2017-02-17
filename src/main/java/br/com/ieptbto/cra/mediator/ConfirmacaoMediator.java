@@ -19,8 +19,8 @@ import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 
 /**
  * @author thasso
@@ -55,7 +55,7 @@ public class ConfirmacaoMediator extends BaseMediator {
 	}
 
 	public Boolean verificarArquivoConfirmacaoCra() {
-		Instituicao cra = instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoSistema.CRA.toString());
+		Instituicao cra = instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoCRA.CRA.toString());
 		return confirmacaoDAO.verificarArquivoConfirmacaoCra(cra);
 	}
 
@@ -85,7 +85,7 @@ public class ConfirmacaoMediator extends BaseMediator {
 	}
 
 	private Arquivo criarNovoArquivoDeConfirmacao(Instituicao instituicaoDestino, Remessa confirmacao) {
-		Instituicao cra = instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoSistema.CRA.toString());
+		Instituicao cra = instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoCRA.CRA.toString());
 		TipoArquivo tipoArquivo = tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoFebraban.CONFIRMACAO);
 		
 		Arquivo arquivo = new Arquivo();

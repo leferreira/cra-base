@@ -45,8 +45,8 @@ import br.com.ieptbto.cra.entidade.view.ViewArquivoPendente;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.enumeration.LayoutArquivo;
 import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 
@@ -89,14 +89,14 @@ public class ArquivoMediator extends BaseMediator {
 	}
 
 	public List<Arquivo> buscarArquivos(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim,
-			TipoInstituicaoSistema tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoFebraban> tiposArquivo,
+			TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoFebraban> tiposArquivo,
 			List<StatusDownload> situacoesArquivos) {
 		return arquivoDAO.buscarArquivos(usuario, nomeArquivo, dataInicio, dataFim, tipoInstituicao, bancoConvenio, tiposArquivo,
 				situacoesArquivos);
 	}
 
 	public List<Arquivo> buscarArquivosDesistenciaCancelamento(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim,
-			TipoInstituicaoSistema tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoFebraban> tiposArquivo,
+			TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoFebraban> tiposArquivo,
 			List<StatusDownload> situacoesArquivos) {
 		return arquivoDAO.buscarArquivosDesistenciaCancelamento(usuario, nomeArquivo, dataInicio, dataFim, tipoInstituicao, bancoConvenio,
 				tiposArquivo, situacoesArquivos);
@@ -143,13 +143,13 @@ public class ArquivoMediator extends BaseMediator {
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<ViewArquivoPendente> consultarViewArquivosPendentes(Instituicao instituicao) {
-		TipoInstituicaoSistema tipoInstituicao = instituicao.getTipoInstituicao().getTipoInstituicao();
-		if (TipoInstituicaoSistema.CRA == tipoInstituicao) {
+		TipoInstituicaoCRA tipoInstituicao = instituicao.getTipoInstituicao().getTipoInstituicao();
+		if (TipoInstituicaoCRA.CRA == tipoInstituicao) {
 			return arquivoDAO.consultarArquivosPendentes(instituicao);
-		} else if (TipoInstituicaoSistema.CARTORIO == tipoInstituicao) {
+		} else if (TipoInstituicaoCRA.CARTORIO == tipoInstituicao) {
 			return arquivoDAO.consultarArquivosPendentesCartorio(instituicao);
-		} else if (TipoInstituicaoSistema.INSTITUICAO_FINANCEIRA == tipoInstituicao 
-						|| TipoInstituicaoSistema.CONVENIO == tipoInstituicao) {
+		} else if (TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA == tipoInstituicao 
+						|| TipoInstituicaoCRA.CONVENIO == tipoInstituicao) {
 			return arquivoDAO.consultarArquivosPendentesBancoConvenio(instituicao);
 		}
 		return null;
@@ -213,7 +213,7 @@ public class ArquivoMediator extends BaseMediator {
 		Arquivo arquivo = new Arquivo();
 		arquivo.setNomeArquivo(nomeArquivo);
 		arquivo.setTipoArquivo(tipoArquivoDAO.buscarTipoArquivo(nomeArquivo));
-		arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoSistema.CRA.toString()));
+		arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoCRA.CRA.toString()));
 		arquivo.setUsuarioEnvio(usuario);
 		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
 		arquivo.setStatusArquivo(setStatusArquivo());
@@ -230,7 +230,7 @@ public class ArquivoMediator extends BaseMediator {
 	}
 
 	private Instituicao getInstituicaoEnvioArquivo(Usuario usuario, FileUpload uploadedFile) {
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			return usuario.getInstituicao();
 		}
 

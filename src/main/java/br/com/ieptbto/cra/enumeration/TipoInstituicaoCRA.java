@@ -1,9 +1,8 @@
-package br.com.ieptbto.cra.enumeration.regra;
+package br.com.ieptbto.cra.enumeration;
 
-import br.com.ieptbto.cra.enumeration.AbstractCraEnum;
 import br.com.ieptbto.cra.exception.InfraException;
 
-public enum TipoInstituicaoSistema implements AbstractCraEnum {
+public enum TipoInstituicaoCRA implements AbstractCraEnum {
 
 															CRA("1", "Central de Remessa de Arquivos"),
 															CARTORIO("2", "Cartório de Protesto"),
@@ -13,7 +12,7 @@ public enum TipoInstituicaoSistema implements AbstractCraEnum {
 	private String constante;
 	private String label;
 
-	private TipoInstituicaoSistema(String constante, String label) {
+	private TipoInstituicaoCRA(String constante, String label) {
 		this.constante = constante;
 		this.label = label;
 	}
@@ -34,9 +33,9 @@ public enum TipoInstituicaoSistema implements AbstractCraEnum {
 	 * @param valor
 	 * @return tipo arquivo
 	 */
-	public static TipoInstituicaoSistema get(String valor) {
-		TipoInstituicaoSistema[] values = TipoInstituicaoSistema.values();
-		for (TipoInstituicaoSistema tipoInstituicao : values) {
+	public static TipoInstituicaoCRA get(String valor) {
+		TipoInstituicaoCRA[] values = TipoInstituicaoCRA.values();
+		for (TipoInstituicaoCRA tipoInstituicao : values) {
 			if (tipoInstituicao.getConstante().equals(valor)) {
 				return tipoInstituicao;
 			}

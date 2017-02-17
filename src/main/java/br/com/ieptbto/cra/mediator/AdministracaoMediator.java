@@ -33,9 +33,9 @@ import br.com.ieptbto.cra.entidade.vo.CabecalhoCnpVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaCnpVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeCnpVO;
 import br.com.ieptbto.cra.entidade.vo.TituloCnpVO;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DataUtil;
@@ -74,14 +74,14 @@ public class AdministracaoMediator extends BaseMediator {
 			administracaoDAO.removerRemessa(arquivo);
 		}
 		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.CONFIRMACAO)) {
-			if (arquivo.getInstituicaoEnvio().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
+			if (arquivo.getInstituicaoEnvio().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 				administracaoDAO.removerConfirmacaoCRA(arquivo);
 			} else {
 				administracaoDAO.removerConfirmacaoCartorio(arquivo);
 			}
 		}
 		if (arquivo.getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.RETORNO)) {
-			if (arquivo.getInstituicaoEnvio().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
+			if (arquivo.getInstituicaoEnvio().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 				administracaoDAO.removerRetornoCRA(arquivo);
 			} else {
 				administracaoDAO.removerRetornoCartorio(arquivo);

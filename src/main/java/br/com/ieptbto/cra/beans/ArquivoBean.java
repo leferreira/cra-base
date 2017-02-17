@@ -7,10 +7,10 @@ import java.util.List;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.NivelDetalhamentoRelatorio;
 import br.com.ieptbto.cra.enumeration.TipoVisualizacaoArquivos;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 
 public class ArquivoBean implements Serializable {
 
@@ -23,7 +23,7 @@ public class ArquivoBean implements Serializable {
 	private TipoArquivoFebraban tipoArquivo;
 	private List<TipoArquivoFebraban> tiposArquivos;
 	private List<StatusDownload> situacoesArquivos;
-	private TipoInstituicaoSistema tipoInstituicao;
+	private TipoInstituicaoCRA tipoInstituicao;
 	private Instituicao bancoConvenio;
 	private Instituicao cartorio;
 	private Instituicao instituicao;
@@ -78,11 +78,11 @@ public class ArquivoBean implements Serializable {
 		this.tiposArquivos = tiposArquivos;
 	}
 
-	public TipoInstituicaoSistema getTipoInstituicao() {
+	public TipoInstituicaoCRA getTipoInstituicao() {
 		return tipoInstituicao;
 	}
 
-	public void setTipoInstituicao(TipoInstituicaoSistema tipoInstituicao) {
+	public void setTipoInstituicao(TipoInstituicaoCRA tipoInstituicao) {
 		this.tipoInstituicao = tipoInstituicao;
 	}
 

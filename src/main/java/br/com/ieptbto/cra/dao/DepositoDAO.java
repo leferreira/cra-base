@@ -3,7 +3,6 @@ package br.com.ieptbto.cra.dao;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -72,13 +71,10 @@ public class DepositoDAO extends AbstractBaseDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Deposito> buscarDepositosNaoIdentificados() {
-//		Criteria criteria = getCriteria(Deposito.class);
-//		criteria.addOrder(Order.asc("data"));
-//		criteria.add(Restrictions.eq("situacaoDeposito", SituacaoDeposito.NAO_IDENTIFICADO));
-//		return criteria.list();
-		Query query = createQuery("select d from Deposito d where d.situacaoDeposito= :situacaoDeposito order by data asc");
-		query.setParameter("situacaoDeposito", SituacaoDeposito.NAO_IDENTIFICADO);
-		return query.list();
+		Criteria criteria = getCriteria(Deposito.class);
+		criteria.addOrder(Order.asc("data"));
+		criteria.add(Restrictions.eq("situacaoDeposito", SituacaoDeposito.NAO_IDENTIFICADO));
+		return criteria.list();
 	}
 
 	/**

@@ -26,8 +26,8 @@ import org.joda.time.LocalDate;
 
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 
 /**
  * @author Thasso Araújo
@@ -224,8 +224,8 @@ public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
 	
 	public void setStatusRemessaPorTipoInstituicaoEnvio() {
 		TipoInstituicao tipoInstituicaoEnvio = this.getInstituicaoOrigem().getTipoInstituicao();
-		if (tipoInstituicaoEnvio.getTipoInstituicao() == TipoInstituicaoSistema.INSTITUICAO_FINANCEIRA
-				|| tipoInstituicaoEnvio.getTipoInstituicao() == TipoInstituicaoSistema.CONVENIO) {
+		if (tipoInstituicaoEnvio.getTipoInstituicao() == TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA
+				|| tipoInstituicaoEnvio.getTipoInstituicao() == TipoInstituicaoCRA.CONVENIO) {
 			this.statusDownload = StatusDownload.AGUARDANDO;
 		} else
 			this.statusDownload = StatusDownload.ENVIADO;

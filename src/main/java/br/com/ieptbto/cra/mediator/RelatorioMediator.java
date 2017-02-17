@@ -22,7 +22,7 @@ import br.com.ieptbto.cra.dao.TaxaCraDAO;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.view.ViewTitulo;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.XlsUtil;
 
@@ -41,7 +41,7 @@ public class RelatorioMediator extends BaseMediator {
 	private File arquivoFisico;
 	private FileUpload file;
 
-	public List<ViewTitulo> relatorioTitulosPorSituacao(SituacaoTituloRelatorio situacaoTitulo, TipoInstituicaoSistema tipoInstituicao, Instituicao instituicao,
+	public List<ViewTitulo> relatorioTitulosPorSituacao(SituacaoTituloRelatorio situacaoTitulo, TipoInstituicaoCRA tipoInstituicao, Instituicao instituicao,
 			Instituicao cartorio, LocalDate dataInicio, LocalDate dataFim) {
 
 		if (situacaoTitulo.equals(SituacaoTituloRelatorio.GERAL)) {

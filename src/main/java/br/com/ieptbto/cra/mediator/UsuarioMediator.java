@@ -12,7 +12,7 @@ import br.com.ieptbto.cra.dao.UsuarioFiliadoDAO;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.UsuarioFiliado;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
 
@@ -55,7 +55,7 @@ public class UsuarioMediator extends BaseMediator {
 		if (usuario != null && usuario.isSenha(senha)) {
 			if (instituicaoDao.isInstituicaoAtiva(usuario.getInstituicao())) {
 				if (usuario.isStatus() == true) {
-					if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CONVENIO)) {
+					if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
 						if (!usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.LAYOUT_PERSONALIZADO_CONVENIOS)) {
 							new InfraException(Erro.USUARIO_CONVENIO.getMensagemErro());
 						}
@@ -77,10 +77,9 @@ public class UsuarioMediator extends BaseMediator {
 	public Usuario autenticarConvenio(String login, String senha) {
 		Usuario usuario = usuarioDao.buscarUsuarioPorLogin(login);
 		if (usuario != null && usuario.isSenha(senha)) {
-			if (!TipoInstituicaoSistema.CONVENIO.equals(usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao())) {
-				if (usuario.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.LAYOUT_PERSONALIZADO_CONVENIOS)) {
-					throw new InfraException("Este usuário não é de um convênio!");
-				}
+			TipoInstituicaoCRA tipoInstituicao = usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao();
+			if (tipoInstituicao != TipoInstituicaoCRA.CONVENIO) {
+				throw new InfraException("Este usuário não é de um convênio!");
 			}
 			if (instituicaoDao.isInstituicaoAtiva(usuario.getInstituicao())) {
 				if (usuario.isStatus() == true) {

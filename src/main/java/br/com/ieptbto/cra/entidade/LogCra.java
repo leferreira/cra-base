@@ -9,13 +9,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
 import br.com.ieptbto.cra.enumeration.CraAcao;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.TipoLog;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.util.DataUtil;
 
 /**
@@ -55,6 +56,9 @@ public class LogCra extends AbstractEntidade<LogCra> {
 
 	@Column(name = "DESCRICAO", nullable = false, columnDefinition = "text")
 	public String getDescricao() {
+		if (descricao == null) {
+			this.descricao = StringUtils.EMPTY;
+		}
 		return descricao;
 	}
 
@@ -66,13 +70,16 @@ public class LogCra extends AbstractEntidade<LogCra> {
 	@Column(name = "TIPO_LOG", length = 150)
 	@Enumerated(EnumType.STRING)
 	public TipoLog getTipoLog() {
+		if (tipoLog == null) {
+			this.tipoLog = TipoLog.OCORRENCIA_ERRO;
+		}
 		return tipoLog;
 	}
 
 	@Column(name = "INSTITUICAO", length = 45)
 	public String getInstituicao() {
 		if (instituicao == null) {
-			instituicao = TipoInstituicaoSistema.CRA.getLabel();
+			instituicao = TipoInstituicaoCRA.CRA.getLabel();
 		}
 		return instituicao;
 	}

@@ -29,10 +29,10 @@ import br.com.ieptbto.cra.entidade.Titulo;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.view.ViewTitulo;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.CodigoIrregularidade;
 import br.com.ieptbto.cra.enumeration.regra.RegraAgenciaCentralizadoraCodigoCartorio;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.TituloException;
@@ -90,13 +90,13 @@ public class TituloDAO extends AbstractBaseDAO {
 		return Retorno.class.cast(criteria.uniqueResult());
 	}
 
-	public List<TituloRemessa> buscarTitulos(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
+	public List<TituloRemessa> buscarTitulos(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
 			Instituicao bancoConvenio, Instituicao cartorio, TituloBean titulo) {
 		Instituicao instituicaoUsuario = usuario.getInstituicao();
 
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
-		if (!instituicaoUsuario.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
+		if (!instituicaoUsuario.getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoUsuario),
 					Restrictions.eq("remessa.instituicaoDestino", instituicaoUsuario)));
 		}
@@ -328,7 +328,7 @@ public class TituloDAO extends AbstractBaseDAO {
 	private void verificarProtestoIndevidoERetirado(TituloRemessa titulo, Retorno tituloRetorno, List<Exception> erros) {
 		TipoOcorrencia tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloRetorno.getTipoOcorrencia());
 
-		if (!titulo.getRemessa().getInstituicaoOrigem().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CONVENIO)) {
+		if (!titulo.getRemessa().getInstituicaoOrigem().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
 			if (TipoOcorrencia.PROTESTADO.equals(tipoOcorrencia) || TipoOcorrencia.RETIRADO.equals(tipoOcorrencia)) {
 				List<PedidoDesistencia> pedidosDesistencia = desistenciaProtestoMediator.buscarPedidosDesistenciaProtestoPorTitulo(titulo);
 

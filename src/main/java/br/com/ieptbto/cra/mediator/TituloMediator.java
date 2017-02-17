@@ -19,8 +19,8 @@ import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.view.ViewTitulo;
 import br.com.ieptbto.cra.enumeration.TipoCampo51;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 
 /**
  * @author Thasso Araújo
@@ -65,7 +65,7 @@ public class TituloMediator extends BaseMediator {
 		return null;
 	}
 
-	public List<TituloRemessa> buscarTitulos(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
+	public List<TituloRemessa> buscarTitulos(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
 			Instituicao bancoConvenio, Instituicao cartorio, TituloBean titulo) {
 		return tituloDAO.buscarTitulos(usuario, dataInicio, dataFim, tipoInstituicao, bancoConvenio, cartorio, titulo);
 	}

@@ -6,7 +6,7 @@ import java.util.Date;
 import org.apache.commons.lang.StringUtils;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 
 /**
  * @author Thasso Araújo
@@ -25,7 +25,7 @@ public class TituloBean implements Serializable {
 	private String numeroIdentificacaoDevedor;
 	private String nomeCredor;
 	private String documentoCredor;
-	private TipoInstituicaoSistema tipoInstituicao;
+	private TipoInstituicaoCRA tipoInstituicao;
 	private Instituicao bancoConvenio;
 	private Instituicao cartorio;
 	
@@ -131,11 +131,11 @@ public class TituloBean implements Serializable {
 		this.documentoCredor = documentoCredor;
 	}
 
-	public TipoInstituicaoSistema getTipoInstituicao() {
+	public TipoInstituicaoCRA getTipoInstituicao() {
 		return tipoInstituicao;
 	}
 
-	public void setTipoInstituicao(TipoInstituicaoSistema tipoInstituicao) {
+	public void setTipoInstituicao(TipoInstituicaoCRA tipoInstituicao) {
 		this.tipoInstituicao = tipoInstituicao;
 	}
 

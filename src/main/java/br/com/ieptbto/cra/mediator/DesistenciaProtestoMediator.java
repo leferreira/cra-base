@@ -35,8 +35,8 @@ import br.com.ieptbto.cra.entidade.vo.ArquivoDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.DesistenciaSerproVO;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -101,7 +101,7 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 		arquivo.setNomeArquivo(nomeArquivo);
 		arquivo.setUsuarioEnvio(usuario);
 		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
-		arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoSistema.CRA.toString()));
+		arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoCRA.CRA.toString()));
 		arquivo.setDataEnvio(new LocalDate());
 		arquivo.setDataRecebimento(new LocalDate().toDate());
 		arquivo.setHoraEnvio(new LocalTime());

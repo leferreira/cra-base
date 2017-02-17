@@ -25,8 +25,8 @@ import br.com.ieptbto.cra.entidade.Rodape;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DecoderString;
 
@@ -62,7 +62,7 @@ public class RemessaMediator extends BaseMediator {
 		return remessaDAO.buscarPorPK(rodape, Rodape.class);
 	}
 
-	public List<Remessa> buscarRemessas(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
+	public List<Remessa> buscarRemessas(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
 			Instituicao bancoConvenio, Instituicao cartorio, List<TipoArquivoFebraban> tiposArquivo, List<StatusDownload> statusDownload) {
 		return remessaDAO.buscarRemessaAvancado(usuario, nomeArquivo, dataInicio, dataFim, tipoInstituicao, bancoConvenio, cartorio, tiposArquivo, statusDownload);
 	}

@@ -16,7 +16,7 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 
 @Entity
 @Audited
@@ -26,7 +26,7 @@ public class TipoInstituicao extends AbstractEntidade<TipoInstituicao> {
 
 	private static final long serialVersionUID = 1L;
 	private int id;
-	private TipoInstituicaoSistema tipoInstituicao;
+	private TipoInstituicaoCRA tipoInstituicao;
 	private List<Instituicao> listaInstituicoes;
 
 	@Id
@@ -38,7 +38,7 @@ public class TipoInstituicao extends AbstractEntidade<TipoInstituicao> {
 
 	@Column(name = "TIPO_INSTITUICAO", nullable = false)
 	@Enumerated(EnumType.STRING)
-	public TipoInstituicaoSistema getTipoInstituicao() {
+	public TipoInstituicaoCRA getTipoInstituicao() {
 		return tipoInstituicao;
 	}
 
@@ -51,7 +51,7 @@ public class TipoInstituicao extends AbstractEntidade<TipoInstituicao> {
 		this.id = id;
 	}
 
-	public void setTipoInstituicao(TipoInstituicaoSistema tipoInstituicao) {
+	public void setTipoInstituicao(TipoInstituicaoCRA tipoInstituicao) {
 		this.tipoInstituicao = tipoInstituicao;
 	}
 

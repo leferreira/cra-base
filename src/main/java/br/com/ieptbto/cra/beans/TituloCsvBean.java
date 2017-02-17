@@ -155,8 +155,8 @@ public class TituloCsvBean implements Serializable {
 	}
 
 	public String getApresentante() {
-		if (apresentante.length() > 24) {
-			this.apresentante = apresentante.substring(0, 24);
+		if (apresentante.length() > 40) {
+			this.apresentante = apresentante.substring(0, 39);
 		}
 		return apresentante;
 	}

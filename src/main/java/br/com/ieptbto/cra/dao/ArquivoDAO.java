@@ -34,8 +34,8 @@ import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.StatusDownload;
 import br.com.ieptbto.cra.enumeration.TipoBatimento;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.DesistenciaCancelamentoException;
@@ -148,8 +148,10 @@ public class ArquivoDAO extends AbstractBaseDAO {
 				if (retornoContemTituloPago.equals(false) || remessa.getInstituicaoDestino().getTipoBatimento()
 						.equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
 					remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
-					update(remessa);
+				} else {
+					remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.NAO_CONFIRMADO);
 				}
+				update(remessa);
 			}
 			remessa.getCabecalho().setQtdTitulosRemessa(remessa.getTitulos().size());
 			remessa.getRodape().setSomatorioValorRemessa(valorTotalSaldo);
@@ -369,12 +371,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	}
 
 	public List<Arquivo> buscarArquivos(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim,
-			TipoInstituicaoSistema tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoFebraban> tiposArquivo,
+			TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoFebraban> tiposArquivo,
 			List<StatusDownload> situacoesArquivos) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.createAlias("tipoArquivo", "tipoArquivo");
 
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", usuario.getInstituicao()),
 					Restrictions.eq("instituicaoRecebe", usuario.getInstituicao())));
 		}
@@ -416,12 +418,12 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	}
 
 	public List<Arquivo> buscarArquivosDesistenciaCancelamento(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim,
-			TipoInstituicaoSistema tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoFebraban> tiposArquivo,
+			TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoFebraban> tiposArquivo,
 			List<StatusDownload> situacoesArquivos) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.createAlias("tipoArquivo", "tipoArquivo");
 
-		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoSistema.CRA)) {
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
 			criteria.add(Restrictions.or(Restrictions.eq("instituicaoEnvio", usuario.getInstituicao()),
 					Restrictions.eq("instituicaoRecebe", usuario.getInstituicao())));
 		}

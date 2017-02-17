@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.view.ViewTitulo;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 
@@ -22,7 +22,7 @@ import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 @Repository
 public class RelatorioDAO extends AbstractBaseDAO {
 
-	public List<ViewTitulo> relatorioTitulosGeral(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao, 
+	public List<ViewTitulo> relatorioTitulosGeral(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao, 
 			Instituicao bancoConvenio, Instituicao cartorio) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT v ");
@@ -49,7 +49,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return query.list();
 	}
 
-	public List<ViewTitulo> relatorioTitulosSemConfirmacao(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
+	public List<ViewTitulo> relatorioTitulosSemConfirmacao(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
 			Instituicao bancoConvenio, Instituicao cartorio) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT v ");
@@ -77,7 +77,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return query.list();
 	}
 
-	public List<ViewTitulo> relatorioTitulosConfirmadosSemRetorno(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
+	public List<ViewTitulo> relatorioTitulosConfirmadosSemRetorno(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
 			Instituicao bancoConvenio, Instituicao cartorio) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT v ");
@@ -106,7 +106,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return query.list();
 	}
 
-	public List<ViewTitulo> relatorioTitulosRetorno(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao, Instituicao bancoConvenio,
+	public List<ViewTitulo> relatorioTitulosRetorno(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio,
 			Instituicao cartorio) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT v ");
@@ -134,7 +134,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return query.list();
 	}
 
-	public List<ViewTitulo> relatorioTitulosPagos(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao, Instituicao bancoConvenio,
+	public List<ViewTitulo> relatorioTitulosPagos(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio,
 			Instituicao cartorio) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT v ");
@@ -162,7 +162,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return query.list();
 	}
 
-	public List<ViewTitulo> relatorioTitulosProtestados(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
+	public List<ViewTitulo> relatorioTitulosProtestados(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
 			Instituicao bancoConvenio, Instituicao cartorio) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT v ");
@@ -190,7 +190,7 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return query.list();
 	}
 
-	public List<ViewTitulo> relatorioTitulosRetiradosDevolvidos(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
+	public List<ViewTitulo> relatorioTitulosRetiradosDevolvidos(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
 			Instituicao bancoConvenio, Instituicao cartorio) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT v ");
@@ -221,25 +221,25 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		return query.list();
 	}
 
-	public List<ViewTitulo> relatorioTitulosDesistenciaProtesto(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
+	public List<ViewTitulo> relatorioTitulosDesistenciaProtesto(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
 			Instituicao instituicao, Instituicao cartorio) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
-		TipoInstituicaoSistema tipoInstituicaoParametro = instituicao.getTipoInstituicao().getTipoInstituicao();
-		if (tipoInstituicaoParametro.equals(TipoInstituicaoSistema.INSTITUICAO_FINANCEIRA) || tipoInstituicaoParametro.equals(TipoInstituicaoSistema.CONVENIO)) {
+		TipoInstituicaoCRA tipoInstituicaoParametro = instituicao.getTipoInstituicao().getTipoInstituicao();
+		if (tipoInstituicaoParametro.equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA) || tipoInstituicaoParametro.equals(TipoInstituicaoCRA.CONVENIO)) {
 
-		} else if (tipoInstituicaoParametro.equals(TipoInstituicaoSistema.CARTORIO)) {
+		} else if (tipoInstituicaoParametro.equals(TipoInstituicaoCRA.CARTORIO)) {
 
 		}
 		return criteria.list();
 	}
 
-	public List<ViewTitulo> relatorioTitulosAutorizacaoCancelamento(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoSistema tipoInstituicao,
+	public List<ViewTitulo> relatorioTitulosAutorizacaoCancelamento(LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
 			Instituicao instituicao, Instituicao cartorio) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
-		TipoInstituicaoSistema tipoInstituicaoParametro = instituicao.getTipoInstituicao().getTipoInstituicao();
-		if (tipoInstituicaoParametro.equals(TipoInstituicaoSistema.INSTITUICAO_FINANCEIRA) || tipoInstituicaoParametro.equals(TipoInstituicaoSistema.CONVENIO)) {
+		TipoInstituicaoCRA tipoInstituicaoParametro = instituicao.getTipoInstituicao().getTipoInstituicao();
+		if (tipoInstituicaoParametro.equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA) || tipoInstituicaoParametro.equals(TipoInstituicaoCRA.CONVENIO)) {
 
-		} else if (tipoInstituicaoParametro.equals(TipoInstituicaoSistema.CARTORIO)) {
+		} else if (tipoInstituicaoParametro.equals(TipoInstituicaoCRA.CARTORIO)) {
 
 		}
 		return criteria.list();

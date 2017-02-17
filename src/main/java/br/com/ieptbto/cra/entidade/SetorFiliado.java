@@ -23,7 +23,6 @@ import org.hibernate.envers.Audited;
 @org.hibernate.annotations.Table(appliesTo = "TB_SETOR_FILIADO")
 public class SetorFiliado extends AbstractEntidade<SetorFiliado>{
 
-	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private Filiado filiado;

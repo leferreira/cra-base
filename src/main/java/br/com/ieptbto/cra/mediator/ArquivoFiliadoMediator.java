@@ -22,8 +22,8 @@ import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DataUtil;
 
@@ -64,7 +64,7 @@ public class ArquivoFiliadoMediator extends BaseMediator {
 		setArquivo(new Arquivo());
 		this.arquivo.setNomeArquivo(getNomeArquivo());
 		this.arquivo.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoFebraban.REMESSA));
-		this.arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoSistema.CRA.toString()));
+		this.arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoCRA.CRA.toString()));
 		this.arquivo.setUsuarioEnvio(usuario);
 		this.arquivo.setRemessas(new ArrayList<Remessa>());
 		this.arquivo.setHoraEnvio(new LocalTime());
@@ -111,7 +111,7 @@ public class ArquivoFiliadoMediator extends BaseMediator {
 	}
 
 	private boolean verificarPermissaoDeEnvio(Usuario user, Arquivo arquivo) {
-		if (TipoInstituicaoSistema.CONVENIO.equals(user.getInstituicao().getTipoInstituicao().getTipoInstituicao())
+		if (TipoInstituicaoCRA.CONVENIO.equals(user.getInstituicao().getTipoInstituicao().getTipoInstituicao())
 				&& user.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.LAYOUT_PERSONALIZADO_CONVENIOS)) {
 			return true;
 		}

@@ -9,7 +9,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import br.com.ieptbto.cra.entidade.TipoInstituicao;
-import br.com.ieptbto.cra.enumeration.regra.TipoInstituicaoSistema;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 
 /**
@@ -36,8 +36,8 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 		Transaction transaction = getBeginTransation();
 		try {
 			TipoInstituicao tipoInstituicao = new TipoInstituicao();
-			tipoInstituicao.setId(Integer.parseInt(TipoInstituicaoSistema.get(tipo).getConstante()));
-			tipoInstituicao.setTipoInstituicao(TipoInstituicaoSistema.get(tipo));
+			tipoInstituicao.setId(Integer.parseInt(TipoInstituicaoCRA.get(tipo).getConstante()));
+			tipoInstituicao.setTipoInstituicao(TipoInstituicaoCRA.get(tipo));
 			save(tipoInstituicao);
 			transaction.commit();
 		} catch (Exception ex) {
@@ -49,7 +49,7 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 	@SuppressWarnings("unchecked")
 	public List<TipoInstituicao> buscarListaTipoInstituicao() {
 		Criteria criteria = getCriteria(TipoInstituicao.class);
-		criteria.add(Restrictions.ne("tipoInstituicao", TipoInstituicaoSistema.CARTORIO));
+		criteria.add(Restrictions.ne("tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 		criteria.addOrder(Order.asc("tipoInstituicao"));
 		return criteria.list();
 	}
@@ -61,7 +61,7 @@ public class TipoInstituicaoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public TipoInstituicao buscarTipoInstituicao(TipoInstituicaoSistema tipoInstituicao) {
+	public TipoInstituicao buscarTipoInstituicao(TipoInstituicaoCRA tipoInstituicao) {
 		Criteria criteria = getCriteria(TipoInstituicao.class);
 		criteria.add(Restrictions.eq("tipoInstituicao", tipoInstituicao));
 		return TipoInstituicao.class.cast(criteria.uniqueResult());
