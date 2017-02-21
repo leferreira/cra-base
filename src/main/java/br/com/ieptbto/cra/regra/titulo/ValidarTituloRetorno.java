@@ -3,6 +3,7 @@ package br.com.ieptbto.cra.regra.titulo;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
@@ -15,6 +16,7 @@ import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 import br.com.ieptbto.cra.exception.TituloException;
+import br.com.ieptbto.cra.mediator.DesistenciaProtestoMediator;
 
 /**
  * @author Thasso Araújo
@@ -26,6 +28,9 @@ public class ValidarTituloRetorno extends RegraTitulo {
 
 	private static final String SEFAZ = "801";
 
+	@SpringBean
+	DesistenciaProtestoMediator desistenciaMediator;
+	
 	@Override
 	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 		this.arquivo = arquivo;
