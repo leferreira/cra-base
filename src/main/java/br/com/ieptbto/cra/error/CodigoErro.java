@@ -138,8 +138,8 @@ public enum CodigoErro {
 						CARTORIO_CODIGO_IRREGULARIDADE_INVALIDO("109", "Código Irregularidade inválido ou inexistente"),
 						CARTORIO_PROTESTO_INDEVIDO("110", "Protesto Indevido, solicite o cancelamento para o título"),
 						CARTORIO_TITULOS_DUPLICADOS_NO_ARQUIVO("111", "Titulos duplicados no arquivo"),
-						CARTORIO_CODIGO_CARTORIO_APRESENTANTE_INVALIDO("112",
-								"Código do Cartório (campo 31 do registro de transação) inválido!"),
+						CARTORIO_CODIGO_CARTORIO_APRESENTANTE_INVALIDO("112", "Código do Cartório (campo 31 do registro de transação) inválido"),
+						CARTORIO_TITULO_RETIRADO_SEM_SOLICITACAO("113", "Titulo Retirado pelo cartório sem solicitação de desistência"),
 
 						CARTORIO_CODIGO_PORTADOR_RODAPE_INVALIDO("901", "Número do Código Portador do rodapé inválido"),
 						CARTORIO_NOME_PORTADOR_RODAPE_INVALIDO("902", "Nome do Portador do rodapé inválido");

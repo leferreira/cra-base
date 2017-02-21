@@ -411,6 +411,12 @@ public class TituloDAO extends AbstractBaseDAO {
 		for (TituloRemessa titulo : titulos) {
 			if (titulo.isDevedorPrincipal()) {
 				if (titulo.getRetorno() == null) {
+					/*TipoOcorrencia tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloRetorno.getTipoOcorrencia());
+					if (tipoOcorrencia == TipoOcorrencia.RETIRADO && titulo.getPedidosDesistencia() == null 
+							|| titulo.getPedidosDesistencia().isEmpty()) {
+						erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_RETIRADO_SEM_SOLICITACAO, tituloRetorno.getNossoNumero(), numeroProtocolo,
+								tituloRetorno.getNumeroSequencialArquivo()));
+					}*/
 					return titulo;
 				}
 			}
