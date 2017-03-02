@@ -335,8 +335,7 @@ public class TituloDAO extends AbstractBaseDAO {
 				if (TipoOcorrencia.PROTESTADO.equals(tipoOcorrencia)) {
 					for (PedidoDesistencia pedido : pedidosDesistencia) {
 						LocalDate dataOcorrenciaProtesto = tituloRetorno.getDataOcorrencia();
-						LocalDate dataEnvioDesistencia =
-								pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
+						LocalDate dataEnvioDesistencia = pedido.getDesistenciaProtesto().getRemessaDesistenciaProtesto().getCabecalho().getDataMovimento();
 						if (dataOcorrenciaProtesto.isAfter(dataEnvioDesistencia) || dataOcorrenciaProtesto.equals(dataEnvioDesistencia)) {
 							Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio().trim());
 							erros.add(new TituloException(CodigoErro.CARTORIO_PROTESTO_INDEVIDO, tituloRetorno.getNossoNumero(),
