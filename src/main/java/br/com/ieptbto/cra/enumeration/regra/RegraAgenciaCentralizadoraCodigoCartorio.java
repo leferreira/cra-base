@@ -8,6 +8,8 @@ public enum RegraAgenciaCentralizadoraCodigoCartorio {
 
 												BRADESCO("237", "102397", 1),
 												BANCO_DO_BRASIL("001", null, 1),
+												BANCOOB("756", null, 1),
+												SANTANDER("033", null, 1),
 												ITAU("341", "", 0);
 
 	private String codigoPortador;

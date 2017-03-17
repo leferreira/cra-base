@@ -113,6 +113,7 @@ public class AbstractBaseDAO {
 	 * @param clazz
 	 * @return
 	 */
+	@Transactional(propagation = Propagation.REQUIRED)
 	public <T extends AbstractEntidade<T>> T buscarPorPK(T entidade, Class<T> clazz) {
 		return (T) getSession().get(clazz, entidade.getId());
 	}
@@ -125,6 +126,7 @@ public class AbstractBaseDAO {
 	 * @param clazz
 	 * @return
 	 */
+	@Transactional(propagation = Propagation.REQUIRED)
 	public <T extends AbstractEntidade<T>> T buscarPorPK(Integer id, Class<T> clazz) {
 		return (T) getSession().get(clazz, id);
 	}

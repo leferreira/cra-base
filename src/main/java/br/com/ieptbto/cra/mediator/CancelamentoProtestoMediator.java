@@ -78,9 +78,9 @@ public class CancelamentoProtestoMediator extends BaseMediator {
 		return cancelamentoDAO.buscarPedidosCancelamentoProtesto(cancelamentoProtesto);
 	}
 
-	public List<CancelamentoProtesto> buscarCancelamentoProtesto(String nomeArquivo, Instituicao bancoConvenio, Instituicao cartorio,
+	public List<CancelamentoProtesto> consultarCancelamentos(String nomeArquivo, Instituicao bancoConvenio, Instituicao cartorio,
 			LocalDate dataInicio, LocalDate dataFim, List<TipoArquivoFebraban> tiposArquivo, Usuario usuario) {
-		return cancelamentoDAO.buscarCancelamentoProtesto(nomeArquivo, bancoConvenio, cartorio, dataInicio, dataFim, tiposArquivo, usuario);
+		return cancelamentoDAO.consultarCancelamentos(nomeArquivo, bancoConvenio, cartorio, dataInicio, dataFim, tiposArquivo, usuario);
 	}
 
 	/**

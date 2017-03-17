@@ -145,7 +145,7 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(String nomeArquivo, Instituicao portador, Instituicao cartorio,
+	public List<AutorizacaoCancelamento> consultarAutorizacoes(String nomeArquivo, Instituicao portador, Instituicao cartorio,
 			LocalDate dataInicio, LocalDate dataFim, List<TipoArquivoFebraban> tiposArquivo, Usuario usuario) {
 		Criteria criteria = getCriteria(AutorizacaoCancelamento.class);
 		criteria.createAlias("remessaAutorizacaoCancelamento", "remessa");
@@ -174,12 +174,14 @@ public class AutorizacaoCancelamentoDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", cartorio.getMunicipio().getCodigoIBGE()));
 		}
 
-		if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CARTORIO)) {
+		Instituicao instituicaoUsuario = buscarPorPK(usuario.getInstituicao());
+		TipoInstituicaoCRA tipoInstituicaoUsuario = usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao();
+		if (tipoInstituicaoUsuario == TipoInstituicaoCRA.CARTORIO) {
 			criteria.createAlias("cabecalhoCartorio", "cabecalho");
-			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", usuario.getInstituicao().getMunicipio().getCodigoIBGE()));
-		} else if (usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA)) {
+			criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", instituicaoUsuario.getMunicipio().getCodigoIBGE()));
+		} else if (tipoInstituicaoUsuario == TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA) {
 			criteria.createAlias("remessa.cabecalho", "cabecalhoArquivo");
-			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", usuario.getInstituicao().getCodigoCompensacao()));
+			criteria.add(Restrictions.eq("cabecalhoArquivo.codigoApresentante", instituicaoUsuario.getCodigoCompensacao()));
 		}
 		return criteria.list();
 	}

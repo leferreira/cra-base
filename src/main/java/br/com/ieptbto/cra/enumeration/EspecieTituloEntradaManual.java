@@ -13,6 +13,7 @@ public enum EspecieTituloEntradaManual implements AbstractCraEnum {
 	DMI("DMI", "DMI - Duplicata Venda Mercantil por Indicação"),
 	DSI("DSI", "DSI - Duplicata de Prestação de Serviços"),
 	EC("EC", "EC - Encargos Condominiais"),
+	IPC("IPC", "IPC - Instrumento Particular de Confissão de Dívidas"),
 	NP("NP", "NP - Nota Promissória"),
 	SJ("SJ", "SJ - Sentença Judicial");
 

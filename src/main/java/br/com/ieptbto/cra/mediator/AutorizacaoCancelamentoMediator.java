@@ -78,10 +78,9 @@ public class AutorizacaoCancelamentoMediator extends BaseMediator {
 		return autorizacaoCancelamentoDAO.buscarPedidosAutorizacaoCancelamento(autorizacaoCancelamento);
 	}
 
-	public List<AutorizacaoCancelamento> buscarAutorizacaoCancelamento(String nomeArquivo, Instituicao bancoConvenio, Instituicao cartorio,
-			LocalDate dataInicio, LocalDate dataFim, List<TipoArquivoFebraban> tiposArquivo, Usuario usuario) {
-		return autorizacaoCancelamentoDAO.buscarAutorizacaoCancelamento(nomeArquivo, bancoConvenio, cartorio, dataInicio, dataFim,
-				tiposArquivo, usuario);
+	public List<AutorizacaoCancelamento> consultarAutorizacoes(String nomeArquivo, Instituicao bancoConvenio, Instituicao cartorio,
+			LocalDate dataInicio, LocalDate dataFim, List<TipoArquivoFebraban> tiposArquivo, Usuario user) {
+		return autorizacaoCancelamentoDAO.consultarAutorizacoes(nomeArquivo, bancoConvenio, cartorio, dataInicio, dataFim, tiposArquivo, user);
 	}
 
 	/**

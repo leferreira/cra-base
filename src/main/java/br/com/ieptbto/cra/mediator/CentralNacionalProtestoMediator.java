@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.ieptbto.cra.conversor.cnp.ConversorCnpVO;
 import br.com.ieptbto.cra.conversor.cnp.RegistroCnpConversor;
 import br.com.ieptbto.cra.dao.CentralNancionalProtestoDAO;
-import br.com.ieptbto.cra.dao.MunicipioDAO;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.LoteCnp;
 import br.com.ieptbto.cra.entidade.Municipio;
@@ -47,7 +46,9 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 	@Autowired
 	CentralNancionalProtestoDAO centralNancionalProtestoDAO;
 	@Autowired
-	MunicipioDAO municipioDAO;
+	MunicipioMediator municipioMediator;
+	@Autowired
+	InstituicaoMediator instituicaoMediator;
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<Instituicao> consultarCartoriosCentralNacionalProtesto() {
@@ -146,13 +147,15 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 		return remessaCnpVO;
 	}
 
+	@Transactional(propagation=Propagation.NOT_SUPPORTED, readOnly=true)
 	private CabecalhoCnpVO gerarCabecalhoCnp(Instituicao instituicao) {
+		Municipio municipio = municipioMediator.buscarMunicipioInstituicao(instituicao);
+
 		CabecalhoCnpVO cabecalhoCnpVO = new CabecalhoCnpVO();
 		cabecalhoCnpVO.setCodigoRegistro("1");
 		cabecalhoCnpVO.setEmBranco2("01");
 		cabecalhoCnpVO.setDataMovimento(DataUtil.localDateToStringddMMyyyy(new LocalDate()));
-		instituicao.setMunicipio(municipioDAO.carregarMunicipio(instituicao.getMunicipio()));
-		cabecalhoCnpVO.setEmBranco53(instituicao.getMunicipio().getCodigoIBGE());
+		cabecalhoCnpVO.setEmBranco53(municipio.getCodigoIBGE());
 		cabecalhoCnpVO.setNumeroRemessaArquivo(centralNancionalProtestoDAO.gerarSequencialCnp(instituicao));
 		cabecalhoCnpVO.setTipoDocumento("1");
 		cabecalhoCnpVO.setIdentificacaoDoArquivo("CENTRAL_NACIONAL_PROTESTO");
@@ -207,12 +210,13 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 	}
 
 	private CabecalhoCnpVO gerarCabecalhoCnp(Instituicao instituicao, LocalDate data) {
+		Municipio municipio = municipioMediator.buscarMunicipioInstituicao(instituicao);
+		
 		CabecalhoCnpVO cabecalhoCnpVO = new CabecalhoCnpVO();
 		cabecalhoCnpVO.setCodigoRegistro("1");
 		cabecalhoCnpVO.setEmBranco2("01");
 		cabecalhoCnpVO.setDataMovimento(DataUtil.localDateToStringddMMyyyy(new LocalDate()));
-		instituicao.setMunicipio(municipioDAO.carregarMunicipio(instituicao.getMunicipio()));
-		cabecalhoCnpVO.setEmBranco53(instituicao.getMunicipio().getCodigoIBGE());
+		cabecalhoCnpVO.setEmBranco53(municipio.getCodigoIBGE());
 		cabecalhoCnpVO.setNumeroRemessaArquivo(centralNancionalProtestoDAO.gerarSequencialCnp(instituicao, data));
 		cabecalhoCnpVO.setTipoDocumento("1");
 		cabecalhoCnpVO.setIdentificacaoDoArquivo("CENTRAL_NACIONAL_PROTESTO");
@@ -250,7 +254,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 			RegistroCnp cancelamento =
 					centralNancionalProtestoDAO.consultarCancelamento(documentoDevedor, titulo.getNumeroProtocoloCartorio());
 			if (cancelamento == null) {
-				Municipio municipio = municipioDAO.carregarMunicipio(titulo.getLoteCnp().getInstituicaoOrigem().getMunicipio());
+				Municipio municipio = new Municipio();
 				if (!pracasComProtesto.contains(municipio.getNomeMunicipio().toUpperCase())) {
 					pracasComProtesto.add(municipio.getNomeMunicipio().toUpperCase());
 				}

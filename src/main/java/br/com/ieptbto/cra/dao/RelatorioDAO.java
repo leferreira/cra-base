@@ -30,13 +30,13 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		sql.append("WHERE v.dataRecebimento_Arquivo_Remessa BETWEEN :dataInicio AND :dataFim ");
 		
 		if (bancoConvenio != null && cartorio == null) {
-			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Instituicao = " + bancoConvenio.getId() + " ");
 		}
 		if (cartorio != null && bancoConvenio == null) {
 			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (bancoConvenio != null && cartorio != null) {
-			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Instituicao = " + bancoConvenio.getId() + " ");
 			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (tipoInstituicao != null && bancoConvenio == null) {
@@ -58,13 +58,13 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		sql.append("AND v.id_Confirmacao IS NULL ");
 		
 		if (bancoConvenio != null && cartorio == null) {
-			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Instituicao = " + bancoConvenio.getId() + " ");
 		}
 		if (cartorio != null && bancoConvenio == null) {
 			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (bancoConvenio != null && cartorio != null) {
-			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Instituicao = " + bancoConvenio.getId() + " ");
 			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (tipoInstituicao != null && bancoConvenio == null) {
@@ -87,13 +87,13 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		sql.append("AND v.numeroControleDevedor_TituloRemessa = " + Integer.valueOf(ConfiguracaoBase.UM) + " ");
 		
 		if (bancoConvenio != null && cartorio == null) {
-			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Instituicao = " + bancoConvenio.getId() + " ");
 		}
 		if (cartorio != null && bancoConvenio == null) {
 			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (bancoConvenio != null && cartorio != null) {
-			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Instituicao = " + bancoConvenio.getId() + " ");
 			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (tipoInstituicao != null && bancoConvenio == null) {
@@ -115,13 +115,13 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		sql.append("AND v.id_Retorno IS NOT NULL ");
 		
 		if (bancoConvenio != null && cartorio == null) {
-			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Instituicao = " + bancoConvenio.getId() + " ");
 		}
 		if (cartorio != null && bancoConvenio == null) {
 			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (bancoConvenio != null && cartorio != null) {
-			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Instituicao = " + bancoConvenio.getId() + " ");
 			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (tipoInstituicao != null && bancoConvenio == null) {
@@ -143,13 +143,13 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		sql.append("AND v.situacaoTitulo = '" + TipoOcorrencia.PAGO + "' ");
 		
 		if (bancoConvenio != null && cartorio == null) {
-			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Instituicao = " + bancoConvenio.getId() + " ");
 		}
 		if (cartorio != null && bancoConvenio == null) {
 			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (bancoConvenio != null && cartorio != null) {
-			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Instituicao = " + bancoConvenio.getId() + " ");
 			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (tipoInstituicao != null && bancoConvenio == null) {
@@ -171,13 +171,13 @@ public class RelatorioDAO extends AbstractBaseDAO {
 		sql.append("AND v.situacaoTitulo = '" + TipoOcorrencia.PROTESTADO + "' ");
 		
 		if (bancoConvenio != null && cartorio == null) {
-			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Instituicao = " + bancoConvenio.getId() + " ");
 		}
 		if (cartorio != null && bancoConvenio == null) {
 			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (bancoConvenio != null && cartorio != null) {
-			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Instituicao = " + bancoConvenio.getId() + " ");
 			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (tipoInstituicao != null && bancoConvenio == null) {
@@ -202,13 +202,13 @@ public class RelatorioDAO extends AbstractBaseDAO {
 				+ ") ");
 		
 		if (bancoConvenio != null && cartorio == null) {
-			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Instituicao = " + bancoConvenio.getId() + " ");
 		}
 		if (cartorio != null && bancoConvenio == null) {
 			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (bancoConvenio != null && cartorio != null) {
-			sql.append("AND v.id_Instituicao_Apresentante = " + bancoConvenio.getId() + " ");
+			sql.append("AND v.id_Instituicao_Instituicao = " + bancoConvenio.getId() + " ");
 			sql.append("AND v.id_Instituicao_Cartorio = " + cartorio.getId() + " ");
 		}
 		if (tipoInstituicao != null && bancoConvenio == null) {

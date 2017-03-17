@@ -113,6 +113,9 @@ public abstract class Titulo<T> extends AbstractEntidade<T> {
 
 	@Column(name = "CODIGO_CARTORIO")
 	public Integer getCodigoCartorio() {
+		if (codigoCartorio == null || codigoCartorio == 0) {
+			codigoCartorio = 1;
+		}
 		return codigoCartorio;
 	}
 

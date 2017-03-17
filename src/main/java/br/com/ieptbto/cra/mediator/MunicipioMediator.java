@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
 import br.com.ieptbto.cra.dao.MunicipioDAO;
@@ -24,13 +22,12 @@ public class MunicipioMediator extends BaseMediator {
 		return municipioDao.consultarMunicipios(nomeMunicipio, codigoIbge, uf);
 	}
 
-	@Transactional(propagation=Propagation.NOT_SUPPORTED, readOnly=false)
 	public Municipio carregarMunicipio(Municipio municipio) {
-		return municipioDao.carregarMunicipio(municipio);
+		return municipioDao.buscarPorPK(municipio, Municipio.class);
 	}
 
-	public Municipio adicionarMunicipio(Municipio municipio) {
-		return municipioDao.salvar(municipio);
+	public Municipio salvarMunicipio(Municipio municipio) {
+		return municipioDao.salvarMunicipio(municipio);
 	}
 
 	public Municipio alterarMunicipio(Municipio municipio) {
@@ -69,7 +66,7 @@ public class MunicipioMediator extends BaseMediator {
 	}
 
 	public Municipio salvar(Municipio municipio) {
-		return municipioDao.salvar(municipio);
+		return municipioDao.salvarMunicipio(municipio);
 	}
 
 	public Municipio buscaMunicipioPorCodigoIBGE(String codigoMunicipio) {
@@ -82,5 +79,9 @@ public class MunicipioMediator extends BaseMediator {
 
 	public List<Municipio> buscarMunicipiosAtivos() {
 		return municipioDao.buscarMunicipiosAtivos();
+	}
+
+	public Municipio buscarMunicipioInstituicao(Instituicao instituicao) {
+		return municipioDao.buscarPorPK(instituicao.getMunicipio(), Municipio.class);
 	}
 }

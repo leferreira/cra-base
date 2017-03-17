@@ -19,10 +19,8 @@ public enum CraAcao {
 	DOWNLOAD_ARQUIVO_DESISTENCIA_PROTESTO("Download de Desistência", "XML_DOWNLOAD_SUSTACAO", "buscarDesistenciaCancelamento"),
 	DOWNLOAD_ARQUIVO_CANCELAMENTO_PROTESTO("Download de Cancelamento", "XML_DOWLOAD_CANCELAMENTO", "buscarDesistenciaCancelamento"),
 	DOWNLOAD_ARQUIVO_AUTORIZACAO_CANCELAMENTO("Download de Autorização", "XML_DOWLOAD_AUTORIZACAO", "buscarDesistenciaCancelamento"),
-	CONFIRMAR_RECEBIMENTO_DESISTENCIA_CANCELAMENTO(
-													"Confirmar Recebimento Desistência e Cancelamento",
-													"XML_CONFIRMAR_SUSTACAO_CANCELAMENTO_AUTORIZACAO",
-													"confirmarRecebimentoDesistenciaCancelamento"),
+	CONFIRMAR_RECEBIMENTO_DESISTENCIA_CANCELAMENTO("Confirmar Recebimento Desistência e Cancelamento", "XML_CONFIRMAR_SUSTACAO_CANCELAMENTO_AUTORIZACAO",
+		"confirmarRecebimentoDesistenciaCancelamento"),
 	DOWNLOAD_ARQUIVO_CENTRAL_NACIONAL_PROTESTO("Download CNP", "XML_DOWNLOAD_CNP", ""),
 	ENVIO_ARQUIVO_CENTRAL_NACIONAL_PROTESTO("Envio da CNP", "XML_UPLOAD_CNP", ""),
 	CONSULTA_CARTORIOS_CENTRAL_NACIONAL_PROTESTO("Cartórios vínculados a CNP", "XML_CONSULTA_CARTORIOS", ""),
