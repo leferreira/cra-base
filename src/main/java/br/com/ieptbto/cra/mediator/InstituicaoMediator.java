@@ -105,6 +105,10 @@ public class InstituicaoMediator {
 	public List<Instituicao> getInstituicoesFinanceirasEConvenios() {
 		return instituicaoDAO.getInstituicoesFinanceirasEConvenios();
 	}
+	
+	public List<Instituicao> getInstituicoesLayoutPersonalizado() {
+		return instituicaoDAO.getInstituicoesLayoutPersonalizado();
+	}
 
 	public List<Instituicao> getConvenios() {
 		return instituicaoDAO.getConvenios();

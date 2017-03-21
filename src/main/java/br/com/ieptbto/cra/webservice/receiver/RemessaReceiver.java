@@ -175,8 +175,7 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 		for (Remessa remessa : arquivo.getRemessas()) {
 			ComarcaDetalhamentoSerproVO comarcaDetalhamento = new ComarcaDetalhamentoSerproVO();
 			comarcaDetalhamento.setCodigoMunicipio(remessa.getCabecalho().getCodigoMunicipio());
-			comarcaDetalhamento
-					.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
+			comarcaDetalhamento.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
 			comarcaDetalhamento.setRegistro(StringUtils.EMPTY);
 
 			CodigoErro codigoErroSerpro = CodigoErro.SERPRO_SUCESSO_REMESSA;
@@ -247,8 +246,7 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 
 				ComarcaDetalhamentoSerproVO comarcaDetalhamento = new ComarcaDetalhamentoSerproVO();
 				comarcaDetalhamento.setCodigoMunicipio(exception.getCodigoMunicipio());
-				comarcaDetalhamento
-						.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
+				comarcaDetalhamento.setDataHora(DataUtil.localDateToStringddMMyyyy(new LocalDate()) + DataUtil.localTimeToStringMMmm(new LocalTime()));
 				comarcaDetalhamento.setRegistro(ConfiguracaoBase.UM);
 
 				CodigoErro codigoErroSerpro = CodigoErro.SERPRO_ARQUIVO_INVALIDO_REMESSA_DESISTENCIA_CANCELAMENTO;

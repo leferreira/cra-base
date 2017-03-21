@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
@@ -212,6 +213,19 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
 		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CRA));
+		criteria.addOrder(Order.asc("nomeFantasia"));
+		return criteria.list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Instituicao> getInstituicoesLayoutPersonalizado() {
+		Criteria criteria = getCriteria(Instituicao.class);
+		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
+		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
+		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CRA));
+		criteria.add(Restrictions.or(
+					Restrictions.eq("layoutPadraoXML", LayoutPadraoXML.LAYOUT_PERSONALIZADO_CONVENIOS),
+					Restrictions.eq("layoutPadraoXML", LayoutPadraoXML.ENTRADA_MANUAL)));
 		criteria.addOrder(Order.asc("nomeFantasia"));
 		return criteria.list();
 	}
