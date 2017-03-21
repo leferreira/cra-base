@@ -1,15 +1,6 @@
 package br.com.ieptbto.cra.entidade;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.hibernate.envers.Audited;
 
@@ -24,7 +15,8 @@ import br.com.ieptbto.cra.enumeration.LayoutArquivo;
 @SuppressWarnings("serial")
 @Entity
 @Audited
-@Table(name = "TB_LAYOUT_EMPRESA")
+@Table(name = "TB_LAYOUT_EMPRESA", uniqueConstraints=
+	@UniqueConstraint(columnNames={"campo", "layout_arquivo", "instituicao_id"}))
 @org.hibernate.annotations.Table(appliesTo = "TB_LAYOUT_EMPRESA")
 public class LayoutFiliado extends AbstractEntidade<LayoutFiliado> {
 

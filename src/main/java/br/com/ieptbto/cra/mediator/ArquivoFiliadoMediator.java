@@ -72,10 +72,6 @@ public class ArquivoFiliadoMediator extends BaseMediator {
 		this.arquivo.setDataRecebimento(new LocalDate().toDate());
 		this.arquivo.setInstituicaoEnvio(usuario.getInstituicao());
 		this.arquivo.setStatusArquivo(getStatusArquivoEnviado());
-
-		if (verificarSeArquivoJaEnviado(getArquivo())) {
-
-		}
 		conversorArquivoFiliado.converter(file, getUsuario(), getArquivo(), getErros());
 		setArquivo(arquivoDAO.salvar(getArquivo(), usuario, getErros()));
 		return this;

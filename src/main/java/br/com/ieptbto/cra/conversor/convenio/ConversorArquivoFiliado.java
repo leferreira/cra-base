@@ -86,54 +86,6 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		processarArquivoRecebido(arquivo);
 	}
 
-	private Rodape getRodapeRemessa(Remessa remessa, BigDecimal valortotalTitulos) {
-		Rodape rodape = new Rodape();
-		rodape.setDataMovimento(new LocalDate());
-		rodape.setIdentificacaoRegistro(TipoIdentificacaoRegistro.RODAPE);
-		rodape.setNomePortador(RemoverAcentosUtil.removeAcentos(getInstituicao().getRazaoSocial()).toUpperCase());
-		rodape.setNumeroCodigoPortador(getInstituicao().getCodigoCompensacao());
-		rodape.setRemessa(remessa);
-		rodape.setSomatorioQtdRemessa(new BigDecimal(remessa.getTitulos().size() * 3));
-		rodape.setSomatorioValorRemessa(valortotalTitulos);
-		rodape.setNumeroSequencialRegistroArquivo(String.valueOf(remessa.getTitulos().size() + 2));
-		return rodape;
-	}
-
-	private CabecalhoRemessa getCabecalhoRemessa(Remessa remessa, String cidade) {
-		int totalTitulos = remessa.getTitulos().size();
-		String codigoMunicipio = getCodigoMunicipio(cidade);
-
-		CabecalhoRemessa cabecalho = new CabecalhoRemessa();
-		cabecalho.setCodigoMunicipio(codigoMunicipio);
-		cabecalho.setDataMovimento(new LocalDate());
-		cabecalho.setIdentificacaoRegistro(TipoIdentificacaoRegistro.CABECALHO);
-		cabecalho.setIdentificacaoTransacaoDestinatario("SDT");
-		cabecalho.setIdentificacaoTransacaoRemetente("BFO");
-		cabecalho.setIdentificacaoTransacaoTipo("TPR");
-		cabecalho.setNomePortador(RemoverAcentosUtil.removeAcentos(getInstituicao().getRazaoSocial()).toUpperCase());
-		cabecalho.setNumeroCodigoPortador(getInstituicao().getCodigoCompensacao());
-		cabecalho.setNumeroSequencialRemessa(gerarNumeroSequencial(remessa.getInstituicaoOrigem().getCodigoCompensacao(), codigoMunicipio));
-		cabecalho.setNumeroSequencialRegistroArquivo("1");
-		cabecalho.setAgenciaCentralizadora(StringUtils.leftPad(getInstituicao().getAgenciaCentralizadora(), 6, "0"));
-		cabecalho.setQtdTitulosRemessa(totalTitulos);
-		cabecalho.setQtdRegistrosRemessa(totalTitulos);
-		cabecalho.setQtdIndicacoesRemessa(0);
-		cabecalho.setQtdOriginaisRemessa(totalTitulos);
-		cabecalho.setRemessa(remessa);
-		cabecalho.setVersaoLayout("043");
-		return cabecalho;
-	}
-
-	private Integer gerarNumeroSequencial(String codigoPortador, String codigoMunicipio) {
-		CabecalhoRemessa ultimoCabecalhoRemessa =
-				cabecalhoMediator.buscarUltimoCabecalhoRemessaPorMunicipio(codigoPortador, codigoMunicipio);
-
-		if (ultimoCabecalhoRemessa != null) {
-			return ultimoCabecalhoRemessa.getNumeroSequencialRemessa() + 1;
-		}
-		return 1;
-	}
-
 	private void processarArquivoRecebido(Arquivo arquivo) {
 		Map<String, List<List<TemplateLayoutEmpresa>>> listaCampos = new HashMap<>();
 
@@ -258,7 +210,54 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 			}
 		}
 		arquivo.setRemessas(remessas);
+	}
 
+	private Rodape getRodapeRemessa(Remessa remessa, BigDecimal valortotalTitulos) {
+		Rodape rodape = new Rodape();
+		rodape.setDataMovimento(new LocalDate());
+		rodape.setIdentificacaoRegistro(TipoIdentificacaoRegistro.RODAPE);
+		rodape.setNomePortador(RemoverAcentosUtil.removeAcentos(getInstituicao().getRazaoSocial()).toUpperCase());
+		rodape.setNumeroCodigoPortador(getInstituicao().getCodigoCompensacao());
+		rodape.setRemessa(remessa);
+		rodape.setSomatorioQtdRemessa(new BigDecimal(remessa.getTitulos().size() * 3));
+		rodape.setSomatorioValorRemessa(valortotalTitulos);
+		rodape.setNumeroSequencialRegistroArquivo(String.valueOf(remessa.getTitulos().size() + 2));
+		return rodape;
+	}
+
+	private CabecalhoRemessa getCabecalhoRemessa(Remessa remessa, String cidade) {
+		int totalTitulos = remessa.getTitulos().size();
+		String codigoMunicipio = getCodigoMunicipio(cidade);
+
+		CabecalhoRemessa cabecalho = new CabecalhoRemessa();
+		cabecalho.setCodigoMunicipio(codigoMunicipio);
+		cabecalho.setDataMovimento(new LocalDate());
+		cabecalho.setIdentificacaoRegistro(TipoIdentificacaoRegistro.CABECALHO);
+		cabecalho.setIdentificacaoTransacaoDestinatario("SDT");
+		cabecalho.setIdentificacaoTransacaoRemetente("BFO");
+		cabecalho.setIdentificacaoTransacaoTipo("TPR");
+		cabecalho.setNomePortador(RemoverAcentosUtil.removeAcentos(getInstituicao().getRazaoSocial()).toUpperCase());
+		cabecalho.setNumeroCodigoPortador(getInstituicao().getCodigoCompensacao());
+		cabecalho.setNumeroSequencialRemessa(gerarNumeroSequencial(remessa.getInstituicaoOrigem().getCodigoCompensacao(), codigoMunicipio));
+		cabecalho.setNumeroSequencialRegistroArquivo("1");
+		cabecalho.setAgenciaCentralizadora(StringUtils.leftPad(getInstituicao().getAgenciaCentralizadora(), 6, "0"));
+		cabecalho.setQtdTitulosRemessa(totalTitulos);
+		cabecalho.setQtdRegistrosRemessa(totalTitulos);
+		cabecalho.setQtdIndicacoesRemessa(0);
+		cabecalho.setQtdOriginaisRemessa(totalTitulos);
+		cabecalho.setRemessa(remessa);
+		cabecalho.setVersaoLayout("043");
+		return cabecalho;
+	}
+
+	private Integer gerarNumeroSequencial(String codigoPortador, String codigoMunicipio) {
+		CabecalhoRemessa ultimoCabecalhoRemessa =
+				cabecalhoMediator.buscarUltimoCabecalhoRemessaPorMunicipio(codigoPortador, codigoMunicipio);
+
+		if (ultimoCabecalhoRemessa != null) {
+			return ultimoCabecalhoRemessa.getNumeroSequencialRemessa() + 1;
+		}
+		return 1;
 	}
 
 	/**
@@ -303,24 +302,20 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		remessa.getInstituicaoOrigem().setMunicipio(municipioInstituicao);
 		titulo.setIdentificacaoRegistro(TipoIdentificacaoRegistro.TITULO);
 		titulo.setCodigoPortador(getInstituicao().getCodigoCompensacao());
-		titulo.setAgenciaCodigoCedente(StringUtils
-				.leftPad(getInstituicao().getCodigoCompensacao() + DataUtil.getDataAtual(new SimpleDateFormat("MMyyyy")), 15, "0"));
+		titulo.setAgenciaCodigoCedente(StringUtils.leftPad(getInstituicao().getCodigoCompensacao() + DataUtil.getDataAtual(new SimpleDateFormat("MMyyyy")), 15, "0"));
 		titulo.setNomeCedenteFavorecido(RemoverAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getRazaoSocial()).toUpperCase());
 		titulo.setNomeSacadorVendedor(RemoverAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getRazaoSocial()).toUpperCase());
 		titulo.setDocumentoSacador(remessa.getInstituicaoOrigem().getCnpj());
 		titulo.setEnderecoSacadorVendedor(RemoverAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getEndereco()).toUpperCase());
-		titulo.setCidadeSacadorVendedor(
-				RemoverAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getMunicipio().getNomeMunicipio().toUpperCase()));
+		titulo.setCidadeSacadorVendedor(RemoverAcentosUtil.removeAcentos(remessa.getInstituicaoOrigem().getMunicipio().getNomeMunicipio().toUpperCase()));
 		titulo.setUfSacadorVendedor(remessa.getInstituicaoOrigem().getMunicipio().getUf());
 		titulo.setEnderecoSacadorVendedor(remessa.getInstituicaoOrigem().getEndereco());
 		titulo.setCepSacadorVendedor("77000000");
-
 		titulo.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(titulo.getNumeroIdentificacaoDevedor()));
 		titulo.setNumeroControleDevedor(1);
 		titulo.setInformacaoSobreAceite("N");
 		titulo.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(titulo.getEnderecoDevedor()));
 		titulo.setUfDevedor("TO");
-
 		titulo.setDataCadastro(new Date());
 		titulo.setEspecieTitulo("CDA");
 		titulo.setDataOcorrencia(new LocalDate());
