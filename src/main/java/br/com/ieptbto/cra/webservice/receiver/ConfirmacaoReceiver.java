@@ -101,7 +101,7 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 			MensagemVO mensagem = new MensagemVO();
 			mensagem.setCodigo(CodigoErro.CRA_SUCESSO.getCodigo());
 			mensagem.setMunicipio(remessa.getCabecalho().getCodigoMunicipio());
-			mensagem.setDescricao("Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
+			mensagem.setDescricao("Instituição: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
 					+ remessa.getCabecalho().getQtdTitulosRemessa() + " títulos receberam confirmação.");
 			mensagens.add(mensagem);
 		}
