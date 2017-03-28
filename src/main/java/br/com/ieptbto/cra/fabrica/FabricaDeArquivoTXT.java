@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,11 @@ import br.com.ieptbto.cra.conversor.arquivo.ConversorDesistenciaCancelamento;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorRetorno;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorRodape;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorTitulo;
+import br.com.ieptbto.cra.dao.BatimentoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Batimento;
 import br.com.ieptbto.cra.entidade.Confirmacao;
+import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
@@ -30,7 +34,14 @@ import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
+import br.com.ieptbto.cra.entidade.vo.retornoRecebimentoEmpresa.ArquivoRecebimentoEmpresaVO;
+import br.com.ieptbto.cra.entidade.vo.retornoRecebimentoEmpresa.ConversorHeaderEmpresa;
+import br.com.ieptbto.cra.entidade.vo.retornoRecebimentoEmpresa.ConversorRegistroEmpresa;
+import br.com.ieptbto.cra.entidade.vo.retornoRecebimentoEmpresa.HeaderRetornoRecebimentoVO;
+import br.com.ieptbto.cra.entidade.vo.retornoRecebimentoEmpresa.RegistroRetornoRecebimentoVO;
+import br.com.ieptbto.cra.entidade.vo.retornoRecebimentoEmpresa.TraillerRetornoRecebimentoVO;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.gerador.GeradorDeArquivosTXT;
 
 @SuppressWarnings("rawtypes")
@@ -47,6 +58,8 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	ConversorDesistenciaCancelamento conversorDesistenciaCancelamento;
 	@Autowired
 	ConversorCancelamentoProtesto conversorCancelamentoProtesto;
+	@Autowired
+	BatimentoDAO batimentoDAO;
 
 	private static final String PRIMEIRO_DEVEDOR = "1";
 
@@ -153,6 +166,39 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		gerarTXT(file, remessasVO);
 		return file;
 	}
+	
+	public File baixarRetornoRecebimentoEmpresaTXT(File file, List<Remessa> remessas, Instituicao instituicao, LocalDate dataGeracao, Integer sequencialArquivo) {
+		this.file = file;
+		BigDecimal valorTotalTitulos = BigDecimal.ZERO;
+		
+		ArquivoRecebimentoEmpresaVO arquivoVO = new ArquivoRecebimentoEmpresaVO();  
+		arquivoVO.setHeaderEmpresaVO(new ConversorHeaderEmpresa().converter(new HeaderRetornoRecebimentoVO(), instituicao, dataGeracao, sequencialArquivo));
+		
+		List<RegistroRetornoRecebimentoVO> registros = new ArrayList<RegistroRetornoRecebimentoVO>();
+		for (Remessa remessa : remessas) {
+			Batimento batimento = batimentoDAO.buscarBatimentoDoRetorno(remessa);
+			for (Titulo titulo : remessa.getTitulos()) {
+				Retorno retorno = Retorno.class.cast(titulo);
+				TipoOcorrencia tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(retorno.getTipoOcorrencia());
+				
+				if (TipoOcorrencia.PAGO == tipoOcorrencia) {
+					registros.add(new ConversorRegistroEmpresa().converter(new RegistroRetornoRecebimentoVO(), retorno, batimento, registros.size() + 1));
+				}
+			}
+		}
+		if (registros.isEmpty()) {
+			return null;
+		}
+		arquivoVO.setRegistrosEmpresaVO(registros);
+		
+		TraillerRetornoRecebimentoVO trailler = new TraillerRetornoRecebimentoVO();
+		trailler.setValorTotalRecebidoRegistros(new BigDecimalConversor().getValorConvertidoParaString(valorTotalTitulos));
+		trailler.setTotalRegistrosArquivo(Integer.toString(registros.size()));
+		arquivoVO.setTraillerEmpresaVO(trailler);
+		
+		gerarTXT(file, arquivoVO);
+		return file;
+	}
 
 	public File fabricaArquivoDesistenciaProtestoTXT(File file, RemessaDesistenciaProtesto remessa) {
 		return geradorDeArquivosTXT.gerar(conversorDesistenciaCancelamento.converterParaVO(remessa), file);
@@ -176,11 +222,27 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		return Integer.toString(somatorioQtdRemessa);
 	}
 
+	/**
+	 * @param file
+	 * @param remessaVO
+	 */
 	private void gerarTXT(File file, RemessaVO remessaVO) {
 		geradorDeArquivosTXT.gerar(remessaVO, file);
 	}
 
+	/**
+	 * @param file
+	 * @param remessasVO
+	 */
 	private void gerarTXT(File file, List<RemessaVO> remessasVO) {
 		geradorDeArquivosTXT.gerar(remessasVO, file);
+	}
+	
+	/**
+	 * @param file
+	 * @param remessasVO
+	 */
+	private void gerarTXT(File file, ArquivoRecebimentoEmpresaVO arquivoCnab240) {
+		geradorDeArquivosTXT.gerar(arquivoCnab240, file);
 	}
 }

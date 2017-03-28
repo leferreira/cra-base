@@ -6,10 +6,9 @@ package br.com.ieptbto.cra.enumeration;
  */
 public enum LayoutPadraoXML {
 
-	ENTRADA_MANUAL("Entrada Manual (Convênios)"),
 	CRA_NACIONAL("CRA-Nacional"),
-	SERPRO("Serpro"),
-	LAYOUT_PERSONALIZADO_CONVENIOS("Personalizado (Convênios)");
+	ENTRADA_MANUAL_LAYOUT_PERSONALIZADO("Entrada Manual e Layout Personalizado"),
+	SERPRO("Serpro");
 
 	private String label;
 

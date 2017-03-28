@@ -17,7 +17,7 @@ public class RemoverAcentosUtil implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public static void main(String[] args) {
-		System.out.println(RemoverAcentosUtil.removeAcentos("t♫e£s↓t♀e• m♠u↨i♫t►o  l*o#u♂c?o"));
+		System.out.println(RemoverAcentosUtil.removeAcentos("t♫e£s↓t♀e• m♠u↨i♫t►o  l*o#u♂c?o  '"));
 	}
 
 	public static String removeAcentos(String retorno) {
@@ -45,9 +45,9 @@ public class RemoverAcentosUtil implements Serializable {
 				retorno = retorno.replace("ª", " ");
 				retorno = retorno.replace("�", "");
 				retorno = retorno.replace("_", " ");
-				retorno = retorno.replace("_", " ");
 				retorno = retorno.replace("#", " ");
 				retorno = retorno.replace("?", " ");
+				retorno = retorno.replace("'", "");
 
 				String nfdNormalizedString = Normalizer.normalize(retorno, Normalizer.Form.NFD);
 				Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");

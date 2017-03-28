@@ -5,7 +5,8 @@ import br.com.ieptbto.cra.exception.InfraException;
 
 public enum TipoIdentificacaoRegistro implements AbstractCraEnum {
 
-	TITULO("1", "Título"), CABECALHO("0", "Cabeçalho"), RODAPE("9", "Rodapé");
+	TITULO("1", "Título"), CABECALHO("0", "Cabeçalho"), RODAPE("9", "Rodapé"),
+	REGISTRO_EMPRESA("G", "Registro"), HEADER_EMPRESA("A", "Header"), TRAILLER_EMPRESA("Z", "Trailler");
 
 	private String constante;
 	private String label;
@@ -39,5 +40,4 @@ public enum TipoIdentificacaoRegistro implements AbstractCraEnum {
 		}
 		throw new InfraException("Tipo de Registro desconhecido : " + valor);
 	}
-
 }

@@ -18,6 +18,8 @@ import br.com.ieptbto.cra.entidade.vo.RemessaDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
+import br.com.ieptbto.cra.entidade.vo.retornoRecebimentoEmpresa.ArquivoRecebimentoEmpresaVO;
+import br.com.ieptbto.cra.entidade.vo.retornoRecebimentoEmpresa.RegistroRetornoRecebimentoVO;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.FabricaDeRegistroTXT;
 
@@ -126,6 +128,30 @@ public class GeradorDeArquivosTXT extends Gerador {
 			new InfraException("Não foi possível gerar o arquivo TXT físico");
 		}
 
+	}
+	
+	public void gerar(ArquivoRecebimentoEmpresaVO arquivoCnab240VO, File arquivoTXT) {
+		try {
+			BufferedWriter bWrite = new BufferedWriter(new FileWriter(arquivoTXT));
+
+			bWrite.write(FabricaDeRegistroTXT.getLinhaLayoutEmpresa(arquivoCnab240VO.getHeaderEmpresaVO()));
+			bWrite.write(NEW_LINE);
+			for (RegistroRetornoRecebimentoVO registroCnab240VO : arquivoCnab240VO.getRegistrosEmpresaVO()) {
+				bWrite.write(FabricaDeRegistroTXT.getLinhaLayoutEmpresa(registroCnab240VO));
+				bWrite.write(NEW_LINE);
+			}
+			bWrite.write(FabricaDeRegistroTXT.getLinhaLayoutEmpresa(arquivoCnab240VO.getTraillerEmpresaVO()));
+			bWrite.write(NEW_LINE);
+			
+			bWrite.flush();
+			bWrite.close();
+		} catch (IOException e) {
+			logger.error(e);
+			new InfraException("Não foi possível gerar o arquivo TXT físico");
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			new InfraException("Não foi possível gerar o arquivo TXT físico");
+		}
 	}
 
 	private String gerarLinhaRodape(RodapeVO rodape) {

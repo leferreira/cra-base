@@ -44,6 +44,16 @@ public class DateConversor extends AbstractConversor<LocalDate> {
 		}
 		return StringUtils.repeat(" ", getAnotacaoAtributo().tamanho());
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getValorConvertidoParaString(LocalDate objeto, String format) {
+		if (objeto != null) {
+			return DataUtil.localDateToString(objeto, format);
+		}
+		return StringUtils.repeat(" ", getAnotacaoAtributo().tamanho());
+	}
 
 	@Override
 	public LocalDate getValorConvertido(String valor, Class<?> propertyType) throws ConvertException {

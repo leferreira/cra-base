@@ -68,7 +68,6 @@ public abstract class AbstractConversorArquivo<R extends AbstractArquivoVO, E ex
 				        getValorTipado(valor, propertyType, entidadeVO, new CampoArquivo(propertyName, entidadeVO.getClass())));
 			}
 		}
-
 		return arquivo;
 	}
 

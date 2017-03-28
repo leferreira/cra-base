@@ -94,6 +94,10 @@ public class ArquivoMediator extends BaseMediator {
 		return arquivoDAO.buscarArquivos(usuario, nomeArquivo, dataInicio, dataFim, tipoInstituicao, bancoConvenio, tiposArquivo,
 				situacoesArquivos);
 	}
+	
+	public List<Arquivo> buscarRetornoParaLayoutRecebimentoEmpresa(Usuario usuario, LocalDate dataInicio, LocalDate dataFim) {
+		return arquivoDAO.buscarRetornoParaLayoutRecebimentoEmpresa(usuario, dataInicio, dataFim);
+	}
 
 	public List<Arquivo> buscarArquivosDesistenciaCancelamento(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim,
 			TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoFebraban> tiposArquivo,

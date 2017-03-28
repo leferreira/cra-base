@@ -20,7 +20,6 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.StatusDownload;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
@@ -51,11 +50,6 @@ public class ArquivoFiliadoMediator extends BaseMediator {
 	private List<Exception> erros;
 
 	public ArquivoFiliadoMediator salvarArquivo(FileUploadField file, Usuario usuario) {
-		if (!verificarPermissaoDeEnvio(usuario, arquivo)) {
-			logger.error("O usuário " + usuario.getNome() + " não pode enviar arquivos " + file.getInputName());
-			throw new InfraException("O usuário " + usuario.getNome() + " não pode enviar arquivos " + file.getInputName());
-		}
-
 		if (!verificarSeInstituicaoPossuiLayout(usuario.getInstituicao())) {
 			logger.error("Olá " + usuario.getNome() + ", Não existe layout cadastrado para sua instituicao...");
 			throw new InfraException("Olá " + usuario.getNome() + ", Não há layout cadastrado para sua instituicao");
@@ -72,18 +66,13 @@ public class ArquivoFiliadoMediator extends BaseMediator {
 		this.arquivo.setDataRecebimento(new LocalDate().toDate());
 		this.arquivo.setInstituicaoEnvio(usuario.getInstituicao());
 		this.arquivo.setStatusArquivo(getStatusArquivoEnviado());
+		
 		conversorArquivoFiliado.converter(file, getUsuario(), getArquivo(), getErros());
 		setArquivo(arquivoDAO.salvar(getArquivo(), usuario, getErros()));
 		return this;
 	}
 
-	private boolean verificarSeArquivoJaEnviado(Arquivo arquivo2) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	/**
-	 * 
 	 * @param instituicao
 	 * @return true se exitir layout para a instituição
 	 */
@@ -104,14 +93,6 @@ public class ArquivoFiliadoMediator extends BaseMediator {
 		status.setData(new LocalDateTime());
 		status.setStatusDownload(StatusDownload.ENVIADO);
 		return status;
-	}
-
-	private boolean verificarPermissaoDeEnvio(Usuario user, Arquivo arquivo) {
-		if (TipoInstituicaoCRA.CONVENIO.equals(user.getInstituicao().getTipoInstituicao().getTipoInstituicao())
-				&& user.getInstituicao().getLayoutPadraoXML().equals(LayoutPadraoXML.LAYOUT_PERSONALIZADO_CONVENIOS)) {
-			return true;
-		}
-		return false;
 	}
 
 	public Usuario getUsuario() {

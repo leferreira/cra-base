@@ -41,6 +41,8 @@ public class DataUtil implements Serializable {
 
 	/** Pattern padrao para formatacao de data. */
 	public static final String PADRAO_FORMATACAO_DATA_DDMMYYYY = "ddMMyyyy";
+	
+	public static final String PADRAO_FORMATACAO_DATA_YYYYMMDD = "yyyyMMdd";
 
 	/** Pattern padrao para formatacao de hora. */
 	public static final String PADRAO_FORMATACAO_HORA_HHMM = "HHmm";
@@ -118,6 +120,13 @@ public class DataUtil implements Serializable {
 			return null;
 		}
 		return localDate.toString(getDateTimeFormatter(PADRAO_FORMATACAO_DATA));
+	}
+	
+	public static String localDateToString(LocalDate localDate, String format) {
+		if (localDate == null) {
+			return null;
+		}
+		return localDate.toString(getDateTimeFormatter(format));
 	}
 
 	public static String localTimeToString(LocalTime localTime) {

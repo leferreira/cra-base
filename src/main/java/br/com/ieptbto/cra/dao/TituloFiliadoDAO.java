@@ -295,8 +295,8 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<TituloRemessa> buscarListaTitulos(Usuario user, LocalDate dataInicio, Instituicao instiuicaoCartorio, String numeroTitulo, String nomeDevedor,
-			String documentoDevedor, String codigoFiliado) {
+	public List<TituloRemessa> buscarListaTitulos(Usuario user, LocalDate dataInicio, LocalDate dataFim, Instituicao instiuicaoCartorio, String numeroTitulo, 
+			String nomeDevedor, String documentoDevedor, String codigoFiliado) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 		criteria.add(Restrictions.eq("remessa.instituicaoOrigem", user.getInstituicao()));
@@ -314,7 +314,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", documentoDevedor.trim(), MatchMode.ANYWHERE));
 		}
 		if (dataInicio != null) {
-			criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataInicio.plusDays(1)));
+			criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
 		}
 		if (instiuicaoCartorio != null) {
 			criteria.createAlias("remessa.cabecalho", "cabecalho");

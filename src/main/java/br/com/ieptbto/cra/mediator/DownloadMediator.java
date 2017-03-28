@@ -84,6 +84,28 @@ public class DownloadMediator extends BaseMediator {
 		}
 		return processadorArquivo.baixarRemessaConfirmacaoRetornoTXT(arquivo, remessas, usuario);
 	}
+	
+	/**
+	 * Download de arquivos TXT de Convênios no Layout CNAB240
+	 * 
+	 * @param instituicao
+	 * @param arquivo
+	 * @return
+	 */
+	public File baixarRetornoRecebimentoEmpresa(Usuario usuario, Arquivo arquivo) {
+		arquivo = arquivoDAO.buscarPorPK(arquivo.getId(), Arquivo.class);
+		if (!arquivo.getStatusArquivo().getStatusDownload().equals(StatusDownload.ENVIADO)) {
+			StatusArquivo status = new StatusArquivo();
+			status.setData(new LocalDateTime());
+			status.setStatusDownload(StatusDownload.RECEBIDO);
+			arquivo.setStatusArquivo(status);
+			arquivoDAO.alterarStatusArquivo(arquivo);
+		}
+		
+		List<Remessa> remessas = arquivoDAO.baixarArquivoInstituicaoRetorno(arquivo);
+		Integer sequencialArquivo = arquivoDAO.buscarSequencialRetornoRecebimentoEmpresa(arquivo.getInstituicaoRecebe(), arquivo.getDataEnvio());
+		return processadorArquivo.baixarRetornoRecebimentoEmpresaTXT(arquivo, remessas, usuario, sequencialArquivo);
+	}
 
 	/**
 	 * Download de arquivos TXT de Instituições e Convênios

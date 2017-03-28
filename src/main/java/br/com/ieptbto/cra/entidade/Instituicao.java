@@ -1,7 +1,6 @@
 package br.com.ieptbto.cra.entidade;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -33,7 +31,6 @@ import br.com.ieptbto.cra.enumeration.TipoCampo51;
 @org.hibernate.annotations.Table(appliesTo = "TB_INSTITUICAO")
 public class Instituicao extends AbstractEntidade<Instituicao> {
 
-	/***/
     private static final long serialVersionUID = 1L;
     private int id;
     private String nomeFantasia;
@@ -60,13 +57,13 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
     private Boolean verificacaoManual;
     private Municipio municipio;
     private TipoCampo51 tipoCampo51;
+    private boolean layoutRetornoRecebimentoEmpresa;
     private boolean setoresConvenio;
+    private boolean administrarEmpresasFiliadas;
     private TipoBatimento tipoBatimento;
     private LayoutPadraoXML layoutPadraoXML;
     private TipoInstituicao tipoInstituicao;
     private Integer versao;
-    private List<Arquivo> arquivoEnviados;
-    private List<Usuario> listaUsuarios;
 
     @Id
     @Column(name = "ID_INSTITUICAO", columnDefinition = "serial")
@@ -162,20 +159,10 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
         return numeroContaCorrente;
     }
 
-    @OneToMany(mappedBy = "instituicaoEnvio", fetch = FetchType.LAZY)
-    public List<Arquivo> getArquivoEnviados() {
-        return arquivoEnviados;
-    }
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TIPO_INSTITUICAO_ID")
     public TipoInstituicao getTipoInstituicao() {
         return tipoInstituicao;
-    }
-
-    @OneToMany(mappedBy = "instituicao", fetch = FetchType.LAZY)
-    public List<Usuario> getListaUsuarios() {
-        return listaUsuarios;
     }
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -192,6 +179,11 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
     @Column(name = "SETORES_CONVENIO")
     public boolean getSetoresConvenio() {
         return setoresConvenio;
+    }
+    
+    @Column(name = "ADMINISTRAR_EMPRESAS_FILIADAS")
+    public boolean getAdministrarEmpresasFiliadas() {
+        return administrarEmpresasFiliadas;
     }
 
     @Column(name = "TELEFONE", length = 20)
@@ -234,6 +226,10 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 
     public void setSetoresConvenio(boolean setoresConvenio) {
         this.setoresConvenio = setoresConvenio;
+    }
+    
+    public void setAdministrarEmpresasFiliadas(boolean administrarEmpresasFiliadas) {
+    	this.administrarEmpresasFiliadas = administrarEmpresasFiliadas;
     }
 
     public void setCodigoCompensacao(String codigoCompensacao) {
@@ -290,14 +286,6 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 
     public void setTipoInstituicao(TipoInstituicao tipoInstituicao) {
         this.tipoInstituicao = tipoInstituicao;
-    }
-
-    public void setArquivoEnviados(List<Arquivo> arquivoEnviados) {
-        this.arquivoEnviados = arquivoEnviados;
-    }
-
-    public void setListaUsuarios(List<Usuario> listaUsuarios) {
-        this.listaUsuarios = listaUsuarios;
     }
 
     @Override
@@ -438,4 +426,13 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
     public void setVerificacaoManual(Boolean verificacaoManual) {
         this.verificacaoManual = verificacaoManual;
     }
+
+    @Column(name = "LAYOUT_RETORNO_RECEBIMENTO_EMPRESA")
+	public boolean getLayoutRetornoRecebimentoEmpresa() {
+		return layoutRetornoRecebimentoEmpresa;
+	}
+
+	public void setLayoutRetornoRecebimentoEmpresa(boolean layoutRetornoRecebimentoEmpresa) {
+		this.layoutRetornoRecebimentoEmpresa = layoutRetornoRecebimentoEmpresa;
+	}
 }

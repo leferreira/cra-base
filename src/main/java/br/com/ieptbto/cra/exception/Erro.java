@@ -24,13 +24,13 @@ public enum Erro {
 					NUMERO_SEQUENCIAL_CABECALHO_INVALDIO("0012", "Número sequencial do Cabecalho inválido"), //
 					TAMANHO_NOME_ARQUIVO_INVALIDO("", "Quantidade de caracteres informada no nome do arquivo é inválida"), //
 					DATA_NOME_ARQUIVO_INVALIDA("", "A data informada no nome do arquivo é inválida"), //
-					EXTENSAO_NOME_ARQUIVO_INVALIDA("",
-							"Extensão do nome do arquivo inválida. Verifique o nome do arquivo se segue com o layout FEBRABAN."),
+					EXTENSAO_NOME_ARQUIVO_INVALIDA("","Extensão do nome do arquivo inválida. Verifique o nome do arquivo se segue com o layout FEBRABAN."),
 					CODIGO_PORTADOR_CABECALHO_INVALIDO("", "Número do código do portador no cabeçalho inválido."),
 					NOME_APRESENTANTE_CABECALHO_INVALIDO("", "Nome do apresentante no cabeçalho inválido."),
 					CODIGO_PORTADOR_RODAPE_INVALIDO("", "Número do código do portador no rodapé inválido."),
 					NOME_APRESENTANTE_RODAPE_INVALIDO("", "Nome do apresentante no rodapé inválido."),
-					USUARIO_CONVENIO("", "Este usuário deve acessar via IEPTB Convênios!");//
+					USUARIO_CONVENIO("", "Este usuário deve acessar via IEPTB Convênios! <a href='http://www.cratocantins.com.br/convenio'><strong>Acesse aqui...</strong></a>"),//
+					USUARIO_CRA("", "Este usuário deve acessar via CRA-TO ! <a href='http://www.cratocantins.com.br/cra'><strong>Acesse aqui...</strong></a>");//
 
 	private String codigoErro;
 	private String mensagem;

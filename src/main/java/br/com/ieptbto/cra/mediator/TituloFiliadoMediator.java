@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.mediator;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
@@ -19,6 +20,7 @@ import br.com.ieptbto.cra.entidade.SetorFiliado;
 import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.UsuarioFiliado;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DecoderString;
@@ -97,8 +99,15 @@ public class TituloFiliadoMediator extends BaseMediator {
 		return tituloFiliadoDAO.buscarTituloDoConvenioNaCra(tituloFiliado);
 	}
 
-	public List<TituloFiliado> buscarTitulosParaEnvio(Filiado empresaFiliada, SetorFiliado setor) {
-		return tituloFiliadoDAO.buscarTitulosParaEnvio(empresaFiliada, setor);
+	public List<TituloFiliado> buscarTitulosParaEnvio(UsuarioFiliado usuarioFiliado, SetorFiliado setor) {
+		if (usuarioFiliado == null) {
+			 return new ArrayList<TituloFiliado>();
+		}
+		return tituloFiliadoDAO.buscarTitulosParaEnvio(usuarioFiliado.getFiliado(), setor);
+	}
+	
+	public List<TituloFiliado> buscarTitulosParaEnvio(Filiado filiado, SetorFiliado setor) {
+		return tituloFiliadoDAO.buscarTitulosParaEnvio(filiado, setor);
 	}
 
 	public void removerTituloFiliado(TituloFiliado titulo) {
@@ -113,9 +122,9 @@ public class TituloFiliadoMediator extends BaseMediator {
 		return tituloFiliadoDAO.avalistasTituloFiliado(titulo);
 	}
 
-	public List<TituloRemessa> buscarListaTitulos(Usuario user, LocalDate dataInicio, Instituicao instiuicaoCartorio, String numeroTitulo, String nomeDevedor,
-			String documentoDevedor, String codigoFiliado) {
-		return tituloFiliadoDAO.buscarListaTitulos(user, dataInicio, instiuicaoCartorio, numeroTitulo, nomeDevedor, documentoDevedor, codigoFiliado);
+	public List<TituloRemessa> buscarListaTitulos(Usuario user, LocalDate dataInicio, LocalDate dataFim, Instituicao instiuicaoCartorio, String numeroTitulo, 
+			String nomeDevedor, String documentoDevedor, String codigoFiliado) {
+		return tituloFiliadoDAO.buscarListaTitulos(user, dataInicio, dataFim, instiuicaoCartorio, numeroTitulo, nomeDevedor, documentoDevedor, codigoFiliado);
 	}
 
 	public List<TituloFiliado> buscarTitulosParaRelatorioFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim,

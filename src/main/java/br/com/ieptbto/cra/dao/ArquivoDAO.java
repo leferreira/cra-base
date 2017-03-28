@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.dao;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -11,7 +12,9 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -416,6 +419,35 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		criteria.addOrder(Order.desc("dataEnvio"));
 		return criteria.list();
 	}
+	
+	public List<Arquivo> buscarRetornoParaLayoutRecebimentoEmpresa(Usuario usuario, LocalDate dataInicio, LocalDate dataFim) {
+		List<Arquivo> results = new ArrayList<>();
+
+		Criteria criteria = getCriteria(Retorno.class);
+		criteria.createAlias("remessa", "remessa", JoinType.INNER_JOIN);
+		criteria.createAlias("remessa.arquivoGeradoProBanco", "a", JoinType.INNER_JOIN);
+
+		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
+			criteria.add(Restrictions.or(Restrictions.eq("a.instituicaoEnvio", usuario.getInstituicao()),
+					Restrictions.eq("a.instituicaoRecebe", usuario.getInstituicao())));
+		}
+		if (dataInicio != null) {
+			criteria.add(Restrictions.between("a.dataEnvio", dataInicio, dataFim));
+		}
+		criteria.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PAGO.getConstante()));
+		criteria.setProjection(Projections.groupProperty("remessa.arquivoGeradoProBanco"));
+		
+		Iterator iterate = criteria.list().iterator();
+		while (iterate.hasNext()) {
+			Object object = (Object) iterate.next();
+			Arquivo arquivo = Arquivo.class.cast(object);
+			
+			Criteria criteriaArquivo = getCriteria(Arquivo.class);
+			criteriaArquivo.add(Restrictions.eq("id", arquivo.getId()));
+			results.add(Arquivo.class.cast(criteriaArquivo.uniqueResult()));
+		}
+		return results;
+	}
 
 	public List<Arquivo> buscarArquivosDesistenciaCancelamento(Usuario usuario, String nomeArquivo, LocalDate dataInicio, LocalDate dataFim,
 			TipoInstituicaoCRA tipoInstituicao, Instituicao bancoConvenio, List<TipoArquivoFebraban> tiposArquivo,
@@ -542,5 +574,22 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		query.setParameter("id", instituicao.getId());
 		resultados.addAll(query.list());
 		return resultados;
+	}
+
+	/**
+	 * Busca o sequencial de arquivo de acordo com a quantidade 
+	 * retorno gerado para a instituição cadastrada com o Layout de Arrecadação e Recebimento
+	 * @param dataEnvio
+	 * @return
+	 */
+	public Integer buscarSequencialRetornoRecebimentoEmpresa(Instituicao instituicaoRecebe, LocalDate dataEnvio) {
+		Criteria criteria = getCriteria(Arquivo.class);
+		criteria.createAlias("tipoArquivo", "tipoArquivoFebraban");
+		criteria.add(Restrictions.eq("instituicaoRecebe", instituicaoRecebe));
+		criteria.add(Restrictions.eq("tipoArquivoFebraban.tipoArquivo", TipoArquivoFebraban.RETORNO));
+		criteria.add(Restrictions.le("dataEnvio", dataEnvio));
+		criteria.setProjection(Projections.count("id"));
+		Long sequencial = Long.class.cast(criteria.uniqueResult());
+		return (sequencial == 0) ? 1 : sequencial.intValue();
 	}
 }

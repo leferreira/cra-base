@@ -103,6 +103,21 @@ public class ProcessadorArquivo extends Processador {
 		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + arquivo.getId()));
 		return fabricaDeArquivo.baixarRemessaConfirmacaoRetornoTXT(remessas, getFile());
 	}
+	
+	/**
+	 * Métódos de download B,C,R TXT Para Instituicao e Convênios
+	 * 
+	 * @param arquivo
+	 * @param remessas
+	 * @return
+	 */
+	public File baixarRetornoRecebimentoEmpresaTXT(Arquivo arquivo, List<Remessa> remessas, Usuario usuario, Integer sequencialArquivo) {
+		this.file = null;
+
+		verificaDiretorio(usuario);
+		setFile(new File(getPathUsuarioTemp() + ConfiguracaoBase.BARRA + arquivo.getId()));
+		return fabricaDeArquivo.baixarRetornoRecebimentoEmpresaTXT(remessas, getFile(), usuario.getInstituicao(), arquivo.getDataEnvio(), sequencialArquivo);
+	}
 
 	/**
 	 * Métódos de download B,C,R TXT Para Cartórios

@@ -223,9 +223,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
 		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CARTORIO));
 		criteria.add(Restrictions.ne("tipoInstituicao.tipoInstituicao", TipoInstituicaoCRA.CRA));
-		criteria.add(Restrictions.or(
-					Restrictions.eq("layoutPadraoXML", LayoutPadraoXML.LAYOUT_PERSONALIZADO_CONVENIOS),
-					Restrictions.eq("layoutPadraoXML", LayoutPadraoXML.ENTRADA_MANUAL)));
+		criteria.add(Restrictions.eq("layoutPadraoXML", LayoutPadraoXML.ENTRADA_MANUAL_LAYOUT_PERSONALIZADO));
 		criteria.addOrder(Order.asc("nomeFantasia"));
 		return criteria.list();
 	}

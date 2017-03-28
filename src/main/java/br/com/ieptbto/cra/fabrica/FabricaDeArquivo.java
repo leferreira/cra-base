@@ -9,10 +9,12 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
@@ -94,6 +96,10 @@ public class FabricaDeArquivo {
 		return fabricaDeArquivoTXT.fabricaArquivoInstituicaoConvenioTXT(file, remessas);
 	}
 
+	public File baixarRetornoRecebimentoEmpresaTXT(List<Remessa> remessas, File file, Instituicao instituicao, LocalDate dataGeracao, Integer sequencialArquivo) {
+		return fabricaDeArquivoTXT.baixarRetornoRecebimentoEmpresaTXT(file, remessas, instituicao, dataGeracao, sequencialArquivo);
+	}
+	
 	public File baixarDesistenciaTXT(RemessaDesistenciaProtesto remessa, File file) {
 		return fabricaDeArquivoTXT.fabricaArquivoDesistenciaProtestoTXT(file, remessa);
 	}
