@@ -36,7 +36,6 @@ import br.com.ieptbto.cra.security.IAuthModel;
 @org.hibernate.annotations.Table(appliesTo = "TB_USUARIO")
 public class Usuario extends AbstractEntidade<Usuario> implements IClusterable, IAuthModel {
 
-	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private String nome;

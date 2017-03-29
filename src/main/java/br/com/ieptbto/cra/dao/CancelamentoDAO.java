@@ -147,7 +147,7 @@ public class CancelamentoDAO extends AbstractBaseDAO {
 				}
 			}
 			transaction.commit();
-			loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, CraAcao.ENVIO_ARQUIVO_CANCELAMENTO_PROTESTO,
+			loggerCra.sucess(usuario, CraAcao.ENVIO_ARQUIVO_CANCELAMENTO_PROTESTO,
 					"Arquivo " + arquivo.getNomeArquivo() + ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia()
 							+ ", recebido com sucesso via aplicação.");
 

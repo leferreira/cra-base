@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import br.com.ieptbto.cra.webservice.vo.AbstractMensagemVO;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
@@ -35,6 +36,7 @@ public class LogCra extends AbstractEntidade<LogCra> {
 	private CraAcao acao;
 	private String descricao;
 	private Exception excecao;
+	private Object mensagemResposta;
 	private TipoLog tipoLog;
 	private String usuario;
 	private String instituicao;
@@ -66,6 +68,11 @@ public class LogCra extends AbstractEntidade<LogCra> {
 	public Exception getExcecao() {
 		return excecao;
 	}
+
+    @Column(name="MENSAGEM_RESPOSTA")
+    public Object getMensagemResposta() {
+        return mensagemResposta;
+    }
 
 	@Column(name = "TIPO_LOG", length = 150)
 	@Enumerated(EnumType.STRING)
@@ -135,7 +142,11 @@ public class LogCra extends AbstractEntidade<LogCra> {
 		this.hora = hora;
 	}
 
-	@Override
+    public void setMensagemResposta(Object mensagemResposta) {
+        this.mensagemResposta = mensagemResposta;
+    }
+
+    @Override
 	public int compareTo(LogCra entidade) {
 		return 0;
 	}

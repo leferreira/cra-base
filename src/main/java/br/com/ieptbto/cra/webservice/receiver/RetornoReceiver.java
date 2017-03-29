@@ -54,7 +54,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 		if (!erros.isEmpty()) {
 			return gerarRespostaErrosRetorno(arquivo, usuario, erros, dados);
 		}
-		return gerarResposta(arquivo, usuario);
+		return gerarRespostaSucesso(arquivo, usuario);
 	}
 
 	private RetornoVO converterStringArquivoVO(String dados, String nomeArquivo) {
@@ -81,7 +81,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 		return arquivo;
 	}
 
-	private MensagemXmlVO gerarResposta(Arquivo arquivo, Usuario usuario) {
+	private MensagemXmlVO gerarRespostaSucesso(Arquivo arquivo, Usuario usuario) {
 		List<MensagemVO> mensagens = new ArrayList<MensagemVO>();
 		MensagemXmlVO mensagemXml = new MensagemXmlVO();
 		DescricaoVO descricao = new DescricaoVO();
@@ -106,8 +106,9 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 			mensagem.setDescricao("Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
 					+ remessa.getCabecalho().getQtdTitulosRemessa() + " títulos receberam retorno.");
 			mensagens.add(mensagem);
-		}
-		return mensagemXml;
+		}loggerCra.sucess(usuario, CraAcao.ENVIO_ARQUIVO_RETORNO, mensagemXml,
+                "Arquivo " + arquivo.getNomeArquivo() + ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso.");
+        return mensagemXml;
 	}
 
 	private MensagemXmlVO gerarRespostaErrosRetorno(Arquivo arquivo, Usuario usuario, List<Exception> erros, String dados) {

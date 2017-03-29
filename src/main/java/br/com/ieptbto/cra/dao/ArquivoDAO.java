@@ -88,15 +88,14 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 			} else if (TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
 				salvarDesistenciaProtesto(arquivo, usuario, erros, transaction);
-
+                loggerCra.sucess(usuario, CraAcao.ENVIO_ARQUIVO_DESISTENCIA_PROTESTO,
+                        "Arquivo " + arquivo.getNomeArquivo() + ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso.");
 			} else if (TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
 				throw new InfraException("Não foi possivel enviar o Cancelamento de Protesto! Entre em contato com a CRA!");
 			} else if (TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
 				throw new InfraException("Não foi possivel enviar a Autorização de Cancelamento! Entre em contato com a CRA!");
 			}
 			transaction.commit();
-			loggerCra.sucess(arquivo.getInstituicaoEnvio(), usuario, getTipoAcaoEnvio(arquivo), "Arquivo " + arquivo.getNomeArquivo()
-					+ ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso.");
 
 		} catch (InfraException ex) {
 			transaction.rollback();
@@ -221,24 +220,6 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		}
 	}
 
-	private CraAcao getTipoAcaoEnvio(Arquivo arquivo) {
-		CraAcao tipoAcao = null;
-		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo);
-		if (tipoArquivo.equals(TipoArquivoFebraban.REMESSA)) {
-			tipoAcao = CraAcao.ENVIO_ARQUIVO_REMESSA;
-		} else if (tipoArquivo.equals(TipoArquivoFebraban.CONFIRMACAO)) {
-			tipoAcao = CraAcao.ENVIO_ARQUIVO_CONFIRMACAO;
-		} else if (tipoArquivo.equals(TipoArquivoFebraban.RETORNO)) {
-			tipoAcao = CraAcao.ENVIO_ARQUIVO_RETORNO;
-		} else if (tipoArquivo.equals(TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO)) {
-			tipoAcao = CraAcao.ENVIO_ARQUIVO_DESISTENCIA_PROTESTO;
-		} else if (tipoArquivo.equals(TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO)) {
-			tipoAcao = CraAcao.ENVIO_ARQUIVO_CANCELAMENTO_PROTESTO;
-		} else if (tipoArquivo.equals(TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO)) {
-			tipoAcao = CraAcao.ENVIO_ARQUIVO_AUTORIZACAO_CANCELAMENTO;
-		}
-		return tipoAcao;
-	}
 
 	/**
 	 * Atualizar dados de status do arquivo
