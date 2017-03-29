@@ -1,13 +1,11 @@
 package br.com.ieptbto.cra.logger;
 
-import br.com.ieptbto.cra.webservice.vo.AbstractMensagemVO;
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.LogCra;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.CraAcao;
@@ -113,16 +111,16 @@ public class LoggerCra {
 		return loggerMediator.salvar(logCra);
 	}
 
-    public LogCra sucess(Usuario user, CraAcao acao, AbstractMensagemVO mensagemVO, String descricao) {
+    public LogCra sucess(Usuario user, CraAcao acao, String relatorio, String descricao) {
         LogCra logCra = new LogCra();
         logCra.setAcao(acao);
         logCra.setDescricao(descricao);
         logCra.setTipoLog(TipoLog.SUCESSO);
         logCra.setData(new LocalDate());
-        logCra.setMensagemResposta(mensagemVO);
+        logCra.setRelatorio(relatorio);
         logCra.setHora(new LocalTime());
         logCra.setUsuario(user.getNome());
-        logCra.setInstituicao(user.getInstituicao());
+        logCra.setInstituicao(user.getInstituicao().getNomeFantasia());
         return loggerMediator.salvar(logCra);
     }
 }

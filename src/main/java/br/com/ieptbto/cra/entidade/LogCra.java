@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import br.com.ieptbto.cra.webservice.vo.AbstractMensagemVO;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
@@ -36,12 +35,12 @@ public class LogCra extends AbstractEntidade<LogCra> {
 	private CraAcao acao;
 	private String descricao;
 	private Exception excecao;
-	private Object mensagemResposta;
 	private TipoLog tipoLog;
 	private String usuario;
 	private String instituicao;
 	private LocalDate data;
 	private LocalTime hora;
+	private String relatorio;
 
 	@Id
 	@Column(name = "ID_REGISTRO_ACAO", columnDefinition = "serial")
@@ -69,9 +68,9 @@ public class LogCra extends AbstractEntidade<LogCra> {
 		return excecao;
 	}
 
-    @Column(name="MENSAGEM_RESPOSTA")
-    public Object getMensagemResposta() {
-        return mensagemResposta;
+    @Column(name="RELATORIO")
+    public String getRelatorio() {
+        return relatorio;
     }
 
 	@Column(name = "TIPO_LOG", length = 150)
@@ -141,12 +140,12 @@ public class LogCra extends AbstractEntidade<LogCra> {
 	public void setHora(LocalTime hora) {
 		this.hora = hora;
 	}
+	
+    public void setRelatorio(String relatorio) {
+		this.relatorio = relatorio;
+	}
 
-    public void setMensagemResposta(Object mensagemResposta) {
-        this.mensagemResposta = mensagemResposta;
-    }
-
-    @Override
+	@Override
 	public int compareTo(LogCra entidade) {
 		return 0;
 	}
@@ -169,7 +168,6 @@ public class LogCra extends AbstractEntidade<LogCra> {
 
 	@Override
 	public String toString() {
-		return "CraLog Registrado [ " + DataUtil.localDateToString(data) + "  " + DataUtil.localTimeToString("HH:mm:ss", hora) + " ] : [" + tipoLog.getLabel()
-				+ "] " + descricao;
+		return "[ " + DataUtil.localDateToString(data) + "  " + DataUtil.localTimeToString("HH:mm:ss", hora) + " ] : [" + tipoLog.getLabel() + "] " + descricao;
 	}
 }

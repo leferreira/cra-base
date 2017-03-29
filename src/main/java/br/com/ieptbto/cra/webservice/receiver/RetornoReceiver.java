@@ -106,8 +106,7 @@ public class RetornoReceiver extends AbstractArquivoReceiver {
 			mensagem.setDescricao("Instituicao: " + remessa.getInstituicaoDestino().getNomeFantasia() + " - "
 					+ remessa.getCabecalho().getQtdTitulosRemessa() + " títulos receberam retorno.");
 			mensagens.add(mensagem);
-		}loggerCra.sucess(usuario, CraAcao.ENVIO_ARQUIVO_RETORNO, mensagemXml,
-                "Arquivo " + arquivo.getNomeArquivo() + ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso.");
+		}
         return mensagemXml;
 	}
 

@@ -164,8 +164,6 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 					+ remessa.getCabecalho().getQtdTitulosRemessa() + " Títulos.");
 			mensagens.add(mensagem);
 		}
-        loggerCra.sucess(usuario, CraAcao.ENVIO_ARQUIVO_REMESSA, mensagemXml,
-                "Arquivo " + arquivo.getNomeArquivo() + ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso.");
 		return mensagemXml;
 	}
 

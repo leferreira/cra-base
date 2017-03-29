@@ -105,8 +105,6 @@ public class ConfirmacaoReceiver extends AbstractArquivoReceiver {
 					+ remessa.getCabecalho().getQtdTitulosRemessa() + " títulos receberam confirmação.");
 			mensagens.add(mensagem);
 		}
-        loggerCra.sucess(usuario, CraAcao.ENVIO_ARQUIVO_CONFIRMACAO, mensagemXml,
-                "Arquivo " + arquivo.getNomeArquivo() + ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso.");
         return mensagemXml;
 	}
 
