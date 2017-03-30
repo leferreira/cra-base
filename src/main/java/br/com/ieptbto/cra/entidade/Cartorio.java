@@ -9,8 +9,6 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 
 public class Cartorio extends Instituicao {
 
-
-	/***/
 	private static final long serialVersionUID = 1L;
 	
 	private Municipio municipio;
