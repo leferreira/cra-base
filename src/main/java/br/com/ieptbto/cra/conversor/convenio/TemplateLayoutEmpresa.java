@@ -26,6 +26,9 @@ public class TemplateLayoutEmpresa {
 	}
 
 	public String getValor() {
+		if (valor != null) {
+			valor = valor.toUpperCase();
+		}
 		return valor;
 	}
 
@@ -54,7 +57,7 @@ public class TemplateLayoutEmpresa {
 					} else if (listaLayout.getCampo().equals(CampoLayoutPersonalizado.CIDADEDEVEDOR) && StringUtils.isBlank(dados[i])) {
 						cidade = "Palmas";
 						logger.error("cidade não informada. " + Arrays.toString(dados));
-					}
+					} 
 					if (listaLayout.getCampo().equals(CampoLayoutPersonalizado.NUMEROIDENTIFICACAODEVEDOR) && StringUtils.isNotBlank(dados[i])) {
 						if (dados[i] != null) {
 							dados[i] = dados[i].replace(".", "").replace("-", "").replace("/", "").trim();
