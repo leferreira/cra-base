@@ -94,7 +94,7 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 			String linha = reader.readLine();
 			int cont = 2;
 			while ((linha = reader.readLine()) != null) {
-				String dados[] = linha.replace(";-", ";").replace("--", " ").split(Pattern.quote(";"));
+				String dados[] = RemoverAcentosUtil.removeAcentos(linha.replace(";-", ";").replace("º", " ").replace("--", " ")).split(Pattern.quote(";"));
 				if (dados.length >= getLayoutfiliado().size()) {
 					LinhaTemplateLayout mapaCampos = TemplateLayoutEmpresa.getTemplate(dados, getLayoutfiliado(), getErros());
 
@@ -143,6 +143,12 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 					for (TemplateLayoutEmpresa templateLayoutEmpresa : registro) {
 						for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
 							String propertyName = propertyDescriptor.getName();
+							if (templateLayoutEmpresa.getCampo().equals(CampoLayoutPersonalizado.NUMEROTITULO)) {
+								if (StringUtils.isNotBlank(templateLayoutEmpresa.getValor())) {
+									titulo.setNumeroTitulo(templateLayoutEmpresa.getValor());
+									break;
+								}
+							}
 							if (templateLayoutEmpresa.getCampo().equals(CampoLayoutPersonalizado.DATAEMISSAOTITULO)) {
 								if (StringUtils.isNotBlank(templateLayoutEmpresa.getValor())) {
 									LocalDate dataEmissao = DataUtil.stringToLocalDate("ddMMyyyy",
@@ -319,12 +325,17 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 		titulo.setDataCadastro(new Date());
 		titulo.setEspecieTitulo("CDA");
 		titulo.setDataOcorrencia(new LocalDate());
-		titulo.setDataVencimentoTitulo(titulo.getDataEmissaoTitulo());
+		if (titulo.getDataVencimentoTitulo() == null) {
+			titulo.setDataVencimentoTitulo(titulo.getDataEmissaoTitulo());
+		}
 		titulo.setPracaProtesto(RemoverAcentosUtil.removeAcentos(titulo.getCidadeDevedor()));
 		titulo.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(titulo.getCidadeDevedor()));
 		titulo.setValorTitulo(titulo.getSaldoTitulo());
 		titulo.setRemessa(remessa);
 		titulo.setNumeroSequencialArquivo(Integer.toString(remessa.getTitulos().size() + 1));
+		if (StringUtils.isEmpty(titulo.getNossoNumero())) {
+			titulo.setNossoNumero(titulo.getNumeroTitulo());
+		}
 		return titulo;
 	}
 
