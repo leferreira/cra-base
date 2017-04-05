@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.dao.BatimentoDAO;
 import br.com.ieptbto.cra.dao.DepositoDAO;
-import br.com.ieptbto.cra.dao.InstituicaoDAO;
-import br.com.ieptbto.cra.dao.RetornoDAO;
 import br.com.ieptbto.cra.entidade.Deposito;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -32,17 +30,14 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 public class DepositoMediator extends BaseMediator {
 
 	@Autowired
-	BatimentoMediator batimentoMediator;
+	private BatimentoMediator batimentoMediator;
 	@Autowired
-	RemessaMediator remessaMediator;
+	private RemessaMediator remessaMediator;
 	@Autowired
-	DepositoDAO depositoDAO;
+	private DepositoDAO depositoDAO;
 	@Autowired
-	RetornoDAO retornoDAO;
-	@Autowired
-	BatimentoDAO batimentoDAO;
-	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private BatimentoDAO batimentoDAO;
+	
 	private Usuario usuario;
 	private FileUpload fileUpload;
 	private List<Deposito> depositos;

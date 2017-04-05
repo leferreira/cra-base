@@ -49,7 +49,7 @@ import br.com.ieptbto.cra.webservice.vo.MensagemXmlVO;
 public class RemessaReceiver extends AbstractArquivoReceiver {
 
 	@Autowired
-	ArquivoMediator arquivoMediator;
+	private ArquivoMediator arquivoMediator;
 
 	@Override
 	public AbstractMensagemVO receber(Usuario usuario, String nomeArquivo, String dados) {

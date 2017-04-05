@@ -1,7 +1,9 @@
 package br.com.ieptbto.cra.mediator;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
+import br.com.ieptbto.cra.entidade.LogCra;
 import br.com.ieptbto.cra.entidade.PedidoAutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.PedidoCancelamento;
 import br.com.ieptbto.cra.entidade.PedidoDesistencia;
@@ -45,17 +48,17 @@ import br.com.ieptbto.cra.util.DecoderString;
 public class DownloadMediator extends BaseMediator {
 
 	@Autowired
-	ArquivoDAO arquivoDAO;
+	private ArquivoDAO arquivoDAO;
 	@Autowired
-	RemessaDAO remessaDAO;
+	private RemessaDAO remessaDAO;
 	@Autowired
-	DesistenciaDAO desistenciaDAO;
+	private DesistenciaDAO desistenciaDAO;
 	@Autowired
-	CancelamentoDAO cancelamentoDAO;
+	private CancelamentoDAO cancelamentoDAO;
 	@Autowired
-	AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
+	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
 	@Autowired
-	ProcessadorArquivo processadorArquivo;
+	private ProcessadorArquivo processadorArquivo;
 
 	/**
 	 * Download de arquivos TXT de Instituições e Convênios
@@ -115,7 +118,6 @@ public class DownloadMediator extends BaseMediator {
 	 * @return
 	 */
 	public File baixarDesistenciaCancelamentoTXT(Usuario usuario, Arquivo arquivo) {
-
 		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
 				&& !arquivo.getStatusArquivo().getStatusDownload().equals(StatusDownload.ENVIADO)) {
 			StatusArquivo status = new StatusArquivo();
@@ -344,6 +346,39 @@ public class DownloadMediator extends BaseMediator {
 		} catch (IOException e) {
 			logger.info(e);
 			throw new InfraException("Não foi possível fazer o download do ofício! Por favor, entre em contato com a CRA...");
+		}
+	}
+
+	/**
+	 * Download de relatório de resposta de ação na cra
+	 * @param logCra
+	 * @return
+	 */
+	public File downloadRelatorioLogCra(LogCra logCra) {
+		File diretorioTempReport = new File(ConfiguracaoBase.DIRETORIO_TEMP_REPORTS);
+		if (!diretorioTempReport.exists()) {
+			diretorioTempReport.mkdirs();
+		}
+		
+		File file = null;
+		try {
+			file = new File(ConfiguracaoBase.DIRETORIO_TEMP_REPORTS + logCra.getId());
+			if (file.exists()) {
+				return file;				
+			} 
+			BufferedWriter bWrite = new BufferedWriter(new FileWriter(file));
+			bWrite.write(logCra.getRelatorio());
+			bWrite.flush();
+			bWrite.close();
+			
+			return file;
+		
+		} catch (FileNotFoundException e) {
+			logger.info(e);
+			throw new InfraException("Não foi possível fazer o download do relatorio de respota do log! Por favor, entre em contato com a CRA...");
+		} catch (IOException e) {
+			logger.info(e);
+			throw new InfraException("Não foi possível fazer o download do relatorio de respota do log! Por favor, entre em contato com a CRA...");
 		}
 	}
 }

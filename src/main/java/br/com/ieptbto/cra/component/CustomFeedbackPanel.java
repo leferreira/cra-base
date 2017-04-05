@@ -28,6 +28,9 @@ public class CustomFeedbackPanel extends FeedbackPanel {
 			case FeedbackMessage.ERROR:
 				css = "alert alert-danger alert-dismissable";
 				break;
+			case FeedbackMessage.WARNING:
+				css = "alert alert-warning alert-dismissable";
+				break;
 			default:
 				css = "alert alert-dismissable";
 		}

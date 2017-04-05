@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
@@ -68,7 +69,7 @@ public class LogCra extends AbstractEntidade<LogCra> {
 		return excecao;
 	}
 
-    @Column(name="RELATORIO")
+    @Column(name="RELATORIO", columnDefinition = "text")
     public String getRelatorio() {
         return relatorio;
     }
@@ -169,5 +170,11 @@ public class LogCra extends AbstractEntidade<LogCra> {
 	@Override
 	public String toString() {
 		return "[ " + DataUtil.localDateToString(data) + "  " + DataUtil.localTimeToString("HH:mm:ss", hora) + " ] : [" + tipoLog.getLabel() + "] " + descricao;
+	}
+
+	@Transient
+	public String getNomeArquivoRelatorio(){
+		return DataUtil.localDateToString(data).replace("/", "-") + "_" + DataUtil.localTimeToString("HH:mm:ss", hora) 
+			+ "_" + getAcao().toString() + "_" + getInstituicao().toUpperCase(); 
 	}
 }

@@ -58,6 +58,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
     private Municipio municipio;
     private TipoCampo51 tipoCampo51;
     private boolean layoutRetornoRecebimentoEmpresa;
+    private boolean oficioDesistenciaCancelamentoObrigatorio;
     private boolean setoresConvenio;
     private boolean administrarEmpresasFiliadas;
     private TipoBatimento tipoBatimento;
@@ -434,5 +435,14 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 
 	public void setLayoutRetornoRecebimentoEmpresa(boolean layoutRetornoRecebimentoEmpresa) {
 		this.layoutRetornoRecebimentoEmpresa = layoutRetornoRecebimentoEmpresa;
+	}
+
+	@Column(name = "OFICIO_DESISTENCIA_CANCELAMENTO_OBRIGATORIO")
+	public boolean isOficioDesistenciaCancelamentoObrigatorio() {
+		return oficioDesistenciaCancelamentoObrigatorio;
+	}
+
+	public void setOficioDesistenciaCancelamentoObrigatorio(boolean oficioDesistenciaCancelamentoObrigatorio) {
+		this.oficioDesistenciaCancelamentoObrigatorio = oficioDesistenciaCancelamentoObrigatorio;
 	}
 }

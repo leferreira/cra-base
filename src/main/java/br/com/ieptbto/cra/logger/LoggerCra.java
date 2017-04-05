@@ -20,10 +20,9 @@ import br.com.ieptbto.cra.util.XmlFormatterUtil;
 @Service
 public class LoggerCra {
 
-	protected static final Logger logger = Logger.getLogger(LoggerCra.class);
-
 	@Autowired
 	private LoggerMediator loggerMediator;
+	protected static final Logger logger = Logger.getLogger(LoggerCra.class);
 
 	public LogCra alert(Usuario user, CraAcao acao, String descricao) {
 		LogCra logCra = new LogCra();

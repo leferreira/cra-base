@@ -13,6 +13,7 @@ public class ConfiguracaoBase {
 	public static final int TAMANHO_NOME_ARQUIVO = 13;
 	public static String DIRETORIO_BASE = "../ARQUIVOS_CRA/";
 	public static String DIRETORIO_TEMP_BASE = "../ARQUIVOS_CRA/TEMP/";
+	public static String DIRETORIO_TEMP_REPORTS = "../ARQUIVOS_CRA/TEMP/REPORTS/";
 	public static String DIRETORIO_BASE_INSTITUICAO = DIRETORIO_BASE + "INSTITUICAO/";
 	public static String DIRETORIO_BASE_INSTITUICAO_TEMP = DIRETORIO_TEMP_BASE + "INSTITUICAO/";
 	public static String DIRETORIO_BASE_DE_PARA_TEMP = DIRETORIO_TEMP_BASE + "ARQUIVOS_DE_PARA/";
@@ -23,6 +24,7 @@ public class ConfiguracaoBase {
 	public static final String ZERO = "0";
 	public static final String UM = "1";
 	public static final String EXTENSAO_ARQUIVO_ZIP = ".zip";
+	public static final String EXTENSAO_ARQUIVO_XML = ".xml";
 	public static final int TAMANHO_PADRAO_LINHA = 600;
 	public static final int TAMANHO_PADRAO_LINHA_DESISTENCIA_PROTESTO = 127;
 	public static final String FECHA_CHAVE = "]";
