@@ -65,6 +65,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
     private LayoutPadraoXML layoutPadraoXML;
     private TipoInstituicao tipoInstituicao;
     private Integer versao;
+    private Boolean retornoCancelamento;
 
     @Id
     @Column(name = "ID_INSTITUICAO", columnDefinition = "serial")
@@ -135,6 +136,17 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
         return agenciaCentralizadora;
     }
 
+    /**
+     * Responsável por dizer se a instituição recebe ou não retorno de
+     * cancelamento de títulos
+     * 
+     * @return Boolean retornoCancelamento
+     */
+    @Column(name = "RETORNO_CANCELAMENTO")
+    public Boolean getRetornoCancelamento() {
+        return retornoCancelamento;
+    }
+
     @Column(name = "SITUACAO")
     public boolean isSituacao() {
         return situacao;
@@ -181,7 +193,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
     public boolean getSetoresConvenio() {
         return setoresConvenio;
     }
-    
+
     @Column(name = "ADMINISTRAR_EMPRESAS_FILIADAS")
     public boolean getAdministrarEmpresasFiliadas() {
         return administrarEmpresasFiliadas;
@@ -195,6 +207,10 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
     @Column(name = "VERSAO")
     public Integer getVersao() {
         return versao;
+    }
+
+    public void setRetornoCancelamento(Boolean retornoCancelamento) {
+        this.retornoCancelamento = retornoCancelamento;
     }
 
     public void setCodigoCartorio(String codigoCartorio) {
@@ -228,9 +244,9 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
     public void setSetoresConvenio(boolean setoresConvenio) {
         this.setoresConvenio = setoresConvenio;
     }
-    
+
     public void setAdministrarEmpresasFiliadas(boolean administrarEmpresasFiliadas) {
-    	this.administrarEmpresasFiliadas = administrarEmpresasFiliadas;
+        this.administrarEmpresasFiliadas = administrarEmpresasFiliadas;
     }
 
     public void setCodigoCompensacao(String codigoCompensacao) {
@@ -429,20 +445,20 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
     }
 
     @Column(name = "LAYOUT_RETORNO_RECEBIMENTO_EMPRESA")
-	public boolean getLayoutRetornoRecebimentoEmpresa() {
-		return layoutRetornoRecebimentoEmpresa;
-	}
+    public boolean getLayoutRetornoRecebimentoEmpresa() {
+        return layoutRetornoRecebimentoEmpresa;
+    }
 
-	public void setLayoutRetornoRecebimentoEmpresa(boolean layoutRetornoRecebimentoEmpresa) {
-		this.layoutRetornoRecebimentoEmpresa = layoutRetornoRecebimentoEmpresa;
-	}
+    public void setLayoutRetornoRecebimentoEmpresa(boolean layoutRetornoRecebimentoEmpresa) {
+        this.layoutRetornoRecebimentoEmpresa = layoutRetornoRecebimentoEmpresa;
+    }
 
-	@Column(name = "OFICIO_DESISTENCIA_CANCELAMENTO_OBRIGATORIO")
-	public boolean isOficioDesistenciaCancelamentoObrigatorio() {
-		return oficioDesistenciaCancelamentoObrigatorio;
-	}
+    @Column(name = "OFICIO_DESISTENCIA_CANCELAMENTO_OBRIGATORIO")
+    public boolean isOficioDesistenciaCancelamentoObrigatorio() {
+        return oficioDesistenciaCancelamentoObrigatorio;
+    }
 
-	public void setOficioDesistenciaCancelamentoObrigatorio(boolean oficioDesistenciaCancelamentoObrigatorio) {
-		this.oficioDesistenciaCancelamentoObrigatorio = oficioDesistenciaCancelamentoObrigatorio;
-	}
+    public void setOficioDesistenciaCancelamentoObrigatorio(boolean oficioDesistenciaCancelamentoObrigatorio) {
+        this.oficioDesistenciaCancelamentoObrigatorio = oficioDesistenciaCancelamentoObrigatorio;
+    }
 }
