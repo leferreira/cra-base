@@ -33,11 +33,9 @@ import br.com.ieptbto.cra.util.DataUtil;
 @org.hibernate.annotations.Table(appliesTo = "TB_CABECALHO")
 public class CabecalhoRemessa extends Cabecalho<CabecalhoRemessa> implements FieldHandled {
 
-	/*** */
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private Remessa remessa;
-
 	private TipoIdentificacaoRegistro identificacaoRegistro;
 	private String numeroCodigoPortador;
 	private String nomePortador;

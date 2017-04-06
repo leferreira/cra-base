@@ -1,7 +1,5 @@
 package br.com.ieptbto.cra.entidade.vo;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -18,10 +16,10 @@ public class ComarcaDesistenciaCancelamentoSerproVO extends AbstractArquivoVO {
 
 	@XmlElement(name = "CodMun")
 	private String codigoMunicipio;
-	
+
 	@XmlElement(name = "cartorio")
-	private List<CartorioDesistenciaCancelamentoSerproVO> cartorioDesistenciaCancelamento;
-	
+	private CartorioDesistenciaCancelamentoSerproVO cartorioDesistenciaCancelamento;
+
 	@Override
 	public String getIdentificacaoRegistro() {
 		return null;
@@ -31,7 +29,7 @@ public class ComarcaDesistenciaCancelamentoSerproVO extends AbstractArquivoVO {
 		return codigoMunicipio;
 	}
 
-	public List<CartorioDesistenciaCancelamentoSerproVO> getCartorioDesistenciaCancelamento() {
+	public CartorioDesistenciaCancelamentoSerproVO getCartorioDesistenciaCancelamento() {
 		return cartorioDesistenciaCancelamento;
 	}
 
@@ -39,8 +37,7 @@ public class ComarcaDesistenciaCancelamentoSerproVO extends AbstractArquivoVO {
 		this.codigoMunicipio = codigoMunicipio;
 	}
 
-	public void setCartorioDesistenciaCancelamento(
-			List<CartorioDesistenciaCancelamentoSerproVO> cartorioDesistenciaCancelamento) {
+	public void setCartorioDesistenciaCancelamento(CartorioDesistenciaCancelamentoSerproVO cartorioDesistenciaCancelamento) {
 		this.cartorioDesistenciaCancelamento = cartorioDesistenciaCancelamento;
 	}
 }

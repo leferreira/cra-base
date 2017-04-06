@@ -40,9 +40,7 @@ import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 @org.hibernate.annotations.Table(appliesTo = "TB_REMESSA")
 public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
 
-	/***/
 	private static final long serialVersionUID = 1L;
-
 	private int id;
 	private Arquivo arquivo;
 	private Arquivo arquivoGeradoProBanco;

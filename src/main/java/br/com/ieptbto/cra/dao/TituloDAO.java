@@ -451,54 +451,56 @@ public class TituloDAO extends AbstractBaseDAO {
 	public TituloRemessa buscarTituloDesistenciaProtesto(PedidoDesistencia pedidoDesistenciaCancelamento) {
 		Integer numProtocolo = Integer.parseInt(pedidoDesistenciaCancelamento.getNumeroProtocolo());
 
-		Criteria criteria = getCriteria(Confirmacao.class);
-		criteria.createAlias("titulo", "titulo");
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", pedidoDesistenciaCancelamento.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
-		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
-		criteria.add(Restrictions.eq("dataProtocolo", pedidoDesistenciaCancelamento.getDataProtocolagem()));
-		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
-		if (confirmacao == null) {
-			return null;
+		Query query = getSession().createQuery("SELECT c FROM Confirmacao c JOIN c.remessa r JOIN r.cabecalho ca "
+				+ "WHERE ca.codigoMunicipio = :codMunicipio "
+				+ "AND c.numeroProtocoloCartorio = :protocolo "
+				+ "AND c.numeroTitulo = :numeroTitulo"
+		);
+		query.setString("codMunicipio", pedidoDesistenciaCancelamento.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio());
+		query.setString("protocolo", Long.toString(numProtocolo));
+		query.setString("numeroTitulo", pedidoDesistenciaCancelamento.getNumeroTitulo().trim());
+		List<Confirmacao> results = query.list();
+		for (Confirmacao confirmacao : results) {
+			if (confirmacao.getTitulo().getNumeroControleDevedor() == 1) {
+				return confirmacao.getTitulo();
+			}
 		}
-		return confirmacao.getTitulo();
+		return null;
 	}
 
 	public TituloRemessa buscarTituloCancelamentoProtesto(PedidoCancelamento pedido) {
-		Integer numProtocolo = Integer.parseInt(pedido.getNumeroProtocolo());
+		Long numProtocolo = Long.parseLong(pedido.getNumeroProtocolo());
 
-		Criteria criteria = getCriteria(Confirmacao.class);
-		criteria.createAlias("titulo", "titulo");
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(
-				Restrictions.eq("cabecalho.codigoMunicipio", pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio()));
-		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
-		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
-		criteria.add(Restrictions.eq("numeroControleDevedor", 1));
-
-		Confirmacao confirmacao = Confirmacao.class.cast(criteria.uniqueResult());
-		if (confirmacao == null) {
-			return null;
+		Query query = getSession().createQuery("SELECT c FROM Confirmacao c JOIN c.remessa r JOIN r.cabecalho ca "
+				+ "WHERE ca.codigoMunicipio = :codMunicipio "
+				+ "AND c.numeroProtocoloCartorio = :protocolo "
+				+ "AND c.numeroTitulo = :numeroTitulo"
+		);
+		query.setString("codMunicipio", pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio());
+		query.setString("protocolo", Long.toString(numProtocolo));
+		query.setString("numeroTitulo", pedido.getNumeroTitulo().trim());
+		List<Confirmacao> results = query.list();
+		for (Confirmacao confirmacao : results) {
+			if (confirmacao.getTitulo().getNumeroControleDevedor() == 1) {
+				return confirmacao.getTitulo();
+			}
 		}
-		return confirmacao.getTitulo();
+		return null;
 	}
 
 	public TituloRemessa buscarTituloAutorizacaoCancelamento(PedidoAutorizacaoCancelamento pedido) {
 		Long numProtocolo = Long.parseLong(pedido.getNumeroProtocolo());
 
-		Criteria criteria = getCriteria(Confirmacao.class);
-		criteria.createAlias("titulo", "titulo");
-		criteria.createAlias("remessa", "remessa");
-		criteria.createAlias("remessa.cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio",
-				pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio()));
-		criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
-		criteria.add(Restrictions.eq("dataProtocolo", pedido.getDataProtocolagem()));
-
-		List<Confirmacao> confirmacoes = criteria.list();
-		for (Confirmacao confirmacao : confirmacoes) {
+		Query query = getSession().createQuery("SELECT c FROM Confirmacao c JOIN c.remessa r JOIN r.cabecalho ca "
+				+ "WHERE ca.codigoMunicipio = :codMunicipio "
+				+ "AND c.numeroProtocoloCartorio = :protocolo "
+				+ "AND c.numeroTitulo = :numeroTitulo"
+		);
+		query.setString("codMunicipio", pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio());
+		query.setString("protocolo", Long.toString(numProtocolo));
+		query.setString("numeroTitulo", pedido.getNumeroTitulo().trim());
+		List<Confirmacao> results = query.list();
+		for (Confirmacao confirmacao : results) {
 			if (confirmacao.getTitulo().getNumeroControleDevedor() == 1) {
 				return confirmacao.getTitulo();
 			}

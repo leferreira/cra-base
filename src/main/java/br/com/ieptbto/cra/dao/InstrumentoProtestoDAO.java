@@ -123,7 +123,7 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 
 		try {
 			Query query = createSQLQuery(
-					"DELETE FROM tb_instrumento_protesto WHERE id_instrumento_protesto=" + instrumentoProtesto.getId() + ";");
+					"DELETE FROM tb_instrumento_protesto WHERE id_instrumento_protesto=" + instrumentoProtesto.getId());
 			query.executeUpdate();
 		} catch (Exception ex) {
 			logger.info(ex.getMessage());

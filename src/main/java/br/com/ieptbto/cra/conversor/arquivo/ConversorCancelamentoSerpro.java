@@ -56,41 +56,40 @@ public class ConversorCancelamentoSerpro {
 			CabecalhoCartorio cabecalhoCartorio = new CabecalhoCartorio();
 			RodapeCartorio rodapeCartorio = new RodapeCartorio();
 			List<PedidoCancelamento> pedidosCancelamento = new ArrayList<PedidoCancelamento>();
-			for (CartorioDesistenciaCancelamentoSerproVO cartorio : comarca.getCartorioDesistenciaCancelamento()) {
-				cabecalhoCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.HEADER_CARTORIO);
-				cabecalhoCartorio.setCodigoCartorio(StringUtils.leftPad(cartorio.getCodigoCartorio(), 2, "0"));
-				cabecalhoCartorio.setQuantidadeDesistencia(cartorio.getTituloDesistenciaCancelamento().size());
-				cabecalhoCartorio.setCodigoMunicipio(comarca.getCodigoMunicipio());
-				cabecalhoCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(2), 5, "0"));
+			CartorioDesistenciaCancelamentoSerproVO cartorio = comarca.getCartorioDesistenciaCancelamento();
+			cabecalhoCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.HEADER_CARTORIO);
+			cabecalhoCartorio.setCodigoCartorio(StringUtils.leftPad(cartorio.getCodigoCartorio(), 2, "0"));
+			cabecalhoCartorio.setQuantidadeDesistencia(cartorio.getTituloDesistenciaCancelamento().size());
+			cabecalhoCartorio.setCodigoMunicipio(comarca.getCodigoMunicipio());
+			cabecalhoCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(2), 5, "0"));
 
-				for (TituloDesistenciaCancelamentoSerproVO titulo : cartorio.getTituloDesistenciaCancelamento()) {
-					PedidoCancelamento registro = new PedidoCancelamento();
-					registro.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA);
-					registro.setNumeroProtocolo(titulo.getNumeroProtocoloCartorio());
-					registro.setDataProtocolagem(DataUtil.stringToLocalDate("ddMMyyyy", titulo.getDataProtocolo()));
-					registro.setNumeroTitulo(titulo.getNumeroTitulo());
-					registro.setNomePrimeiroDevedor(titulo.getNomeDevedor());
-					registro.setValorTitulo(new BigDecimal(titulo.getValorTitulo()));
-					registro.setSolicitacaoCancelamentoSustacao("C");
-					registro.setReservado(CodigoIrregularidade.IRREGULARIDADE_60.getCodigoIrregularidade());
-					registro.setSequenciaRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
-					
-					this.sequenciaRegistro = getSequenciaRegistro() + 1;
-					this.somatorioValor = getSomatorioValor().add(registro.getValorTitulo());
-					pedidosCancelamento.add(registro);
-				}
-				this.quantidadeDesistencias = getQuantidadeDesistencias() + cartorio.getTituloDesistenciaCancelamento().size();
-				this.quantidadeRegistrosTipo2 = getQuantidadeRegistrosTipo2() + cartorio.getTituloDesistenciaCancelamento().size();
-
-				rodapeCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.TRAILLER_CARTORIO);
-				rodapeCartorio.setCodigoCartorio(cartorio.getCodigoCartorio());
-				rodapeCartorio.setSomaTotalCancelamentoDesistencia(cartorio.getTituloDesistenciaCancelamento().size() * 2);
-				rodapeCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
-
-				cancelamentoProtesto.setCabecalhoCartorio(cabecalhoCartorio);
-				cancelamentoProtesto.setCancelamentos(pedidosCancelamento);
-				cancelamentoProtesto.setRodapeCartorio(rodapeCartorio);
+			for (TituloDesistenciaCancelamentoSerproVO titulo : cartorio.getTituloDesistenciaCancelamento()) {
+				PedidoCancelamento registro = new PedidoCancelamento();
+				registro.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA);
+				registro.setNumeroProtocolo(titulo.getNumeroProtocoloCartorio());
+				registro.setDataProtocolagem(DataUtil.stringToLocalDate("ddMMyyyy", titulo.getDataProtocolo()));
+				registro.setNumeroTitulo(titulo.getNumeroTitulo());
+				registro.setNomePrimeiroDevedor(titulo.getNomeDevedor());
+				registro.setValorTitulo(new BigDecimal(titulo.getValorTitulo()));
+				registro.setSolicitacaoCancelamentoSustacao("C");
+				registro.setReservado(CodigoIrregularidade.IRREGULARIDADE_60.getCodigoIrregularidade());
+				registro.setSequenciaRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
+				
+				this.sequenciaRegistro = getSequenciaRegistro() + 1;
+				this.somatorioValor = getSomatorioValor().add(registro.getValorTitulo());
+				pedidosCancelamento.add(registro);
 			}
+			this.quantidadeDesistencias = getQuantidadeDesistencias() + cartorio.getTituloDesistenciaCancelamento().size();
+			this.quantidadeRegistrosTipo2 = getQuantidadeRegistrosTipo2() + cartorio.getTituloDesistenciaCancelamento().size();
+
+			rodapeCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.TRAILLER_CARTORIO);
+			rodapeCartorio.setCodigoCartorio(cartorio.getCodigoCartorio());
+			rodapeCartorio.setSomaTotalCancelamentoDesistencia(cartorio.getTituloDesistenciaCancelamento().size() * 2);
+			rodapeCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
+
+			cancelamentoProtesto.setCabecalhoCartorio(cabecalhoCartorio);
+			cancelamentoProtesto.setCancelamentos(pedidosCancelamento);
+			cancelamentoProtesto.setRodapeCartorio(rodapeCartorio);
 			cancelamentos.add(cancelamentoProtesto);
 		}
 		return cancelamentos;
