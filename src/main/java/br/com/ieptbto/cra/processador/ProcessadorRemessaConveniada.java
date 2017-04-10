@@ -46,8 +46,6 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 @Service
 public class ProcessadorRemessaConveniada extends Processador {
 
-	private static final int NUMERO_SEQUENCIAL_REMESSA = 1;
-
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
 	@Autowired
@@ -57,6 +55,7 @@ public class ProcessadorRemessaConveniada extends Processador {
 	@Autowired
 	private AvalistaMediator avalistaMediator;
 
+	private static final int NUMERO_SEQUENCIAL_REMESSA = 1;
 	private Usuario usuario;
 	private HashMap<chaveTitulo, TituloFiliado> mapaTitulos;
 	private HashMap<String, Arquivo> mapaArquivos;

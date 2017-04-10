@@ -1,12 +1,14 @@
 package br.com.ieptbto.cra.mediator;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
+import org.apache.wicket.model.util.ListModel;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import br.com.ieptbto.cra.entidade.UsuarioFiliado;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DecoderString;
+import br.com.ieptbto.cra.util.ZipFile;
 
 /**
  * @author Thasso Araújo
@@ -33,8 +36,9 @@ import br.com.ieptbto.cra.util.DecoderString;
 public class TituloFiliadoMediator extends BaseMediator {
 
 	@Autowired
-	TituloFiliadoDAO tituloFiliadoDAO;
-	private FileUpload fileUpload;
+	private TituloFiliadoDAO tituloFiliadoDAO;
+	
+	private List<FileUpload> filesUpload;
 	private String pathInstituicaoTemp;
 	private String pathUsuarioTemp;
 
@@ -46,14 +50,14 @@ public class TituloFiliadoMediator extends BaseMediator {
 	 * @param uploadedFile
 	 * @return
 	 */
-	public TituloFiliado salvarTituloConvenio(Usuario usuario, TituloFiliado titulo, FileUpload uploadedFile) {
-		this.fileUpload = uploadedFile;
+	public TituloFiliado salvarTituloConvenio(Usuario usuario, TituloFiliado titulo, ListModel<FileUpload> uploadedFiles) {
+		this.filesUpload = uploadedFiles.getObject();
 		this.pathInstituicaoTemp = null;
 		this.pathUsuarioTemp = null;
 
 		try {
-			if (fileUpload != null) {
-				File fileTmp = verificarDiretorioECopiarArquivo(usuario);
+			if (filesUpload != null && !filesUpload.isEmpty()) {
+				File fileTmp = verificarDiretorioECopiarArquivo(usuario, titulo);
 
 				byte[] conteudoArquivo = DecoderString.loadFile(fileTmp);
 				titulo.setAnexo(Base64.encodeBase64(conteudoArquivo));
@@ -66,29 +70,49 @@ public class TituloFiliadoMediator extends BaseMediator {
 		return titulo;
 	}
 
-	private File verificarDiretorioECopiarArquivo(Usuario usuario) {
+	private File verificarDiretorioECopiarArquivo(Usuario usuario, TituloFiliado titulo) {
 		pathInstituicaoTemp = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO_TEMP + usuario.getInstituicao().getId();
 		pathUsuarioTemp = pathInstituicaoTemp + ConfiguracaoBase.BARRA + usuario.getId();
 		File diretorioInstituicaoTemp = new File(pathInstituicaoTemp);
 		File diretorioUsuarioTemp = new File(pathUsuarioTemp);
 
-		if (diretorioInstituicaoTemp.exists()) {
-			diretorioInstituicaoTemp.delete();
-		}
-		diretorioInstituicaoTemp.mkdirs();
-		if (diretorioUsuarioTemp.exists()) {
-			diretorioUsuarioTemp.delete();
-		}
-		diretorioUsuarioTemp.mkdirs();
-
-		File fileTmp = new File(pathUsuarioTemp + ConfiguracaoBase.BARRA + usuario.getId());
 		try {
-			fileUpload.writeTo(fileTmp);
+			if (diretorioInstituicaoTemp.exists()) {
+				diretorioInstituicaoTemp.delete();
+			}
+			diretorioInstituicaoTemp.mkdirs();
+			if (diretorioUsuarioTemp.exists()) {
+				for (File oldFile : diretorioUsuarioTemp.listFiles()) {
+					oldFile.delete();
+				}
+			} else {
+				diretorioUsuarioTemp.mkdirs();
+			}
+
+			for (FileUpload file : filesUpload) {
+				File fileTmp = new File(pathUsuarioTemp + ConfiguracaoBase.BARRA + file.getClientFileName());
+				file.writeTo(fileTmp);
+			}
+			File zipFile = new File(pathUsuarioTemp + ConfiguracaoBase.BARRA + titulo.getNomeDevedor().replace(" ", "_").replace("/", "") 
+					+ ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+			if (zipFile.exists()) {
+				zipFile.delete();
+			}
+			zipFile.createNewFile();
+			
+			byte[] zipOutput = ZipFile.zipFiles(pathUsuarioTemp, titulo.getNomeDevedor().replace(" ", "_").replace("/", "") 
+					+ ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+            FileOutputStream fout1 = new FileOutputStream(zipFile);
+            fout1.write(zipOutput);
+            fout1.close();
+            return zipFile;
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 			throw new InfraException("Não foi possível criar arquivo temporário do anexo! Por favor entre em contato com o IEPTB-TO.");
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			throw new InfraException("Não foi possível criar arquivo temporário do anexo! Por favor entre em contato com o IEPTB-TO.");
 		}
-		return fileTmp;
 	}
 
 	public TituloFiliado buscarTituloFiliadoProcessadoNaCra(String nossoNumero, String numeroTitulo) {

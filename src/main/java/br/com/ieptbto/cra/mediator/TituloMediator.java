@@ -85,7 +85,7 @@ public class TituloMediator extends BaseMediator {
 			if (anexo != null) {
 				return anexo;
 			}
-		}
+		} 
 		return null;
 	}
 }

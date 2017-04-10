@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 public class ConfiguracaoBase {
 
 	public static final int TAMANHO_NOME_ARQUIVO = 13;
+	public static String DIRETORIO_TEMP = "TEMP/";
 	public static String DIRETORIO_BASE = "../ARQUIVOS_CRA/";
 	public static String DIRETORIO_TEMP_BASE = "../ARQUIVOS_CRA/TEMP/";
 	public static String DIRETORIO_TEMP_REPORTS = "../ARQUIVOS_CRA/TEMP/REPORTS/";

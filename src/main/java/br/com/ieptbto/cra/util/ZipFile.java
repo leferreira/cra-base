@@ -93,7 +93,7 @@ public class ZipFile {
         return baos.toByteArray();
     }
 
-    public byte[] zipFiles(String directory) throws IOException {
+    public static byte[] zipFiles(String directory, String nameFile) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ZipOutputStream zos = new ZipOutputStream(baos);
         byte bytes[] = new byte[2048];
@@ -101,18 +101,20 @@ public class ZipFile {
         File folder = new File(directory);
 
         for (String fileName : folder.list()) {
-            FileInputStream fis = new FileInputStream(directory + "/" + fileName);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-
-            zos.putNextEntry(new ZipEntry(fileName));
-
-            int bytesRead;
-            while ((bytesRead = bis.read(bytes)) != -1) {
-                zos.write(bytes, 0, bytesRead);
-            }
-            zos.closeEntry();
-            bis.close();
-            fis.close();
+        	if (!fileName.equals(nameFile)) {
+        		FileInputStream fis = new FileInputStream(directory + "/" + fileName);
+        		BufferedInputStream bis = new BufferedInputStream(fis);
+        		
+        		zos.putNextEntry(new ZipEntry(fileName));
+        		
+        		int bytesRead;
+        		while ((bytesRead = bis.read(bytes)) != -1) {
+        			zos.write(bytes, 0, bytesRead);
+        		}
+        		zos.closeEntry();
+        		bis.close();
+        		fis.close();
+        	}
         }
         zos.flush();
         baos.flush();

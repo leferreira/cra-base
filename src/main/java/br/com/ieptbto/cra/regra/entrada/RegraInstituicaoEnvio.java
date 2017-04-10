@@ -3,7 +3,6 @@ package br.com.ieptbto.cra.regra.entrada;
 import java.io.File;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.conversor.enumeration.ErroValidacao;
@@ -12,7 +11,6 @@ import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.mediator.TipoInstituicaoMediator;
 
 /**
  * 
@@ -21,9 +19,6 @@ import br.com.ieptbto.cra.mediator.TipoInstituicaoMediator;
  */
 @Service
 public class RegraInstituicaoEnvio extends RegraEntrada {
-
-	@Autowired
-	TipoInstituicaoMediator tipoInstituicaoMediator;
 
 	private Instituicao instituicao;
 	private TipoArquivoFebraban tipoArquivo;
@@ -53,7 +48,7 @@ public class RegraInstituicaoEnvio extends RegraEntrada {
 	 */
 	private void verificarInstituicaoDeEnvio() {
 		try {
-			if (!usuario.getInstituicao().isSituacao()) {
+			if (!usuario.getInstituicao().getSituacao()) {
 				logger.error(ErroValidacao.INSTITUICAO_BLOQUEADA.getMensagemErro());
 				throw new InfraException(ErroValidacao.INSTITUICAO_BLOQUEADA.getMensagemErro());
 			}

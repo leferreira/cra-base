@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.enumeration.AbstractCraEnum;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
 
@@ -76,7 +77,28 @@ public enum TipoArquivoFebraban
 	public static String generateNomeArquivoFebraban(TipoArquivoFebraban tipoArquivo, String codigoPortador, String sequencialArquivo) {
 		SimpleDateFormat dataPadraoArquivo = new SimpleDateFormat("ddMM.yy");
 		String dataArquivo = dataPadraoArquivo.format(new Date()).toString();
-		return tipoArquivo.getConstante() + codigoPortador + dataArquivo + sequencialArquivo;
+		return tipoArquivo.constante + codigoPortador + dataArquivo + sequencialArquivo;
+	}
+	
+	/**
+	 * Verifica se o tipo de Instituicao tem a permissão para enviar o arquivo
+	 * @param tipoInstituicao
+	 * @return
+	 * 		boolean
+	 */
+	public boolean isPermitidoEnvioParaTipoInstituicao(TipoInstituicaoCRA tipoInstituicao) {
+		if (TipoArquivoFebraban.REMESSA == this || TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO == this
+				|| TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO == this || TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO == this) {
+			if (TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA != tipoInstituicao 
+					&& TipoInstituicaoCRA.CONVENIO != tipoInstituicao && TipoInstituicaoCRA.CRA != tipoInstituicao ) {
+				throw new InfraException(Erro.USUARIO_SEM_PERMISSAO_DE_ENVIO_DE_ARQUIVO.getMensagemErro());
+			}
+		} else if (TipoArquivoFebraban.CONFIRMACAO == this || TipoArquivoFebraban.RETORNO == this) {
+			if (TipoInstituicaoCRA.CARTORIO != tipoInstituicao && TipoInstituicaoCRA.CRA != tipoInstituicao ) {
+				throw new InfraException(Erro.USUARIO_SEM_PERMISSAO_DE_ENVIO_DE_ARQUIVO.getMensagemErro());
+			}
+		}
+		return true;
 	}
 
 	@Override

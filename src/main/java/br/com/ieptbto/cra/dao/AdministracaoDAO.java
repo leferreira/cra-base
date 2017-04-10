@@ -28,7 +28,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class AdministracaoDAO extends AbstractBaseDAO {
 
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 
 	/**
 	 * Consultar arquivos para remover na entidade Arquivo

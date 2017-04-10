@@ -28,17 +28,17 @@ import br.com.ieptbto.cra.processador.ProcessadorRemessaConveniada;
 public class ConvenioMediator extends BaseMediator {
 
 	@Autowired
-	TituloFiliadoDAO tituloFiliadoDAO;
+	private TituloFiliadoDAO tituloFiliadoDAO;
 	@Autowired
-	ArquivoDAO arquivoDAO;
+	private ArquivoDAO arquivoDAO;
 	@Autowired
-	CancelamentoDAO cancelamentoDAO;
+	private CancelamentoDAO cancelamentoDAO;
 	@Autowired
-	AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
+	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
 	@Autowired
-	ProcessadorRemessaConveniada processadorRemessaConveniada;
+	private ProcessadorRemessaConveniada processadorRemessaConveniada;
 	@Autowired
-	ProcessadorDesistenciaCancelamentoConvenio processadorDesistenciaCancelamentoConveniada;
+	private ProcessadorDesistenciaCancelamentoConvenio processadorDesistenciaCancelamentoConveniada;
 
 	/**
 	 * Buscar títulos do convênio para geração de arquivos de remessa

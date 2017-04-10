@@ -50,17 +50,17 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class CancelamentoProtestoMediator extends BaseMediator {
 
 	@Autowired
-	ArquivoDAO arquivoDAO;
+	private ArquivoDAO arquivoDAO;
 	@Autowired
-	CancelamentoDAO cancelamentoDAO;
+	private CancelamentoDAO cancelamentoDAO;
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 	@Autowired
-	TipoArquivoDAO tipoArquivoDAO;
+	private TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
-	ConversorDesistenciaCancelamento conversorArquivoDesistenciaProtesto;
+	private ConversorDesistenciaCancelamento conversorArquivoDesistenciaProtesto;
 	@Autowired
-	ConversorCancelamentoSerpro conversorCancelamentoSerpro;
+	private ConversorCancelamentoSerpro conversorCancelamentoSerpro;
 
 	public RemessaCancelamentoProtesto buscarRemessaCancelamentoPorPK(RemessaCancelamentoProtesto remessaCancelamentoProtesto) {
 		return cancelamentoDAO.buscarPorPK(remessaCancelamentoProtesto, RemessaCancelamentoProtesto.class);

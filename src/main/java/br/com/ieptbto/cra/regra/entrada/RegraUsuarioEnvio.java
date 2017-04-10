@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
@@ -63,6 +64,11 @@ public class RegraUsuarioEnvio extends RegraEntrada {
 
 		if (!instituicaoMediator.isInstituicaoAtiva(usuario.getInstituicao())) {
 			throw new InfraException(Erro.INSTITUICAO_NAO_ATIVA.getMensagemErro());
+		}
+		
+		TipoInstituicaoCRA tipoInstituicao = usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao();
+		if (!arquivo.getTipoArquivo().getTipoArquivo().isPermitidoEnvioParaTipoInstituicao(tipoInstituicao)) {
+			throw new InfraException(Erro.USUARIO_SEM_PERMISSAO_DE_ENVIO_DE_ARQUIVO.getMensagemErro());
 		}
 	}
 

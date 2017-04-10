@@ -34,7 +34,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 public class TituloFiliadoDAO extends AbstractBaseDAO {
 
 	@Autowired
-	AvalistaDAO avalistaDAO;
+	private AvalistaDAO avalistaDAO;
 
 	public TituloFiliado salvar(TituloFiliado titulo) {
 		Transaction transaction = getBeginTransation();

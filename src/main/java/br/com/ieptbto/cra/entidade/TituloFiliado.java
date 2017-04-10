@@ -41,15 +41,12 @@ import br.com.ieptbto.cra.enumeration.TipoAlineaCheque;
 @org.hibernate.annotations.Table(appliesTo = "TB_TITULO_FILIADO")
 public class TituloFiliado extends AbstractEntidade<TituloFiliado> {
 
-	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
-
 	private Usuario usuarioEntradaManual;
 	private SetorFiliado setor;
 	private Filiado filiado;
 	private byte[] anexo;
-
 	private String numeroTitulo;
 	private Date dataEmissao;
 	private Date dataVencimento;

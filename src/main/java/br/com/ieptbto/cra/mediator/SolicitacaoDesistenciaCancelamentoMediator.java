@@ -1,12 +1,14 @@
 package br.com.ieptbto.cra.mediator;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
+import org.apache.wicket.model.util.ListModel;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.ProcessadorDesistenciaCancelamentoConvenio;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.DecoderString;
+import br.com.ieptbto.cra.util.ZipFile;
 
 /**
  * @author Thasso Araújo
@@ -68,7 +71,7 @@ public class SolicitacaoDesistenciaCancelamentoMediator extends BaseMediator {
 	 * @return
 	 */
 	public SolicitacaoDesistenciaCancelamento salvarSolicitacaoDesistenciaCancelamento(
-			SolicitacaoDesistenciaCancelamento solicitacaoDesistenciaCancelamento, FileUpload uploadedFile) {
+			SolicitacaoDesistenciaCancelamento solicitacaoDesistenciaCancelamento, ListModel<FileUpload> uploadedFiles) {
 		Usuario usuario = solicitacaoDesistenciaCancelamento.getUsuario();
 
 		SolicitacaoDesistenciaCancelamento solicitacaoEnviada = solicitacaoDAO.verificarSolicitadoAnteriormente(solicitacaoDesistenciaCancelamento);
@@ -77,10 +80,10 @@ public class SolicitacaoDesistenciaCancelamentoMediator extends BaseMediator {
 					+ DataUtil.localDateToString(new LocalDate(solicitacaoEnviada.getDataSolicitacao()))
 					+ "! Aguarde o processamento pelo cartório...");
 		}
-		if (uploadedFile != null) {
+		if (uploadedFiles != null && !uploadedFiles.getObject().isEmpty()) {
 			this.pathInstituicaoTemp = null;
 			this.pathUsuarioTemp = null;
-			File fileTmp = verificarDiretorioECopiarArquivo(usuario, uploadedFile);
+			File fileTmp = verificarDiretorioECopiarArquivo(usuario, uploadedFiles, solicitacaoDesistenciaCancelamento.getTituloRemessa());
 
 			byte[] conteudoArquivo = DecoderString.loadFile(fileTmp);
 			solicitacaoDesistenciaCancelamento.setDocumentoAnexo(Base64.encodeBase64(conteudoArquivo));
@@ -88,29 +91,49 @@ public class SolicitacaoDesistenciaCancelamentoMediator extends BaseMediator {
 		return solicitacaoDAO.salvarSolicitacaoDesistenciaCancelamento(solicitacaoDesistenciaCancelamento);
 	}
 
-	private File verificarDiretorioECopiarArquivo(Usuario usuario, FileUpload uploadedFile) {
+	private File verificarDiretorioECopiarArquivo(Usuario usuario, ListModel<FileUpload> uploadedFiles, TituloRemessa titulo) {
 		pathInstituicaoTemp = ConfiguracaoBase.DIRETORIO_BASE_INSTITUICAO_TEMP + usuario.getInstituicao().getId();
 		pathUsuarioTemp = pathInstituicaoTemp + ConfiguracaoBase.BARRA + usuario.getId();
 		File diretorioInstituicaoTemp = new File(pathInstituicaoTemp);
 		File diretorioUsuarioTemp = new File(pathUsuarioTemp);
 
-		if (diretorioInstituicaoTemp.exists()) {
-			diretorioInstituicaoTemp.delete();
-		}
-		diretorioInstituicaoTemp.mkdirs();
-		if (diretorioUsuarioTemp.exists()) {
-			diretorioUsuarioTemp.delete();
-		}
-		diretorioUsuarioTemp.mkdirs();
-
-		File fileTmp = new File(pathUsuarioTemp + ConfiguracaoBase.BARRA + usuario.getId());
 		try {
-			uploadedFile.writeTo(fileTmp);
+			if (diretorioInstituicaoTemp.exists()) {
+				diretorioInstituicaoTemp.delete();
+			}
+			diretorioInstituicaoTemp.mkdirs();
+			if (diretorioUsuarioTemp.exists()) {
+				for (File oldFile : diretorioUsuarioTemp.listFiles()) {
+					oldFile.delete();
+				}
+			} else {
+				diretorioUsuarioTemp.mkdirs();
+			}
+
+			for (FileUpload file : uploadedFiles.getObject()) {
+				File fileTmp = new File(pathUsuarioTemp + ConfiguracaoBase.BARRA + file.getClientFileName());
+				file.writeTo(fileTmp);
+			}
+			File zipFile = new File(pathUsuarioTemp + ConfiguracaoBase.BARRA + titulo.getNomeDevedor().replace(" ", "_").replace("/", "") 
+					+ ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+			if (zipFile.exists()) {
+				zipFile.delete();
+			}
+			zipFile.createNewFile();
+			
+			byte[] zipOutput = ZipFile.zipFiles(pathUsuarioTemp, titulo.getNomeDevedor().replace(" ", "_").replace("/", "") 
+					+ ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
+            FileOutputStream fout1 = new FileOutputStream(zipFile);
+            fout1.write(zipOutput);
+            fout1.close();
+            return zipFile;
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 			throw new InfraException("Não foi possível criar arquivo temporário do anexo! Por favor entre em contato com o IEPTB-TO.");
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			throw new InfraException("Não foi possível criar arquivo temporário do anexo! Por favor entre em contato com o IEPTB-TO.");
 		}
-		return fileTmp;
 	}
 	
 	/**
