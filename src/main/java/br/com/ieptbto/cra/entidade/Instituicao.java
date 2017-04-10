@@ -61,6 +61,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	private Boolean oficioDesistenciaCancelamentoObrigatorio;
 	private Boolean setoresConvenio;
 	private Boolean administrarEmpresasFiliadas;
+	private Boolean retornoCancelamento;
 	private TipoBatimento tipoBatimento;
 	private LayoutPadraoXML layoutPadraoXML;
 	private TipoInstituicao tipoInstituicao;
@@ -186,6 +187,17 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	public Boolean getAdministrarEmpresasFiliadas() {
 		return (administrarEmpresasFiliadas == null) ? false : administrarEmpresasFiliadas;
 	}
+	
+	/**
+     * Responsável por dizer se a instituição recebe ou não retorno de
+     * cancelamento de títulos
+     * 
+     * @return Boolean retornoCancelamento
+     */
+    @Column(name = "RETORNO_CANCELAMENTO")
+    public Boolean getRetornoCancelamento() {
+        return retornoCancelamento;
+    }
 
 	@Column(name = "TELEFONE", length = 20)
 	public String getTelefone() {
@@ -393,6 +405,10 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	public void setAdministrarEmpresasFiliadas(Boolean administrarEmpresasFiliadas) {
 		this.administrarEmpresasFiliadas = administrarEmpresasFiliadas;
 	}
+	
+	public void setRetornoCancelamento(Boolean retornoCancelamento) {
+        this.retornoCancelamento = retornoCancelamento;
+    }
 
 	public void setTipoBatimento(TipoBatimento tipoBatimento) {
 		this.tipoBatimento = tipoBatimento;
