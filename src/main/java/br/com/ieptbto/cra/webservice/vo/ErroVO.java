@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Leandro
  * 
  */
-@XmlRootElement(name = "erro")
+@XmlRootElement(name = "mensagem")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ErroVO {
 

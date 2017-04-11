@@ -20,6 +20,7 @@ import br.com.ieptbto.cra.dao.AutorizacaoCancelamentoDAO;
 import br.com.ieptbto.cra.dao.CancelamentoDAO;
 import br.com.ieptbto.cra.dao.SolicitacaoDesistenciaCancelamentoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamento;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.Usuario;
@@ -39,15 +40,15 @@ import br.com.ieptbto.cra.util.ZipFile;
 public class SolicitacaoDesistenciaCancelamentoMediator extends BaseMediator {
 
 	@Autowired
-	ProcessadorDesistenciaCancelamentoConvenio processadorDesistenciaCancelamentoConvenio;
+	private ProcessadorDesistenciaCancelamentoConvenio processadorDesistenciaCancelamentoConvenio;
 	@Autowired
-	SolicitacaoDesistenciaCancelamentoDAO solicitacaoDAO;
+	private SolicitacaoDesistenciaCancelamentoDAO solicitacaoDAO;
 	@Autowired
-	ArquivoDAO arquivoDAO;
+	private ArquivoDAO arquivoDAO;
 	@Autowired
-	CancelamentoDAO cancelamentoDAO;
+	private CancelamentoDAO cancelamentoDAO;
 	@Autowired
-	AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
+	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
 	
 	private String pathInstituicaoTemp;
 	private String pathUsuarioTemp;
@@ -57,7 +58,13 @@ public class SolicitacaoDesistenciaCancelamentoMediator extends BaseMediator {
 	}
 
 	public List<SolicitacaoDesistenciaCancelamento> buscarSolicitacoesDesistenciasCancelamentoPorTitulo(TituloRemessa titulo) {
-		if (titulo.getRemessa().getInstituicaoOrigem().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
+		Instituicao instituicaoTitulo = titulo.getRemessa().getInstituicaoOrigem();
+		if (instituicaoTitulo.getId() != 0) {
+			instituicaoTitulo = arquivoDAO.buscarPorPK(titulo.getRemessa().getInstituicaoOrigem().getId(), Instituicao.class);
+			titulo.getRemessa().setInstituicaoOrigem(instituicaoTitulo);
+		} 
+		TipoInstituicaoCRA tipoInstituicao = titulo.getRemessa().getInstituicaoOrigem().getTipoInstituicao().getTipoInstituicao();
+		if (tipoInstituicao.equals(TipoInstituicaoCRA.CONVENIO)) {
 			return solicitacaoDAO.buscarSolicitacoesDesistenciasCancelamentoPorTitulo(titulo);
 		}
 		return null;

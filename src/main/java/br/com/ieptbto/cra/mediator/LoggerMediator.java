@@ -20,9 +20,9 @@ import br.com.ieptbto.cra.entidade.LogCra;
 public class LoggerMediator extends BaseMediator {
 
 	@Autowired
-	LoggerDAO loggerDAO;
+	private LoggerDAO loggerDAO;
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly=false)
 	public LogCra salvar(LogCra log) {
 		return loggerDAO.salvar(log);
 	}

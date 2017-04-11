@@ -2,6 +2,7 @@ package br.com.ieptbto.cra.conversor.arquivo;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -45,51 +46,69 @@ public class ConversorAutorizacaoSerpro {
 	}
 
 	private List<AutorizacaoCancelamento> getAutorizacaoCancelamento(RemessaAutorizacaoCancelamento remessa, AutorizacaoCancelamentoSerproVO autorizacaoSerpro) {
-		List<AutorizacaoCancelamento> autorizacoesCancelamentos = new ArrayList<AutorizacaoCancelamento>();
-
-		for (ComarcaDesistenciaCancelamentoSerproVO comarca : autorizacaoSerpro.getComarcaDesistenciaCancelamento()) {
-			AutorizacaoCancelamento autorizacaoCancelamento = new AutorizacaoCancelamento();
-			autorizacaoCancelamento.setRemessaAutorizacaoCancelamento(remessa);
-
-			CabecalhoCartorio cabecalhoCartorio = new CabecalhoCartorio();
-			RodapeCartorio rodapeCartorio = new RodapeCartorio();
-			List<PedidoAutorizacaoCancelamento> pedidosAC = new ArrayList<PedidoAutorizacaoCancelamento>();
-			CartorioDesistenciaCancelamentoSerproVO cartorio = comarca.getCartorioDesistenciaCancelamento();
-			cabecalhoCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.HEADER_CARTORIO);
-			cabecalhoCartorio.setCodigoCartorio(cartorio.getCodigoCartorio());
-			cabecalhoCartorio.setQuantidadeDesistencia(cartorio.getTituloDesistenciaCancelamento().size());
-			cabecalhoCartorio.setCodigoMunicipio(comarca.getCodigoMunicipio());
-			cabecalhoCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(2), 5, "0"));
-
-			for (TituloDesistenciaCancelamentoSerproVO titulo : cartorio.getTituloDesistenciaCancelamento()) {
-				PedidoAutorizacaoCancelamento registro = new PedidoAutorizacaoCancelamento();
-				registro.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA);
-				registro.setNumeroProtocolo(titulo.getNumeroProtocoloCartorio());
-				registro.setDataProtocolagem(DataUtil.stringToLocalDate("ddMMyyyy", titulo.getDataProtocolo()));
-				registro.setNumeroTitulo(titulo.getNumeroTitulo());
-				registro.setNomePrimeiroDevedor(titulo.getNomeDevedor());
-				registro.setValorTitulo(new BigDecimal(titulo.getValorTitulo()));
-				registro.setSolicitacaoCancelamentoSustacao("S");
-				registro.setSequenciaRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
-
-				this.sequenciaRegistro = getSequenciaRegistro() + 1;
-				this.somatorioValor = getSomatorioValor().add(registro.getValorTitulo());
-				pedidosAC.add(registro);
+		HashMap<String, AutorizacaoCancelamento> mapaAutorizacaoPorComarca = new HashMap<String, AutorizacaoCancelamento>(); 
+		List<AutorizacaoCancelamento> listaAutorizacoes = new ArrayList<AutorizacaoCancelamento>();
+		
+		for (ComarcaDesistenciaCancelamentoSerproVO comarca : autorizacaoSerpro.getComarcaDesistenciaCancelamento()) {	
+			String codigoMunicipio = comarca.getCodigoMunicipio();
+			
+			// add na comarca existente
+			if (mapaAutorizacaoPorComarca.containsKey(codigoMunicipio)) {
+				AutorizacaoCancelamento autorizacao = mapaAutorizacaoPorComarca.get(codigoMunicipio);
+				adicionarRegistrosCancelamentos(comarca, autorizacao);				
+			} else {
+				AutorizacaoCancelamento autorizacao = criarNovaAutorizacaoCancelamentoComarca(remessa, comarca);
+				mapaAutorizacaoPorComarca.put(codigoMunicipio, autorizacao);
+				listaAutorizacoes.add(autorizacao);
 			}
-			this.quantidadeDesistencias = getQuantidadeDesistencias() + cartorio.getTituloDesistenciaCancelamento().size();
-			this.quantidadeRegistrosTipo2 = getQuantidadeRegistrosTipo2() + cartorio.getTituloDesistenciaCancelamento().size();
-
-			rodapeCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.TRAILLER_CARTORIO);
-			rodapeCartorio.setCodigoCartorio(cartorio.getCodigoCartorio());
-			rodapeCartorio.setSomaTotalCancelamentoDesistencia(cartorio.getTituloDesistenciaCancelamento().size() * 2);
-			rodapeCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
-
-			autorizacaoCancelamento.setCabecalhoCartorio(cabecalhoCartorio);
-			autorizacaoCancelamento.setAutorizacoesCancelamentos(pedidosAC);
-			autorizacaoCancelamento.setRodapeCartorio(rodapeCartorio);
-			autorizacoesCancelamentos.add(autorizacaoCancelamento);
 		}
-		return autorizacoesCancelamentos;
+		return listaAutorizacoes;
+	}
+
+	/**
+	 * Criar nova autorizacao de cancelamento para a comarca
+	 * @param remessa
+	 * @param comarca
+	 */
+	private AutorizacaoCancelamento criarNovaAutorizacaoCancelamentoComarca(RemessaAutorizacaoCancelamento remessa, 
+			ComarcaDesistenciaCancelamentoSerproVO comarca) {
+		AutorizacaoCancelamento autorizacaoCancelamento = new AutorizacaoCancelamento();
+		autorizacaoCancelamento.setRemessaAutorizacaoCancelamento(remessa);
+
+		CabecalhoCartorio cabecalhoCartorio = new CabecalhoCartorio();
+		CartorioDesistenciaCancelamentoSerproVO cartorio = comarca.getCartorioDesistenciaCancelamento();
+		cabecalhoCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.HEADER_CARTORIO);
+		cabecalhoCartorio.setCodigoCartorio(cartorio.getCodigoCartorio());
+		cabecalhoCartorio.setQuantidadeDesistencia(cartorio.getTituloDesistenciaCancelamento().size());
+		cabecalhoCartorio.setCodigoMunicipio(comarca.getCodigoMunicipio());
+		cabecalhoCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(2), 5, "0"));
+
+		List<PedidoAutorizacaoCancelamento> pedidosAutorizacao = new ArrayList<PedidoAutorizacaoCancelamento>();
+		for (TituloDesistenciaCancelamentoSerproVO titulo : cartorio.getTituloDesistenciaCancelamento()) {
+			PedidoAutorizacaoCancelamento registro = new PedidoAutorizacaoCancelamento();
+			registro.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA);
+			registro.setNumeroProtocolo(titulo.getNumeroProtocoloCartorio());
+			registro.setDataProtocolagem(DataUtil.stringToLocalDate("ddMMyyyy", titulo.getDataProtocolo()));
+			registro.setNumeroTitulo(titulo.getNumeroTitulo());
+			registro.setNomePrimeiroDevedor(titulo.getNomeDevedor());
+			registro.setValorTitulo(new BigDecimal(titulo.getValorTitulo()));
+			registro.setSolicitacaoCancelamentoSustacao("S");
+			registro.setSequenciaRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
+			this.sequenciaRegistro = getSequenciaRegistro() + 1;
+			this.somatorioValor = getSomatorioValor().add(registro.getValorTitulo());
+			pedidosAutorizacao.add(registro);
+		}
+		this.quantidadeDesistencias = getQuantidadeDesistencias() + cartorio.getTituloDesistenciaCancelamento().size();
+		this.quantidadeRegistrosTipo2 = getQuantidadeRegistrosTipo2() + cartorio.getTituloDesistenciaCancelamento().size();
+
+		RodapeCartorio rodapeCartorio = new RodapeCartorio();
+		rodapeCartorio.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.TRAILLER_CARTORIO);
+		rodapeCartorio.setCodigoCartorio(cartorio.getCodigoCartorio());
+		rodapeCartorio.setSomaTotalCancelamentoDesistencia(cartorio.getTituloDesistenciaCancelamento().size() * 2);
+		autorizacaoCancelamento.setCabecalhoCartorio(cabecalhoCartorio);
+		autorizacaoCancelamento.setAutorizacoesCancelamentos(pedidosAutorizacao);
+		autorizacaoCancelamento.setRodapeCartorio(rodapeCartorio);
+		return autorizacaoCancelamento;
 	}
 
 	private RodapeArquivo getRodapeArquivoCancelamento(Instituicao instituicao) {
@@ -113,6 +132,36 @@ public class ConversorAutorizacaoSerpro {
 		cabecalhoArquivo.setQuantidadeRegistro(getQuantidadeRegistrosTipo2());
 		cabecalhoArquivo.setSequencialRegistro("00001");
 		return cabecalhoArquivo;
+	}
+	
+	/**
+	 * Inclui os registros de cancelamento independente do codigo do cartório
+	 * @param comarca
+	 * @param autorizacao 
+	 */
+	private void adicionarRegistrosCancelamentos(ComarcaDesistenciaCancelamentoSerproVO comarca, AutorizacaoCancelamento autorizacao) {
+		CartorioDesistenciaCancelamentoSerproVO cartorio = comarca.getCartorioDesistenciaCancelamento();
+
+		for (TituloDesistenciaCancelamentoSerproVO titulo : cartorio.getTituloDesistenciaCancelamento()) {
+			PedidoAutorizacaoCancelamento registro = new PedidoAutorizacaoCancelamento();
+			registro.setIdentificacaoRegistro(TipoRegistroDesistenciaProtesto.REGISTRO_PEDIDO_DESISTENCIA);
+			registro.setNumeroProtocolo(titulo.getNumeroProtocoloCartorio());
+			registro.setDataProtocolagem(DataUtil.stringToLocalDate("ddMMyyyy", titulo.getDataProtocolo()));
+			registro.setNumeroTitulo(titulo.getNumeroTitulo());
+			registro.setNomePrimeiroDevedor(titulo.getNomeDevedor());
+			registro.setValorTitulo(new BigDecimal(titulo.getValorTitulo()));
+			registro.setSolicitacaoCancelamentoSustacao("S");
+			registro.setSequenciaRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
+			this.sequenciaRegistro = getSequenciaRegistro() + 1;
+			this.somatorioValor = getSomatorioValor().add(registro.getValorTitulo());
+			autorizacao.getAutorizacoesCancelamentos().add(registro);
+		}
+		this.quantidadeDesistencias = getQuantidadeDesistencias() + cartorio.getTituloDesistenciaCancelamento().size();
+		this.quantidadeRegistrosTipo2 = getQuantidadeRegistrosTipo2() + cartorio.getTituloDesistenciaCancelamento().size();
+		
+		RodapeCartorio rodapeCartorio = autorizacao.getRodapeCartorio();
+		rodapeCartorio.setSomaTotalCancelamentoDesistencia(cartorio.getTituloDesistenciaCancelamento().size() * 2);
+		rodapeCartorio.setSequencialRegistro(StringUtils.leftPad(Integer.toString(getSequenciaRegistro()), 5, "0"));
 	}
 
 	public int getQuantidadeDesistencias() {

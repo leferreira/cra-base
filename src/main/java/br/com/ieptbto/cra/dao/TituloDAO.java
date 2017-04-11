@@ -48,7 +48,7 @@ import br.com.ieptbto.cra.mediator.DesistenciaProtestoMediator;
 public class TituloDAO extends AbstractBaseDAO {
 
     @Autowired
-    DesistenciaProtestoMediator desistenciaProtestoMediator;
+    private DesistenciaProtestoMediator desistenciaProtestoMediator;
 
     /**
      * Buscar Confirmação por títulos
@@ -509,7 +509,7 @@ public class TituloDAO extends AbstractBaseDAO {
 		Query query = getSession().createQuery("SELECT c FROM Confirmacao c JOIN c.remessa r JOIN r.cabecalho ca "
 				+ "WHERE ca.codigoMunicipio = :codMunicipio "
 				+ "AND c.numeroProtocoloCartorio = :protocolo "
-				+ "AND c.numeroTitulo = :numeroTitulo"
+				+ "AND c.numeroTitulo = :numeroTitulo "
 		);
 		query.setString("codMunicipio", pedidoDesistenciaCancelamento.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio());
 		query.setString("protocolo", Long.toString(numProtocolo));

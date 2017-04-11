@@ -26,7 +26,6 @@ import org.hibernate.envers.Audited;
 @org.hibernate.annotations.Table(appliesTo = "TB_AUTORIZACAO_CANCELAMENTO")
 public class AutorizacaoCancelamento extends AbstractEntidade<AutorizacaoCancelamento> {
 
-	/***/
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private CabecalhoCartorio cabecalhoCartorio;

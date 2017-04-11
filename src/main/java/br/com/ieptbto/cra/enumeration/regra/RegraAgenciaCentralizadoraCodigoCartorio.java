@@ -10,7 +10,9 @@ public enum RegraAgenciaCentralizadoraCodigoCartorio {
 												BANCO_DO_BRASIL("001", null, 1),
 												BANCOOB("756", null, 1),
 												SANTANDER("033", null, 1),
-												ITAU("341", "", 0);
+												ITAU("341", "", 0),
+												PGFN("582", "", 1),
+												PGF("812", "", 1);
 
 	private String codigoPortador;
 	private String agenciaCentralizadora;

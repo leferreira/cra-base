@@ -21,6 +21,7 @@ public class TituloConvenioBean implements Serializable {
 	private String numeroTitulo;
 	private String nomeDevedor;
 	private String documentoDevedor;
+	private String numeroProtocoloCartorio;
 	private String tipoExportacao;
 	private TipoInstituicaoCRA tipoInstituicao;
 	private Instituicao bancoConvenio;
@@ -64,6 +65,10 @@ public class TituloConvenioBean implements Serializable {
 	public String getDocumentoDevedor() {
 		return documentoDevedor;
 	}
+	
+	public String getNumeroProtocoloCartorio() {
+		return numeroProtocoloCartorio;
+	}
 
 	public void setDocumentoDevedor(String documentoDevedor) {
 		this.documentoDevedor = documentoDevedor;
@@ -91,6 +96,10 @@ public class TituloConvenioBean implements Serializable {
 
 	public void setBancoConvenio(Instituicao bancoConvenio) {
 		this.bancoConvenio = bancoConvenio;
+	}
+	
+	public void setNumeroProtocoloCartorio(String numeroProtocoloCartorio) {
+		this.numeroProtocoloCartorio = numeroProtocoloCartorio;
 	}
 
 	public Instituicao getCartorio() {

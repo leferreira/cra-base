@@ -147,8 +147,8 @@ public class TituloFiliadoMediator extends BaseMediator {
 	}
 
 	public List<TituloRemessa> buscarListaTitulos(Usuario user, LocalDate dataInicio, LocalDate dataFim, Instituicao instiuicaoCartorio, String numeroTitulo, 
-			String nomeDevedor, String documentoDevedor, String codigoFiliado) {
-		return tituloFiliadoDAO.buscarListaTitulos(user, dataInicio, dataFim, instiuicaoCartorio, numeroTitulo, nomeDevedor, documentoDevedor, codigoFiliado);
+			String nomeDevedor, String documentoDevedor, String nuumeroProtocolo, String codigoFiliado) {
+		return tituloFiliadoDAO.buscarListaTitulos(user, dataInicio, dataFim, instiuicaoCartorio, numeroTitulo, nomeDevedor, documentoDevedor, nuumeroProtocolo, codigoFiliado);
 	}
 
 	public List<TituloFiliado> buscarTitulosParaRelatorioFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim,

@@ -23,7 +23,7 @@ import br.com.ieptbto.cra.enumeration.TipoLog;
 @Repository
 public class LoggerDAO extends AbstractBaseDAO {
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = false)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public LogCra salvar(LogCra logCra) {
 		Transaction transaction = getBeginTransation();
 		LogCra novaLog = null;

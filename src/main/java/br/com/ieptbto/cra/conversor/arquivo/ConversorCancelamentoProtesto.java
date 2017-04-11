@@ -30,7 +30,6 @@ public class ConversorCancelamentoProtesto {
 		remessaVO.setPedidoDesistencias(new ArrayList<DesistenciaProtestoVO>());
 
 		remessaVO.setCabecalhoArquivo(new ConversorCabecalhoArquivoDesistenciaCancelamento().converter(remessaCancelamentoProtesto.getCabecalho(), CabecalhoArquivoDesistenciaProtestoVO.class));
-
 		remessaVO.setRodapeArquivo(new ConversorRodapeArquivoDesistenciaCancelamento().converter(remessaCancelamentoProtesto.getRodape(),
 		        RodapeArquivoDesistenciaProtestoVO.class));
 
@@ -49,6 +48,7 @@ public class ConversorCancelamentoProtesto {
 
 			cancelamentoVO.setRodapeCartorio(new ConversorRodapeCartorioDesistenciaCancelamento().converter(cancelamento.getRodapeCartorio(),
 			        RodapeCartorioDesistenciaProtestoVO.class));
+			cancelamentoVO.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(Integer.toString(cancelamentoVO.getRegistroDesistenciaProtesto().size() * 2));
 			remessaVO.getPedidoDesistencias().add(cancelamentoVO);
 		}
 		return remessaVO;
@@ -78,6 +78,7 @@ public class ConversorCancelamentoProtesto {
 
 			acVO.setRodapeCartorio(new ConversorRodapeCartorioDesistenciaCancelamento().converter(ac.getRodapeCartorio(),
 			        RodapeCartorioDesistenciaProtestoVO.class));
+			acVO.getRodapeCartorio().setSomaTotalCancelamentoDesistencia(Integer.toString(acVO.getRegistroDesistenciaProtesto().size() * 2));
 			remessaVO.getPedidoDesistencias().add(acVO);
 		}
 		return remessaVO;

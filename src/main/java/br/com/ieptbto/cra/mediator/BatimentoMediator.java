@@ -24,11 +24,11 @@ import br.com.ieptbto.cra.entidade.view.ViewBatimentoRetorno;
 public class BatimentoMediator extends BaseMediator {
 
 	@Autowired
-	BatimentoDAO batimentoDAO;
+	private BatimentoDAO batimentoDAO;
 	@Autowired
-	RetornoDAO retornoDAO;
+	private RetornoDAO retornoDAO;
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 	
 	/**
 	 * Consulta a view BatimentoRetorno para arquivos que não tiveram o batimento confirmado

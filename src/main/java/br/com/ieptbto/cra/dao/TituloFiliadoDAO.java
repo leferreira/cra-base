@@ -296,7 +296,7 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 
 	@SuppressWarnings("unchecked")
 	public List<TituloRemessa> buscarListaTitulos(Usuario user, LocalDate dataInicio, LocalDate dataFim, Instituicao instiuicaoCartorio, String numeroTitulo, 
-			String nomeDevedor, String documentoDevedor, String codigoFiliado) {
+			String nomeDevedor, String documentoDevedor, String nuumeroProtocolo, String codigoFiliado) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 		criteria.add(Restrictions.eq("remessa.instituicaoOrigem", user.getInstituicao()));
@@ -312,6 +312,10 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		}
 		if (documentoDevedor != null && documentoDevedor.trim() != StringUtils.EMPTY) {
 			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", documentoDevedor.trim(), MatchMode.ANYWHERE));
+		}
+		if (nuumeroProtocolo != null && StringUtils.isNotBlank(nuumeroProtocolo)) {
+			criteria.createAlias("confirmacao", "confirmacao");
+			criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", nuumeroProtocolo, MatchMode.EXACT));
 		}
 		if (dataInicio != null) {
 			criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
