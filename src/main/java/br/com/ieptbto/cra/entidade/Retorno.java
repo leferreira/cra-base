@@ -24,9 +24,6 @@ import org.hibernate.envers.Audited;
 @org.hibernate.annotations.Table(appliesTo = "TB_RETORNO")
 public class Retorno extends Titulo<Retorno> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private CabecalhoRemessa cabecalho;
 	private int id;

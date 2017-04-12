@@ -19,15 +19,14 @@ import org.hibernate.envers.Audited;
  * @author Leandro
  *
  */
-@SuppressWarnings("serial")
 @Entity
 @Audited
 @Table(name = "TB_TITULO_RETORNO_CANCELAMENTO")
 @org.hibernate.annotations.Table(appliesTo = "TB_TITULO_RETORNO_CANCELAMENTO")
-
 public class TituloRetornoCancelamento extends Titulo<TituloRetornoCancelamento> {
 
-    private int id;
+	private static final long serialVersionUID = 1L;
+	private int id;
     private TituloRemessa titulo;
     private Date dataCadastro;
     private BigDecimal valorTitulo;
@@ -100,7 +99,5 @@ public class TituloRetornoCancelamento extends Titulo<TituloRetornoCancelamento>
         this.setValorGravacaoEletronica(tituloRetorno.getValorGravacaoEletronica());
         this.setValorTitulo(tituloRetorno.getSaldoTitulo());
         this.setDataCadastro(new Date());
-
     }
-
 }
