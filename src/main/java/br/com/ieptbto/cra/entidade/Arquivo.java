@@ -38,7 +38,6 @@ import org.joda.time.LocalTime;
 @org.hibernate.annotations.Table(appliesTo = "TB_ARQUIVO")
 public class Arquivo extends AbstractEntidade<Arquivo> implements FieldHandled {
 
-	/****/
 	private static final long serialVersionUID = 8563214L;
 	private int id;
 	private String nomeArquivo;

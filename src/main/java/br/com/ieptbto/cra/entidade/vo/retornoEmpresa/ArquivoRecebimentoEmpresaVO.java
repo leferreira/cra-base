@@ -1,4 +1,4 @@
-package br.com.ieptbto.cra.entidade.vo.retornoRecebimentoEmpresa;
+package br.com.ieptbto.cra.entidade.vo.retornoEmpresa;
 
 import java.io.Serializable;
 import java.util.List;

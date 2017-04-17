@@ -14,9 +14,9 @@ import br.com.ieptbto.cra.conversor.arquivo.ConversorRodapeArquivoDesistenciaCan
 import br.com.ieptbto.cra.conversor.arquivo.ConversorRodapeCartorioDesistenciaCancelamento;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorTitulo;
 import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
-import br.com.ieptbto.cra.entidade.vo.retornoRecebimentoEmpresa.ConversorHeaderEmpresa;
-import br.com.ieptbto.cra.entidade.vo.retornoRecebimentoEmpresa.ConversorRegistroEmpresa;
-import br.com.ieptbto.cra.entidade.vo.retornoRecebimentoEmpresa.ConversorTraillerEmpresa;
+import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.ConversorHeaderEmpresa;
+import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.ConversorRegistroEmpresa;
+import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.ConversorTraillerEmpresa;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import br.com.ieptbto.cra.util.CraConstructorUtils;

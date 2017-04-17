@@ -166,6 +166,6 @@ public class DesistenciaProtestoMediator extends BaseMediator {
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public Arquivo verificarDesistenciaJaEnviadaAnteriormente(String nomeArquivo, Instituicao instituicao) {
-		return arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(instituicao, nomeArquivo);
+		return arquivoDAO.buscarArquivoPorNomeInstituicaoEnvio(instituicao, nomeArquivo);
 	}
 }

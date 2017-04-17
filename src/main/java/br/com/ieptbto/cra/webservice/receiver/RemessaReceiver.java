@@ -22,6 +22,7 @@ import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.vo.ArquivoRemessaConvenioVO;
 import br.com.ieptbto.cra.entidade.vo.ArquivoRemessaSerproVO;
 import br.com.ieptbto.cra.entidade.vo.ArquivoRemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
@@ -261,5 +262,48 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 			}
 		}
 		return mensagemSerpro;
+	}
+
+	/**
+	 * @param usuario
+	 * @param nomeArquivo
+	 * @param dados
+	 * @return
+	 */
+	public AbstractMensagemVO receberRemessaConvenio(Usuario usuario, String nomeArquivo, String dados) {
+		List<Exception> erros = new ArrayList<Exception>();
+		//ArquivoRemessaConvenioVO remessaConvenioVO = converterStringArquivoConvenioVO(dados);
+		
+		//Arquivo arquivo = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo, erros);
+		Arquivo arquivo = new Arquivo();
+		if (!erros.isEmpty()) {
+			return gerarRespostaErrosRemessa(arquivo, usuario, erros);
+		}
+		return gerarRespostaSucesso(arquivo, usuario);
+	}
+	
+	@SuppressWarnings("unused")
+	private ArquivoRemessaConvenioVO converterStringArquivoConvenioVO(String dados) {
+		JAXBContext context;
+
+		ArquivoRemessaConvenioVO arquivo = null;
+		try {
+			context = JAXBContext.newInstance(ArquivoRemessaConvenioVO.class);
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			String xmlRecebido = "";
+
+			Scanner scanner = new Scanner(new ByteArrayInputStream(new String(dados).getBytes()));
+			while (scanner.hasNext()) {
+				String line = scanner.nextLine().replaceAll("& ", "&amp;");
+				xmlRecebido = xmlRecebido + line;
+			}
+			scanner.close();
+			InputStream xml = new ByteArrayInputStream(xmlRecebido.getBytes());
+			arquivo = (ArquivoRemessaConvenioVO) unmarshaller.unmarshal(new InputSource(xml));
+		} catch (JAXBException e) {
+			logger.error(e.getMessage(), e);
+			throw new InfraException("Erro ao converter o contéudo xml do arquivo.");
+		}
+		return arquivo;
 	}
 }

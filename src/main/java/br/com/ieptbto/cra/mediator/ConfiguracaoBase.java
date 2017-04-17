@@ -19,8 +19,8 @@ public class ConfiguracaoBase {
 	public static String DIRETORIO_BASE_INSTITUICAO_TEMP = DIRETORIO_TEMP_BASE + "INSTITUICAO/";
 	public static String DIRETORIO_BASE_DE_PARA_TEMP = DIRETORIO_TEMP_BASE + "ARQUIVOS_DE_PARA/";
 	public static String BARRA = "/";
-	public static String RELATORIOS_PATH = "/br/com/ieptbto/cra/relatorio/";
-	public static String RELATORIOS_CONVENIO_PATH = "/br/com/ieptbto/cra/relatorioConvenio/";
+	public static String RELATORIOS_PATH = "/br/com/ieptbto/cra/report/";
+	public static String RELATORIOS_CONVENIO_PATH = "/br/com/ieptbto/cra/report/";
 	
 	public static final String ZERO = "0";
 	public static final String UM = "1";

@@ -35,15 +35,15 @@ import br.com.ieptbto.cra.util.DataUtil;
 public class ArquivoFiliadoMediator extends BaseMediator {
 
 	@Autowired
-	TipoArquivoMediator tipoArquivoMediator;
+	private TipoArquivoMediator tipoArquivoMediator;
 	@Autowired
-	ConversorArquivoFiliado conversorArquivoFiliado;
+	private ConversorArquivoFiliado conversorArquivoFiliado;
 	@Autowired
-	ArquivoDAO arquivoDAO;
+	private ArquivoDAO arquivoDAO;
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 	@Autowired
-	LayoutFiliadoDAO layoutFiliadoDao;
+	private LayoutFiliadoDAO layoutFiliadoDao;
 	
 	private Usuario usuario;
 	private Arquivo arquivo;

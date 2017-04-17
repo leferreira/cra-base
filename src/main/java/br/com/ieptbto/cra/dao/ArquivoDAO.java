@@ -479,10 +479,19 @@ public class ArquivoDAO extends AbstractBaseDAO {
 	}
 
 	@Transactional(readOnly = true)
-	public Arquivo buscarArquivosPorNomeArquivoInstituicaoEnvio(Instituicao instituicao, String nomeArquivo) {
+	public Arquivo buscarArquivoPorNomeInstituicaoEnvio(Instituicao instituicao, String nomeArquivo) {
 		Criteria criteria = getCriteria(Arquivo.class);
 		criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));
 		criteria.add(Restrictions.eq("nomeArquivo", nomeArquivo));
+		criteria.setMaxResults(1);
+		return Arquivo.class.cast(criteria.uniqueResult());
+	}
+	
+	@Transactional(readOnly = true)
+	public Arquivo buscarArquivoEnviadoDataAtual(Instituicao instituicao) {
+		Criteria criteria = getCriteria(Arquivo.class);
+		criteria.add(Restrictions.eq("instituicaoEnvio", instituicao));
+		criteria.add(Restrictions.eq("dataEnvio", new LocalDate()));
 		criteria.setMaxResults(1);
 		return Arquivo.class.cast(criteria.uniqueResult());
 	}

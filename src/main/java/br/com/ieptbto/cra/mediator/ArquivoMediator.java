@@ -106,8 +106,12 @@ public class ArquivoMediator extends BaseMediator {
 				tiposArquivo, situacoesArquivos);
 	}
 
-	public Arquivo buscarArquivoEnviado(Usuario usuario, String nomeArquivo) {
-		return arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(usuario.getInstituicao(), nomeArquivo);
+	public Arquivo buscarArquivoPorNomeInstituicaoEnvio(Usuario usuario, String nomeArquivo) {
+		return arquivoDAO.buscarArquivoPorNomeInstituicaoEnvio(usuario.getInstituicao(), nomeArquivo);
+	}
+	
+	public Arquivo buscarArquivoEnviadoConvenio(Usuario usuario) {
+		return arquivoDAO.buscarArquivoEnviadoDataAtual(usuario.getInstituicao());
 	}
 
 	/**

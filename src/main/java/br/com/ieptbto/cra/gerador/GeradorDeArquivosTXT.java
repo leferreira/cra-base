@@ -18,8 +18,8 @@ import br.com.ieptbto.cra.entidade.vo.RemessaDesistenciaProtestoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
-import br.com.ieptbto.cra.entidade.vo.retornoRecebimentoEmpresa.ArquivoRecebimentoEmpresaVO;
-import br.com.ieptbto.cra.entidade.vo.retornoRecebimentoEmpresa.RegistroRetornoRecebimentoVO;
+import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.ArquivoRecebimentoEmpresaVO;
+import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.RegistroRetornoRecebimentoVO;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.FabricaDeRegistroTXT;
 

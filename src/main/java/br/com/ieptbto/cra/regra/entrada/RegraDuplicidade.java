@@ -75,7 +75,7 @@ public class RegraDuplicidade extends RegraEntrada {
 	}
 
 	private void verificarExistencia() {
-		if (arquivoDAO.buscarArquivosPorNomeArquivoInstituicaoEnvio(instituicaoEnvio, arquivo.getNomeArquivo()) != null) {
+		if (arquivoDAO.buscarArquivoPorNomeInstituicaoEnvio(instituicaoEnvio, arquivo.getNomeArquivo()) != null) {
 			throw new InfraException("Não foi possível importar, pois, o arquivo [ " + arquivo.getNomeArquivo() + " ] já foi enviado para a CRA !");
 		}
 	}

@@ -31,7 +31,7 @@ import br.com.ieptbto.cra.enumeration.TipoCampo51;
 @org.hibernate.annotations.Table(appliesTo = "TB_INSTITUICAO")
 public class Instituicao extends AbstractEntidade<Instituicao> {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1;  
 	private int id;
 	private String nomeFantasia;
 	private String razaoSocial;
@@ -51,16 +51,16 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	private String numeroContaCorrente;
 	private String codigoCartorio;
 	private BigDecimal valorConfirmacao;
-	private Boolean situacao;
+	private boolean situacao;
 	private Boolean seloDiferido;
 	private Boolean taxaCra;
 	private Boolean verificacaoManual;
 	private Municipio municipio;
 	private TipoCampo51 tipoCampo51;
-	private Boolean layoutRetornoRecebimentoEmpresa;
-	private Boolean oficioDesistenciaCancelamentoObrigatorio;
-	private Boolean setoresConvenio;
-	private Boolean administrarEmpresasFiliadas;
+	private boolean layoutRetornoRecebimentoEmpresa;
+	private boolean oficioDesistenciaCancelamentoObrigatorio;
+	private boolean setoresConvenio;
+	private boolean administrarEmpresasFiliadas;
 	private Boolean retornoCancelamento;
 	private TipoBatimento tipoBatimento;
 	private LayoutPadraoXML layoutPadraoXML;
@@ -137,8 +137,8 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	}
 
 	@Column(name = "SITUACAO")
-	public Boolean getSituacao() {
-		return (situacao == null) ? false : situacao;
+	public boolean getSituacao() {
+		return situacao;
 	}
 
 	@Column(name = "FAVORECIDO")
@@ -179,13 +179,13 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	}
 
 	@Column(name = "SETORES_CONVENIO")
-	public Boolean getSetoresConvenio() {
-		return (setoresConvenio == null) ? false : setoresConvenio;
+	public boolean getSetoresConvenio() {
+		return setoresConvenio;
 	}
 
 	@Column(name = "ADMINISTRAR_EMPRESAS_FILIADAS")
-	public Boolean getAdministrarEmpresasFiliadas() {
-		return (administrarEmpresasFiliadas == null) ? false : administrarEmpresasFiliadas;
+	public boolean getAdministrarEmpresasFiliadas() {
+		return administrarEmpresasFiliadas;
 	}
 	
 	/**
@@ -210,13 +210,13 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 	}
 
 	@Column(name = "LAYOUT_RETORNO_RECEBIMENTO_EMPRESA")
-	public Boolean getLayoutRetornoRecebimentoEmpresa() {
-		return (layoutRetornoRecebimentoEmpresa == null) ? false : layoutRetornoRecebimentoEmpresa;
+	public boolean getLayoutRetornoRecebimentoEmpresa() {
+		return layoutRetornoRecebimentoEmpresa;
 	}
 
 	@Column(name = "OFICIO_DESISTENCIA_CANCELAMENTO_OBRIGATORIO")
-	public Boolean getOficioDesistenciaCancelamentoObrigatorio() {
-		return (oficioDesistenciaCancelamentoObrigatorio == null) ? false : oficioDesistenciaCancelamentoObrigatorio;
+	public boolean getOficioDesistenciaCancelamentoObrigatorio() {
+		return oficioDesistenciaCancelamentoObrigatorio;
 	}
 
 	@Transient
@@ -366,7 +366,7 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		this.valorConfirmacao = valorConfirmacao;
 	}
 
-	public void setSituacao(Boolean situacao) {
+	public void setSituacao(boolean situacao) {
 		this.situacao = situacao;
 	}
 
@@ -390,19 +390,19 @@ public class Instituicao extends AbstractEntidade<Instituicao> {
 		this.tipoCampo51 = tipoCampo51;
 	}
 
-	public void setLayoutRetornoRecebimentoEmpresa(Boolean layoutRetornoRecebimentoEmpresa) {
+	public void setLayoutRetornoRecebimentoEmpresa(boolean layoutRetornoRecebimentoEmpresa) {
 		this.layoutRetornoRecebimentoEmpresa = layoutRetornoRecebimentoEmpresa;
 	}
 
-	public void setOficioDesistenciaCancelamentoObrigatorio(Boolean oficioDesistenciaCancelamentoObrigatorio) {
+	public void setOficioDesistenciaCancelamentoObrigatorio(boolean oficioDesistenciaCancelamentoObrigatorio) {
 		this.oficioDesistenciaCancelamentoObrigatorio = oficioDesistenciaCancelamentoObrigatorio;
 	}
 
-	public void setSetoresConvenio(Boolean setoresConvenio) {
+	public void setSetoresConvenio(boolean setoresConvenio) {
 		this.setoresConvenio = setoresConvenio;
 	}
 
-	public void setAdministrarEmpresasFiliadas(Boolean administrarEmpresasFiliadas) {
+	public void setAdministrarEmpresasFiliadas(boolean administrarEmpresasFiliadas) {
 		this.administrarEmpresasFiliadas = administrarEmpresasFiliadas;
 	}
 	
