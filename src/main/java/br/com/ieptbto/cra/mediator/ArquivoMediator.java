@@ -42,6 +42,7 @@ import br.com.ieptbto.cra.entidade.StatusArquivo;
 import br.com.ieptbto.cra.entidade.TipoArquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.view.ViewArquivoPendente;
+import br.com.ieptbto.cra.entidade.vo.ArquivoRemessaConvenioVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.enumeration.LayoutArquivo;
 import br.com.ieptbto.cra.enumeration.StatusDownload;
@@ -49,6 +50,7 @@ import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
+import br.com.ieptbto.cra.processador.ProcessadorArquivoConvenio;
 
 /**
  * @author Thasso Araújo
@@ -58,25 +60,27 @@ import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 public class ArquivoMediator extends BaseMediator {
 
 	@Autowired
-	ArquivoDAO arquivoDAO;
+	private ArquivoDAO arquivoDAO;
 	@Autowired
-	RemessaDAO remessaDAO;
+	private RemessaDAO remessaDAO;
 	@Autowired
-	TipoArquivoDAO tipoArquivoDAO;
+	private TipoArquivoDAO tipoArquivoDAO;
 	@Autowired
-	InstituicaoDAO instituicaoDAO;
+	private InstituicaoDAO instituicaoDAO;
 	@Autowired
-	DesistenciaDAO desistenciaDAO;
+	private DesistenciaDAO desistenciaDAO;
 	@Autowired
-	CancelamentoDAO cancelamentoDAO;
+	private CancelamentoDAO cancelamentoDAO;
 	@Autowired
-	MunicipioDAO municipioDAO;
+	private MunicipioDAO municipioDAO;
 	@Autowired
-	AutorizacaoCancelamentoDAO autorizacaoDAO;
+	private AutorizacaoCancelamentoDAO autorizacaoDAO;
 	@Autowired
-	ProcessadorArquivo processadorArquivo;
+	private ProcessadorArquivo processadorArquivo;
 	@Autowired
-	ConversorRemessaArquivo conversorRemessaArquivo;
+	private ProcessadorArquivoConvenio processadorArquivoConvenio;
+	@Autowired
+	private ConversorRemessaArquivo conversorRemessaArquivo;
 
 	@Transactional
 	public Arquivo buscarArquivoPorPK(Arquivo arquivo) {
@@ -231,6 +235,35 @@ public class ArquivoMediator extends BaseMediator {
 		arquivo.setDataRecebimento(new LocalDate().toDate());
 
 		arquivo = processadorArquivo.processarArquivoWS(arquivoRecebido, arquivo, erros);
+		if (erros.isEmpty()) {
+			arquivo = arquivoDAO.salvar(arquivo, usuario, erros);
+		}
+		return arquivo;
+	}
+
+	/**
+	 * Salvar arquivo de remessa dos convênios pelo ws.
+	 * 
+	 * @param arquivoRecebido
+	 * @param usuario
+	 * @param nomeArquivo
+	 * @return MensagemCra
+	 */
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
+	public Arquivo salvarWSConvenio(ArquivoRemessaConvenioVO arquivoVO, Usuario usuario, String nomeArquivo, List<Exception> erros) {
+		Arquivo arquivo = new Arquivo();
+		arquivo.setNomeArquivo(nomeArquivo);
+		arquivo.setTipoArquivo(tipoArquivoDAO.buscarTipoArquivo(nomeArquivo));
+		arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoCRA.CRA.toString()));
+		arquivo.setUsuarioEnvio(usuario);
+		arquivo.setInstituicaoEnvio(usuario.getInstituicao());
+		arquivo.setStatusArquivo(setStatusArquivo());
+		arquivo.setRemessas(new ArrayList<Remessa>());
+		arquivo.setHoraEnvio(new LocalTime());
+		arquivo.setDataEnvio(new LocalDate());
+		arquivo.setDataRecebimento(new LocalDate().toDate());
+
+		arquivo = processadorArquivoConvenio.processarArquivoWS(arquivoVO, arquivo, erros);
 		if (erros.isEmpty()) {
 			arquivo = arquivoDAO.salvar(arquivo, usuario, erros);
 		}

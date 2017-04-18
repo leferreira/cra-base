@@ -1,4 +1,4 @@
-package br.com.ieptbto.cra.processador;
+package br.com.ieptbto.cra.conversor.convenio;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -35,6 +35,7 @@ import br.com.ieptbto.cra.mediator.AvalistaMediator;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.mediator.RemessaMediator;
 import br.com.ieptbto.cra.mediator.TipoArquivoMediator;
+import br.com.ieptbto.cra.processador.Processador;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
@@ -44,7 +45,7 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
  */
 @SuppressWarnings("rawtypes")
 @Service
-public class ProcessadorRemessaConveniada extends Processador {
+public class ConversorTituloCovenioArquivo extends Processador {
 
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
@@ -61,7 +62,12 @@ public class ProcessadorRemessaConveniada extends Processador {
 	private HashMap<String, Arquivo> mapaArquivos;
 	private List<Remessa> remessas;
 	private List<Arquivo> arquivos;
-
+	
+	/**
+	 * @param titulosConvenios
+	 * @param usuario
+	 * @return
+	 */
 	public List<Arquivo> processarRemessa(List<TituloFiliado> titulosConvenios, Usuario usuario) {
 		this.usuario = usuario;
 		this.mapaTitulos = null;

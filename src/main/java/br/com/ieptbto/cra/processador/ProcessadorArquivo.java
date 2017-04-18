@@ -88,7 +88,7 @@ public class ProcessadorArquivo extends Processador {
 		logger.info("Fim processamento arquivo via WS " + arquivo.getNomeArquivo() + " do usuário " + usuario.getLogin());
 		return arquivo;
 	}
-
+	
 	/**
 	 * Métódos de download B,C,R TXT Para Instituicao e Convênios
 	 * 

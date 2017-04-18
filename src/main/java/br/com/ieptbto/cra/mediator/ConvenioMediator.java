@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.ieptbto.cra.conversor.convenio.ConversorTituloCovenioArquivo;
 import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.dao.AutorizacaoCancelamentoDAO;
 import br.com.ieptbto.cra.dao.CancelamentoDAO;
@@ -18,7 +19,6 @@ import br.com.ieptbto.cra.entidade.TituloFiliado;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.processador.ProcessadorDesistenciaCancelamentoConvenio;
-import br.com.ieptbto.cra.processador.ProcessadorRemessaConveniada;
 
 /**
  * @author Thasso Araújo
@@ -36,7 +36,7 @@ public class ConvenioMediator extends BaseMediator {
 	@Autowired
 	private AutorizacaoCancelamentoDAO autorizacaoCancelamentoDAO;
 	@Autowired
-	private ProcessadorRemessaConveniada processadorRemessaConveniada;
+	private ConversorTituloCovenioArquivo processadorRemessaConveniada;
 	@Autowired
 	private ProcessadorDesistenciaCancelamentoConvenio processadorDesistenciaCancelamentoConveniada;
 

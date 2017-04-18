@@ -5,8 +5,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
+import br.com.ieptbto.cra.conversor.DateConversor;
 import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
 import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
+import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
  * 
@@ -39,7 +42,7 @@ public class TituloConvenioVO extends AbstractArquivoVO {
 
 	@XmlAttribute(name = "t06")
 	@IAtributoArquivo(ordem = 6, posicao = 0, formato = " ", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 20, descricao = "")
-	private String municipioDevedor;
+	private String cidadeDevedor;
 
 	@XmlAttribute(name = "t07")
 	@IAtributoArquivo(ordem = 7, posicao = 0, formato = " ", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 20, descricao = "")
@@ -83,6 +86,9 @@ public class TituloConvenioVO extends AbstractArquivoVO {
 	}
 
 	public String getDataEmissao() {
+		if (dataEmissao != null && dataEmissao.contains("/")) {
+			this.dataEmissao = new DateConversor().getValorConvertidoParaString(DataUtil.stringToLocalDate(dataEmissao));
+		}
 		return dataEmissao;
 	}
 
@@ -91,6 +97,9 @@ public class TituloConvenioVO extends AbstractArquivoVO {
 	}
 
 	public String getNomeDevedor() {
+		if (nomeDevedor != null) {
+			nomeDevedor = RemoverAcentosUtil.removeAcentos(nomeDevedor).toUpperCase();
+		}
 		return nomeDevedor;
 	}
 
@@ -107,6 +116,9 @@ public class TituloConvenioVO extends AbstractArquivoVO {
 	}
 
 	public String getEnderecoDevedor() {
+		if (enderecoDevedor != null) {
+			enderecoDevedor = RemoverAcentosUtil.removeAcentos(enderecoDevedor).toUpperCase();
+		}
 		return enderecoDevedor;
 	}
 
@@ -114,15 +126,21 @@ public class TituloConvenioVO extends AbstractArquivoVO {
 		this.enderecoDevedor = enderecoDevedor;
 	}
 
-	public String getMunicipioDevedor() {
-		return municipioDevedor;
+	public String getCidadeDevedor() {
+		if (cidadeDevedor != null) {
+			cidadeDevedor = RemoverAcentosUtil.removeAcentos(cidadeDevedor).toUpperCase();
+		}
+		return cidadeDevedor;
 	}
 
-	public void setMunicipioDevedor(String municipioDevedor) {
-		this.municipioDevedor = municipioDevedor;
+	public void setCidadeDevedor(String cidadeDevedor) {
+		this.cidadeDevedor = cidadeDevedor;
 	}
 
 	public String getBairroDevedor() {
+		if (bairroDevedor != null) {
+			bairroDevedor = RemoverAcentosUtil.removeAcentos(bairroDevedor).toUpperCase();
+		}
 		return bairroDevedor;
 	}
 
@@ -131,6 +149,9 @@ public class TituloConvenioVO extends AbstractArquivoVO {
 	}
 
 	public String getCepDevedor() {
+		if (cepDevedor != null) {
+			cepDevedor = cepDevedor.replace(".", "").replace("-", "").trim();
+		}
 		return cepDevedor;
 	}
 

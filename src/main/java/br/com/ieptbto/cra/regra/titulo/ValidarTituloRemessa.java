@@ -25,7 +25,5 @@ public class ValidarTituloRemessa extends RegraTitulo {
 
 	@Override
 	protected void executar() {
-		// TODO Auto-generated method stub
-
 	}
 }

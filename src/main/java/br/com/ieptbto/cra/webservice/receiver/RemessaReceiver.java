@@ -272,17 +272,15 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 	 */
 	public AbstractMensagemVO receberRemessaConvenio(Usuario usuario, String nomeArquivo, String dados) {
 		List<Exception> erros = new ArrayList<Exception>();
-		//ArquivoRemessaConvenioVO remessaConvenioVO = converterStringArquivoConvenioVO(dados);
+		ArquivoRemessaConvenioVO remessaConvenioVO = converterStringArquivoConvenioVO(dados);
 		
-		//Arquivo arquivo = arquivoMediator.salvarWS(remessasVO, usuario, nomeArquivo, erros);
-		Arquivo arquivo = new Arquivo();
+		Arquivo arquivo = arquivoMediator.salvarWSConvenio(remessaConvenioVO, usuario, nomeArquivo, erros);
 		if (!erros.isEmpty()) {
 			return gerarRespostaErrosRemessa(arquivo, usuario, erros);
 		}
 		return gerarRespostaSucesso(arquivo, usuario);
 	}
 	
-	@SuppressWarnings("unused")
 	private ArquivoRemessaConvenioVO converterStringArquivoConvenioVO(String dados) {
 		JAXBContext context;
 
