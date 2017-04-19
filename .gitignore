@@ -4,5 +4,7 @@
 /.tern-project
 /.settings/
 /.gitignore
+/.idea/
 /bin/
 /README.md
+/cra-base.iml
