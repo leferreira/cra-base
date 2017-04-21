@@ -1,9 +1,11 @@
 package br.com.ieptbto.cra.util;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 
+import br.com.ieptbto.cra.conversor.BigDecimalConversor;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -20,43 +22,42 @@ public class RemoverAcentosUtil implements Serializable {
 		System.out.println(RemoverAcentosUtil.removeAcentos("t♫e£s↓t♀e• m♠u↨i♫t►o  l*o#u♂c?o  '"));
 	}
 
-	public static String removeAcentos(String retorno) {
+	public static String removeAcentos(String text) {
+		if (text != null) {
+			if (!StringUtils.isEmpty(text.trim())) {
+				text = text.replaceAll("[ÂÀÁÄÃ]", "A");
+				text = text.replaceAll("[âãàáä]", "a");
+				text = text.replaceAll("[ÊÈÉË]", "E");
+				text = text.replaceAll("[êèéë]", "e");
+				text = text.replaceAll("[ÎÍÌÏ]", "I");
+				text = text.replaceAll("[îíìï]", "i");
+				text = text.replaceAll("[ÔÕÒÓÖ]", "O");
+				text = text.replaceAll("[ôõòóö]", "o");
+				text = text.replaceAll("[ÛÙÚÜ]", "U");
+				text = text.replaceAll("[ûúùü]", "u");
+				text = text.replaceAll("Ç", "C");
+				text = text.replaceAll("ç", "c");
+				text = text.replaceAll("[ýÿ]", "y");
+				text = text.replaceAll("Ý", "Y");
+				text = text.replaceAll("ñ", "n");
+				text = text.replaceAll("Ñ", "N");
+				text = text.replace("*", " ");
+				text = text.replace("º", " ");
+				text = text.replace("ª", " ");
+				text = text.replace("�", "");
+				text = text.replace("_", " ");
+				text = text.replace("#", " ");
+				text = text.replace("?", " ");
+				text = text.replace("'", "");
 
-		if (retorno != null) {
-			if (!StringUtils.isEmpty(retorno.trim())) {
-				retorno = retorno.replaceAll("[ÂÀÁÄÃ]", "A");
-				retorno = retorno.replaceAll("[âãàáä]", "a");
-				retorno = retorno.replaceAll("[ÊÈÉË]", "E");
-				retorno = retorno.replaceAll("[êèéë]", "e");
-				retorno = retorno.replaceAll("[ÎÍÌÏ]", "I");
-				retorno = retorno.replaceAll("[îíìï]", "i");
-				retorno = retorno.replaceAll("[ÔÕÒÓÖ]", "O");
-				retorno = retorno.replaceAll("[ôõòóö]", "o");
-				retorno = retorno.replaceAll("[ÛÙÚÜ]", "U");
-				retorno = retorno.replaceAll("[ûúùü]", "u");
-				retorno = retorno.replaceAll("Ç", "C");
-				retorno = retorno.replaceAll("ç", "c");
-				retorno = retorno.replaceAll("[ýÿ]", "y");
-				retorno = retorno.replaceAll("Ý", "Y");
-				retorno = retorno.replaceAll("ñ", "n");
-				retorno = retorno.replaceAll("Ñ", "N");
-				retorno = retorno.replace("*", " ");
-				retorno = retorno.replace("º", " ");
-				retorno = retorno.replace("ª", " ");
-				retorno = retorno.replace("�", "");
-				retorno = retorno.replace("_", " ");
-				retorno = retorno.replace("#", " ");
-				retorno = retorno.replace("?", " ");
-				retorno = retorno.replace("'", "");
-
-				String nfdNormalizedString = Normalizer.normalize(retorno, Normalizer.Form.NFD);
+				String nfdNormalizedString = Normalizer.normalize(text, Normalizer.Form.NFD);
 				Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-				retorno = pattern.matcher(nfdNormalizedString).replaceAll(" ");
+				text = pattern.matcher(nfdNormalizedString).replaceAll(" ");
 
 				pattern = Pattern.compile("[^\\p{ASCII}]");
-				retorno = pattern.matcher(nfdNormalizedString).replaceAll(" ");
+				text = pattern.matcher(nfdNormalizedString).replaceAll(" ");
 			}
 		}
-		return retorno;
+		return text;
 	}
 }

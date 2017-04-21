@@ -10,9 +10,7 @@ import br.com.ieptbto.cra.error.CodigoErro;
  */
 public class TituloException extends RuntimeException {
 
-	/** **/
 	private static final long serialVersionUID = 1L;
-
 	private String nossoNumero;
 	private String numeroSequencialRegistro;
 	private Integer numeroProtocoloCartorio;
@@ -28,7 +26,7 @@ public class TituloException extends RuntimeException {
 		this.numeroSequencialRegistro = sequencialRegistro;
 	}
 
-	public String getDescricao() {
+    public String getDescricao() {
 		if (descricao == null) {
 			descricao = StringUtils.EMPTY;
 		}

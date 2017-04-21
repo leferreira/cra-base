@@ -1,5 +1,7 @@
 package br.com.ieptbto.cra.enumeration;
 
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+
 public enum CraAcao {
 
 	ACESSO_CRA("Ação padrão CRA.", "", ""),
@@ -57,6 +59,23 @@ public enum CraAcao {
 		}
 		return CraAcao.ACESSO_CRA;
 	}
+
+    public static CraAcao getAcaoEnvio(TipoArquivoFebraban tipo) {
+        if (TipoArquivoFebraban.REMESSA == tipo) {
+            return CraAcao.ENVIO_ARQUIVO_REMESSA;
+        } else if (TipoArquivoFebraban.CONFIRMACAO == tipo) {
+            return CraAcao.ENVIO_ARQUIVO_CONFIRMACAO;
+        } else if (TipoArquivoFebraban.RETORNO == tipo) {
+            return CraAcao.ENVIO_ARQUIVO_RETORNO;
+        } else if (TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO == tipo) {
+            return CraAcao.ENVIO_ARQUIVO_DESISTENCIA_PROTESTO;
+        } else if (TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO == tipo) {
+            return CraAcao.ENVIO_ARQUIVO_CANCELAMENTO_PROTESTO;
+        } else if (TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO == tipo) {
+            return CraAcao.ENVIO_ARQUIVO_AUTORIZACAO_CANCELAMENTO;
+        }
+        return CraAcao.ACESSO_CRA;
+    }
 
 	@Override
 	public String toString() {

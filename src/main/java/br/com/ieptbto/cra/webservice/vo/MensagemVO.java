@@ -23,7 +23,22 @@ public class MensagemVO extends AbstractMensagemVO {
 	@XmlAttribute(name = "municipio")
 	private String municipio;
 
-	public String getDescricao() {
+    @XmlAttribute(name = "nosso_numero")
+    private String nossoNumero;
+
+    @XmlAttribute(name = "numero_protocolo_cartorio")
+    private Integer numeroProtocoloCartorio;
+
+    @XmlAttribute(name = "numero_titulo")
+    private String numeroTitulo;
+
+    @XmlAttribute(name = "nome_devedor")
+    private String nomeDevedor;
+
+    @XmlAttribute(name = "numero_sequencial_registro")
+    private int numeroSequencialRegistro;
+
+    public String getDescricao() {
 		return descricao;
 	}
 
@@ -46,15 +61,6 @@ public class MensagemVO extends AbstractMensagemVO {
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
-
-	@XmlAttribute(name = "nosso_numero")
-	private String nossoNumero;
-
-	@XmlAttribute(name = "numero_sequencial_registro")
-	private int numeroSequencialRegistro;
-
-	@XmlAttribute(name = "numero_protocolo_cartorio")
-	private Integer numeroProtocoloCartorio;
 
 	public String getNossoNumero() {
 		return nossoNumero;
@@ -79,4 +85,20 @@ public class MensagemVO extends AbstractMensagemVO {
 	public void setNumeroProtocoloCartorio(Integer numeroProtocoloCartorio) {
 		this.numeroProtocoloCartorio = numeroProtocoloCartorio;
 	}
+
+    public String getNumeroTitulo() {
+        return numeroTitulo;
+    }
+
+    public void setNumeroTitulo(String numeroTitulo) {
+        this.numeroTitulo = numeroTitulo;
+    }
+
+    public String getNomeDevedor() {
+        return nomeDevedor;
+    }
+
+    public void setNomeDevedor(String nomeDevedor) {
+        this.nomeDevedor = nomeDevedor;
+    }
 }

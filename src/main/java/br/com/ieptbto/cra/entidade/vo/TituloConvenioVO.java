@@ -1,15 +1,22 @@
 package br.com.ieptbto.cra.entidade.vo;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
-import br.com.ieptbto.cra.conversor.DateConversor;
-import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
+import br.com.ieptbto.cra.conversor.BigDecimalConversor;
+import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.entidade.TituloRemessa;
+import br.com.ieptbto.cra.enumeration.EspecieTituloEntradaManual;
 import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDate;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 
@@ -21,182 +28,218 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 public class TituloConvenioVO extends AbstractArquivoVO {
 
 	@XmlAttribute(name = "t01")
-	@IAtributoArquivo(ordem = 1, posicao = 0, formato = " ", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 11, descricao = "")
+	@IAtributoArquivo(ordem = 1, posicao = 0, formato = " ", tamanho = 11, descricao = "")
 	private String numeroTitulo;
 
 	@XmlAttribute(name = "t02")
-	@IAtributoArquivo(ordem = 2, posicao = 0, formato = " ", posicaoCampoVazio = PosicaoCampoVazio.DIREITO, tamanho = 8, descricao = "")
+	@IAtributoArquivo(ordem = 2, posicao = 0, formato = " ", tamanho = 20, descricao = "")
 	private String dataEmissao;
 
 	@XmlAttribute(name = "t03")
-	@IAtributoArquivo(ordem = 3, posicao = 0, formato = " ", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 45, descricao = "")
+	@IAtributoArquivo(ordem = 3, posicao = 0, formato = " ", tamanho = 45, descricao = "")
 	private String nomeDevedor;
 
 	@XmlAttribute(name = "t04")
-	@IAtributoArquivo(ordem = 4, posicao = 0, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 14, descricao = "")
-	private String numeroIdentificaoDevedor;
+	@IAtributoArquivo(ordem = 4, posicao = 0, formato = "0", tamanho = 30, descricao = "")
+	private String numeroIdentificacaoDevedor;
 
 	@XmlAttribute(name = "t05")
-	@IAtributoArquivo(ordem = 5, posicao = 0, formato = " ", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 45, descricao = "")
+	@IAtributoArquivo(ordem = 5, posicao = 0, formato = " ", tamanho = 45, descricao = "")
 	private String enderecoDevedor;
 
 	@XmlAttribute(name = "t06")
-	@IAtributoArquivo(ordem = 6, posicao = 0, formato = " ", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 20, descricao = "")
+	@IAtributoArquivo(ordem = 6, posicao = 0, formato = " ", tamanho = 20, descricao = "")
 	private String cidadeDevedor;
 
 	@XmlAttribute(name = "t07")
-	@IAtributoArquivo(ordem = 7, posicao = 0, formato = " ", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 20, descricao = "")
+	@IAtributoArquivo(ordem = 7, posicao = 0, formato = " ", tamanho = 20, descricao = "")
 	private String bairroDevedor;
 
 	@XmlAttribute(name = "t08")
-	@IAtributoArquivo(ordem = 8, posicao = 0, formato = "0", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 8, descricao = "")
+	@IAtributoArquivo(ordem = 8, posicao = 0, formato = "0", tamanho = 8, descricao = "")
 	private String cepDevedor;
 
 	@XmlAttribute(name = "t09")
-	@IAtributoArquivo(ordem = 9, posicao = 0, formato = " ", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 11, descricao = "")
+	@IAtributoArquivo(ordem = 9, posicao = 0, formato = " ", tamanho = 11, descricao = "")
 	private String documentoDevedor;
 
 	@XmlAttribute(name = "t10")
-	@IAtributoArquivo(ordem = 10, posicao = 0, formato = " ", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 15, descricao = "")
+	@IAtributoArquivo(ordem = 10, posicao = 0, formato = " ", tamanho = 15, descricao = "")
 	private String nossoNumero;
 
 	@XmlAttribute(name = "t11")
-	@IAtributoArquivo(ordem = 11, posicao = 0, formato = " ", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 19, descricao = "")
+	@IAtributoArquivo(ordem = 11, posicao = 0, formato = " ", tamanho = 19, descricao = "")
 	private String complementoRegistro;
 
 	@XmlAttribute(name = "t12")
-	@IAtributoArquivo(ordem = 12, posicao = 0, formato = " ", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 8, descricao = "")
+	@IAtributoArquivo(ordem = 12, posicao = 0, formato = " ", tamanho = 20, descricao = "")
 	private String dataVencimento;
 
 	@XmlAttribute(name = "t13")
-	@IAtributoArquivo(ordem = 13, posicao = 0, formato = " ", posicaoCampoVazio = PosicaoCampoVazio.ESQUERDO, tamanho = 11, descricao = "")
-	private String valorSaldo;
+	@IAtributoArquivo(ordem = 13, posicao = 0, formato = " ", tamanho = 20, descricao = "")
+	private String saldoTitulo;
 
-	@Override
-	public String getIdentificacaoRegistro() {
-		return TipoIdentificacaoRegistro.TITULO.getConstante();
-	}
+	private Municipio municipio;
 
-	public String getNumeroTitulo() {
-		return numeroTitulo;
-	}
+    @Override
+    public String getIdentificacaoRegistro() {
+        return null;
+    }
 
-	public void setNumeroTitulo(String numeroTitulo) {
-		this.numeroTitulo = numeroTitulo;
-	}
+    public static TituloRemessa createTitulo(Instituicao instituicao, Municipio municipioInsituicao) {
+        TituloRemessa titulo = new TituloRemessa();
+        titulo.setIdentificacaoRegistro(TipoIdentificacaoRegistro.TITULO);
+        titulo.setCodigoPortador(instituicao.getCodigoCompensacao());
+        titulo.setAgenciaCodigoCedente(StringUtils.leftPad(instituicao.getCodigoCompensacao() + DataUtil.getDataAtual(new SimpleDateFormat("ddMMyyyy")), 15, "0"));
+        titulo.setNomeCedenteFavorecido(RemoverAcentosUtil.removeAcentos(instituicao.getRazaoSocial()).toUpperCase());
+        titulo.setNomeSacadorVendedor(RemoverAcentosUtil.removeAcentos(instituicao.getRazaoSocial()).toUpperCase());
+        titulo.setDocumentoSacador(instituicao.getCnpj());
+        titulo.setEnderecoSacadorVendedor(RemoverAcentosUtil.removeAcentos(instituicao.getEndereco()).toUpperCase());
+        titulo.setCidadeSacadorVendedor(RemoverAcentosUtil.removeAcentos(municipioInsituicao.getNomeMunicipio().toUpperCase()));
+        titulo.setUfSacadorVendedor(municipioInsituicao.getUf());
+        titulo.setEnderecoSacadorVendedor(instituicao.getEndereco());
+        titulo.setDataCadastro(new Date());
+        titulo.setCepSacadorVendedor("77000000");
+        titulo.setNumeroControleDevedor(1);
+        titulo.setInformacaoSobreAceite("N");
+        titulo.setTipoMoeda("001");
+        titulo.setTipoEndoso("M");
+        titulo.setEspecieTitulo(EspecieTituloEntradaManual.CDA.getConstante());
+        titulo.setDataOcorrencia(new LocalDate());
+        return titulo;
+    }
 
-	public String getDataEmissao() {
-		if (dataEmissao != null && dataEmissao.contains("/")) {
-			this.dataEmissao = new DateConversor().getValorConvertidoParaString(DataUtil.stringToLocalDate(dataEmissao));
-		}
-		return dataEmissao;
-	}
+    public String getNumeroTitulo() {
+        return numeroTitulo;
+    }
 
-	public void setDataEmissao(String dataEmissao) {
-		this.dataEmissao = dataEmissao;
-	}
+    public void setNumeroTitulo(String numeroTitulo) {
+        this.numeroTitulo = numeroTitulo;
+    }
 
-	public String getNomeDevedor() {
-		if (nomeDevedor != null) {
-			nomeDevedor = RemoverAcentosUtil.removeAcentos(nomeDevedor).toUpperCase();
-		}
-		return nomeDevedor;
-	}
+    public String getDataEmissao() {
+        if (dataEmissao != null) {
+            dataEmissao = dataEmissao.replace("/","");
+        }
+        return dataEmissao;
+    }
 
-	public void setNomeDevedor(String nomeDevedor) {
-		this.nomeDevedor = nomeDevedor;
-	}
+    public void setDataEmissao(String dataEmissao) {
+        this.dataEmissao = dataEmissao;
+    }
 
-	public String getNumeroIdentificaoDevedor() {
-		return numeroIdentificaoDevedor;
-	}
+    public String getNomeDevedor() {
+        return RemoverAcentosUtil.removeAcentos(nomeDevedor).toUpperCase();
+    }
 
-	public void setNumeroIdentificaoDevedor(String numeroIdentificaoDevedor) {
-		this.numeroIdentificaoDevedor = numeroIdentificaoDevedor;
-	}
+    public void setNomeDevedor(String nomeDevedor) {
+        this.nomeDevedor = nomeDevedor;
+    }
 
-	public String getEnderecoDevedor() {
-		if (enderecoDevedor != null) {
-			enderecoDevedor = RemoverAcentosUtil.removeAcentos(enderecoDevedor).toUpperCase();
-		}
-		return enderecoDevedor;
-	}
+    public String getNumeroIdentificacaoDevedor() {
+        if (!StringUtils.isBlank(numeroIdentificacaoDevedor)) {
+            numeroIdentificacaoDevedor = numeroIdentificacaoDevedor.replace("/", "").replace(".", "").replace("-", "");
+        }
+        return numeroIdentificacaoDevedor;
+    }
 
-	public void setEnderecoDevedor(String enderecoDevedor) {
-		this.enderecoDevedor = enderecoDevedor;
-	}
+    public void setNumeroIdentificacaoDevedor(String numeroIdentificacaoDevedor) {
+        this.numeroIdentificacaoDevedor = numeroIdentificacaoDevedor;
+    }
 
-	public String getCidadeDevedor() {
-		if (cidadeDevedor != null) {
-			cidadeDevedor = RemoverAcentosUtil.removeAcentos(cidadeDevedor).toUpperCase();
-		}
-		return cidadeDevedor;
-	}
+    public String getEnderecoDevedor() {
+        return RemoverAcentosUtil.removeAcentos(enderecoDevedor).toUpperCase();
+    }
 
-	public void setCidadeDevedor(String cidadeDevedor) {
-		this.cidadeDevedor = cidadeDevedor;
-	}
+    public void setEnderecoDevedor(String enderecoDevedor) {
+        this.enderecoDevedor = enderecoDevedor;
+    }
 
-	public String getBairroDevedor() {
-		if (bairroDevedor != null) {
-			bairroDevedor = RemoverAcentosUtil.removeAcentos(bairroDevedor).toUpperCase();
-		}
-		return bairroDevedor;
-	}
+    public String getCidadeDevedor() {
+        return RemoverAcentosUtil.removeAcentos(cidadeDevedor).toUpperCase();
+    }
 
-	public void setBairroDevedor(String bairroDevedor) {
-		this.bairroDevedor = bairroDevedor;
-	}
+    public void setCidadeDevedor(String cidadeDevedor) {
+        this.cidadeDevedor = cidadeDevedor;
+    }
 
-	public String getCepDevedor() {
-		if (cepDevedor != null) {
-			cepDevedor = cepDevedor.replace(".", "").replace("-", "").trim();
-		}
-		return cepDevedor;
-	}
+    public String getBairroDevedor() {
+        return RemoverAcentosUtil.removeAcentos(bairroDevedor).toUpperCase();
+    }
 
-	public void setCepDevedor(String cepDevedor) {
-		this.cepDevedor = cepDevedor;
-	}
+    public void setBairroDevedor(String bairroDevedor) {
+        this.bairroDevedor = bairroDevedor;
+    }
 
-	public String getDocumentoDevedor() {
-		return documentoDevedor;
-	}
+    public String getCepDevedor() {
+        if (cepDevedor != null) {
+            cepDevedor = cepDevedor.replace("/", "").replace("-", "").replace(".", "");
+        }
+        return cepDevedor;
+    }
 
-	public void setDocumentoDevedor(String documentoDevedor) {
-		this.documentoDevedor = documentoDevedor;
-	}
+    public void setCepDevedor(String cepDevedor) {
+        this.cepDevedor = cepDevedor;
+    }
 
-	public String getNossoNumero() {
-		return nossoNumero;
-	}
+    public String getDocumentoDevedor() {
+        return RemoverAcentosUtil.removeAcentos(documentoDevedor);
+    }
 
-	public void setNossoNumero(String nossoNumero) {
-		this.nossoNumero = nossoNumero;
-	}
+    public void setDocumentoDevedor(String documentoDevedor) {
+        this.documentoDevedor = documentoDevedor;
+    }
 
-	public String getComplementoRegistro() {
-		return complementoRegistro;
-	}
+    public String getNossoNumero() {
+        if (nossoNumero != null && nossoNumero.length() > 15) {
+            nossoNumero = nossoNumero.substring(0, 14);
+        }
+        return nossoNumero;
+    }
 
-	public void setComplementoRegistro(String complementoRegistro) {
-		this.complementoRegistro = complementoRegistro;
-	}
+    public void setNossoNumero(String nossoNumero) {
+        this.nossoNumero = nossoNumero;
+    }
 
-	public String getDataVencimento() {
-		return dataVencimento;
-	}
+    public String getComplementoRegistro() {
+        return RemoverAcentosUtil.removeAcentos(complementoRegistro);
+    }
 
-	public void setDataVencimento(String dataVencimento) {
-		this.dataVencimento = dataVencimento;
-	}
+    public void setComplementoRegistro(String complementoRegistro) {
+        this.complementoRegistro = complementoRegistro;
+    }
 
-	public String getValorSaldo() {
-		return valorSaldo;
-	}
+    public String getDataVencimento() {
+        if (dataVencimento != null) {
+            dataVencimento = dataVencimento.replace("/","");
+        }
+        return dataVencimento;
+    }
 
-	public void setValorSaldo(String valorSaldo) {
-		this.valorSaldo = valorSaldo;
-	}
+    public void setDataVencimento(String dataVencimento) {
+        this.dataVencimento = dataVencimento;
+    }
 
+    public String getSaldoTitulo() {
+        if (saldoTitulo != null) {
+            saldoTitulo = saldoTitulo.replace(".", ",");
+        }
+        return saldoTitulo;
+    }
+
+    public void setSaldoTitulo(String valorSaldo) {
+        this.saldoTitulo = valorSaldo;
+    }
+
+    public Municipio getMunicipio() {
+        return municipio;
+    }
+
+    public void setMunicipio(Municipio municipio) {
+        this.municipio = municipio;
+    }
+
+    public String asString(){
+        return nomeDevedor + " - " + numeroTitulo + " - " + saldoTitulo;
+    }
 }

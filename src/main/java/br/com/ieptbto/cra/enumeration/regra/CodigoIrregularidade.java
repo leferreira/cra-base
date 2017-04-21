@@ -82,7 +82,7 @@ public enum CodigoIrregularidade {
 	private String codigoIrregularidade;
 	private String motivo;
 
-	private CodigoIrregularidade(String codigoIrregularidade, String motivo) {
+	CodigoIrregularidade(String codigoIrregularidade, String motivo) {
 		this.codigoIrregularidade = codigoIrregularidade;
 		this.motivo = motivo;
 	}

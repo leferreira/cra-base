@@ -244,7 +244,6 @@ public class ArquivoMediator extends BaseMediator {
 	/**
 	 * Salvar arquivo de remessa dos convênios pelo ws.
 	 * 
-	 * @param arquivoRecebido
 	 * @param usuario
 	 * @param nomeArquivo
 	 * @return MensagemCra
@@ -252,7 +251,8 @@ public class ArquivoMediator extends BaseMediator {
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public Arquivo salvarWSConvenio(ArquivoRemessaConvenioVO arquivoVO, Usuario usuario, String nomeArquivo, List<Exception> erros) {
 		Arquivo arquivo = new Arquivo();
-		arquivo.setNomeArquivo(nomeArquivo);
+		arquivo.setNomeArquivo(TipoArquivoFebraban.generateNomeArquivoFebraban
+                (TipoArquivoFebraban.REMESSA, usuario.getInstituicao().getCodigoCompensacao(), "1"));
 		arquivo.setTipoArquivo(tipoArquivoDAO.buscarTipoArquivo(nomeArquivo));
 		arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoCRA.CRA.toString()));
 		arquivo.setUsuarioEnvio(usuario);
@@ -262,8 +262,7 @@ public class ArquivoMediator extends BaseMediator {
 		arquivo.setHoraEnvio(new LocalTime());
 		arquivo.setDataEnvio(new LocalDate());
 		arquivo.setDataRecebimento(new LocalDate().toDate());
-
-		arquivo = processadorArquivoConvenio.processarArquivoWS(arquivoVO, arquivo, erros);
+		arquivo = processadorArquivoConvenio.processarArquivoWS(arquivoVO, arquivo, usuario, erros);
 		if (erros.isEmpty()) {
 			arquivo = arquivoDAO.salvar(arquivo, usuario, erros);
 		}

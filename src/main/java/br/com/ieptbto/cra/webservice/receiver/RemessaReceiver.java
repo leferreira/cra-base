@@ -10,6 +10,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import br.com.ieptbto.cra.exception.TituloConvenioException;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -228,6 +229,16 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 
 				descricaoLog = descricaoLog + "<li>" + exception.getDescricao() + ";</li>";
 			}
+            if (TituloConvenioException.class.isInstance(ex)) {
+                TituloConvenioException exception = TituloConvenioException.class.cast(ex);
+                MensagemVO mensagem = new MensagemVO();
+                mensagem.setCodigo(exception.getCodigoErro().getCodigo());
+                mensagem.setDescricao(exception.getDescricao());
+                mensagem.setNomeDevedor(exception.getNomeDevedor());
+                mensagem.setNumeroTitulo(exception.getNumeroTitulo());
+                mensagens.add(mensagem);
+                descricaoLog = descricaoLog + "<li>" + exception.getDescricao() + ";</li>";
+            }
 		}
 		descricaoLog = descricaoLog + "</ul>";
 		if (!erros.isEmpty()) {
@@ -280,8 +291,8 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 		}
 		return gerarRespostaSucesso(arquivo, usuario);
 	}
-	
-	private ArquivoRemessaConvenioVO converterStringArquivoConvenioVO(String dados) {
+
+    private ArquivoRemessaConvenioVO converterStringArquivoConvenioVO(String dados) {
 		JAXBContext context;
 
 		ArquivoRemessaConvenioVO arquivo = null;
@@ -290,14 +301,15 @@ public class RemessaReceiver extends AbstractArquivoReceiver {
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			String xmlRecebido = "";
 
-			Scanner scanner = new Scanner(new ByteArrayInputStream(new String(dados).getBytes()));
+			Scanner scanner = new Scanner(new ByteArrayInputStream(dados.getBytes()));
 			while (scanner.hasNext()) {
-				String line = scanner.nextLine().replaceAll("& ", "&amp;");
+				String line = scanner.nextLine().replaceAll("& ", "&amp;").replace("\\n\\t", "");
 				xmlRecebido = xmlRecebido + line;
 			}
 			scanner.close();
 			InputStream xml = new ByteArrayInputStream(xmlRecebido.getBytes());
 			arquivo = (ArquivoRemessaConvenioVO) unmarshaller.unmarshal(new InputSource(xml));
+
 		} catch (JAXBException e) {
 			logger.error(e.getMessage(), e);
 			throw new InfraException("Erro ao converter o contéudo xml do arquivo.");

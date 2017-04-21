@@ -85,18 +85,17 @@ public class ArquivoDAO extends AbstractBaseDAO {
 					transaction.rollback();
 					return arquivoProcessado;
 				}
-				transaction.commit();
 
-			} else if (TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
-				salvarDesistenciaProtesto(arquivo, usuario, erros, transaction);
-				transaction.commit();
-				loggerCra.sucess(usuario, CraAcao.ENVIO_ARQUIVO_DESISTENCIA_PROTESTO,
-                        "Arquivo " + arquivo.getNomeArquivo() + ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso.");
-			} else if (TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
-				throw new InfraException("Não foi possivel enviar o Cancelamento de Protesto! Entre em contato com a CRA!");
-			} else if (TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
-				throw new InfraException("Não foi possivel enviar a Autorização de Cancelamento! Entre em contato com a CRA!");
-			}
+            } else if (TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
+                salvarDesistenciaProtesto(arquivo, usuario, erros, transaction);
+            } else if (TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {
+                throw new InfraException("Não foi possivel enviar o Cancelamento de Protesto! Entre em contato com a CRA!");
+            } else if (TipoArquivoFebraban.AUTORIZACAO_DE_CANCELAMENTO.equals(tipoArquivo)) {
+                throw new InfraException("Não foi possivel enviar a Autorização de Cancelamento! Entre em contato com a CRA!");
+            }
+            transaction.commit();
+            loggerCra.sucess(usuario, CraAcao.getAcaoEnvio(tipoArquivo),
+                    "Arquivo " + arquivo.getNomeArquivo() + ", enviado por " + arquivo.getInstituicaoEnvio().getNomeFantasia() + ", recebido com sucesso.");
 
 		} catch (InfraException ex) {
 			transaction.rollback();

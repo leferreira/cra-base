@@ -267,7 +267,6 @@ public class ConversorArquivoFiliado extends ConversorArquivoFiliadoAbstract {
 	}
 
 	/**
-	 * 
 	 * Verifica se a cidade de destino do título existe na base de dados.
 	 * 
 	 * @param cidade

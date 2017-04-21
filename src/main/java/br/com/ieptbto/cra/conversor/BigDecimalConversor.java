@@ -38,6 +38,34 @@ public class BigDecimalConversor extends AbstractConversor<BigDecimal> {
 		}
 	}
 
+    /**
+     * Gera o valor monetário apartir de uma string independente da quantidade de casas
+     * decimais após a vírgula
+     * @param valor
+     * @return bigdecimal
+     */
+    public BigDecimal getValorBigDecimal(String valor) {
+        if (valor == null || StringUtils.trim(valor).isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+
+        if (!valor.matches("\\d+\\,\\d{2}")) {
+            if (valor.contains(",")) {
+                String[] splitValor = valor.split(",");
+                if (splitValor.length > 1) {
+                    splitValor[1] = StringUtils.rightPad(splitValor[1], 2, "0");
+                    valor = splitValor[0] + "," + splitValor[1];
+                } else {
+                    valor = valor + "00";
+                }
+            } else {
+                valor = valor + ",00";
+            }
+        }
+	    return this.getValorConvertido(valor);
+    }
+
+
 	/**
 	 * {@inheritDoc}
 	 */

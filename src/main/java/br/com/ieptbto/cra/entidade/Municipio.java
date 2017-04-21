@@ -61,12 +61,12 @@ public class Municipio extends AbstractEntidade<Municipio> {
 
 	@Column(name = "FAIXA_FINAL_CEPO", length = 10)
 	public String getFaixaFinalCep() {
-		return faixaFinalCep;
+		return faixaFinalCep.replace("-", "").replace(".", "");
 	}
 
 	@Column(name = "FAIXA_INICIAL_CEP", length = 10)
 	public String getFaixaInicialCep() {
-		return faixaInicialCep;
+		return faixaInicialCep.replace("-", "").replace(".", "");
 	}
 
 	public void setNomeMunicipioSemAcento(String nomeMunicipioSemAcento) {
@@ -120,4 +120,25 @@ public class Municipio extends AbstractEntidade<Municipio> {
 		}
 		return false;
 	}
+
+    /**
+     * Verificar de cep se está dentro da faixa do municipio
+     * @param cep
+     * @return boolean
+     */
+    public boolean cepIsValidFromMunicipio(String cep) {
+
+        try {
+            Integer codigoPostal = Integer.class.cast(cep);
+            Integer faixaInicial = Integer.class.cast(getFaixaInicialCep());
+            Integer faixaFinal = Integer.class.cast(faixaFinalCep);
+
+            if (codigoPostal >= faixaInicial && codigoPostal <= faixaFinal) {
+                return true;
+            }
+            return false;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
 }

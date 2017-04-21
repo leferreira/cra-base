@@ -112,12 +112,24 @@ public enum CodigoErro {
 						CARTORIO_TITULO_RETIRADO_SEM_SOLICITACAO("113", "Titulo Retirado pelo cartório sem solicitação de desistência"),
 
 						CARTORIO_CODIGO_PORTADOR_RODAPE_INVALIDO("901", "Número do Código Portador do rodapé inválido"),
-						CARTORIO_NOME_PORTADOR_RODAPE_INVALIDO("902", "Nome do Portador do rodapé inválido");
+						CARTORIO_NOME_PORTADOR_RODAPE_INVALIDO("902", "Nome do Portador do rodapé inválido"),
+
+                        CONVENIO_MUNICIPIO_INVALIDO("0001", "Município inválido ou não pertence ao estado do Tocantins"),
+                        CONVENIO_CEP_DEVEDOR_INVALIDO("0002", "CEP do devedor não pertece a praça de pagamento informada"),
+                        CONVENIO_DATA_EMISSAO_INVALIDA("0003", "Data de emissão inválida"),
+                        CONVENIO_DATA_VENCIMENTO_INVALIDA("0004", "Data vencimento inválida ou vazia"),
+                        CONVENIO_VALOR_SALDO_INVALIDA("0005", "Valor salor inválida"),
+                        CONVENIO_DOCUMENTO_DEVEDOR_INVALIDO("0006", "Documento do devedor inválido"),
+                        CONVENIO_NUMERO_TITULO_INVALIDA("0007", "Número do título inválido"),
+                        CONVENIO_DATA_EMISSAO_MAIOR_QUE_ATUAL("0008", "Data de emissão maior que atual"),
+                        CONVENIO_NOME_DEVEDOR_INVALIDO("0009", "Nome do devedor"),
+                        CONVENIO_DATA_VENCIMENTO_MENOR_QUE_EMISSAO("0010", "Data vencimento menor que emissão"),
+                        CONVENIO_CEP_FORA_DA_FAIXA("0011", "CEP informado está fora da faixa de limite da cidade do devedor");
 
 	private String codigo;
 	private String descricao;
 
-	private CodigoErro(String codigo, String descricao) {
+	CodigoErro(String codigo, String descricao) {
 		this.codigo = codigo;
 		this.descricao = descricao;
 	}

@@ -43,9 +43,7 @@ import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 @org.hibernate.annotations.Table(appliesTo = "TB_TITULO")
 public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled {
 
-	/*** */
 	private static final long serialVersionUID = 1L;
-
 	private int id;
 	private Confirmacao confirmacao;
 	private Retorno retorno;
@@ -53,7 +51,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	private List<PedidoDesistencia> pedidosDesistencia;
 	private List<PedidoCancelamento> pedidosCancelamento;
 	private List<PedidoAutorizacaoCancelamento> pedidosAutorizacaoCancelamento;
-
 	private String nomeCedenteFavorecido;
 	private String nomeSacadorVendedor;
 	private String documentoSacador;

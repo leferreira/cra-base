@@ -47,7 +47,6 @@ public class TituloFiliadoMediator extends BaseMediator {
 	 * 
 	 * @param usuario
 	 * @param titulo
-	 * @param uploadedFile
 	 * @return
 	 */
 	public TituloFiliado salvarTituloConvenio(Usuario usuario, TituloFiliado titulo, ListModel<FileUpload> uploadedFiles) {
