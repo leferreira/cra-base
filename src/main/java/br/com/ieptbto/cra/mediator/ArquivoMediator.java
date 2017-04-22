@@ -253,7 +253,7 @@ public class ArquivoMediator extends BaseMediator {
 		Arquivo arquivo = new Arquivo();
 		arquivo.setNomeArquivo(TipoArquivoFebraban.generateNomeArquivoFebraban
                 (TipoArquivoFebraban.REMESSA, usuario.getInstituicao().getCodigoCompensacao(), "1"));
-		arquivo.setTipoArquivo(tipoArquivoDAO.buscarTipoArquivo(nomeArquivo));
+		arquivo.setTipoArquivo(tipoArquivoDAO.buscarPorTipoArquivo(TipoArquivoFebraban.REMESSA));
 		arquivo.setInstituicaoRecebe(instituicaoDAO.buscarInstituicaoPorNomeFantasia(TipoInstituicaoCRA.CRA.toString()));
 		arquivo.setUsuarioEnvio(usuario);
 		arquivo.setInstituicaoEnvio(usuario.getInstituicao());

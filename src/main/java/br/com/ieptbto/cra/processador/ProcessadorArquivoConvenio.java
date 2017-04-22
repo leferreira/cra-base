@@ -6,16 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import br.com.ieptbto.cra.conversor.BigDecimalConversor;
-import br.com.ieptbto.cra.entidade.*;
-import br.com.ieptbto.cra.enumeration.StatusDownload;
-import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
-import br.com.ieptbto.cra.error.CodigoErro;
-import br.com.ieptbto.cra.exception.TituloConvenioException;
-import br.com.ieptbto.cra.mediator.MunicipioMediator;
-import br.com.ieptbto.cra.util.CpfCnpjUtil;
-import br.com.ieptbto.cra.util.DataUtil;
-import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.springframework.beans.BeanWrapper;
@@ -23,23 +13,39 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.ieptbto.cra.conversor.BigDecimalConversor;
+import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
+import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.entidade.Remessa;
+import br.com.ieptbto.cra.entidade.Rodape;
+import br.com.ieptbto.cra.entidade.Titulo;
+import br.com.ieptbto.cra.entidade.TituloRemessa;
+import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.entidade.vo.ArquivoRemessaConvenioVO;
 import br.com.ieptbto.cra.entidade.vo.TituloConvenioVO;
+import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
+import br.com.ieptbto.cra.error.CodigoErro;
+import br.com.ieptbto.cra.exception.TituloConvenioException;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
+import br.com.ieptbto.cra.mediator.MunicipioMediator;
 import br.com.ieptbto.cra.mediator.RemessaMediator;
-import br.com.ieptbto.cra.mediator.TipoArquivoMediator;
+import br.com.ieptbto.cra.util.CpfCnpjUtil;
+import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
  * @author Thasso Araujo
  *
  */
+@SuppressWarnings("rawtypes")
 @Service
 public class ProcessadorArquivoConvenio extends Processador {
 	
 	@Autowired
 	private InstituicaoMediator instituicaoMediator;
-	@Autowired
-	private TipoArquivoMediator tipoArquivoMediator;
 	@Autowired
 	private RemessaMediator remessaMediator;
     @Autowired
@@ -95,7 +101,7 @@ public class ProcessadorArquivoConvenio extends Processador {
 		this.arquivo.setRemessas(new ArrayList<Remessa>(mapaRemessas.values()));
 	}
 
-    private void gerarRemessa(TituloRemessa titulo, HashMap<Integer, Remessa> mapaRemessas, List<Exception> erros) {
+	private void gerarRemessa(TituloRemessa titulo, HashMap<Integer, Remessa> mapaRemessas, List<Exception> erros) {
        Instituicao instituicaoDestino = instituicaoMediator.buscarInstituicaoPorNomeCidade(titulo.getCidadeDevedor());
        if (instituicaoDestino == null) {
            erros.add(new TituloConvenioException(CodigoErro.CONVENIO_MUNICIPIO_INVALIDO, titulo));
@@ -104,7 +110,7 @@ public class ProcessadorArquivoConvenio extends Processador {
            erros.add(new TituloConvenioException(CodigoErro.CONVENIO_CEP_FORA_DA_FAIXA, titulo));
            return;
        }
-       titulo.setPracaProtesto(instituicaoDestino.getMunicipio().getNomeMunicipio());
+       titulo.setPracaProtesto(instituicaoDestino.getMunicipio().getNomeMunicipio().toUpperCase());
        titulo.setUfDevedor(instituicaoDestino.getMunicipio().getUf());
 
        if (mapaRemessas.containsKey(instituicaoDestino.getId())) {
@@ -116,6 +122,7 @@ public class ProcessadorArquivoConvenio extends Processador {
 
            BigDecimal valorSaldo = remessa.getRodape().getSomatorioValorRemessa().add(titulo.getValorTitulo());
            titulo.setNumeroSequencialArquivo(Integer.toString(remessa.getTitulos().size() + 2));
+           titulo.setRemessa(remessa);
            remessa.getTitulos().add(titulo);
 
            remessa.getCabecalho().setQtdRegistrosRemessa(quantidadeRegistros + 1);
@@ -129,6 +136,7 @@ public class ProcessadorArquivoConvenio extends Processador {
 
        } else {
            Remessa remessa = new Remessa();
+           remessa.setArquivo(arquivo);
            remessa.setDataRecebimento(new LocalDate());
            remessa.setInstituicaoDestino(instituicaoDestino);
            remessa.setInstituicaoOrigem(usuario.getInstituicao());
@@ -136,6 +144,8 @@ public class ProcessadorArquivoConvenio extends Processador {
            remessa.setRodape(generateRodape(remessa));
            remessa.getCabecalho().setRemessa(remessa);
            remessa.setTitulos(new ArrayList<Titulo>());
+           titulo.setNumeroSequencialArquivo(Integer.toString(remessa.getTitulos().size() + 2));
+           titulo.setRemessa(remessa);
            remessa.getTitulos().add(titulo);
            remessa.getRodape().setRemessa(remessa);
            remessa.setStatusDownload(StatusDownload.AGUARDANDO);
@@ -167,7 +177,7 @@ public class ProcessadorArquivoConvenio extends Processador {
         cabecalho.setIdentificacaoTransacaoTipo("TPR");
         cabecalho.setNomePortador(RemoverAcentosUtil.removeAcentos(usuario.getInstituicao().getNomeFantasia()));
         cabecalho.setNumeroCodigoPortador(usuario.getInstituicao().getCodigoCompensacao());
-        cabecalho.setNumeroSequencialRemessa(remessaMediator.getNumeroSequencialConvenio(instituicaoDestino, instituicaoDestino));
+        cabecalho.setNumeroSequencialRemessa(remessaMediator.getNumeroSequencialConvenio(instituicaoDestino, instituicaoDestino) + 1);
         cabecalho.setVersaoLayout("043");
         cabecalho.setQtdTitulosRemessa(1);
         cabecalho.setQtdRegistrosRemessa(1);
@@ -251,6 +261,7 @@ public class ProcessadorArquivoConvenio extends Processador {
         titulo.setDataEmissaoTitulo(dataEmissao);
         titulo.setDataVencimentoTitulo(dataVencimento);
         titulo.setValorTitulo(valorSaldo);
+        titulo.setSaldoTitulo(valorSaldo);
     }
 
     /**

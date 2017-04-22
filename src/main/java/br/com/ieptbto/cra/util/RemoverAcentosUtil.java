@@ -1,11 +1,9 @@
 package br.com.ieptbto.cra.util;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 
-import br.com.ieptbto.cra.conversor.BigDecimalConversor;
 import org.apache.commons.lang.StringUtils;
 
 /**

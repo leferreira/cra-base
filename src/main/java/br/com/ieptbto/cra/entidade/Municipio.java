@@ -129,9 +129,9 @@ public class Municipio extends AbstractEntidade<Municipio> {
     public boolean cepIsValidFromMunicipio(String cep) {
 
         try {
-            Integer codigoPostal = Integer.class.cast(cep);
-            Integer faixaInicial = Integer.class.cast(getFaixaInicialCep());
-            Integer faixaFinal = Integer.class.cast(faixaFinalCep);
+            Long codigoPostal = Long.valueOf(cep);
+            Long faixaInicial = Long.valueOf(faixaInicialCep);
+            Long faixaFinal = Long.valueOf(faixaFinalCep);
 
             if (codigoPostal >= faixaInicial && codigoPostal <= faixaFinal) {
                 return true;
