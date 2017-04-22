@@ -1,15 +1,10 @@
 package br.com.ieptbto.cra.entidade;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
+
+import javax.persistence.*;
 
 @Entity
 @Audited
@@ -61,12 +56,18 @@ public class Municipio extends AbstractEntidade<Municipio> {
 
 	@Column(name = "FAIXA_FINAL_CEPO", length = 10)
 	public String getFaixaFinalCep() {
-		return faixaFinalCep.replace("-", "").replace(".", "");
+	    if (faixaFinalCep != null) {
+            this.faixaFinalCep = faixaFinalCep.replace("-", "").replace(".", "");
+        }
+		return faixaFinalCep;
 	}
 
 	@Column(name = "FAIXA_INICIAL_CEP", length = 10)
 	public String getFaixaInicialCep() {
-		return faixaInicialCep.replace("-", "").replace(".", "");
+        if (faixaInicialCep != null) {
+            this.faixaInicialCep = faixaInicialCep.replace("-", "").replace(".", "");
+        }
+        return faixaInicialCep;
 	}
 
 	public void setNomeMunicipioSemAcento(String nomeMunicipioSemAcento) {

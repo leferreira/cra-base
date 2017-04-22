@@ -1,20 +1,9 @@
 package br.com.ieptbto.cra.entidade;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
+import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
+import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -26,11 +15,10 @@ import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
-import br.com.ieptbto.cra.conversor.arquivo.ConversorTitulo;
-import br.com.ieptbto.cra.entidade.vo.TituloVO;
-import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
-import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
-import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 
@@ -442,11 +430,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.complementoRegistro = complementoRegistro;
 	}
 
-	@Transient
-	public String getChaveTitulo() {
-		return this.getCodigoPortador() + getNossoNumero() + getNumeroTitulo();
-	}
-
 	@Override
 	public int compareTo(TituloRemessa entidade) {
 		CompareToBuilder compareToBuilder = new CompareToBuilder();
@@ -463,7 +446,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 
 		if (this.confirmacao == null) {
 			this.situacaoTitulo = "S/CONFIRMAÇÃO";
-		} else if (this.confirmacao != null && this.retorno == null) {
+		} else if (this.retorno == null) {
 			if (this.confirmacao.getTipoOcorrencia() != null) {
 				if (StringUtils.isBlank(this.confirmacao.getTipoOcorrencia().trim())) {
 					this.situacaoTitulo = "ABERTO";
@@ -487,10 +470,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 			this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.retorno.getTipoOcorrencia()).getLabel();
 		}
 		return situacaoTitulo;
-	}
-
-	public static TituloRemessa parseTituloVO(TituloVO tituloVO) {
-		return new ConversorTitulo().converter(TituloRemessa.class, tituloVO);
 	}
 
 	public void parseTituloFiliado(TituloFiliado tituloFiliado) {
@@ -519,7 +498,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setNomeDevedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getNomeDevedor()));
 		this.setDocumentoDevedor(tituloFiliado.getDocumentoDevedor());
 		this.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getEnderecoDevedor()));
-		this.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(tituloFiliado.getCpfCnpj()));
+		this.setTipoIdentificacaoDevedor(getTIpoIdentificacao(tituloFiliado.getCpfCnpj()));
 		this.setNumeroIdentificacaoDevedor(StringUtils.leftPad(tituloFiliado.getCpfCnpj(), 14, "0"));
 		this.setCepDevedor(tituloFiliado.getCepDevedor());
 		this.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(tituloFiliado.getCidadeDevedor()));
@@ -553,7 +532,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.setNomeDevedor(RemoverAcentosUtil.removeAcentos(avalista.getNome()));
 		this.setDocumentoDevedor(tituloFiliado.getDocumentoDevedor());
 		this.setEnderecoDevedor(RemoverAcentosUtil.removeAcentos(avalista.getEndereco()));
-		this.setTipoIdentificacaoDevedor(verificarTipoIdentificacaoDevedor(avalista.getDocumento()));
+		this.setTipoIdentificacaoDevedor(getTIpoIdentificacao(avalista.getDocumento()));
 		this.setNumeroIdentificacaoDevedor(StringUtils.leftPad(avalista.getDocumento(), 14, "0"));
 		this.setCepDevedor(avalista.getCep());
 		this.setCidadeDevedor(RemoverAcentosUtil.removeAcentos(avalista.getCidade()));
@@ -573,12 +552,19 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		return StringUtils.EMPTY;
 	}
 
-	private String verificarTipoIdentificacaoDevedor(String documentoDevedor) {
-		if (documentoDevedor.length() <= 11) {
-			return "002";
+    /**
+     * Utilitario para verificação do tipo de identificação, irá retornar 001 para CNPJ e 002 para CPF
+     *
+     * @param documento
+     * @return
+     */
+    @Transient
+    public static String getTIpoIdentificacao(String documento) {
+        if (documento.length() <= 11) {
+			return ConfiguracaoBase.TIPO_CNPJ;
 		}
-		return "001";
-	}
+	    return ConfiguracaoBase.TIPO_CPF;
+    }
 
 	@Override
 	public boolean equals(Object obj) {

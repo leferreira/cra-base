@@ -1,28 +1,7 @@
 package br.com.ieptbto.cra.processador;
 
-import java.beans.PropertyDescriptor;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.conversor.BigDecimalConversor;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.Rodape;
-import br.com.ieptbto.cra.entidade.Titulo;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.*;
 import br.com.ieptbto.cra.entidade.vo.ArquivoRemessaConvenioVO;
 import br.com.ieptbto.cra.entidade.vo.TituloConvenioVO;
 import br.com.ieptbto.cra.enumeration.StatusDownload;
@@ -35,6 +14,18 @@ import br.com.ieptbto.cra.mediator.RemessaMediator;
 import br.com.ieptbto.cra.util.CpfCnpjUtil;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDate;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.beans.PropertyDescriptor;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author Thasso Araujo
@@ -209,6 +200,8 @@ public class ProcessadorArquivoConvenio extends Processador {
         if (StringUtils.isNotEmpty(titulo.getNumeroIdentificacaoDevedor())) {
             if (!CpfCnpjUtil.isValidCNPJ(titulo.getNumeroIdentificacaoDevedor()) && !CpfCnpjUtil.isValidCPF(titulo.getNumeroIdentificacaoDevedor())) {
                 erros.add(new TituloConvenioException(CodigoErro.CONVENIO_DOCUMENTO_DEVEDOR_INVALIDO, titulo));
+            } else {
+                titulo.setTipoIdentificacaoDevedor(TituloRemessa.getTIpoIdentificacao(titulo.getNumeroIdentificacaoDevedor()));
             }
         }
         if (titulo.getValorTitulo() != null && titulo.getValorTitulo().equals(BigDecimal.ZERO)) {

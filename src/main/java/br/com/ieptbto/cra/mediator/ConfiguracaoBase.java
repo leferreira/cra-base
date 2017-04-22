@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ConfiguracaoBase {
 
-	public static final int TAMANHO_NOME_ARQUIVO = 13;
 	public static String DIRETORIO_TEMP = "TEMP/";
 	public static String DIRETORIO_BASE = "../ARQUIVOS_CRA/";
 	public static String DIRETORIO_TEMP_BASE = "../ARQUIVOS_CRA/TEMP/";
@@ -21,7 +20,9 @@ public class ConfiguracaoBase {
 	public static String BARRA = "/";
 	public static String RELATORIOS_PATH = "/br/com/ieptbto/cra/report/";
 	public static String RELATORIOS_CONVENIO_PATH = "/br/com/ieptbto/cra/report/";
-	
+
+    public static final String TIPO_CPF = "002";
+    public static final String TIPO_CNPJ = "001";
 	public static final String ZERO = "0";
 	public static final String UM = "1";
 	public static final String EXTENSAO_ARQUIVO_ZIP = ".zip";
