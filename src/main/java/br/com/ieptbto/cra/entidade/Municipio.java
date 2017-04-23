@@ -131,8 +131,8 @@ public class Municipio extends AbstractEntidade<Municipio> {
 
         try {
             Long codigoPostal = Long.valueOf(cep);
-            Long faixaInicial = Long.valueOf(faixaInicialCep);
-            Long faixaFinal = Long.valueOf(faixaFinalCep);
+            Long faixaInicial = Long.valueOf(getFaixaInicialCep());
+            Long faixaFinal = Long.valueOf(getFaixaFinalCep());
 
             if (codigoPostal >= faixaInicial && codigoPostal <= faixaFinal) {
                 return true;

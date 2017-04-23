@@ -1,15 +1,5 @@
 package br.com.ieptbto.cra.entidade.vo;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
-
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Municipio;
@@ -18,6 +8,14 @@ import br.com.ieptbto.cra.enumeration.EspecieTituloEntradaManual;
 import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDate;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 
@@ -223,9 +221,6 @@ public class TituloConvenioVO extends AbstractArquivoVO {
     }
 
     public String getSaldoTitulo() {
-        if (saldoTitulo != null) {
-            saldoTitulo = saldoTitulo.replace(".", ",");
-        }
         return saldoTitulo;
     }
 

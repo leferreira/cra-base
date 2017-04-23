@@ -1,11 +1,10 @@
 package br.com.ieptbto.cra.conversor;
 
-import java.math.BigDecimal;
-
-import org.apache.commons.lang.StringUtils;
-
 import br.com.ieptbto.cra.conversor.enumeration.ErroConversao;
 import br.com.ieptbto.cra.exception.ConvertException;
+import org.apache.commons.lang.StringUtils;
+
+import java.math.BigDecimal;
 
 /**
  * 
@@ -48,7 +47,7 @@ public class BigDecimalConversor extends AbstractConversor<BigDecimal> {
         if (valor == null || StringUtils.trim(valor).isEmpty()) {
             return BigDecimal.ZERO;
         }
-
+        valor = valor.replace(".", "");
         if (!valor.matches("\\d+\\,\\d{2}")) {
             if (valor.contains(",")) {
                 String[] splitValor = valor.split(",");
