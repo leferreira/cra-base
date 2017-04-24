@@ -139,6 +139,7 @@ public class Municipio extends AbstractEntidade<Municipio> {
             }
             return false;
         } catch (Exception ex) {
+            System.out.println("CEP [ " + cep + " ] inválido para o município " + this.nomeMunicipio);
             return false;
         }
     }
