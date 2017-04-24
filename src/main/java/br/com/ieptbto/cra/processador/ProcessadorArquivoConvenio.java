@@ -93,7 +93,7 @@ public class ProcessadorArquivoConvenio extends Processador {
 	}
 
 	private void gerarRemessa(TituloRemessa titulo, HashMap<Integer, Remessa> mapaRemessas, List<Exception> erros) {
-       Instituicao instituicaoDestino = instituicaoMediator.buscarInstituicaoPorNomeCidade(titulo.getCidadeDevedor());
+       Instituicao instituicaoDestino = instituicaoMediator.buscarInstituicaoPorNomeCidade(titulo.getPracaProtesto());
        if (instituicaoDestino == null) {
            erros.add(new TituloConvenioException(CodigoErro.CONVENIO_MUNICIPIO_INVALIDO, titulo));
            return;
@@ -101,8 +101,6 @@ public class ProcessadorArquivoConvenio extends Processador {
            erros.add(new TituloConvenioException(CodigoErro.CONVENIO_CEP_FORA_DA_FAIXA, titulo));
            return;
        }
-       titulo.setPracaProtesto(instituicaoDestino.getMunicipio().getNomeMunicipio().toUpperCase());
-       titulo.setUfDevedor(instituicaoDestino.getMunicipio().getUf());
 
        if (mapaRemessas.containsKey(instituicaoDestino.getId())) {
            Remessa remessa = mapaRemessas.get(instituicaoDestino.getId());
@@ -196,6 +194,9 @@ public class ProcessadorArquivoConvenio extends Processador {
         }
         if (StringUtils.isEmpty(titulo.getNomeDevedor())) {
             erros.add(new TituloConvenioException(CodigoErro.CONVENIO_NOME_DEVEDOR_INVALIDO, titulo));;
+        }
+        if (StringUtils.isEmpty(titulo.getEnderecoDevedor())) {
+            erros.add(new TituloConvenioException(CodigoErro.CONVENIO_ENDERECO_DEVEDOR_INVALIDO, titulo));;
         }
         if (StringUtils.isNotEmpty(titulo.getNumeroIdentificacaoDevedor())) {
             if (!CpfCnpjUtil.isValidCNPJ(titulo.getNumeroIdentificacaoDevedor()) && !CpfCnpjUtil.isValidCPF(titulo.getNumeroIdentificacaoDevedor())) {

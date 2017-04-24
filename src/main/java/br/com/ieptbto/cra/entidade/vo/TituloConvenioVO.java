@@ -34,51 +34,57 @@ public class TituloConvenioVO extends AbstractArquivoVO {
 	@IAtributoArquivo(ordem = 2, posicao = 0, formato = " ", tamanho = 20, descricao = "")
 	private String dataEmissao;
 
-	@XmlAttribute(name = "t03")
-	@IAtributoArquivo(ordem = 3, posicao = 0, formato = " ", tamanho = 45, descricao = "")
-	private String nomeDevedor;
+    @XmlAttribute(name = "t03")
+    @IAtributoArquivo(ordem = 3, posicao = 0, formato = " ", tamanho = 20, descricao = "")
+    private String dataVencimento;
 
 	@XmlAttribute(name = "t04")
-	@IAtributoArquivo(ordem = 4, posicao = 0, formato = "0", tamanho = 30, descricao = "")
-	private String numeroIdentificacaoDevedor;
+	@IAtributoArquivo(ordem = 4, posicao = 0, formato = " ", tamanho = 45, descricao = "")
+	private String nomeDevedor;
 
 	@XmlAttribute(name = "t05")
-	@IAtributoArquivo(ordem = 5, posicao = 0, formato = " ", tamanho = 45, descricao = "")
+	@IAtributoArquivo(ordem = 5, posicao = 0, formato = "0", tamanho = 30, descricao = "")
+	private String numeroIdentificacaoDevedor;
+
+    @XmlAttribute(name = "t06")
+    @IAtributoArquivo(ordem = 6, posicao = 0, formato = " ", tamanho = 11, descricao = "")
+    private String documentoDevedor;
+
+    @XmlAttribute(name = "t07")
+	@IAtributoArquivo(ordem = 7, posicao = 0, formato = " ", tamanho = 45, descricao = "")
 	private String enderecoDevedor;
 
-	@XmlAttribute(name = "t06")
-	@IAtributoArquivo(ordem = 6, posicao = 0, formato = " ", tamanho = 20, descricao = "")
-	private String cidadeDevedor;
-
-	@XmlAttribute(name = "t07")
-	@IAtributoArquivo(ordem = 7, posicao = 0, formato = " ", tamanho = 20, descricao = "")
+	@XmlAttribute(name = "t08")
+	@IAtributoArquivo(ordem = 8, posicao = 0, formato = " ", tamanho = 20, descricao = "")
 	private String bairroDevedor;
 
-	@XmlAttribute(name = "t08")
-	@IAtributoArquivo(ordem = 8, posicao = 0, formato = "0", tamanho = 8, descricao = "")
+	@XmlAttribute(name = "t09")
+	@IAtributoArquivo(ordem = 9, posicao = 0, formato = "0", tamanho = 8, descricao = "")
 	private String cepDevedor;
 
-	@XmlAttribute(name = "t09")
-	@IAtributoArquivo(ordem = 9, posicao = 0, formato = " ", tamanho = 11, descricao = "")
-	private String documentoDevedor;
+    @XmlAttribute(name = "t10")
+    @IAtributoArquivo(ordem = 10, posicao = 0, formato = " ", tamanho = 20, descricao = "")
+    private String cidadeDevedor;
 
-	@XmlAttribute(name = "t10")
-	@IAtributoArquivo(ordem = 10, posicao = 0, formato = " ", tamanho = 15, descricao = "")
-	private String nossoNumero;
-
-	@XmlAttribute(name = "t11")
-	@IAtributoArquivo(ordem = 11, posicao = 0, formato = " ", tamanho = 19, descricao = "")
-	private String complementoRegistro;
+    @XmlAttribute(name = "t11")
+    @IAtributoArquivo(ordem = 11, posicao = 0, formato = " ", tamanho = 20, descricao = "")
+    private String ufDevedor;
 
 	@XmlAttribute(name = "t12")
-	@IAtributoArquivo(ordem = 12, posicao = 0, formato = " ", tamanho = 20, descricao = "")
-	private String dataVencimento;
+	@IAtributoArquivo(ordem = 12, posicao = 0, formato = " ", tamanho = 15, descricao = "")
+	private String nossoNumero;
 
-	@XmlAttribute(name = "t13")
-	@IAtributoArquivo(ordem = 13, posicao = 0, formato = " ", tamanho = 20, descricao = "")
-	private String saldoTitulo;
+    @XmlAttribute(name = "t13")
+    @IAtributoArquivo(ordem = 13, posicao = 0, formato = " ", tamanho = 20, descricao = "")
+    private String pracaProtesto;
 
-	private Municipio municipio;
+    @XmlAttribute(name = "t14")
+    @IAtributoArquivo(ordem = 14, posicao = 0, formato = " ", tamanho = 20, descricao = "")
+    private String saldoTitulo;
+
+    @XmlAttribute(name = "t15")
+	@IAtributoArquivo(ordem = 15, posicao = 0, formato = " ", tamanho = 19, descricao = "")
+	private String complementoRegistro;
 
     @Override
     public String getIdentificacaoRegistro() {
@@ -129,6 +135,9 @@ public class TituloConvenioVO extends AbstractArquivoVO {
     }
 
     public String getNomeDevedor() {
+        if (nomeDevedor != null && nomeDevedor.length() > 45) {
+            nomeDevedor = nomeDevedor.substring(0, 44);
+        }
         return RemoverAcentosUtil.removeAcentos(nomeDevedor).toUpperCase();
     }
 
@@ -148,6 +157,9 @@ public class TituloConvenioVO extends AbstractArquivoVO {
     }
 
     public String getEnderecoDevedor() {
+        if (enderecoDevedor != null && enderecoDevedor.length() > 45) {
+            enderecoDevedor = enderecoDevedor.substring(0, 44);
+        }
         return RemoverAcentosUtil.removeAcentos(enderecoDevedor).toUpperCase();
     }
 
@@ -228,12 +240,20 @@ public class TituloConvenioVO extends AbstractArquivoVO {
         this.saldoTitulo = valorSaldo;
     }
 
-    public Municipio getMunicipio() {
-        return municipio;
+    public String getPracaProtesto() {
+        return pracaProtesto;
     }
 
-    public void setMunicipio(Municipio municipio) {
-        this.municipio = municipio;
+    public void setPracaProtesto(String pracaProtesto) {
+        this.pracaProtesto = pracaProtesto;
+    }
+
+    public String getUfDevedor() {
+        return ufDevedor;
+    }
+
+    public void setUfDevedor(String ufDevedor) {
+        this.ufDevedor = ufDevedor;
     }
 
     public String asString(){
