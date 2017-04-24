@@ -120,11 +120,12 @@ public enum CodigoErro {
                         CONVENIO_DATA_VENCIMENTO_INVALIDA("0004", "Data vencimento inválida ou vazia"),
                         CONVENIO_VALOR_SALDO_INVALIDA("0005", "Valor salor inválida"),
                         CONVENIO_DOCUMENTO_DEVEDOR_INVALIDO("0006", "Documento do devedor inválido"),
-                        CONVENIO_NUMERO_TITULO_INVALIDA("0007", "Número do título inválido"),
+                        CONVENIO_NUMERO_TITULO_INVALIDA("0007", "Número do título inválido ou maior que 11 caracteres"),
                         CONVENIO_DATA_EMISSAO_MAIOR_QUE_ATUAL("0008", "Data de emissão maior que atual"),
                         CONVENIO_NOME_DEVEDOR_INVALIDO("0009", "Nome do devedor"),
                         CONVENIO_DATA_VENCIMENTO_MENOR_QUE_EMISSAO("0010", "Data vencimento menor que emissão"),
-                        CONVENIO_CEP_FORA_DA_FAIXA("0011", "CEP informado está fora da faixa de limite da cidade do devedor");
+                        CONVENIO_CEP_FORA_DA_FAIXA("0011", "CEP informado está fora da faixa de limite da cidade do devedor"),
+                        CONVENIO_ENDERECO_DEVEDOR_INVALIDO("0012", "Endereço do devedor inválido");
 
 	private String codigo;
 	private String descricao;
