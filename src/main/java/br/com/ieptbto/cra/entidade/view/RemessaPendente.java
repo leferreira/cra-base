@@ -1,15 +1,10 @@
 package br.com.ieptbto.cra.entidade.view;
 
-import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.Table;
-
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name="VIEW_REMESSA_PENDENTE")
@@ -41,6 +36,7 @@ public class RemessaPendente extends ViewArquivoPendente {
 	private String nomeFantasia_Cartorio;
 	private String nomeMunicipio_Municipio;
 	private String cod_ibge_Municipio;
+    private Integer versao_Instituicao;
 
 	public String getTipo_Arquivo() {
 		return tipo_Arquivo;
@@ -170,4 +166,12 @@ public class RemessaPendente extends ViewArquivoPendente {
 	public void setCod_ibge_Municipio(String cod_ibge_Municipio) {
 		this.cod_ibge_Municipio = cod_ibge_Municipio;
 	}
+
+    public Integer getVersao_Instituicao() {
+        return versao_Instituicao;
+    }
+
+    public void setVersao_Instituicao(Integer versao_Instituicao) {
+        this.versao_Instituicao = versao_Instituicao;
+    }
 }
