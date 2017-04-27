@@ -1,46 +1,8 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.wicket.markup.html.form.upload.FileUpload;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import br.com.ieptbto.cra.conversor.arquivo.ConversorRemessaArquivo;
-import br.com.ieptbto.cra.dao.ArquivoDAO;
-import br.com.ieptbto.cra.dao.AutorizacaoCancelamentoDAO;
-import br.com.ieptbto.cra.dao.CancelamentoDAO;
-import br.com.ieptbto.cra.dao.DesistenciaDAO;
-import br.com.ieptbto.cra.dao.InstituicaoDAO;
-import br.com.ieptbto.cra.dao.MunicipioDAO;
-import br.com.ieptbto.cra.dao.RemessaDAO;
-import br.com.ieptbto.cra.dao.TipoArquivoDAO;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
-import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
-import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.StatusArquivo;
-import br.com.ieptbto.cra.entidade.TipoArquivo;
-import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.dao.*;
+import br.com.ieptbto.cra.entidade.*;
 import br.com.ieptbto.cra.entidade.view.ViewArquivoPendente;
 import br.com.ieptbto.cra.entidade.vo.ArquivoRemessaConvenioVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
@@ -51,6 +13,24 @@ import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 import br.com.ieptbto.cra.processador.ProcessadorArquivoConvenio;
+import org.apache.commons.lang.StringUtils;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Thasso Araújo
@@ -275,7 +255,7 @@ public class ArquivoMediator extends BaseMediator {
 		}
 
 		String nomeArquivo = uploadedFile.getClientFileName();
-		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(nomeArquivo);
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.get(nomeArquivo);
 		if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
 			return instituicaoDAO.getInstituicaoPorCodigo(nomeArquivo.substring(1, 4));
 		}

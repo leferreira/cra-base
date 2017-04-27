@@ -51,7 +51,7 @@ public enum TipoOcorrencia implements AbstractCraEnum {
 	 * @param valor
 	 * @return tipo ocorrencia
 	 */
-	public static TipoOcorrencia getTipoOcorrencia(String valor) {
+	public static TipoOcorrencia get(String valor) {
 		if (valor == null) {
 			return null;
 		}

@@ -1,7 +1,9 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.TipoArquivo;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
@@ -11,10 +13,7 @@ import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.TipoArquivo;
-import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import java.util.List;
 
 /**
  * 
@@ -66,21 +65,21 @@ public class TipoArquivoDAO extends AbstractBaseDAO {
 
 	public TipoArquivo buscarTipoArquivo(Arquivo arquivo) {
 		Criteria criteria = getCriteria(TipoArquivo.class);
-		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo.getNomeArquivo().toUpperCase());
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.get(arquivo.getNomeArquivo().toUpperCase());
 		criteria.add(Restrictions.eq("tipoArquivo", tipoArquivo));
 		return TipoArquivo.class.cast(criteria.uniqueResult());
 	}
 
 	public TipoArquivo buscarTipoArquivo(String nomeArquivo) {
 		Criteria criteria = getCriteria(TipoArquivo.class);
-		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(nomeArquivo.toUpperCase());
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.get(nomeArquivo.toUpperCase());
 		criteria.add(Restrictions.eq("tipoArquivo", tipoArquivo));
 		return TipoArquivo.class.cast(criteria.uniqueResult());
 	}
 
 	public void inserirTipoArquivo(String tipo) {
 		TipoArquivo tipoArquivo = new TipoArquivo();
-		tipoArquivo.setTipoArquivo(TipoArquivoFebraban.getTipoArquivoFebraban(tipo));
+		tipoArquivo.setTipoArquivo(TipoArquivoFebraban.get(tipo));
 
 		salvar(tipoArquivo);
 	}

@@ -1,21 +1,15 @@
 package br.com.ieptbto.cra.processador;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
-import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
-import br.com.ieptbto.cra.entidade.vo.CabecalhoArquivoDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.CabecalhoCartorioDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RegistroDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RodapeArquivoDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RodapeCartorioDesistenciaProtestoVO;
+import br.com.ieptbto.cra.entidade.vo.*;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 import br.com.ieptbto.cra.util.CraConstructorUtils;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 

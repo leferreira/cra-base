@@ -1,9 +1,15 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
+import br.com.ieptbto.cra.conversor.convenio.ConversorArquivoFiliado;
+import br.com.ieptbto.cra.dao.ArquivoDAO;
+import br.com.ieptbto.cra.dao.InstituicaoDAO;
+import br.com.ieptbto.cra.dao.LayoutFiliadoDAO;
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.util.DataUtil;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -11,20 +17,9 @@ import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.conversor.convenio.ConversorArquivoFiliado;
-import br.com.ieptbto.cra.dao.ArquivoDAO;
-import br.com.ieptbto.cra.dao.InstituicaoDAO;
-import br.com.ieptbto.cra.dao.LayoutFiliadoDAO;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.StatusArquivo;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.StatusDownload;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
-import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.util.DataUtil;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 

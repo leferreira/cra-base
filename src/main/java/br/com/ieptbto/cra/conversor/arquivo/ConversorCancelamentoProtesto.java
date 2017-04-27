@@ -1,22 +1,10 @@
 package br.com.ieptbto.cra.conversor.arquivo;
 
-import java.util.ArrayList;
-
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.entidade.vo.*;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
-import br.com.ieptbto.cra.entidade.PedidoAutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.PedidoCancelamento;
-import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
-import br.com.ieptbto.cra.entidade.vo.CabecalhoArquivoDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.CabecalhoCartorioDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.DesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RegistroDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RodapeArquivoDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RodapeCartorioDesistenciaProtestoVO;
+import java.util.ArrayList;
 
 /**
  * @author Thasso Araújo

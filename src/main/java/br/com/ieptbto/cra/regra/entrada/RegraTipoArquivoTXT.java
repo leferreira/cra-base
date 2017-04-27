@@ -1,14 +1,5 @@
 package br.com.ieptbto.cra.regra.entrada;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.LayoutArquivo;
@@ -16,6 +7,10 @@ import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
+import org.springframework.stereotype.Service;
+
+import java.io.*;
+import java.util.List;
 
 /**
  * 
@@ -64,7 +59,7 @@ public class RegraTipoArquivoTXT extends RegraEntrada {
 	 * @param arquivo
 	 */
 	private void validaTamanhoLinha(String linha, File file) {
-		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(this.arquivo);
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.get(this.arquivo);
 		if (tipoArquivo.equals(TipoArquivoFebraban.REMESSA) || tipoArquivo.equals(TipoArquivoFebraban.CONFIRMACAO)
 				|| tipoArquivo.equals(TipoArquivoFebraban.RETORNO)) {
 			if (linha.length() != ConfiguracaoBase.TAMANHO_PADRAO_LINHA) {

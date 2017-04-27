@@ -1,15 +1,14 @@
 package br.com.ieptbto.cra.enumeration.regra;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javax.persistence.Entity;
-
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.enumeration.AbstractCraEnum;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.exception.Erro;
 import br.com.ieptbto.cra.exception.InfraException;
+
+import javax.persistence.Entity;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Entity
 public enum TipoArquivoFebraban
@@ -38,7 +37,7 @@ public enum TipoArquivoFebraban
 	 * @param valor
 	 * @return tipo arquivo
 	 */
-	public static TipoArquivoFebraban getTipoArquivoFebraban(String valor) {
+	public static TipoArquivoFebraban get(String valor) {
 		TipoArquivoFebraban[] values = TipoArquivoFebraban.values();
 		for (TipoArquivoFebraban tipoArquivo : values) {
 			if (valor.startsWith(tipoArquivo.getConstante())) {
@@ -63,7 +62,7 @@ public enum TipoArquivoFebraban
 	 * @param arquivo
 	 * @return
 	 */
-	public static TipoArquivoFebraban getTipoArquivoFebraban(Arquivo arquivo) {
+	public static TipoArquivoFebraban get(Arquivo arquivo) {
 		return arquivo.getTipoArquivo().getTipoArquivo();
 	}
 

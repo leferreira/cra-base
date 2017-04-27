@@ -1,9 +1,8 @@
 package br.com.ieptbto.cra.entidade;
 
-import java.io.Serializable;
-
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
+import java.io.Serializable;
 
 /**
  * 

@@ -1,12 +1,12 @@
 package br.com.ieptbto.cra.beans;
 
-import java.io.Serializable;
-
 import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
 import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
 import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.util.DataUtil;
+
+import java.io.Serializable;
 
 /**
  * @author Thasso Araújo

@@ -1,7 +1,8 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.LogCra;
+import br.com.ieptbto.cra.enumeration.TipoLog;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
@@ -12,9 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.LogCra;
-import br.com.ieptbto.cra.enumeration.TipoLog;
+import java.util.List;
 
 /**
  * @author Thasso Aráujo

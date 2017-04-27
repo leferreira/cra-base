@@ -1,8 +1,12 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.entidade.view.ViewBatimentoRetorno;
+import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
+import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
+import br.com.ieptbto.cra.enumeration.TipoBatimento;
+import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
@@ -13,17 +17,8 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import br.com.ieptbto.cra.entidade.Batimento;
-import br.com.ieptbto.cra.entidade.BatimentoDeposito;
-import br.com.ieptbto.cra.entidade.Deposito;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.view.ViewBatimentoRetorno;
-import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
-import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
-import br.com.ieptbto.cra.enumeration.TipoBatimento;
-import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class BatimentoDAO extends AbstractBaseDAO {

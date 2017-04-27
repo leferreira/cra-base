@@ -1,18 +1,7 @@
 package br.com.ieptbto.cra.processador;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import br.com.ieptbto.cra.conversor.AbstractConversorArquivo;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorCabecalho;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorCabecalhoArquivoDesistenciaCancelamento;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorCabecalhoCartorioDesistenciaCancelamento;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorRegistroDesistenciaProtesto;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorRodape;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorRodapeArquivoDesistenciaCancelamento;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorRodapeCartorioDesistenciaCancelamento;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorTitulo;
+import br.com.ieptbto.cra.conversor.arquivo.*;
 import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.ConversorHeaderEmpresa;
 import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.ConversorRegistroEmpresa;
@@ -20,6 +9,10 @@ import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.ConversorTraillerEmpresa;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import br.com.ieptbto.cra.util.CraConstructorUtils;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 

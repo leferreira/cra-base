@@ -1,24 +1,13 @@
 package br.com.ieptbto.cra.regra;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.regra.entrada.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.regra.entrada.RegraDuplicidade;
-import br.com.ieptbto.cra.regra.entrada.RegraHoraEnvio;
-import br.com.ieptbto.cra.regra.entrada.RegraInstituicaoEnvio;
-import br.com.ieptbto.cra.regra.entrada.RegraNomeArquivo;
-import br.com.ieptbto.cra.regra.entrada.RegraNumeroSequencialRemessa;
-import br.com.ieptbto.cra.regra.entrada.RegraTipoArquivoTXT;
-import br.com.ieptbto.cra.regra.entrada.RegraUsuarioEnvio;
+import java.io.*;
+import java.util.List;
 
 /**
  * 

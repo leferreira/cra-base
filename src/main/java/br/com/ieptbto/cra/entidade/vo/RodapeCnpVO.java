@@ -1,11 +1,11 @@
 package br.com.ieptbto.cra.entidade.vo;
 
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 
 /**
  * @author Thasso Araújo

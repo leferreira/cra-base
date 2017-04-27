@@ -1,21 +1,20 @@
 package br.com.ieptbto.cra.processador;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
+import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
+import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
+import br.com.ieptbto.cra.exception.InfraException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
-import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
-import br.com.ieptbto.cra.exception.InfraException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 

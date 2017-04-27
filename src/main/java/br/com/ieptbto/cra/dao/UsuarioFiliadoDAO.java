@@ -1,7 +1,9 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.Filiado;
+import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.UsuarioFiliado;
+import br.com.ieptbto.cra.exception.InfraException;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
@@ -9,10 +11,7 @@ import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDateTime;
 import org.springframework.stereotype.Repository;
 
-import br.com.ieptbto.cra.entidade.Filiado;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.entidade.UsuarioFiliado;
-import br.com.ieptbto.cra.exception.InfraException;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

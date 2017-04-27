@@ -1,13 +1,13 @@
 package br.com.ieptbto.cra.conversor.cnp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import br.com.ieptbto.cra.entidade.LoteCnp;
 import br.com.ieptbto.cra.entidade.RegistroCnp;
 import br.com.ieptbto.cra.entidade.vo.ArquivoCnpVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaCnpVO;
 import br.com.ieptbto.cra.entidade.vo.TituloCnpVO;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

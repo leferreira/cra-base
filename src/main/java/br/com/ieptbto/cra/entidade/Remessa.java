@@ -1,21 +1,9 @@
 package br.com.ieptbto.cra.entidade;
 
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
+import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
+import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.annotations.LazyToOne;
 import org.hibernate.annotations.LazyToOneOption;
@@ -24,10 +12,8 @@ import org.hibernate.bytecode.internal.javassist.FieldHandler;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
-import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
-import br.com.ieptbto.cra.enumeration.StatusDownload;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author Thasso Araújo
@@ -53,8 +39,11 @@ public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
 	private Batimento batimento;
 	private StatusDownload statusDownload;
 	private SituacaoBatimentoRetorno situacaoBatimentoRetorno;
-	private Boolean situacao;
 	private Boolean devolvidoPelaCRA;
+    private Boolean situacao;
+    private Boolean contemCancelamento;
+    private Boolean contemPago;
+    private List<Deposito> listaDepositos;
 	private FieldHandler handler;
 
 	@Id
@@ -93,7 +82,7 @@ public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
 		return cabecalho;
 	}
 
-	@javax.persistence.Transient
+	@Transient
 	public List<Titulo> getTitulos() {
 		return titulos;
 	}
@@ -130,7 +119,42 @@ public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
 		return batimento;
 	}
 
-	public void setBatimento(Batimento batimento) {
+    @Column(name = "STATUS_DOWNLOAD")
+    @Enumerated(EnumType.STRING)
+    public StatusDownload getStatusDownload() {
+        return statusDownload;
+    }
+
+    @Transient
+    public List<Deposito> getListaDepositos() {
+        return listaDepositos;
+    }
+
+    @Column(name = "DEVOLVIDOPELACRA")
+    public Boolean getDevolvidoPelaCRA() {
+        if (devolvidoPelaCRA == null) {
+            devolvidoPelaCRA = false;
+        }
+        return devolvidoPelaCRA;
+    }
+
+    @Column(name = "CONTEM_CANCELAMENTO")
+    public Boolean getContemCancelamento() {
+        if (contemCancelamento == null) {
+            contemCancelamento = false;
+        }
+	    return contemCancelamento;
+    }
+
+    @Transient
+    public Boolean getContemPago() {
+        if (contemPago == null) {
+            contemPago = false;
+        }
+        return contemPago;
+    }
+
+    public void setBatimento(Batimento batimento) {
 		if (this.handler != null) {
 			this.batimento = (Batimento) this.handler.writeObject(this, "batimento", this.batimento, batimento);
 		}
@@ -173,32 +197,12 @@ public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
 		this.situacaoBatimentoRetorno = situacaoBatimentoRetorno;
 	}
 
-	@Override
-	public int compareTo(Remessa entidade) {
-		CompareToBuilder compareToBuilder = new CompareToBuilder();
-		compareToBuilder.append(this.getId(), entidade.getId());
-		return compareToBuilder.toComparison();
-	}
-
 	public void setCabecalho(CabecalhoRemessa cabecalho) {
 		this.cabecalho = cabecalho;
 	}
 
 	public void setRodape(Rodape rodape) {
 		this.rodape = rodape;
-	}
-
-	@Column(name = "STATUS_DOWNLOAD")
-	@Enumerated(EnumType.STRING)
-	public StatusDownload getStatusDownload() {
-		return statusDownload;
-	}
-
-	private List<Deposito> listaDepositos;
-
-	@javax.persistence.Transient
-	public List<Deposito> getListaDepositos() {
-		return listaDepositos;
 	}
 
 	public void setListaDepositos(List<Deposito> listaDepositos) {
@@ -209,35 +213,54 @@ public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
 		this.statusDownload = statusDownload;
 	}
 
-	public Boolean getDevolvidoPelaCRA() {
-		if (devolvidoPelaCRA == null) {
-			devolvidoPelaCRA = false;
-		}
-		return devolvidoPelaCRA;
-	}
-
 	public void setDevolvidoPelaCRA(Boolean devolvidoPelaCRA) {
 		this.devolvidoPelaCRA = devolvidoPelaCRA;
 	}
-	
-	public void setStatusRemessaPorTipoInstituicaoEnvio() {
+
+    /**
+     * Irá definir o status do download do arquivo a nível de cartório será ENVIADO a
+     * nível de bancos e convênios será AGUARDANDO.
+     */
+    public void setStatusRemessaPorTipoInstituicaoEnvio() {
 		TipoInstituicao tipoInstituicaoEnvio = this.getInstituicaoOrigem().getTipoInstituicao();
 		if (tipoInstituicaoEnvio.getTipoInstituicao() == TipoInstituicaoCRA.INSTITUICAO_FINANCEIRA
 				|| tipoInstituicaoEnvio.getTipoInstituicao() == TipoInstituicaoCRA.CONVENIO) {
 			this.statusDownload = StatusDownload.AGUARDANDO;
-		} else
-			this.statusDownload = StatusDownload.ENVIADO;
+		} else {
+            this.statusDownload = StatusDownload.ENVIADO;
+        }
 	}
 
+	/**
+     * Irá definir a situacao de liberação para o banco de confirmações e retornos
+     */
 	public void setConfirmacaoRetornoPendenteLiberacao() {
-		TipoArquivo tipoArquivo = this.getArquivo().getTipoArquivo();
-		if (tipoArquivo.getTipoArquivo() == TipoArquivoFebraban.CONFIRMACAO || tipoArquivo.getTipoArquivo() == TipoArquivoFebraban.RETORNO) {
+		TipoArquivoFebraban tipoArquivo = this.getArquivo().getTipoArquivo().getTipoArquivo();
+		if (tipoArquivo == TipoArquivoFebraban.CONFIRMACAO || tipoArquivo == TipoArquivoFebraban.RETORNO) {
 			this.situacao = false;
-		} else
-			this.situacao = true;
+		} else {
+            this.situacao = true;
+        }
 	}
 
-	@Override
+	/**
+     * Irá definir a situacao do arquivo de retorno com relação ao batimento
+     */
+	public void setSituacaoBatimentoConfirmadoIfNull() {
+	    if (this.situacaoBatimentoRetorno == null) {
+            this.situacaoBatimentoRetorno = SituacaoBatimentoRetorno.CONFIRMADO;
+        }
+    }
+
+    public void setContemCancelamento(Boolean contemCancelamento) {
+        this.contemCancelamento = contemCancelamento;
+    }
+
+    public void setContemPago(Boolean contemPago) {
+        this.contemPago = contemPago;
+    }
+
+    @Override
 	public void setFieldHandler(FieldHandler handler) {
 		this.handler = handler;
 	}
@@ -246,4 +269,11 @@ public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
 	public FieldHandler getFieldHandler() {
 		return this.handler;
 	}
+
+    @Override
+    public int compareTo(Remessa entidade) {
+        CompareToBuilder compareToBuilder = new CompareToBuilder();
+        compareToBuilder.append(this.getId(), entidade.getId());
+        return compareToBuilder.toComparison();
+    }
 }

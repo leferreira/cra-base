@@ -1,11 +1,11 @@
 package br.com.ieptbto.cra.webservice.vo;
 
+import org.apache.commons.lang.StringUtils;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.commons.lang.StringUtils;
 
 @XmlRootElement(name = "cartorio")
 @XmlAccessorType(XmlAccessType.FIELD)

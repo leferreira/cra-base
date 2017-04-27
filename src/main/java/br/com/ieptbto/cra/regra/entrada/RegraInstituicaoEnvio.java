@@ -1,16 +1,15 @@
 package br.com.ieptbto.cra.regra.entrada;
 
-import java.io.File;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.conversor.enumeration.ErroValidacao;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.exception.InfraException;
+import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * 

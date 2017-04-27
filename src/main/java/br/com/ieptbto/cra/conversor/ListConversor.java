@@ -1,13 +1,12 @@
 package br.com.ieptbto.cra.conversor;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import br.com.ieptbto.cra.conversor.arquivo.FabricaConversor;
+import br.com.ieptbto.cra.exception.ConvertException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
-import br.com.ieptbto.cra.conversor.arquivo.FabricaConversor;
-import br.com.ieptbto.cra.exception.ConvertException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 

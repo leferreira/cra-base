@@ -1,27 +1,17 @@
 package br.com.ieptbto.cra.conversor.arquivo;
 
+import br.com.ieptbto.cra.conversor.*;
+import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
+import br.com.ieptbto.cra.enumeration.AbstractCraEnum;
+import br.com.ieptbto.cra.exception.InfraException;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-
-import br.com.ieptbto.cra.conversor.AbstractConversor;
-import br.com.ieptbto.cra.conversor.BigDecimalConversor;
-import br.com.ieptbto.cra.conversor.CampoArquivo;
-import br.com.ieptbto.cra.conversor.DateConversor;
-import br.com.ieptbto.cra.conversor.DateTimeConversor;
-import br.com.ieptbto.cra.conversor.EnumConversor;
-import br.com.ieptbto.cra.conversor.IntConversor;
-import br.com.ieptbto.cra.conversor.IntegerConversor;
-import br.com.ieptbto.cra.conversor.ListConversor;
-import br.com.ieptbto.cra.conversor.StringConversor;
-import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
-import br.com.ieptbto.cra.enumeration.AbstractCraEnum;
-import br.com.ieptbto.cra.exception.InfraException;
 
 /**
  * 

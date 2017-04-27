@@ -1,48 +1,30 @@
 package br.com.ieptbto.cra.dao;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.sql.JoinType;
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import br.com.ieptbto.cra.entidade.Anexo;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Confirmacao;
-import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.PedidoDesistencia;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.Retorno;
-import br.com.ieptbto.cra.entidade.StatusArquivo;
-import br.com.ieptbto.cra.entidade.Titulo;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.*;
 import br.com.ieptbto.cra.entidade.view.ViewArquivoPendente;
 import br.com.ieptbto.cra.enumeration.CraAcao;
-import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
 import br.com.ieptbto.cra.enumeration.StatusDownload;
-import br.com.ieptbto.cra.enumeration.TipoBatimento;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.DesistenciaCancelamentoException;
 import br.com.ieptbto.cra.exception.InfraException;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.*;
+import org.hibernate.sql.JoinType;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * 
@@ -109,7 +91,8 @@ public class ArquivoDAO extends AbstractBaseDAO {
 
 	private void salvarRemessaConfirmacaoRetorno(Arquivo arquivo, Usuario usuario, List<Exception> erros, Transaction transaction) {
 		BigDecimal valorTotalSaldo = BigDecimal.ZERO;
-		Boolean retornoContemTituloPago = false;
+		Boolean contemTituloPago = false;
+        Boolean contemTituloCancelado = false;
 
 		for (Remessa remessa : arquivo.getRemessas()) {
 			remessa.setArquivo(arquivo);
@@ -121,20 +104,17 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			remessa.setDevolvidoPelaCRA(false);
 			remessa.setStatusRemessaPorTipoInstituicaoEnvio();
 			remessa.setConfirmacaoRetornoPendenteLiberacao();
+			remessa.setSituacaoBatimentoConfirmadoIfNull();
 			save(remessa);
 			for (Titulo titulo : remessa.getTitulos()) {
 				titulo.setRemessa(remessa);
 				if (Retorno.class.isInstance(titulo)) {
-					if (titulo.getTipoOcorrencia().equals(TipoOcorrencia.PAGO.getConstante())) {
-						retornoContemTituloPago = true;
-					}
 					Retorno.class.cast(titulo).setCabecalho(remessa.getCabecalho());
 				}
 				TituloRemessa tituloSalvo = tituloDAO.salvar(arquivo.getInstituicaoEnvio(), titulo, erros, transaction);
 				if (TituloRemessa.class.isInstance(titulo)) {
 					if (TituloRemessa.class.cast(titulo).getAnexos() != null) {
 						for (Anexo anexo : TituloRemessa.class.cast(titulo).getAnexos()) {
-
 							tituloSalvo.setAnexos(new ArrayList<Anexo>());
 							tituloSalvo.getAnexos().add(anexo);
 							anexo.setTitulo(tituloSalvo);
@@ -145,15 +125,6 @@ public class ArquivoDAO extends AbstractBaseDAO {
 				if (tituloSalvo != null) {
 					valorTotalSaldo = valorTotalSaldo.add(titulo.getSaldoTitulo());
 				}
-			}
-			if (remessa.getArquivo().getTipoArquivo().getTipoArquivo().equals(TipoArquivoFebraban.RETORNO)) {
-				if (retornoContemTituloPago.equals(false) || remessa.getInstituicaoDestino().getTipoBatimento()
-						.equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
-					remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.CONFIRMADO);
-				} else {
-					remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.NAO_CONFIRMADO);
-				}
-				update(remessa);
 			}
 			remessa.getCabecalho().setQtdTitulosRemessa(remessa.getTitulos().size());
 			remessa.getRodape().setSomatorioValorRemessa(valorTotalSaldo);
@@ -285,11 +256,17 @@ public class ArquivoDAO extends AbstractBaseDAO {
 		List<Remessa> remessas = criteria.list();
 		arquivo.setRemessas(new ArrayList<Remessa>());
 		for (Remessa remessa : remessas) {
-			Criteria criteriaTitulo = getCriteria(Retorno.class);
-			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+            remessa.setTitulos(new ArrayList<Titulo>());
 
-			remessa.setTitulos(criteriaTitulo.list());
-			arquivo.getRemessas().add(remessa);
+            Criteria criteriaTitulo = getCriteria(Retorno.class);
+            criteriaTitulo.add(Restrictions.eq("remessa", remessa));
+            remessa.getTitulos().addAll(criteriaTitulo.list());
+            if (remessa.getContemCancelamento()) {
+                Criteria criteriaCancelamento = getCriteria(RetornoCancelamento.class);
+                criteriaCancelamento.add(Restrictions.eq("remessa", remessa));
+                remessa.getTitulos().addAll(criteriaCancelamento.list());
+            }
+            arquivo.getRemessas().add(remessa);
 		}
 		return arquivo.getRemessas();
 	}
@@ -349,8 +326,13 @@ public class ArquivoDAO extends AbstractBaseDAO {
 			criteriaTitulo.add(Restrictions.eq("remessa", remessa));
 
 			remessa.setTitulos(criteriaTitulo.list());
-			arquivo.getRemessas().add(remessa);
-		}
+			if (remessa.getContemCancelamento()) {
+                Criteria criteriaCancelamento = getCriteria(RetornoCancelamento.class);
+                criteriaCancelamento.add(Restrictions.eq("remessa", remessa));
+                remessa.setTitulos(criteriaCancelamento.list());
+            }
+            arquivo.getRemessas().add(remessa);
+        }
 		return arquivo;
 	}
 

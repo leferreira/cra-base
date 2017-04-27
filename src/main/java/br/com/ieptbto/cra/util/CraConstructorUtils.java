@@ -1,12 +1,11 @@
 package br.com.ieptbto.cra.util;
 
-import java.lang.reflect.InvocationTargetException;
-
+import br.com.ieptbto.cra.exception.InfraException;
 import org.apache.commons.collections.Factory;
 import org.apache.commons.collections.functors.InstantiateFactory;
 import org.apache.commons.lang.reflect.ConstructorUtils;
 
-import br.com.ieptbto.cra.exception.InfraException;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * 

@@ -1,35 +1,18 @@
 package br.com.ieptbto.cra.entidade;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
+import br.com.ieptbto.cra.enumeration.EspecieTituloEntradaManual;
+import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
+import br.com.ieptbto.cra.enumeration.TipoAlineaCheque;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
-import br.com.ieptbto.cra.enumeration.EspecieTituloEntradaManual;
-import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
-import br.com.ieptbto.cra.enumeration.TipoAlineaCheque;
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

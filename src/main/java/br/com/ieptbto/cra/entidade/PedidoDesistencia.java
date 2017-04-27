@@ -1,24 +1,13 @@
 package br.com.ieptbto.cra.entidade;
 
-import java.math.BigDecimal;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
+import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 
-import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
+import javax.persistence.*;
+import java.math.BigDecimal;
 
 /**
  * 

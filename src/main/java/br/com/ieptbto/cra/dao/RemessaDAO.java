@@ -1,8 +1,10 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.exception.InfraException;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
@@ -15,19 +17,8 @@ import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
-import br.com.ieptbto.cra.entidade.Anexo;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Confirmacao;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.Retorno;
-import br.com.ieptbto.cra.entidade.Titulo;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.StatusDownload;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
-import br.com.ieptbto.cra.exception.InfraException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Thasso Araújo
@@ -162,12 +153,18 @@ public class RemessaDAO extends AbstractBaseDAO {
 	}
 
 	public Remessa baixarArquivoCartorioRetorno(Remessa remessa) {
-		Remessa remessaDownload = buscarPorPK(remessa);
+		remessa = buscarPorPK(remessa);
+        remessa.setTitulos(new ArrayList<Titulo>());
 
-		Criteria criteriaTitulo = getCriteria(Retorno.class);
-		criteriaTitulo.add(Restrictions.eq("remessa", remessaDownload));
-		remessaDownload.setTitulos(criteriaTitulo.list());
-		return remessaDownload;
+        Criteria criteria = getCriteria(Retorno.class);
+        criteria.add(Restrictions.eq("remessa", remessa));
+        remessa.getTitulos().addAll(criteria.list());
+        if (remessa.getContemCancelamento()) {
+            Criteria criteriaCancelamento = getCriteria(RetornoCancelamento.class);
+            criteriaCancelamento.add(Restrictions.eq("remessa", remessa));
+            remessa.getTitulos().addAll(criteriaCancelamento.list());
+        }
+        return remessa;
 	}
 
 	@SuppressWarnings("rawtypes")

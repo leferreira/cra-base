@@ -1,18 +1,17 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.LayoutFiliado;
+import br.com.ieptbto.cra.enumeration.LayoutArquivo;
+import br.com.ieptbto.cra.exception.InfraException;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.LayoutFiliado;
-import br.com.ieptbto.cra.enumeration.LayoutArquivo;
-import br.com.ieptbto.cra.exception.InfraException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 

@@ -1,15 +1,14 @@
 package br.com.ieptbto.cra.regra;
 
-import java.io.File;
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.Arquivo;
+import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.regra.entrada.RegraEntrada;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.regra.entrada.RegraEntrada;
+import java.io.File;
+import java.util.List;
 
 /**
  * 

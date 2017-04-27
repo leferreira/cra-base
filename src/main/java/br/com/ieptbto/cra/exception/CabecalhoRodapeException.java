@@ -1,8 +1,7 @@
 package br.com.ieptbto.cra.exception;
 
-import org.apache.commons.lang.StringUtils;
-
 import br.com.ieptbto.cra.error.CodigoErro;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Thasso Araújo

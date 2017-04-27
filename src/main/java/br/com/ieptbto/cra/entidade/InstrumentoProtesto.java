@@ -1,21 +1,12 @@
 package br.com.ieptbto.cra.entidade;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+
+import javax.persistence.*;
 
 /**
  * @author Thasso Araújo

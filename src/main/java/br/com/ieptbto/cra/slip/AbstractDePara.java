@@ -1,10 +1,9 @@
 package br.com.ieptbto.cra.slip;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.enumeration.PadraoArquivoDePara;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 
-import br.com.ieptbto.cra.enumeration.PadraoArquivoDePara;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

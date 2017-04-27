@@ -1,9 +1,8 @@
 package br.com.ieptbto.cra.component.dataTable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import br.com.ieptbto.cra.component.CustomExportToolbar;
+import br.com.ieptbto.cra.dataProvider.DataProvider;
+import br.com.ieptbto.cra.util.DataUtil;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
@@ -21,9 +20,9 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 
-import br.com.ieptbto.cra.component.CustomExportToolbar;
-import br.com.ieptbto.cra.dataProvider.DataProvider;
-import br.com.ieptbto.cra.util.DataUtil;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

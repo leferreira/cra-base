@@ -1,11 +1,10 @@
 package br.com.ieptbto.cra.entidade;
 
-import javax.persistence.*;
-
-import org.hibernate.envers.Audited;
-
 import br.com.ieptbto.cra.enumeration.CampoLayoutPersonalizado;
 import br.com.ieptbto.cra.enumeration.LayoutArquivo;
+import org.hibernate.envers.Audited;
+
+import javax.persistence.*;
 
 /**
  * 

@@ -1,26 +1,16 @@
 package br.com.ieptbto.cra.beans;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.util.DataUtil;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.Batimento;
-import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
-import br.com.ieptbto.cra.entidade.Deposito;
-import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.InstrumentoProtesto;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamento;
-import br.com.ieptbto.cra.entidade.TituloFiliado;
-import br.com.ieptbto.cra.util.DataUtil;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.List;
 
 /**
  * @author Thasso

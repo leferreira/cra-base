@@ -1,9 +1,5 @@
 package br.com.ieptbto.cra.slip.regra;
 
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
 import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
 import br.com.ieptbto.cra.entidade.AgenciaBradesco;
@@ -12,6 +8,9 @@ import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.enumeration.TipoRegraInstrumento;
 import br.com.ieptbto.cra.enumeration.regra.RegraBasicaInstrumentoBanco;
 import br.com.ieptbto.cra.exception.InfraException;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Thasso Araújo

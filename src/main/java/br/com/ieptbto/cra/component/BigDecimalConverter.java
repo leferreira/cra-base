@@ -1,16 +1,15 @@
 package br.com.ieptbto.cra.component;
 
+import br.com.ieptbto.cra.util.DataUtil;
+import org.apache.commons.lang.StringUtils;
+import org.apache.wicket.util.convert.ConversionException;
+import org.apache.wicket.util.convert.IConverter;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.Locale;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.wicket.util.convert.ConversionException;
-import org.apache.wicket.util.convert.IConverter;
-
-import br.com.ieptbto.cra.util.DataUtil;
 
 @SuppressWarnings({ "serial", "rawtypes" })
 public class BigDecimalConverter implements IConverter {

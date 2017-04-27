@@ -1,17 +1,16 @@
 package br.com.ieptbto.cra.logger;
 
-import org.apache.log4j.Logger;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.entidade.LogCra;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.TipoLog;
 import br.com.ieptbto.cra.mediator.LoggerMediator;
 import br.com.ieptbto.cra.util.XmlFormatterUtil;
+import org.apache.log4j.Logger;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Thasso Aráujo

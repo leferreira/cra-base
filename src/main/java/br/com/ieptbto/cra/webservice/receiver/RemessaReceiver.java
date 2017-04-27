@@ -1,24 +1,5 @@
 package br.com.ieptbto.cra.webservice.receiver;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
-import br.com.ieptbto.cra.exception.TituloConvenioException;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.xml.sax.InputSource;
-
 import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivo;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
@@ -32,16 +13,27 @@ import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.exception.TituloConvenioException;
 import br.com.ieptbto.cra.mediator.ArquivoMediator;
 import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 import br.com.ieptbto.cra.util.DataUtil;
-import br.com.ieptbto.cra.webservice.vo.AbstractMensagemVO;
-import br.com.ieptbto.cra.webservice.vo.ComarcaDetalhamentoSerproVO;
-import br.com.ieptbto.cra.webservice.vo.DescricaoVO;
-import br.com.ieptbto.cra.webservice.vo.DetalhamentoVO;
-import br.com.ieptbto.cra.webservice.vo.MensagemVO;
-import br.com.ieptbto.cra.webservice.vo.MensagemXmlSerproVO;
-import br.com.ieptbto.cra.webservice.vo.MensagemXmlVO;
+import br.com.ieptbto.cra.webservice.vo.*;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.xml.sax.InputSource;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 /**
  * @author Thasso Araújo

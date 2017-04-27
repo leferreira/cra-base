@@ -1,15 +1,10 @@
 package br.com.ieptbto.cra.entidade.view;
 
-import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.Table;
-
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name="VIEW_DESISTENCIA_PENDENTE")

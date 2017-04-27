@@ -1,17 +1,16 @@
 package br.com.ieptbto.cra.conversor.convenio;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import br.com.ieptbto.cra.entidade.LayoutFiliado;
 import br.com.ieptbto.cra.enumeration.CampoLayoutPersonalizado;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.CpfCnpjUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TemplateLayoutEmpresa {
 

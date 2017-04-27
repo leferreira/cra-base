@@ -1,16 +1,15 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.TipoInstituicao;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.exception.InfraException;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
-import br.com.ieptbto.cra.entidade.TipoInstituicao;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.exception.InfraException;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

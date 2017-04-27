@@ -1,20 +1,15 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.Collections;
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.AbstractEntidade;
+import br.com.ieptbto.cra.logger.LoggerCra;
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.hibernate.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.entidade.AbstractEntidade;
-import br.com.ieptbto.cra.logger.LoggerCra;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 

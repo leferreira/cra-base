@@ -1,34 +1,7 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import br.com.ieptbto.cra.beans.TituloBean;
-import br.com.ieptbto.cra.entidade.Anexo;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Confirmacao;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.PedidoAutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.PedidoCancelamento;
-import br.com.ieptbto.cra.entidade.PedidoDesistencia;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.Retorno;
-import br.com.ieptbto.cra.entidade.Titulo;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.entidade.TituloRetornoCancelamento;
-import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.*;
 import br.com.ieptbto.cra.entidade.view.ViewTitulo;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.CodigoIrregularidade;
@@ -38,6 +11,21 @@ import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.TituloException;
 import br.com.ieptbto.cra.mediator.DesistenciaProtestoMediator;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StandardBasicTypes;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Thasso Araújo
@@ -104,7 +92,6 @@ public class TituloDAO extends AbstractBaseDAO {
             criteria.add(Restrictions.or(Restrictions.eq("remessa.instituicaoOrigem", instituicaoUsuario),
                     Restrictions.eq("remessa.instituicaoDestino", instituicaoUsuario)));
         }
-
         if (tipoInstituicao != null && bancoConvenio == null) {
             criteria.createAlias("remessa.instituicaoOrigem", "apresentante");
             criteria.createAlias("apresentante.tipoInstituicao", "tipoInstituicao");
@@ -116,7 +103,6 @@ public class TituloDAO extends AbstractBaseDAO {
         if (cartorio != null) {
             criteria.add(Restrictions.eq("remessa.instituicaoDestino", cartorio));
         }
-
         if (titulo.getNossoNumero() != null && titulo.getNossoNumero() != StringUtils.EMPTY) {
             criteria.add(Restrictions.like("nossoNumero", titulo.getNossoNumero(), MatchMode.ANYWHERE));
         }
@@ -124,7 +110,6 @@ public class TituloDAO extends AbstractBaseDAO {
             criteria.createAlias("confirmacao", "confirmacao");
             criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", titulo.getNumeroProtocoloCartorio(), MatchMode.EXACT));
         }
-
         if (titulo.getNumeroTitulo() != null && titulo.getNumeroTitulo() != StringUtils.EMPTY)
             criteria.add(Restrictions.ilike("numeroTitulo", titulo.getNumeroTitulo(), MatchMode.EXACT));
 
@@ -141,10 +126,8 @@ public class TituloDAO extends AbstractBaseDAO {
             criteria.add(Restrictions.eq("numeroIdentificacaoDevedor", titulo.getNumeroIdentificacaoDevedor()));
 
         if (dataInicio != null) {
-            criteria.add(Restrictions.sqlRestriction("DATE(data_cadastro) >= ?", dataInicio.toDate(),
-                    org.hibernate.type.StandardBasicTypes.DATE));
-            criteria.add(
-                    Restrictions.sqlRestriction("DATE(data_cadastro) <= ?", dataFim.toDate(), org.hibernate.type.StandardBasicTypes.DATE));
+            criteria.add(Restrictions.sqlRestriction("DATE(data_cadastro) >= ?", dataInicio.toDate(), StandardBasicTypes.DATE));
+            criteria.add(Restrictions.sqlRestriction("DATE(data_cadastro) <= ?", dataFim.toDate(), StandardBasicTypes.DATE));
         }
         criteria.addOrder(Order.asc("id"));
         return criteria.list();
@@ -173,6 +156,7 @@ public class TituloDAO extends AbstractBaseDAO {
     public List<ViewTitulo> consultarViewTitulosRetornoPorIdRemessa(Integer id) {
         Query query = getSession().getNamedQuery("findTitulosPorIdRemessaRetorno");
         query.setParameter("id", id);
+        query.setParameter("id_can", id);
         return query.list();
     }
 
@@ -228,7 +212,6 @@ public class TituloDAO extends AbstractBaseDAO {
 
             if (tituloRemessa.getAnexos() != null) {
                 for (Anexo anexo : tituloRemessa.getAnexos()) {
-
                     anexo.setTitulo(tituloSalvo);
                     save(anexo);
                 }
@@ -243,7 +226,7 @@ public class TituloDAO extends AbstractBaseDAO {
     /**
      * Salvar título confirmacao
      * 
-     * @param tituloRemessa
+     * @param tituloConfirmacao
      * @param erros
      * @return
      */
@@ -251,8 +234,7 @@ public class TituloDAO extends AbstractBaseDAO {
         TituloRemessa titulo = buscarTituloConfirmacaoSalvo(instituicao, tituloConfirmacao, erros);
 
         try {
-            RegraAgenciaCentralizadoraCodigoCartorio banco = RegraAgenciaCentralizadoraCodigoCartorio
-                    .getBanco(tituloConfirmacao.getCodigoPortador());
+            RegraAgenciaCentralizadoraCodigoCartorio banco = RegraAgenciaCentralizadoraCodigoCartorio.get(tituloConfirmacao.getCodigoPortador());
             if (banco != null) {
                 if (banco.equals(RegraAgenciaCentralizadoraCodigoCartorio.ITAU)) {
                     Integer codigoCartorio = banco.getCodigoCartorio(titulo.getRemessa().getCabecalho().getCodigoMunicipio());
@@ -273,7 +255,7 @@ public class TituloDAO extends AbstractBaseDAO {
             }
             TipoOcorrencia tipoOcorrencia = null;
             if (tituloConfirmacao.getTipoOcorrencia() != null) {
-                tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloConfirmacao.getTipoOcorrencia());
+                tipoOcorrencia = TipoOcorrencia.get(tituloConfirmacao.getTipoOcorrencia());
                 if (!TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.equals(tipoOcorrencia)) {
                     tituloConfirmacao.setValorGravacaoEletronica(titulo.getRemessa().getInstituicaoOrigem().getValorConfirmacao());
                 }
@@ -293,7 +275,7 @@ public class TituloDAO extends AbstractBaseDAO {
     /**
      * Salvar título Retorno
      * 
-     * @param tituloRemessa
+     * @param tituloRetorno
      * @param erros
      * @return
      */
@@ -302,7 +284,7 @@ public class TituloDAO extends AbstractBaseDAO {
 
         try {
             RegraAgenciaCentralizadoraCodigoCartorio banco = RegraAgenciaCentralizadoraCodigoCartorio
-                    .getBanco(tituloRetorno.getCodigoPortador());
+                    .get(tituloRetorno.getCodigoPortador());
             if (banco != null) {
                 if (banco.equals(RegraAgenciaCentralizadoraCodigoCartorio.ITAU)) {
                     Integer codigoCartorio = banco.getCodigoCartorio(titulo.getRemessa().getCabecalho().getCodigoMunicipio());
@@ -318,17 +300,11 @@ public class TituloDAO extends AbstractBaseDAO {
                 }
             }
 
-            // Se o título for encontrado, ele é vinculado com o retorno e salvo
-            // na base
             if (titulo != null) {
                 verificarProtestoIndevidoERetirado(titulo, tituloRetorno, erros);
                 salvarTitulo(tituloRetorno, titulo);
-            }
-            // Se o título remessa não for encontrado, o título retorno
-            // cancelamento é salvo na base
-            else {
+            } else {
                 salvarTituloRetornoCancelamento(tituloRetorno, null);
-                logger.info("Título remessa não encontrado, porém o retorno cancelamento foi salvo.");
             }
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
@@ -338,10 +314,9 @@ public class TituloDAO extends AbstractBaseDAO {
 
     /**
      * Verifica se o título é um cancelamendo e salva como
-     * TituloRetornoCancelamento
+     * RetornoCancelamento
      * 
-     * @param tituloRetorno
-     * @return
+     * @param tituloRetorno, titulo
      */
     private void salvarTitulo(Retorno tituloRetorno, TituloRemessa titulo) {
         tituloRetorno.setTitulo(titulo);
@@ -356,16 +331,17 @@ public class TituloDAO extends AbstractBaseDAO {
     /**
      * Vincula um retorno cancelamento ao um título e salva na base de dados
      * 
-     * @param tituloRetorno
-     * @param tituloRemessa
-     * @return
+     * @param tituloRetorno, tituloRemessa
      */
-    private Retorno salvarTituloRetornoCancelamento(Retorno tituloRetorno, TituloRemessa tituloRemessa) {
-        TituloRetornoCancelamento tituloRetornoCancelamento = new TituloRetornoCancelamento();
-        tituloRetornoCancelamento.parse(tituloRetorno);
-        tituloRetornoCancelamento = save(tituloRetornoCancelamento);
-        tituloRetorno.setId(tituloRetornoCancelamento.getId());
-        return tituloRetorno;
+    private void salvarTituloRetornoCancelamento(Retorno tituloRetorno, TituloRemessa tituloRemessa) {
+        RetornoCancelamento retornoCancelamento = new RetornoCancelamento();
+        retornoCancelamento.parse(tituloRetorno);
+        retornoCancelamento.setTitulo(tituloRemessa);
+        retornoCancelamento = save(retornoCancelamento);
+        if (tituloRemessa != null) {
+            tituloRemessa.setRetornoCancelamento(retornoCancelamento);
+            save(tituloRemessa);
+        }
     }
 
     /**
@@ -385,7 +361,7 @@ public class TituloDAO extends AbstractBaseDAO {
     }
 
     private void verificarProtestoIndevidoERetirado(TituloRemessa titulo, Retorno tituloRetorno, List<Exception> erros) {
-        TipoOcorrencia tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloRetorno.getTipoOcorrencia());
+        TipoOcorrencia tipoOcorrencia = TipoOcorrencia.get(tituloRetorno.getTipoOcorrencia());
 
         if (!titulo.getRemessa().getInstituicaoOrigem().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CONVENIO)) {
             if (TipoOcorrencia.PROTESTADO.equals(tipoOcorrencia) || TipoOcorrencia.RETIRADO.equals(tipoOcorrencia)) {
@@ -469,8 +445,7 @@ public class TituloDAO extends AbstractBaseDAO {
         List<TituloRemessa> titulos = criteria.list();
         for (TituloRemessa titulo : titulos) {
             if (titulo.isDevedorPrincipal()) {
-                if (TipoOcorrencia.PROTESTO_DO_BANCO_CANCELADO.constante == tituloRetorno.getTipoOcorrencia()
-                        || titulo.getRetorno() == null) {
+                if (TipoOcorrencia.PROTESTO_DO_BANCO_CANCELADO.getConstante().equals(tituloRetorno.getTipoOcorrencia()) || titulo.getRetorno() == null) {
                     return titulo;
                 }
             }
@@ -506,10 +481,8 @@ public class TituloDAO extends AbstractBaseDAO {
     public TituloRemessa buscarTituloDesistenciaProtesto(PedidoDesistencia pedidoDesistenciaCancelamento) {
 		Integer numProtocolo = Integer.parseInt(pedidoDesistenciaCancelamento.getNumeroProtocolo());
 
-		Query query = getSession().createQuery("SELECT c FROM Confirmacao c JOIN c.remessa r JOIN r.cabecalho ca "
-				+ "WHERE ca.codigoMunicipio = :codMunicipio "
-				+ "AND c.numeroProtocoloCartorio = :protocolo "
-				+ "AND c.numeroTitulo = :numeroTitulo "
+		Query query = getSession().createQuery(String.format("SELECT c FROM Confirmacao c JOIN c.remessa r JOIN r.cabecalho ca WHERE " +
+                "ca.codigoMunicipio = :codMunicipio AND c.numeroProtocoloCartorio = :protocolo AND c.numeroTitulo = :numeroTitulo ")
 		);
 		query.setString("codMunicipio", pedidoDesistenciaCancelamento.getDesistenciaProtesto().getCabecalhoCartorio().getCodigoMunicipio());
 		query.setString("protocolo", Long.toString(numProtocolo));
@@ -526,10 +499,8 @@ public class TituloDAO extends AbstractBaseDAO {
     public TituloRemessa buscarTituloCancelamentoProtesto(PedidoCancelamento pedido) {
     	Long numProtocolo = Long.parseLong(pedido.getNumeroProtocolo());
 
-		Query query = getSession().createQuery("SELECT c FROM Confirmacao c JOIN c.remessa r JOIN r.cabecalho ca "
-				+ "WHERE ca.codigoMunicipio = :codMunicipio "
-				+ "AND c.numeroProtocoloCartorio = :protocolo "
-				+ "AND c.numeroTitulo = :numeroTitulo"
+		Query query = getSession().createQuery(String.format("SELECT c FROM Confirmacao c JOIN c.remessa r JOIN r.cabecalho ca " +
+                "WHERE ca.codigoMunicipio = :codMunicipio AND c.numeroProtocoloCartorio = :protocolo AND c.numeroTitulo = :numeroTitulo")
 		);
 		query.setString("codMunicipio", pedido.getCancelamentoProtesto().getCabecalhoCartorio().getCodigoMunicipio());
 		query.setString("protocolo", Long.toString(numProtocolo));
@@ -546,10 +517,8 @@ public class TituloDAO extends AbstractBaseDAO {
     public TituloRemessa buscarTituloAutorizacaoCancelamento(PedidoAutorizacaoCancelamento pedido) {
     	Long numProtocolo = Long.parseLong(pedido.getNumeroProtocolo());
 
-		Query query = getSession().createQuery("SELECT c FROM Confirmacao c JOIN c.remessa r JOIN r.cabecalho ca "
-				+ "WHERE ca.codigoMunicipio = :codMunicipio "
-				+ "AND c.numeroProtocoloCartorio = :protocolo "
-				+ "AND c.numeroTitulo = :numeroTitulo"
+		Query query = getSession().createQuery(String.format("SELECT c FROM Confirmacao c JOIN c.remessa r JOIN r.cabecalho ca WHERE " +
+                "ca.codigoMunicipio = :codMunicipio AND c.numeroProtocoloCartorio = :protocolo AND c.numeroTitulo = :numeroTitulo")
 		);
 		query.setString("codMunicipio", pedido.getAutorizacaoCancelamento().getCabecalhoCartorio().getCodigoMunicipio());
 		query.setString("protocolo", Long.toString(numProtocolo));

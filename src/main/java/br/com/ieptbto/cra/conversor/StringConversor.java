@@ -1,8 +1,7 @@
 package br.com.ieptbto.cra.conversor;
 
-import org.apache.commons.lang.StringUtils;
-
 import br.com.ieptbto.cra.exception.ConvertException;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * 

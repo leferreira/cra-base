@@ -1,13 +1,9 @@
 package br.com.ieptbto.cra.conversor.arquivo;
 
+import br.com.ieptbto.cra.entidade.vo.*;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import br.com.ieptbto.cra.entidade.vo.ArquivoRemessaVO;
-import br.com.ieptbto.cra.entidade.vo.ConfirmacaoVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaComarcaVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaVO;
-import br.com.ieptbto.cra.entidade.vo.RetornoVO;
 
 public class ConversorArquivo {
 

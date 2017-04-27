@@ -1,8 +1,7 @@
 package br.com.ieptbto.cra.slip.regra;
 
-import org.apache.log4j.Logger;
-
 import br.com.ieptbto.cra.entidade.TituloRemessa;
+import org.apache.log4j.Logger;
 
 public abstract class RegraAgenciaBanco {
 

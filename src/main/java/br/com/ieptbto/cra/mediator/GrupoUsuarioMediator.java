@@ -1,12 +1,11 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.dao.GrupoUsuarioDAO;
+import br.com.ieptbto.cra.entidade.GrupoUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.dao.GrupoUsuarioDAO;
-import br.com.ieptbto.cra.entidade.GrupoUsuario;
+import java.util.List;
 
 @Service
 public class GrupoUsuarioMediator {

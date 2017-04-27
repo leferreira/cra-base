@@ -1,28 +1,16 @@
 package br.com.ieptbto.cra.mediator;
 
+import br.com.ieptbto.cra.beans.TituloOcorrenciaBean;
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
+import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import br.com.ieptbto.cra.beans.TituloOcorrenciaBean;
-import br.com.ieptbto.cra.entidade.Batimento;
-import br.com.ieptbto.cra.entidade.Confirmacao;
-import br.com.ieptbto.cra.entidade.Deposito;
-import br.com.ieptbto.cra.entidade.InstrumentoProtesto;
-import br.com.ieptbto.cra.entidade.PedidoAutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.PedidoCancelamento;
-import br.com.ieptbto.cra.entidade.PedidoDesistencia;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.Retorno;
-import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamento;
-import br.com.ieptbto.cra.entidade.TituloFiliado;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
-import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 
 /**
  * @author Thasso Araújo

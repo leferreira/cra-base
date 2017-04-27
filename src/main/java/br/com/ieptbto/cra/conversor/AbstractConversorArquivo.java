@@ -1,19 +1,18 @@
 package br.com.ieptbto.cra.conversor;
 
-import java.beans.PropertyDescriptor;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
-
 import br.com.ieptbto.cra.conversor.arquivo.FabricaConversor;
 import br.com.ieptbto.cra.entidade.AbstractEntidade;
 import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
 import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
 import br.com.ieptbto.cra.util.CraConstructorUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
+
+import java.beans.PropertyDescriptor;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 

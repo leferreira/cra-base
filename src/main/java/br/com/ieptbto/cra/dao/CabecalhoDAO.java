@@ -1,12 +1,11 @@
 package br.com.ieptbto.cra.dao;
 
+import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
-
-import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
-import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 
 /**
  * 

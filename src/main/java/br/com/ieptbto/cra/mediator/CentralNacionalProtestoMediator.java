@@ -1,12 +1,16 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
+import br.com.ieptbto.cra.conversor.cnp.ConversorCnpVO;
+import br.com.ieptbto.cra.conversor.cnp.RegistroCnpConversor;
+import br.com.ieptbto.cra.dao.CentralNancionalProtestoDAO;
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.entidade.vo.*;
+import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
+import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.regra.FabricaRegraValidacaoCNP;
+import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,25 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.conversor.cnp.ConversorCnpVO;
-import br.com.ieptbto.cra.conversor.cnp.RegistroCnpConversor;
-import br.com.ieptbto.cra.dao.CentralNancionalProtestoDAO;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.LoteCnp;
-import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.entidade.RegistroCnp;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.entidade.vo.ArquivoCnpVO;
-import br.com.ieptbto.cra.entidade.vo.CabecalhoCnpVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaCnpVO;
-import br.com.ieptbto.cra.entidade.vo.RodapeCnpVO;
-import br.com.ieptbto.cra.entidade.vo.TituloCnpVO;
-import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
-import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
-import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.regra.FabricaRegraValidacaoCNP;
-import br.com.ieptbto.cra.util.DataUtil;
-import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @author Thasso Araújo

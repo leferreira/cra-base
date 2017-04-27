@@ -1,14 +1,13 @@
 package br.com.ieptbto.cra.dataProvider;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 
-import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

@@ -1,26 +1,17 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.util.List;
-
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.beans.TituloBean;
 import br.com.ieptbto.cra.dao.TituloDAO;
-import br.com.ieptbto.cra.entidade.Anexo;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Confirmacao;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.Retorno;
-import br.com.ieptbto.cra.entidade.Titulo;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.*;
 import br.com.ieptbto.cra.entidade.view.ViewTitulo;
 import br.com.ieptbto.cra.enumeration.TipoCampo51;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author Thasso Araújo
@@ -30,7 +21,7 @@ import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 public class TituloMediator extends BaseMediator {
 
 	@Autowired
-	TituloDAO tituloDAO;
+	private TituloDAO tituloDAO;
 
 	public TituloRemessa buscarTituloPorPK(TituloRemessa titulo) {
 		return tituloDAO.buscarPorPK(titulo, TituloRemessa.class);
@@ -54,7 +45,7 @@ public class TituloMediator extends BaseMediator {
 	}
 
 	public List<ViewTitulo> consultarViewTitulosPorRemessa(Remessa remessa) {
-		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(remessa.getArquivo());
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.get(remessa.getArquivo());
 		if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
 			return tituloDAO.consultarViewTitulosPorIdRemessa(remessa.getId());
 		} else if (TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo)) {
@@ -68,15 +59,6 @@ public class TituloMediator extends BaseMediator {
 	public List<TituloRemessa> buscarTitulos(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoInstituicaoCRA tipoInstituicao,
 			Instituicao bancoConvenio, Instituicao cartorio, TituloBean titulo) {
 		return tituloDAO.buscarTitulos(usuario, dataInicio, dataFim, tipoInstituicao, bancoConvenio, cartorio, titulo);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public List<Titulo> carregarTitulosGenerico(Arquivo arquivo) {
-		return tituloDAO.carregarTitulosGenerico(arquivo);
-	}
-
-	public TituloRemessa buscarTituloRemessaPorDadosRetorno(Retorno tituloRetorno) {
-		return tituloDAO.buscarTituloRemessaPorDadosRetorno(tituloRetorno);
 	}
 
 	public Anexo buscarAnexo(TituloRemessa tituloRemessa) {

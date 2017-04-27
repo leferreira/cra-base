@@ -1,16 +1,16 @@
 package br.com.ieptbto.cra.beans;
 
+import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.enumeration.NivelDetalhamentoRelatorio;
+import br.com.ieptbto.cra.enumeration.StatusDownload;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.TipoVisualizacaoArquivos;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.enumeration.StatusDownload;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.enumeration.NivelDetalhamentoRelatorio;
-import br.com.ieptbto.cra.enumeration.TipoVisualizacaoArquivos;
-import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 
 public class ArquivoBean implements Serializable {
 

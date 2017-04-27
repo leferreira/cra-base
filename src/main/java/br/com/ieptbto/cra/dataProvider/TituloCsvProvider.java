@@ -1,13 +1,12 @@
 package br.com.ieptbto.cra.dataProvider;
 
+import br.com.ieptbto.cra.beans.TituloCsvBean;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
-import br.com.ieptbto.cra.beans.TituloCsvBean;
-import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
  * @author Thasso Araújo

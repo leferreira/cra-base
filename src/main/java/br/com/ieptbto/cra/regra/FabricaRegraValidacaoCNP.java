@@ -1,12 +1,11 @@
 package br.com.ieptbto.cra.regra;
 
-import java.math.BigDecimal;
-
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.entidade.RegistroCnp;
 import br.com.ieptbto.cra.util.CpfCnpjUtil;
 import br.com.ieptbto.cra.util.DataUtil;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 /**
  * @author Thasso Araújo

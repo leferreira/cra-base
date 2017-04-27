@@ -6,8 +6,9 @@ package br.com.ieptbto.cra.enumeration;
  */
 public enum TipoDeposito {
 
-	NAO_INFORMADO("Escolha"), 
-	DEPOSITO_CARTORIO_PARA_BANCO("Cartório para Bancos/Convênio"), 
+	NAO_INFORMADO("Escolha"),
+    CDL_ACIPA("CDL/ACIPA"),
+    DEPOSITO_CARTORIO_PARA_BANCO("Cartório para Bancos/Convênio"),
 	DEPOSITO_CARTORIO_PARA_IEPTB("Cartório para o IEPTB"), 
 	DEPOSITO_TAXA_CRA("Taxa CRA"), 
 	DEPOSITOS_ERRADOS("Deposito Errado"), 

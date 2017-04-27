@@ -1,17 +1,16 @@
 package br.com.ieptbto.cra.slip;
 
+import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
+import br.com.ieptbto.cra.entidade.AgenciaCAF;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.wicket.markup.html.form.upload.FileUpload;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
-import br.com.ieptbto.cra.entidade.AgenciaCAF;
 
 /**
  * @author Thasso Araújo

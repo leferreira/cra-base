@@ -1,38 +1,11 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.namespace.QName;
-
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.conversor.cnp.ConversorCnpVO;
 import br.com.ieptbto.cra.dao.AdministracaoDAO;
 import br.com.ieptbto.cra.dao.CentralNancionalProtestoDAO;
 import br.com.ieptbto.cra.dao.InstituicaoDAO;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.LoteCnp;
-import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.entidade.RegistroCnp;
-import br.com.ieptbto.cra.entidade.vo.ArquivoCnpVO;
-import br.com.ieptbto.cra.entidade.vo.CabecalhoCnpVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaCnpVO;
-import br.com.ieptbto.cra.entidade.vo.RodapeCnpVO;
-import br.com.ieptbto.cra.entidade.vo.TituloCnpVO;
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.entidade.vo.*;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
@@ -40,6 +13,18 @@ import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.namespace.QName;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AdministracaoMediator extends BaseMediator {

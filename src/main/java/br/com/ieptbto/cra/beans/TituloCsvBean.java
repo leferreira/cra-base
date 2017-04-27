@@ -1,11 +1,11 @@
 package br.com.ieptbto.cra.beans;
 
+import br.com.ieptbto.cra.entidade.view.ViewTitulo;
+import br.com.ieptbto.cra.util.DataUtil;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import br.com.ieptbto.cra.entidade.view.ViewTitulo;
-import br.com.ieptbto.cra.util.DataUtil;
 
 /**
  * @author Thasso Araújo

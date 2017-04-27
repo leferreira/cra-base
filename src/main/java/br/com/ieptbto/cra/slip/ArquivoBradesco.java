@@ -1,13 +1,9 @@
 package br.com.ieptbto.cra.slip;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
+import br.com.ieptbto.cra.entidade.AgenciaBradesco;
+import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -18,10 +14,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
-import br.com.ieptbto.cra.entidade.AgenciaBradesco;
-import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

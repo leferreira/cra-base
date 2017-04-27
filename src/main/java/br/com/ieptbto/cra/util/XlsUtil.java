@@ -1,9 +1,9 @@
 package br.com.ieptbto.cra.util;
 
-import java.io.Serializable;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+
+import java.io.Serializable;
 
 public class XlsUtil implements Serializable {
 

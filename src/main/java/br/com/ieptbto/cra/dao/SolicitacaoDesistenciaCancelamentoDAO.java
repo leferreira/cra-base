@@ -1,18 +1,17 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamento;
+import br.com.ieptbto.cra.entidade.TituloRemessa;
+import br.com.ieptbto.cra.enumeration.TipoSolicitacaoDesistenciaCancelamento;
+import br.com.ieptbto.cra.enumeration.regra.CodigoIrregularidade;
+import br.com.ieptbto.cra.exception.InfraException;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
-import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamento;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.enumeration.TipoSolicitacaoDesistenciaCancelamento;
-import br.com.ieptbto.cra.enumeration.regra.CodigoIrregularidade;
-import br.com.ieptbto.cra.exception.InfraException;
+import java.util.List;
 
 @Repository
 public class SolicitacaoDesistenciaCancelamentoDAO extends AbstractBaseDAO{

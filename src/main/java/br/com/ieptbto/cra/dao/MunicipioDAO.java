@@ -1,8 +1,8 @@
 package br.com.ieptbto.cra.dao;
 
-import java.text.Normalizer;
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.entidade.Municipio;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
@@ -13,9 +13,8 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+import java.text.Normalizer;
+import java.util.List;
 
 @Repository
 public class MunicipioDAO extends AbstractBaseDAO {

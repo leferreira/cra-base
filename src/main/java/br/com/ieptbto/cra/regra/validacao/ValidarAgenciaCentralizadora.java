@@ -1,10 +1,5 @@
 package br.com.ieptbto.cra.regra.validacao;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Remessa;
@@ -13,6 +8,10 @@ import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 import br.com.ieptbto.cra.mediator.CabecalhoMediator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author Thasso Araújo
@@ -30,7 +29,7 @@ public class ValidarAgenciaCentralizadora extends RegraValidacao {
 	@Override
 	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 
-		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo);
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.get(arquivo);
 		if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
 
 		} else if (TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo)) {

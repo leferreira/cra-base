@@ -1,26 +1,14 @@
 package br.com.ieptbto.cra.entidade.vo;
 
-import java.beans.PropertyDescriptor;
+import br.com.ieptbto.cra.annotations.IAtributoArquivo;
+import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
+import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+import org.apache.commons.lang.StringUtils;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
-
-import br.com.ieptbto.cra.annotations.IAtributoArquivo;
-import br.com.ieptbto.cra.conversor.BigDecimalConversor;
-import br.com.ieptbto.cra.conversor.CampoArquivo;
-import br.com.ieptbto.cra.conversor.arquivo.FabricaConversor;
-import br.com.ieptbto.cra.entidade.Confirmacao;
-import br.com.ieptbto.cra.entidade.Retorno;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
-import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
-import br.com.ieptbto.cra.util.DataUtil;
-import br.com.ieptbto.cra.util.RemoverAcentosUtil;
 
 /**
  * 
@@ -741,128 +729,5 @@ public class TituloVO extends AbstractArquivoVO {
 
 	public void setNumeroSequencialArquivo(String numeroSequencialArquivo) {
 		this.numeroSequencialArquivo = numeroSequencialArquivo;
-	}
-
-	public static TituloVO parseTitulo(Confirmacao titulo) {
-		TituloVO tituloVO = new TituloVO();
-		BeanWrapper propertyAccessCCR = PropertyAccessorFactory.forBeanPropertyAccess(titulo.getTitulo());
-		BeanWrapper propertyAccessTituloVO = PropertyAccessorFactory.forBeanPropertyAccess(tituloVO);
-		PropertyDescriptor[] propertyDescriptors = propertyAccessTituloVO.getPropertyDescriptors();
-		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-			String propertyName = propertyDescriptor.getName();
-			if (propertyAccessCCR.isReadableProperty(propertyName) && propertyAccessTituloVO.isWritableProperty(propertyName)) {
-				String valor = "";
-				if (propertyAccessCCR.getPropertyValue(propertyName) != null) {
-					valor = getValorString(propertyAccessCCR.getPropertyValue(propertyName), new CampoArquivo(propertyName, tituloVO.getClass()));
-				}
-				propertyAccessTituloVO.setPropertyValue(propertyName, valor.trim());
-			}
-		}
-
-		tituloVO.setCodigoCartorio(titulo.getCodigoCartorio().toString());
-		tituloVO.setNumeroProtocoloCartorio(titulo.getNumeroProtocoloCartorio());
-		tituloVO.setDataProtocolo(DataUtil.localDateToStringddMMyyyy(titulo.getDataProtocolo()));
-		tituloVO.setTipoOcorrencia(titulo.getTipoOcorrencia());
-		tituloVO.setDataOcorrencia(DataUtil.localDateToStringddMMyyyy(titulo.getDataOcorrencia()));
-		tituloVO.setCodigoIrregularidade(titulo.getCodigoIrregularidade());
-
-		if (titulo.getTipoOcorrencia() != null) {
-			if (titulo.getTipoOcorrencia().trim().equals("") || titulo.getTipoOcorrencia().equals("0")) {
-				tituloVO.setDataOcorrencia("00000000");
-				tituloVO.setCodigoIrregularidade("00");
-			}
-		}
-
-		if (!titulo.getTipoOcorrencia().equals(TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getConstante())) {
-			tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoSegundoLayoutFebraban(
-					titulo.getRemessa().getInstituicaoDestino().getValorConfirmacao()));
-		}
-		return tituloVO;
-	}
-
-	public static TituloVO parseTitulo(TituloRemessa titulo) {
-		TituloVO tituloVO = new TituloVO();
-		BeanWrapper propertyAccessCCR = PropertyAccessorFactory.forBeanPropertyAccess(titulo);
-		BeanWrapper propertyAccessTituloVO = PropertyAccessorFactory.forBeanPropertyAccess(tituloVO);
-		PropertyDescriptor[] propertyDescriptors = propertyAccessTituloVO.getPropertyDescriptors();
-		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-			String propertyName = propertyDescriptor.getName();
-			if (propertyAccessCCR.isReadableProperty(propertyName) && propertyAccessTituloVO.isWritableProperty(propertyName)) {
-				String valor = "";
-				if (propertyAccessCCR.getPropertyValue(propertyName) != null) {
-					valor = getValorString(propertyAccessCCR.getPropertyValue(propertyName), new CampoArquivo(propertyName, tituloVO.getClass()));
-				}
-				propertyAccessTituloVO.setPropertyValue(propertyName, valor.trim());
-			}
-		}
-
-		return tituloVO;
-	}
-
-	public static TituloVO parseTitulo(Retorno retorno) {
-		TituloVO tituloVO = new TituloVO();
-		BeanWrapper propertyAccessCCR = PropertyAccessorFactory.forBeanPropertyAccess(retorno);
-		BeanWrapper propertyAccessTituloVO = PropertyAccessorFactory.forBeanPropertyAccess(tituloVO);
-		PropertyDescriptor[] propertyDescriptors = propertyAccessTituloVO.getPropertyDescriptors();
-		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-			String propertyName = propertyDescriptor.getName();
-			if (propertyAccessCCR.isReadableProperty(propertyName) && propertyAccessTituloVO.isWritableProperty(propertyName)) {
-				String valor = "";
-				if (propertyAccessCCR.getPropertyValue(propertyName) != null) {
-					valor = getValorString(propertyAccessCCR.getPropertyValue(propertyName), new CampoArquivo(propertyName, tituloVO.getClass()));
-				}
-				propertyAccessTituloVO.setPropertyValue(propertyName, valor.trim());
-			}
-		}
-		tituloVO.setNomeCedenteFavorecido(StringUtils.leftPad(" ", 45));
-		tituloVO.setNomeSacadorVendedor(StringUtils.leftPad(" ", 45));
-		tituloVO.setDocumentoSacador(StringUtils.leftPad(" ", 14));
-		tituloVO.setEnderecoSacadorVendedor(StringUtils.leftPad(" ", 45));
-		tituloVO.setCepSacadorVendedor(StringUtils.leftPad(" ", 8));
-		tituloVO.setCidadeSacadorVendedor(StringUtils.leftPad(" ", 20));
-		tituloVO.setUfSacadorVendedor(StringUtils.leftPad(" ", 2));
-		tituloVO.setEspecieTitulo(StringUtils.leftPad(" ", 3));
-		tituloVO.setNumeroTitulo(StringUtils.leftPad(" ", 11));
-		tituloVO.setDataEmissaoTitulo(StringUtils.leftPad(" ", 8));
-		tituloVO.setDataVencimentoTitulo(StringUtils.leftPad(" ", 8));
-		tituloVO.setPracaProtesto(StringUtils.leftPad(" ", 20));
-		tituloVO.setTipoEndoso(StringUtils.leftPad(" ", 1));
-		tituloVO.setInformacaoSobreAceite(StringUtils.leftPad(" ", 1));
-		tituloVO.setNumeroControleDevedor(StringUtils.leftPad(" ", 1));
-		tituloVO.setNomeDevedor(StringUtils.leftPad(" ", 45));
-		tituloVO.setTipoIdentificacaoDevedor(StringUtils.leftPad(" ", 3));
-		tituloVO.setNumeroIdentificacaoDevedor(StringUtils.leftPad(" ", 14));
-		tituloVO.setDocumentoDevedor(StringUtils.leftPad(" ", 11));
-		tituloVO.setEnderecoDevedor(StringUtils.leftPad(" ", 45));
-		tituloVO.setCepDevedor(StringUtils.leftPad(" ", 8));
-		tituloVO.setCidadeDevedor(StringUtils.leftPad(" ", 20));
-		tituloVO.setUfDevedor(StringUtils.leftPad(" ", 2));
-		tituloVO.setNumeroOperacaoBanco(StringUtils.leftPad(" ", 5));
-		tituloVO.setNumeroContratoBanco(StringUtils.leftPad(" ", 15));
-		tituloVO.setNumeroParcelaContrato(StringUtils.leftPad(" ", 3));
-		tituloVO.setTipoLetraCambio(StringUtils.leftPad(" ", 1));
-		tituloVO.setProtestoMotivoFalencia(StringUtils.leftPad(" ", 1));
-		tituloVO.setInstrumentoProtesto(StringUtils.leftPad(" ", 1));
-
-		tituloVO.setValorCustaCartorio(new BigDecimalConversor().getValorConvertidoParaString(retorno.getValorCustaCartorio()));
-		tituloVO.setTipoOcorrencia(retorno.getTipoOcorrencia());
-		tituloVO.setDataOcorrencia(DataUtil.localDateToStringddMMyyyy(retorno.getDataOcorrencia()));
-		tituloVO.setCodigoIrregularidade(retorno.getCodigoIrregularidade());
-		tituloVO.setCodigoCartorio(retorno.getCodigoCartorio().toString());
-		tituloVO.setNumeroProtocoloCartorio(retorno.getNumeroProtocoloCartorio());
-		tituloVO.setDataProtocolo(DataUtil.localDateToStringddMMyyyy(retorno.getDataProtocolo()));
-
-		tituloVO.setValorDemaisDespesas(new BigDecimalConversor().getValorConvertidoParaString(retorno.getValorDemaisDespesas()));
-		tituloVO.setNumeroSequencialArquivo(retorno.getNumeroSequencialArquivo());
-		tituloVO.setDeclaracaoPortador(" ");
-		tituloVO.setValorGravacaoEletronica(new BigDecimalConversor().getValorConvertidoParaString(retorno.getValorGravacaoEletronica()));
-
-		tituloVO.setValorTitulo(new BigDecimalConversor().getValorConvertidoParaString(retorno.getTitulo().getValorTitulo()));
-		tituloVO.setTipoMoeda(retorno.getTitulo().getTipoMoeda());
-		return tituloVO;
-	}
-
-	private static String getValorString(Object propertyValue, CampoArquivo campoArquivo) {
-		return FabricaConversor.getValorConvertidoParaString(campoArquivo, propertyValue.getClass(), propertyValue);
 	}
 }

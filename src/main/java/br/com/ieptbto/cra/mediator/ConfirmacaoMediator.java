@@ -1,26 +1,19 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import br.com.ieptbto.cra.dao.ConfirmacaoDAO;
+import br.com.ieptbto.cra.dao.InstituicaoDAO;
+import br.com.ieptbto.cra.dao.TipoArquivoDAO;
+import br.com.ieptbto.cra.dao.TituloDAO;
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.dao.ConfirmacaoDAO;
-import br.com.ieptbto.cra.dao.InstituicaoDAO;
-import br.com.ieptbto.cra.dao.TipoArquivoDAO;
-import br.com.ieptbto.cra.dao.TituloDAO;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Confirmacao;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.TipoArquivo;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author thasso

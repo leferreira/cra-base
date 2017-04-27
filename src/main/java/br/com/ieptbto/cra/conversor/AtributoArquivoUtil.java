@@ -1,13 +1,12 @@
 package br.com.ieptbto.cra.conversor;
 
+import br.com.ieptbto.cra.annotations.IAtributoArquivo;
+import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
+import org.apache.commons.lang.ClassUtils;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang.ClassUtils;
-
-import br.com.ieptbto.cra.annotations.IAtributoArquivo;
-import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
 
 /**
  * 

@@ -1,16 +1,15 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.GrupoUsuario;
+import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.security.CraRoles;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.entidade.GrupoUsuario;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.security.CraRoles;
+import java.util.List;
 
 /**
  * 

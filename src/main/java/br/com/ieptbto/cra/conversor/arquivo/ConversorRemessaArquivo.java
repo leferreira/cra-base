@@ -1,24 +1,7 @@
 package br.com.ieptbto.cra.conversor.arquivo;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import br.com.ieptbto.cra.entidade.Anexo;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
-import br.com.ieptbto.cra.entidade.Confirmacao;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.Retorno;
-import br.com.ieptbto.cra.entidade.Rodape;
-import br.com.ieptbto.cra.entidade.Titulo;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
+import br.com.ieptbto.cra.conversor.AbstractFabricaDeArquivo;
+import br.com.ieptbto.cra.entidade.*;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
@@ -27,6 +10,14 @@ import br.com.ieptbto.cra.enumeration.TipoCampo51;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.mediator.TituloMediator;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
@@ -76,7 +67,7 @@ public class ConversorRemessaArquivo {
 	}
 
 	private Instituicao getInstituicaoDestino(CabecalhoVO cabecalho) {
-		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo);
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.get(arquivo);
 		if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
 			return instituicaoMediator.getCartorioPorCodigoIBGE(cabecalho.getCodigoMunicipio());
 		} else if (TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoFebraban.RETORNO.equals(tipoArquivo)) {
@@ -172,10 +163,9 @@ public class ConversorRemessaArquivo {
 		remessaVO.getCabecalho().setNumeroSequencialRegistroArquivo(Integer.toString(1));
 		int sequencial = 2;
 		for (Titulo titulo : remessa.getTitulos()) {
-			TituloVO tituloVO = null;
 			if (titulo instanceof TituloRemessa) {
-				TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
-				tituloVO = TituloVO.parseTitulo(tituloRemessa);
+                TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
+                TituloVO tituloVO = AbstractFabricaDeArquivo.converterParaTituloVO(titulo);
 				if (tituloVO.getNumeroControleDevedor() != null && tituloVO.getNumeroControleDevedor().trim().equals(PRIMEIRO_DEVEDOR)) {
 					quantidadeTitulos++;
 				}
@@ -199,15 +189,8 @@ public class ConversorRemessaArquivo {
 
 	private List<TituloVO> converterTitulos(List<Titulo> titulos) {
 		List<TituloVO> titulosVO = new ArrayList<TituloVO>();
-		TituloVO tituloVO = null;
 		for (Titulo titulo : titulos) {
-			if (titulo instanceof TituloRemessa) {
-				tituloVO = TituloVO.parseTitulo(TituloRemessa.class.cast(titulo));
-			} else if (titulo instanceof Confirmacao) {
-				tituloVO = TituloVO.parseTitulo(Confirmacao.class.cast(titulo));
-			} else if (titulo instanceof Retorno) {
-				tituloVO = TituloVO.parseTitulo(Retorno.class.cast(titulo));
-			}
+            TituloVO tituloVO = AbstractFabricaDeArquivo.converterParaTituloVO(titulo);
 			titulosVO.add(tituloVO);
 		}
 		return titulosVO;

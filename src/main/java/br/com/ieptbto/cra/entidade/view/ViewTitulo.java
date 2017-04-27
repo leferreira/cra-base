@@ -1,16 +1,11 @@
 package br.com.ieptbto.cra.entidade.view;
 
+import org.joda.time.LocalDate;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.Table;
-
-import org.joda.time.LocalDate;
 
 /**
  * @author Thasso Araújo
@@ -19,16 +14,16 @@ import org.joda.time.LocalDate;
 @Entity
 @Table(name="VIEW_TITULO")
 @NamedNativeQueries({
-	@NamedNativeQuery(name="findTitulosPorIdRemessaRemessa", 
+	    @NamedNativeQuery(name="findTitulosPorIdRemessaRemessa",
 			query="select * from view_titulo where id_remessa_remessa= :id order by nomeDevedor_TituloRemessa", resultClass=ViewTitulo.class),
-	@NamedNativeQuery(name="findTitulosPorIdRemessaConfirmacao", 
+	    @NamedNativeQuery(name="findTitulosPorIdRemessaConfirmacao",
 			query="select * from view_titulo where id_remessa_confirmacao= :id order by nomeDevedor_TituloRemessa", resultClass=ViewTitulo.class),
-	@NamedNativeQuery(name="findTitulosPorIdRemessaRetorno", 
-			query="select * from view_titulo where id_remessa_retorno= :id order by nomeDevedor_TituloRemessa", resultClass=ViewTitulo.class)
+	    @NamedNativeQuery(name="findTitulosPorIdRemessaRetorno",
+			query="select * from view_titulo where id_remessa_retorno = :id union " +
+                    "select * from view_titulo where id_remessa_cancelamento = :id_can order by nomeDevedor_TituloRemessa", resultClass=ViewTitulo.class),
 })
 public class ViewTitulo implements Serializable {
 
-	/***/
 	private static final long serialVersionUID = 1L;
 	private Integer id_TituloRemessa;
 	private String nossoNumero_TituloRemessa;
@@ -68,6 +63,8 @@ public class ViewTitulo implements Serializable {
 	private Date dataRecebimento_Arquivo_Retorno_Instituicao;
 	private Integer id_Remessa_Retorno;
 	private LocalDate dataOcorrencia_ConfirmacaoRetorno;
+    private Integer id_Titulo_Retorno_Cancelamento;
+    private Integer id_Remessa_Cancelamento;
 	private Integer id_Instituicao_Cartorio;
 	private Integer id_Municipio;
 	private String nomeMunicipio_Municipio;
@@ -421,4 +418,20 @@ public class ViewTitulo implements Serializable {
 	public void setSituacaoTitulo(String situacaoTitulo) {
 		this.situacaoTitulo = situacaoTitulo;
 	}
+
+    public Integer getId_Titulo_Retorno_Cancelamento() {
+        return id_Titulo_Retorno_Cancelamento;
+    }
+
+    public void setId_Titulo_Retorno_Cancelamento(Integer id_Titulo_Retorno_Cancelamento) {
+        this.id_Titulo_Retorno_Cancelamento = id_Titulo_Retorno_Cancelamento;
+    }
+
+    public Integer getId_Remessa_Cancelamento() {
+        return id_Remessa_Cancelamento;
+    }
+
+    public void setId_Remessa_Cancelamento(Integer id_Remessa_Cancelamento) {
+        this.id_Remessa_Cancelamento = id_Remessa_Cancelamento;
+    }
 }

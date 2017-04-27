@@ -1,22 +1,19 @@
 package br.com.ieptbto.cra.regra.titulo;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.stereotype.Service;
-
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.Retorno;
-import br.com.ieptbto.cra.entidade.Titulo;
-import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.enumeration.SituacaoBatimentoRetorno;
+import br.com.ieptbto.cra.enumeration.TipoBatimento;
 import br.com.ieptbto.cra.enumeration.regra.CodigoIrregularidade;
 import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 import br.com.ieptbto.cra.exception.TituloException;
 import br.com.ieptbto.cra.mediator.DesistenciaProtestoMediator;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Thasso Araújo
@@ -56,25 +53,43 @@ public class ValidarTituloRetorno extends RegraTitulo {
 			for (Titulo titulo : remessa.getTitulos()) {
 				if (Retorno.class.isInstance(titulo)) {
 					Retorno tituloRetorno = Retorno.class.cast(titulo);
-					
-					verificarTipoOcorrenciaProtocoloCodigoIrregularidade(tituloRetorno);
+                    TipoOcorrencia tipoOcorrencia = TipoOcorrencia.get(tituloRetorno.getTipoOcorrencia());
+
+                    verificarPagoOuCancelado(remessa, tituloRetorno, tipoOcorrencia);
+					verificarTipoOcorrenciaProtocoloCodigoIrregularidade(tituloRetorno, tipoOcorrencia);
 					verificarDuplicidadeDeTitulosNoArquivo(titulosProcessados, tituloRetorno);
 				}
 			}
 		}
 	}
 
-	private void verificarTipoOcorrenciaProtocoloCodigoIrregularidade(Retorno tituloRetorno) {
-		Integer numeroProtocoloCartorio = Integer.valueOf(tituloRetorno.getNumeroProtocoloCartorio().trim());
-		TipoOcorrencia tipoOcorrencia = null;
-		if (tituloRetorno.getTipoOcorrencia() != null) {
-			tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloRetorno.getTipoOcorrencia());
-			if (tipoOcorrencia == null) {
-				erros.add(new TituloException(CodigoErro.CARTORIO_TIPO_OCORRENCIA_INVALIDO, tituloRetorno.getNossoNumero(), 
-						numeroProtocoloCartorio, tituloRetorno.getNumeroSequencialArquivo()));
-			}
-		}
+    /**
+     * Verifica se o título é pago ou cancelado. Caso seja pago sera definida a regra do batimento da entidade remessa. Caso seja cancelado
+     * será atribuido true a flag de remessa de titulos cancelamento
+     *
+     * @param remessa
+     * @param tituloRetorno
+     * @param tipoOcorrencia
+     */
+    private void verificarPagoOuCancelado(Remessa remessa, Retorno tituloRetorno, TipoOcorrencia tipoOcorrencia) {
 
+        if (tipoOcorrencia == null) {
+            erros.add(new TituloException(CodigoErro.CARTORIO_TIPO_OCORRENCIA_INVALIDO, tituloRetorno.getNossoNumero(),
+                    getProtocolo(tituloRetorno), tituloRetorno.getNumeroSequencialArquivo()));
+
+        } else if (tipoOcorrencia.equals(TipoOcorrencia.PAGO) && remessa.getContemPago().equals(false)) {
+            TipoBatimento tipoBatimento = remessa.getInstituicaoDestino().getTipoBatimento();
+            if (!tipoBatimento.equals(TipoBatimento.LIBERACAO_SEM_IDENTIFICAÇÃO_DE_DEPOSITO)) {
+                remessa.setSituacaoBatimentoRetorno(SituacaoBatimentoRetorno.NAO_CONFIRMADO);
+            }
+            remessa.setContemPago(true);
+
+        } else if (tipoOcorrencia.equals(TipoOcorrencia.PROTESTO_DO_BANCO_CANCELADO) && remessa.getContemCancelamento().equals(false)) {
+            remessa.setContemCancelamento(true);
+        }
+    }
+
+    private void verificarTipoOcorrenciaProtocoloCodigoIrregularidade(Retorno tituloRetorno, TipoOcorrencia tipoOcorrencia) {
 		CodigoIrregularidade codigoIrregularidade = null;
 		if (tituloRetorno.getCodigoIrregularidade() != null) {
 			codigoIrregularidade = CodigoIrregularidade.getIrregularidade(tituloRetorno.getCodigoIrregularidade());
@@ -85,7 +100,7 @@ public class ValidarTituloRetorno extends RegraTitulo {
 						tituloRetorno.setCodigoIrregularidade("67");
 					} else {
 						erros.add(new TituloException(CodigoErro.CARTORIO_TITULO_DEVOLVIDO_SEM_CODIGO_IRREGULARIDADE, tituloRetorno.getNossoNumero(),
-								numeroProtocoloCartorio, tituloRetorno.getNumeroSequencialArquivo()));
+								getProtocolo(tituloRetorno), tituloRetorno.getNumeroSequencialArquivo()));
 					}
 				}
 			}
@@ -93,12 +108,20 @@ public class ValidarTituloRetorno extends RegraTitulo {
 	}
 
 	private void verificarDuplicidadeDeTitulosNoArquivo(List<Titulo> titulosProcessados, Retorno tituloRetorno) {
-		Integer numeroProtocoloCartorio = Integer.valueOf(tituloRetorno.getNumeroProtocoloCartorio().trim());
 		if (titulosProcessados.contains(tituloRetorno)) {
 			erros.add(new TituloException(CodigoErro.CARTORIO_TITULOS_DUPLICADOS_NO_ARQUIVO, tituloRetorno.getNossoNumero(), 
-					numeroProtocoloCartorio, tituloRetorno.getNumeroSequencialArquivo()));
+					getProtocolo(tituloRetorno), tituloRetorno.getNumeroSequencialArquivo()));
 		} else {
 			titulosProcessados.add(tituloRetorno);
 		}
 	}
+
+    /**
+     * Retorna o protocoloco como inteiro
+     * @param tituloRetorno
+     * @return
+     */
+    private Integer getProtocolo(Retorno tituloRetorno) {
+        return Integer.valueOf(tituloRetorno.getNumeroProtocoloCartorio().trim());
+    }
 }

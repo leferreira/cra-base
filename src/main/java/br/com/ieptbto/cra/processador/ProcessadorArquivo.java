@@ -1,24 +1,18 @@
 package br.com.ieptbto.cra.processador;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.wicket.markup.html.form.upload.FileUpload;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
-import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.*;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.fabrica.FabricaDeArquivo;
 import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
 import br.com.ieptbto.cra.regra.FabricaRegraEntradaValidacao;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Thasso Araújo
@@ -61,8 +55,7 @@ public class ProcessadorArquivo extends Processador {
 			fabricaRegraValidacaoArquivo.validar(getFile(), arquivo, usuario, erros);
 			copiarArquivoEapagarTemporario(arquivo);
 
-			logger.info(
-					"Fim processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + usuario.getLogin());
+			logger.info("Fim processamento arquivo via aplicação " + getFileUpload().getClientFileName() + " do usuário " + usuario.getLogin());
 		} else {
 			throw new InfraException("O arquivo " + getFileUpload().getClientFileName() + " enviado não pode ser processado!");
 		}

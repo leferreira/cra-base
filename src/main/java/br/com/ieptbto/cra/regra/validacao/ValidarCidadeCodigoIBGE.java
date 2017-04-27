@@ -1,11 +1,5 @@
 package br.com.ieptbto.cra.regra.validacao;
 
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Municipio;
 import br.com.ieptbto.cra.entidade.Remessa;
@@ -15,6 +9,11 @@ import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 import br.com.ieptbto.cra.mediator.MunicipioMediator;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ValidarCidadeCodigoIBGE extends RegraValidacao {
@@ -25,7 +24,7 @@ public class ValidarCidadeCodigoIBGE extends RegraValidacao {
 	@Override
 	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 
-		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo);
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.get(arquivo);
 		if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
 
 		} else if (TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo)) {
@@ -49,7 +48,7 @@ public class ValidarCidadeCodigoIBGE extends RegraValidacao {
 				}
 
 				if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)) {
-					if (!TipoArquivoFebraban.REMESSA.equals(TipoArquivoFebraban.getTipoArquivoFebraban(arquivo))) {
+					if (!TipoArquivoFebraban.REMESSA.equals(TipoArquivoFebraban.get(arquivo))) {
 						Municipio municipioEnvio = municipioMediator.carregarMunicipio(remessa.getInstituicaoOrigem().getMunicipio());
 						if (!municipio.equals(municipioEnvio)) {
 							erros.add(new CabecalhoRodapeException(CodigoErro.CARTORIO_CODIGO_MUNICIPIO_INVÁLIDO_OU_DIFERE_INSTITUICAO));

@@ -1,10 +1,10 @@
 package br.com.ieptbto.cra.util;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Utilitario para acentuacao

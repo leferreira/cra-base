@@ -1,11 +1,5 @@
 package br.com.ieptbto.cra.regra.entrada;
 
-import java.io.File;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.dao.ArquivoDAO;
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Instituicao;
@@ -13,6 +7,11 @@ import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * @author Thasso Araújo
@@ -48,9 +47,9 @@ public class RegraDuplicidade extends RegraEntrada {
 			TipoArquivoFebraban tipoArquivo = null;
 
 			if (arquivo.getNomeArquivo().length() == 12) {
-				tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo.getNomeArquivo().substring(0, 1));
+				tipoArquivo = TipoArquivoFebraban.get(arquivo.getNomeArquivo().substring(0, 1));
 			} else if (arquivo.getNomeArquivo().length() == 13) {
-				tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo.getNomeArquivo().substring(0, 2));
+				tipoArquivo = TipoArquivoFebraban.get(arquivo.getNomeArquivo().substring(0, 2));
 			} else {
 				throw new InfraException("Não foi possível identificar o tipo do arquivo ! Verifique o nome do arquivo !");
 			}

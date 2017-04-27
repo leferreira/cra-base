@@ -1,12 +1,12 @@
 package br.com.ieptbto.cra.component;
 
-import java.nio.charset.StandardCharsets;
-
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.export.CSVDataExporter;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.export.ExportToolbar;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Thasso Araújo

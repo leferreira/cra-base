@@ -1,28 +1,18 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
+import br.com.ieptbto.cra.dao.InstrumentoProtestoDAO;
+import br.com.ieptbto.cra.dao.TituloDAO;
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.slip.regra.RegraAgenciaDestino;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.dao.InstrumentoProtestoDAO;
-import br.com.ieptbto.cra.dao.TituloDAO;
-import br.com.ieptbto.cra.entidade.EnvelopeSLIP;
-import br.com.ieptbto.cra.entidade.EtiquetaSLIP;
-import br.com.ieptbto.cra.entidade.InstrumentoProtesto;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.Retorno;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.slip.regra.RegraAgenciaDestino;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author Thasso Araújo

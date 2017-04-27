@@ -1,19 +1,13 @@
 package br.com.ieptbto.cra.entidade;
 
-import java.math.BigDecimal;
-
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
-
+import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.joda.time.LocalDate;
 
-import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
+import javax.persistence.*;
+import java.math.BigDecimal;
 
 /**
  * 

@@ -1,9 +1,5 @@
 package br.com.ieptbto.cra.mediator;
 
-import org.apache.wicket.markup.html.form.upload.FileUpload;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.dao.ArquivoDeParaDAO;
 import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
 import br.com.ieptbto.cra.entidade.AgenciaBradesco;
@@ -14,6 +10,9 @@ import br.com.ieptbto.cra.enumeration.regra.RegraBasicaInstrumentoBanco;
 import br.com.ieptbto.cra.processador.ProcessadorArquivoDeParaBB;
 import br.com.ieptbto.cra.slip.ArquivoBradesco;
 import br.com.ieptbto.cra.slip.ArquivoCAF;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Thasso Araújo

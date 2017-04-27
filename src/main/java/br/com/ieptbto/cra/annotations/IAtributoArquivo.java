@@ -1,12 +1,8 @@
 package br.com.ieptbto.cra.annotations;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
+
+import java.lang.annotation.*;
 
 /**
  * Classe responsável por mapear os atributos de um arquivo

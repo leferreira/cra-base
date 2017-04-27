@@ -1,14 +1,14 @@
 package br.com.ieptbto.cra.dataProvider;
 
-import java.io.Serializable;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilterStateLocator;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
+
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

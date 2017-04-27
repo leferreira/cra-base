@@ -1,7 +1,10 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.EnvelopeSLIP;
+import br.com.ieptbto.cra.entidade.EtiquetaSLIP;
+import br.com.ieptbto.cra.entidade.InstrumentoProtesto;
+import br.com.ieptbto.cra.entidade.Retorno;
+import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
@@ -12,11 +15,7 @@ import org.hibernate.sql.JoinType;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
-import br.com.ieptbto.cra.entidade.EnvelopeSLIP;
-import br.com.ieptbto.cra.entidade.EtiquetaSLIP;
-import br.com.ieptbto.cra.entidade.InstrumentoProtesto;
-import br.com.ieptbto.cra.entidade.Retorno;
-import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

@@ -11,9 +11,7 @@
  ******************************************************************************/
 package br.com.ieptbto.cra.security;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import br.com.ieptbto.cra.conversor.enumeration.ErroValidacao;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
@@ -25,7 +23,8 @@ import org.apache.wicket.authroles.authorization.strategies.role.metadata.MetaDa
 import org.apache.wicket.request.component.IRequestableComponent;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
-import br.com.ieptbto.cra.conversor.enumeration.ErroValidacao;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserRoleAuthorizationStrategy implements IAuthorizationStrategy {
 

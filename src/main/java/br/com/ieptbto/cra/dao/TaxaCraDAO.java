@@ -1,8 +1,7 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.Date;
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.TaxaCra;
+import br.com.ieptbto.cra.exception.InfraException;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
@@ -10,8 +9,8 @@ import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
-import br.com.ieptbto.cra.entidade.TaxaCra;
-import br.com.ieptbto.cra.exception.InfraException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

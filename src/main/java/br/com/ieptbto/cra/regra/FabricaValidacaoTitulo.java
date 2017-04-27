@@ -1,16 +1,15 @@
 package br.com.ieptbto.cra.regra;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.regra.titulo.ValidarTituloConfirmacao;
 import br.com.ieptbto.cra.regra.titulo.ValidarTituloRemessa;
 import br.com.ieptbto.cra.regra.titulo.ValidarTituloRetorno;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class FabricaValidacaoTitulo {
@@ -23,7 +22,7 @@ public class FabricaValidacaoTitulo {
 	private ValidarTituloRetorno validarTituloRetorno;
 
 	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
-		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo);
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.get(arquivo);
 
 		if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
 			validarTituloRemessa.validar(arquivo, usuario, erros);

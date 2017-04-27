@@ -1,12 +1,11 @@
 package br.com.ieptbto.cra.beans;
 
-import java.io.Serializable;
-import java.util.Date;
-
-import org.apache.commons.lang.StringUtils;
-
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author Thasso Araújo

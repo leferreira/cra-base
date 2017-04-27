@@ -1,9 +1,5 @@
 package br.com.ieptbto.cra.conversor.cnp;
 
-import java.math.BigDecimal;
-
-import org.joda.time.LocalDate;
-
 import br.com.ieptbto.cra.conversor.AbstractConversorArquivo;
 import br.com.ieptbto.cra.conversor.BigDecimalConversor;
 import br.com.ieptbto.cra.conversor.DateConversor;
@@ -14,6 +10,9 @@ import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import br.com.ieptbto.cra.util.CpfCnpjUtil;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+import org.joda.time.LocalDate;
+
+import java.math.BigDecimal;
 
 /**
  * @author Thasso Araújo

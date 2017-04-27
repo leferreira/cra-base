@@ -1,13 +1,11 @@
 package br.com.ieptbto.cra.component;
 
-import java.math.BigDecimal;
-
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.IConverter;
 
-import br.com.ieptbto.cra.component.BigDecimalConverter;
+import java.math.BigDecimal;
 
 /**
  * Label para valor monetário.

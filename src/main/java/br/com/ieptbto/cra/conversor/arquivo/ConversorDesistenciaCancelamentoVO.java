@@ -1,16 +1,9 @@
 package br.com.ieptbto.cra.conversor.arquivo;
 
+import br.com.ieptbto.cra.entidade.vo.*;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import br.com.ieptbto.cra.entidade.vo.ArquivoDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.CabecalhoArquivoDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.CabecalhoCartorioDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.DesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RegistroDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RodapeArquivoDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RodapeCartorioDesistenciaProtestoVO;
 
 /**
  * 

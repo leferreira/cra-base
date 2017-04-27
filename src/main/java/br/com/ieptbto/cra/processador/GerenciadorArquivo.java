@@ -1,15 +1,14 @@
 package br.com.ieptbto.cra.processador;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
+import br.com.ieptbto.cra.conversor.AbstractConversor;
+import br.com.ieptbto.cra.conversor.CampoArquivo;
+import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
-import br.com.ieptbto.cra.conversor.AbstractConversor;
-import br.com.ieptbto.cra.conversor.CampoArquivo;
-import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
+import java.lang.reflect.Field;
+import java.util.List;
 
 public class GerenciadorArquivo extends AbstractGerenciadorArquivoLinha {
 

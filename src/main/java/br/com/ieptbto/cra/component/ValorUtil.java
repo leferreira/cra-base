@@ -1,13 +1,11 @@
 package br.com.ieptbto.cra.component;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-
-import org.apache.commons.lang.StringUtils;
-
-import br.com.ieptbto.cra.component.ValorUtil;
 
 /**
  * Utilitário para Valores.

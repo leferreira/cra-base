@@ -35,6 +35,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	private int id;
 	private Confirmacao confirmacao;
 	private Retorno retorno;
+	private RetornoCancelamento retornoCancelamento;
 	private List<Anexo> anexos;
 	private List<PedidoDesistencia> pedidosDesistencia;
 	private List<PedidoCancelamento> pedidosCancelamento;
@@ -68,7 +69,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 	private String protestoMotivoFalencia;
 	private String instrumentoProtesto;
 	private String complementoRegistro;
-	private String situacaoTitulo;
 	private Date dataCadastro;
 	private FieldHandler handler;
 
@@ -98,7 +98,16 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		return retorno;
 	}
 
-	@OneToMany(mappedBy = "titulo", fetch = FetchType.LAZY)
+    @OneToOne(optional = true, mappedBy = "titulo", fetch = FetchType.LAZY)
+    @LazyToOne(LazyToOneOption.NO_PROXY)
+    public RetornoCancelamento getRetornoCancelamento() {
+        if (this.handler != null) {
+            return (RetornoCancelamento) this.handler.readObject(this, "retornoCancelamento", retornoCancelamento);
+        }
+        return retornoCancelamento;
+    }
+
+    @OneToMany(mappedBy = "titulo", fetch = FetchType.LAZY)
 	public List<Anexo> getAnexos() {
 		return anexos;
 	}
@@ -185,9 +194,7 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 
 	@Column(name = "TIPO_ENDOSO")
 	public String getTipoEndoso() {
-		if (tipoEndoso == null) {
-			tipoEndoso = "M";
-		} else if (StringUtils.isEmpty(tipoEndoso.trim())) {
+		if (tipoEndoso == null || StringUtils.isBlank(tipoEndoso.trim())) {
 			tipoEndoso = "M";
 		}
 		return tipoEndoso;
@@ -291,7 +298,6 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		if (this.handler != null) {
 			this.confirmacao = (Confirmacao) this.handler.writeObject(this, "confirmacao", this.confirmacao, confirmacao);
 		}
-
 		this.confirmacao = confirmacao;
 	}
 
@@ -430,45 +436,46 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		this.complementoRegistro = complementoRegistro;
 	}
 
-	@Override
-	public int compareTo(TituloRemessa entidade) {
-		CompareToBuilder compareToBuilder = new CompareToBuilder();
-		compareToBuilder.append(this.getCodigoPortador(), entidade.getCodigoPortador());
-		compareToBuilder.append(this.getNossoNumero(), entidade.getNossoNumero());
-		compareToBuilder.append(this.getNumeroTitulo(), entidade.getNumeroTitulo());
+    public void setAnexos(List<Anexo> anexos) {
+        this.anexos = anexos;
+    }
 
-		return compareToBuilder.toComparison();
-	}
+    public void setRetornoCancelamento(RetornoCancelamento retornoCancelamento) {
+        this.retornoCancelamento = retornoCancelamento;
+    }
 
 	@Transient
 	public String getSituacaoTitulo() {
-		this.situacaoTitulo = "ABERTO";
+        String situacaoTitulo = "ABERTO";
 
 		if (this.confirmacao == null) {
-			this.situacaoTitulo = "S/CONFIRMAÇÃO";
+            situacaoTitulo = "S/CONFIRMAÇÃO";
 		} else if (this.retorno == null) {
 			if (this.confirmacao.getTipoOcorrencia() != null) {
 				if (StringUtils.isBlank(this.confirmacao.getTipoOcorrencia().trim())) {
-					this.situacaoTitulo = "ABERTO";
+                    situacaoTitulo = "ABERTO";
 				}
 				if (this.confirmacao.getNumeroProtocoloCartorio() != null) {
 					if (StringUtils.isNotBlank(this.confirmacao.getNumeroProtocoloCartorio().trim())) {
 						Integer protocolo = Integer.valueOf(this.confirmacao.getNumeroProtocoloCartorio().trim());
 						if (protocolo == 0) {
-							this.situacaoTitulo = TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getLabel();
+                            situacaoTitulo = TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getLabel();
 						}
 					} else if (StringUtils.isEmpty(this.confirmacao.getNumeroProtocoloCartorio().trim())
 							|| StringUtils.isBlank(this.confirmacao.getNumeroProtocoloCartorio().trim())) {
-						return this.situacaoTitulo = TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getLabel();
+						return situacaoTitulo = TipoOcorrencia.DEVOLVIDO_POR_IRREGULARIDADE_SEM_CUSTAS.getLabel();
 					}
 				}
 			} else {
-				this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.confirmacao.getTipoOcorrencia()).getLabel();
+                situacaoTitulo = TipoOcorrencia.get(this.confirmacao.getTipoOcorrencia()).getLabel();
 			}
 		}
 		if (this.retorno != null) {
-			this.situacaoTitulo = TipoOcorrencia.getTipoOcorrencia(this.retorno.getTipoOcorrencia()).getLabel();
+            situacaoTitulo = TipoOcorrencia.get(this.retorno.getTipoOcorrencia()).getLabel();
 		}
+        if (this.retornoCancelamento != null) {
+            situacaoTitulo = TipoOcorrencia.PROTESTO_DO_BANCO_CANCELADO.getLabel();
+        }
 		return situacaoTitulo;
 	}
 
@@ -552,18 +559,13 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		return StringUtils.EMPTY;
 	}
 
-    /**
-     * Utilitario para verificação do tipo de identificação, irá retornar 001 para CNPJ e 002 para CPF
-     *
-     * @param documento
-     * @return
-     */
-    @Transient
-    public static String getTIpoIdentificacao(String documento) {
-        if (documento.length() <= 11) {
-			return ConfiguracaoBase.TIPO_CNPJ;
-		}
-	    return ConfiguracaoBase.TIPO_CPF;
+    @Override
+    public int compareTo(TituloRemessa entidade) {
+        CompareToBuilder compareToBuilder = new CompareToBuilder();
+        compareToBuilder.append(this.getCodigoPortador(), entidade.getCodigoPortador());
+        compareToBuilder.append(this.getNossoNumero(), entidade.getNossoNumero());
+        compareToBuilder.append(this.getNumeroTitulo(), entidade.getNumeroTitulo());
+        return compareToBuilder.toComparison();
     }
 
 	@Override
@@ -588,11 +590,26 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
 		return getId();
 	}
 
-	public void setAnexos(List<Anexo> anexos) {
-		this.anexos = anexos;
-	}
+    /**
+     * Utilitario para verificação do tipo de identificação, irá retornar 001 para CNPJ e 002 para CPF
+     *
+     * @param documento
+     * @return String
+     */
+    @Transient
+    public static String getTIpoIdentificacao(String documento) {
+        if (documento.length() <= 11) {
+            return ConfiguracaoBase.TIPO_CNPJ;
+        }
+        return ConfiguracaoBase.TIPO_CPF;
+    }
 
-	@Transient
+    /**
+     * Método para verificar se o título é de um devedor principal ou de outro
+     * devedor.
+     * @return boolean
+     */
+    @Transient
 	public boolean isDevedorPrincipal() {
 		Integer numeroDevedor = 0;
 		if (this.getNumeroControleDevedor() != null) {

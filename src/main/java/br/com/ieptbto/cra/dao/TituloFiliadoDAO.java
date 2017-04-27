@@ -1,8 +1,9 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.Iterator;
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
+import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
+import br.com.ieptbto.cra.exception.InfraException;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -14,17 +15,8 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import br.com.ieptbto.cra.entidade.Avalista;
-import br.com.ieptbto.cra.entidade.Filiado;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.entidade.SetorFiliado;
-import br.com.ieptbto.cra.entidade.TituloFiliado;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
-import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
-import br.com.ieptbto.cra.exception.InfraException;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

@@ -1,15 +1,14 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.dao.InstituicaoDAO;
+import br.com.ieptbto.cra.entidade.Instituicao;
+import br.com.ieptbto.cra.exception.InfraException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.dao.InstituicaoDAO;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.exception.InfraException;
+import java.util.List;
 
 @Service
 public class InstituicaoMediator {

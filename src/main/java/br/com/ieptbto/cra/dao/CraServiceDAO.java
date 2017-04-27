@@ -1,7 +1,7 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.CraServiceConfig;
+import br.com.ieptbto.cra.enumeration.CraServices;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
@@ -10,8 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.entidade.CraServiceConfig;
-import br.com.ieptbto.cra.enumeration.CraServices;
+import java.util.List;
 
 @Repository
 public class CraServiceDAO extends AbstractBaseDAO {

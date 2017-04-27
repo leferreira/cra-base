@@ -1,7 +1,11 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
+import br.com.ieptbto.cra.entidade.AgenciaBradesco;
+import br.com.ieptbto.cra.entidade.AgenciaCAF;
+import br.com.ieptbto.cra.entidade.TituloRemessa;
+import br.com.ieptbto.cra.enumeration.regra.RegraBasicaInstrumentoBanco;
+import br.com.ieptbto.cra.exception.InfraException;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
@@ -11,12 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.entidade.AgenciaBancoDoBrasil;
-import br.com.ieptbto.cra.entidade.AgenciaBradesco;
-import br.com.ieptbto.cra.entidade.AgenciaCAF;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.enumeration.regra.RegraBasicaInstrumentoBanco;
-import br.com.ieptbto.cra.exception.InfraException;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

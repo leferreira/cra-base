@@ -1,10 +1,9 @@
 package br.com.ieptbto.cra.gerador;
 
-import java.io.File;
-
+import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import org.apache.log4j.Logger;
 
-import br.com.ieptbto.cra.entidade.vo.RemessaVO;
+import java.io.File;
 
 /**
  * 

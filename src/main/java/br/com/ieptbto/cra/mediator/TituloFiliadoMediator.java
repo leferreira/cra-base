@@ -1,11 +1,11 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import br.com.ieptbto.cra.dao.TituloFiliadoDAO;
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
+import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.util.DecoderString;
+import br.com.ieptbto.cra.util.ZipFile;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.model.util.ListModel;
@@ -13,20 +13,11 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.dao.TituloFiliadoDAO;
-import br.com.ieptbto.cra.entidade.Avalista;
-import br.com.ieptbto.cra.entidade.Filiado;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.entidade.SetorFiliado;
-import br.com.ieptbto.cra.entidade.TituloFiliado;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.entidade.UsuarioFiliado;
-import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
-import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.util.DecoderString;
-import br.com.ieptbto.cra.util.ZipFile;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

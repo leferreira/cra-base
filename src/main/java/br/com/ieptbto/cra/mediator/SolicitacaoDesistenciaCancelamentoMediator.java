@@ -1,11 +1,17 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import br.com.ieptbto.cra.dao.ArquivoDAO;
+import br.com.ieptbto.cra.dao.AutorizacaoCancelamentoDAO;
+import br.com.ieptbto.cra.dao.CancelamentoDAO;
+import br.com.ieptbto.cra.dao.SolicitacaoDesistenciaCancelamentoDAO;
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
+import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.processador.ProcessadorDesistenciaCancelamentoConvenio;
+import br.com.ieptbto.cra.util.DataUtil;
+import br.com.ieptbto.cra.util.DecoderString;
+import br.com.ieptbto.cra.util.ZipFile;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.model.util.ListModel;
@@ -15,22 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.dao.ArquivoDAO;
-import br.com.ieptbto.cra.dao.AutorizacaoCancelamentoDAO;
-import br.com.ieptbto.cra.dao.CancelamentoDAO;
-import br.com.ieptbto.cra.dao.SolicitacaoDesistenciaCancelamentoDAO;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamento;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
-import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
-import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.processador.ProcessadorDesistenciaCancelamentoConvenio;
-import br.com.ieptbto.cra.util.DataUtil;
-import br.com.ieptbto.cra.util.DecoderString;
-import br.com.ieptbto.cra.util.ZipFile;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Thasso Araújo
@@ -153,7 +148,7 @@ public class SolicitacaoDesistenciaCancelamentoMediator extends BaseMediator {
 		List<Arquivo> arquivos = processadorDesistenciaCancelamentoConvenio.processaDesistenciasCancelamentos(solicitacoes, user);
 
 		for (Arquivo arquivo : arquivos) {
-			TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo);
+			TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.get(arquivo);
 			if (TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
 				arquivoDAO.salvar(arquivo, user, new ArrayList<Exception>());
 			} else if (TipoArquivoFebraban.CANCELAMENTO_DE_PROTESTO.equals(tipoArquivo)) {

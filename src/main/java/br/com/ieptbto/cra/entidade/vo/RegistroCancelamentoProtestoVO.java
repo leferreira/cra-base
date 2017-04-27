@@ -1,11 +1,10 @@
 package br.com.ieptbto.cra.entidade.vo;
 
-import javax.xml.bind.annotation.XmlAttribute;
-
-import org.apache.commons.lang.StringUtils;
-
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
 import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
+import org.apache.commons.lang.StringUtils;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 @SuppressWarnings("serial")
 public class RegistroCancelamentoProtestoVO extends AbstractArquivoVO {

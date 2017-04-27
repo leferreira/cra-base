@@ -1,39 +1,17 @@
 package br.com.ieptbto.cra.fabrica;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
-
-import br.com.ieptbto.cra.conversor.arquivo.ConversorCabecalhoArquivoDesistenciaCancelamento;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorCabecalhoCartorioDesistenciaCancelamento;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorRegistroDesistenciaProtesto;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorRodapeArquivoDesistenciaCancelamento;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorRodapeCartorioDesistenciaCancelamento;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.CabecalhoArquivo;
-import br.com.ieptbto.cra.entidade.CabecalhoCartorio;
-import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.PedidoDesistencia;
-import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.RodapeArquivo;
-import br.com.ieptbto.cra.entidade.RodapeCartorio;
-import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
-import br.com.ieptbto.cra.entidade.vo.CabecalhoArquivoDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.CabecalhoCartorioDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RegistroDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RodapeArquivoDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RodapeCartorioDesistenciaProtestoVO;
+import br.com.ieptbto.cra.conversor.arquivo.*;
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.entidade.vo.*;
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.FabricaRegistroDesistenciaProtesto;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

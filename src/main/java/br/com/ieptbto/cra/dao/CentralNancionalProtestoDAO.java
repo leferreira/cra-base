@@ -1,9 +1,10 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
+import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.regra.FabricaRegraValidacaoCNP;
+import br.com.ieptbto.cra.util.CpfCnpjUtil;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -18,15 +19,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.LoteCnp;
-import br.com.ieptbto.cra.entidade.Municipio;
-import br.com.ieptbto.cra.entidade.RegistroCnp;
-import br.com.ieptbto.cra.entidade.Usuario;
-import br.com.ieptbto.cra.enumeration.TipoRegistroCnp;
-import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.regra.FabricaRegraValidacaoCNP;
-import br.com.ieptbto.cra.util.CpfCnpjUtil;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

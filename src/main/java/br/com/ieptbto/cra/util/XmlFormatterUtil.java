@@ -1,12 +1,12 @@
 package br.com.ieptbto.cra.util;
 
-import java.io.StringWriter;
-
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+
+import java.io.StringWriter;
 
 /**
  * Utilitário de formatação de string xml

@@ -1,39 +1,28 @@
 package br.com.ieptbto.cra.fabrica;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.xml.sax.InputSource;
-
 import br.com.ieptbto.cra.conversor.AbstractFabricaDeArquivo;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorArquivo;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorDesistenciaCancelamento;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorRemessaArquivo;
 import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.vo.ArquivoDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.ArquivoRemessaSerproVO;
-import br.com.ieptbto.cra.entidade.vo.ArquivoRemessaVO;
-import br.com.ieptbto.cra.entidade.vo.ConfirmacaoVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaVO;
-import br.com.ieptbto.cra.entidade.vo.RetornoVO;
+import br.com.ieptbto.cra.entidade.vo.*;
 import br.com.ieptbto.cra.enumeration.LayoutPadraoXML;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.TipoArquivoMediator;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.xml.sax.InputSource;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 /**
  * 
@@ -129,14 +118,11 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 			arquivoVO = (RetornoVO) unmarshaller.unmarshal(new InputSource(xml));
 			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoFebraban.RETORNO));
 
-		} catch (JAXBException e) {
-			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
-		} catch (IOException e) {
+		} catch (JAXBException | IOException e) {
 			logger.error(e.getMessage(), e.getCause());
 			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		}
-		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
+        List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
 		remessasVO.add(ConversorArquivo.conversorParaArquivoRetorno(arquivoVO));
 		return conversorRemessaArquivo.converterParaArquivo(remessasVO, arquivo, erros);
 	}
@@ -160,14 +146,11 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 			arquivoVO = (ConfirmacaoVO) unmarshaller.unmarshal(new InputSource(xml));
 			arquivoVO.setTipoArquivo(tipoArquivoMediator.buscarTipoPorNome(TipoArquivoFebraban.CONFIRMACAO));
 
-		} catch (JAXBException e) {
-			logger.error(e.getMessage(), e.getCause());
-			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
-		} catch (IOException e) {
+		} catch (JAXBException | IOException e) {
 			logger.error(e.getMessage(), e.getCause());
 			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		}
-		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
+        List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
 		remessasVO.add(ConversorArquivo.conversorParaArquivoConfirmacao(arquivoVO));
 		return conversorRemessaArquivo.converterParaArquivo(remessasVO, arquivo, erros);
 	}
@@ -223,14 +206,11 @@ public class FabricaDeArquivoXML extends AbstractFabricaDeArquivo {
 				arquivoVO = (ArquivoRemessaVO) unmarshaller.unmarshal(new InputSource(xml));
 			}
 
-		} catch (JAXBException e) {
-			logger.error(e.getMessage(), e);
-			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
-		} catch (IOException e) {
+		} catch (JAXBException | IOException e) {
 			logger.error(e.getMessage(), e);
 			throw new InfraException(CodigoErro.CRA_ARQUIVO_CORROMPIDO.getDescricao());
 		}
-		List<RemessaVO> remessasVO = ConversorArquivo.conversorParaArquivoRemessa(arquivoVO);
+        List<RemessaVO> remessasVO = ConversorArquivo.conversorParaArquivoRemessa(arquivoVO);
 		return conversorRemessaArquivo.converterParaArquivo(remessasVO, arquivo, erros);
 	}
 }

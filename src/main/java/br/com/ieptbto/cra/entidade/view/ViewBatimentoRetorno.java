@@ -1,21 +1,14 @@
 package br.com.ieptbto.cra.entidade.view;
 
+import br.com.ieptbto.cra.entidade.Deposito;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
-
-import br.com.ieptbto.cra.entidade.Deposito;
 
 @Entity
 @Table(name="VIEW_BATIMENTO_RETORNO")

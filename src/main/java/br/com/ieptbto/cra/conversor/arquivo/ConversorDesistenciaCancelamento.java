@@ -1,26 +1,11 @@
 package br.com.ieptbto.cra.conversor.arquivo;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.*;
+import br.com.ieptbto.cra.entidade.vo.*;
 import org.springframework.stereotype.Service;
 
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.CabecalhoArquivo;
-import br.com.ieptbto.cra.entidade.CabecalhoCartorio;
-import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.PedidoDesistencia;
-import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.RodapeArquivo;
-import br.com.ieptbto.cra.entidade.RodapeCartorio;
-import br.com.ieptbto.cra.entidade.vo.ArquivoDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.CabecalhoArquivoDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.CabecalhoCartorioDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.DesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RegistroDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RodapeArquivoDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RodapeCartorioDesistenciaProtestoVO;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 

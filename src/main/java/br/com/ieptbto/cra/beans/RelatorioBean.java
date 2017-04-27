@@ -1,11 +1,11 @@
 package br.com.ieptbto.cra.beans;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+
+import java.io.Serializable;
+import java.util.Date;
 
 public class RelatorioBean implements Serializable {
 

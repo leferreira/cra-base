@@ -1,5 +1,12 @@
 package br.com.ieptbto.cra.gerador;
 
+import br.com.ieptbto.cra.entidade.vo.*;
+import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.ArquivoRecebimentoEmpresaVO;
+import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.RegistroRetornoRecebimentoVO;
+import br.com.ieptbto.cra.exception.InfraException;
+import br.com.ieptbto.cra.processador.FabricaDeRegistroTXT;
+import org.springframework.stereotype.Service;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -7,21 +14,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
-import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
-import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
-import br.com.ieptbto.cra.entidade.vo.DesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RegistroDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaDesistenciaProtestoVO;
-import br.com.ieptbto.cra.entidade.vo.RemessaVO;
-import br.com.ieptbto.cra.entidade.vo.RodapeVO;
-import br.com.ieptbto.cra.entidade.vo.TituloVO;
-import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.ArquivoRecebimentoEmpresaVO;
-import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.RegistroRetornoRecebimentoVO;
-import br.com.ieptbto.cra.exception.InfraException;
-import br.com.ieptbto.cra.processador.FabricaDeRegistroTXT;
 
 /**
  * 

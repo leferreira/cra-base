@@ -1,15 +1,14 @@
 package br.com.ieptbto.cra.regra.validacao;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Remessa;
 import br.com.ieptbto.cra.entidade.Usuario;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author Thasso Araújo
@@ -21,7 +20,7 @@ public class ValidarCabecalho extends RegraValidacao {
 	@Override
 	public void validar(Arquivo arquivo, Usuario usuario, List<Exception> erros) {
 
-		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo);
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.get(arquivo);
 		if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
 			validarQuantidadeRegistrosArquivo(arquivo, usuario, erros);
 		} else if (TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo)) {

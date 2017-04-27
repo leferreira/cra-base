@@ -1,22 +1,12 @@
 package br.com.ieptbto.cra.entidade;
 
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
+import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Audited

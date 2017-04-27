@@ -1,8 +1,7 @@
 package br.com.ieptbto.cra.component;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.Deposito;
+import br.com.ieptbto.cra.entidade.view.ViewBatimentoRetorno;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
@@ -10,8 +9,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
-import br.com.ieptbto.cra.entidade.Deposito;
-import br.com.ieptbto.cra.entidade.view.ViewBatimentoRetorno;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

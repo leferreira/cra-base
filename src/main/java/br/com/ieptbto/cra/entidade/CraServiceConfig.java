@@ -1,17 +1,9 @@
 package br.com.ieptbto.cra.entidade;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
+import br.com.ieptbto.cra.enumeration.CraServices;
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.enumeration.CraServices;
+import javax.persistence.*;
 
 /**
  * @author Thasso Aráujo

@@ -1,7 +1,9 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.Deposito;
+import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
+import br.com.ieptbto.cra.enumeration.TipoDeposito;
+import br.com.ieptbto.cra.exception.InfraException;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
@@ -10,10 +12,7 @@ import org.hibernate.criterion.Restrictions;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
 
-import br.com.ieptbto.cra.entidade.Deposito;
-import br.com.ieptbto.cra.enumeration.SituacaoDeposito;
-import br.com.ieptbto.cra.enumeration.TipoDeposito;
-import br.com.ieptbto.cra.exception.InfraException;
+import java.util.List;
 
 @Repository
 public class DepositoDAO extends AbstractBaseDAO {

@@ -1,11 +1,10 @@
 package br.com.ieptbto.cra.regra.titulo;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.entidade.Arquivo;
 import br.com.ieptbto.cra.entidade.Usuario;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author Thasso Araújo

@@ -1,18 +1,17 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.List;
-
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.joda.time.LocalDate;
-import org.springframework.stereotype.Repository;
-
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.entidade.TituloRemessa;
 import br.com.ieptbto.cra.entidade.view.ViewTitulo;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
 import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.mediator.ConfiguracaoBase;
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.joda.time.LocalDate;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author Thasso Araújo

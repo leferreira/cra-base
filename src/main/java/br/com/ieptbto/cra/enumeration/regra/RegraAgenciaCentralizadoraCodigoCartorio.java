@@ -47,7 +47,7 @@ public enum RegraAgenciaCentralizadoraCodigoCartorio {
 		return codigoCartorio;
 	}
 
-	public static RegraAgenciaCentralizadoraCodigoCartorio getBanco(String numeroCodigoPortador) {
+	public static RegraAgenciaCentralizadoraCodigoCartorio get(String numeroCodigoPortador) {
 		RegraAgenciaCentralizadoraCodigoCartorio[] values = RegraAgenciaCentralizadoraCodigoCartorio.values();
 		for (RegraAgenciaCentralizadoraCodigoCartorio bancoAgencia : values) {
 			if (numeroCodigoPortador.startsWith(bancoAgencia.getCodigoPortador())) {

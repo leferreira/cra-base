@@ -1,9 +1,8 @@
 package br.com.ieptbto.cra.exception;
 
+import br.com.ieptbto.cra.error.CodigoErro;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-
-import br.com.ieptbto.cra.error.CodigoErro;
 
 /**
  * @author Thasso Araújo

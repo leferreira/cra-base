@@ -1,14 +1,13 @@
 package br.com.ieptbto.cra.dao;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.entidade.Avalista;
+import br.com.ieptbto.cra.entidade.TituloFiliado;
 import org.hibernate.Criteria;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
-import br.com.ieptbto.cra.entidade.Avalista;
-import br.com.ieptbto.cra.entidade.TituloFiliado;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

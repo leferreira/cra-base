@@ -1,12 +1,8 @@
 package br.com.ieptbto.cra.entidade;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
-
 import br.com.ieptbto.cra.enumeration.TipoRegistroDesistenciaProtesto;
+
+import javax.persistence.*;
 
 /**
  * @author Thasso Araújo

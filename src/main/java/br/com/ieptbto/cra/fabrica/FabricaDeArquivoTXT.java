@@ -1,48 +1,29 @@
 package br.com.ieptbto.cra.fabrica;
 
-import java.io.File;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.conversor.AbstractFabricaDeArquivo;
 import br.com.ieptbto.cra.conversor.BigDecimalConversor;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorCabecalho;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorCancelamentoProtesto;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorConfirmacao;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorDesistenciaCancelamento;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorRetorno;
 import br.com.ieptbto.cra.conversor.arquivo.ConversorRodape;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorTitulo;
 import br.com.ieptbto.cra.dao.BatimentoDAO;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Batimento;
-import br.com.ieptbto.cra.entidade.Confirmacao;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
-import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.Retorno;
-import br.com.ieptbto.cra.entidade.Titulo;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
+import br.com.ieptbto.cra.entidade.*;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RemessaVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
 import br.com.ieptbto.cra.entidade.vo.TituloVO;
-import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.ArquivoRecebimentoEmpresaVO;
-import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.ConversorHeaderEmpresa;
-import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.ConversorRegistroEmpresa;
-import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.HeaderRetornoRecebimentoVO;
-import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.RegistroRetornoRecebimentoVO;
-import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.TraillerRetornoRecebimentoVO;
+import br.com.ieptbto.cra.entidade.vo.retornoEmpresa.*;
 import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.gerador.GeradorDeArquivosTXT;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("rawtypes")
 @Service
@@ -68,7 +49,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		this.arquivo = arquivo;
 		this.erros = erros;
 
-		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(arquivo);
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.get(arquivo);
 		if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo) || TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo) || TipoArquivoFebraban.RETORNO.equals(tipoArquivo)) {
 			return fabricaRemessaConfirmacaoRetorno.processarRemessaConfirmacaoRetorno(getFile(), getArquivo(), getErros());
 		} else if (TipoArquivoFebraban.DEVOLUCAO_DE_PROTESTO.equals(tipoArquivo)) {
@@ -85,9 +66,6 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 	public File fabricaArquivoCartorioTXT(File file, Remessa remessa) {
 		this.file = file;
 		this.arquivo = remessa.getArquivo();
-
-		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(remessa.getArquivo());
-
 		RemessaVO remessaVO = new RemessaVO();
 		remessaVO.setTitulos(new ArrayList<TituloVO>());
 		BigDecimal valorTotalTitulos = BigDecimal.ZERO;
@@ -97,14 +75,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 		int contSequencial = 2;
 		int quantidadeTitulos = 0;
 		for (Titulo titulo : remessa.getTitulos()) {
-			TituloVO tituloVO = new TituloVO();
-			if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
-				tituloVO = new ConversorTitulo().converter(TituloRemessa.class.cast(titulo), TituloVO.class);
-			} else if (TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo)) {
-				tituloVO = new ConversorConfirmacao().converter(Confirmacao.class.cast(titulo), TituloVO.class);
-			} else if (TipoArquivoFebraban.RETORNO.equals(tipoArquivo)) {
-				tituloVO = new ConversorRetorno().converter(Retorno.class.cast(titulo), TituloVO.class);
-			}
+            TituloVO tituloVO = converterParaTituloVO(titulo);
 			if (tituloVO.getNumeroControleDevedor() != null && tituloVO.getNumeroControleDevedor().trim().equals(PRIMEIRO_DEVEDOR)) {
 				quantidadeTitulos++;
 			}
@@ -130,8 +101,6 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 		List<RemessaVO> remessasVO = new ArrayList<RemessaVO>();
 		for (Remessa remessa : remessas) {
-			TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(remessa.getArquivo());
-
 			RemessaVO remessaVO = new RemessaVO();
 			remessaVO.setTitulos(new ArrayList<TituloVO>());
 			BigDecimal valorTotalTitulos = BigDecimal.ZERO;
@@ -141,14 +110,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 
 			int contSequencial = 2;
 			for (Titulo titulo : remessa.getTitulos()) {
-				TituloVO tituloVO = new TituloVO();
-				if (TipoArquivoFebraban.REMESSA.equals(tipoArquivo)) {
-					tituloVO = new ConversorTitulo().converter(TituloRemessa.class.cast(titulo), TituloVO.class);
-				} else if (TipoArquivoFebraban.CONFIRMACAO.equals(tipoArquivo)) {
-					tituloVO = new ConversorConfirmacao().converter(Confirmacao.class.cast(titulo), TituloVO.class);
-				} else if (TipoArquivoFebraban.RETORNO.equals(tipoArquivo)) {
-					tituloVO = new ConversorRetorno().converter(Retorno.class.cast(titulo), TituloVO.class);
-				}
+				TituloVO tituloVO = converterParaTituloVO(titulo);
 				tituloVO.setNumeroSequencialArquivo(String.valueOf(contSequencial));
 				valorTotalTitulos = valorTotalTitulos.add(titulo.getSaldoTitulo());
 				remessaVO.getTitulos().add(tituloVO);
@@ -179,7 +141,7 @@ public class FabricaDeArquivoTXT extends AbstractFabricaDeArquivo {
 			Batimento batimento = batimentoDAO.buscarBatimentoDoRetorno(remessa);
 			for (Titulo titulo : remessa.getTitulos()) {
 				Retorno retorno = Retorno.class.cast(titulo);
-				TipoOcorrencia tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(retorno.getTipoOcorrencia());
+				TipoOcorrencia tipoOcorrencia = TipoOcorrencia.get(retorno.getTipoOcorrencia());
 				
 				if (TipoOcorrencia.PAGO == tipoOcorrencia) {
 					registros.add(new ConversorRegistroEmpresa().converter(new RegistroRetornoRecebimentoVO(), retorno, batimento, registros.size() + 1));

@@ -1,14 +1,13 @@
 package br.com.ieptbto.cra.entidade.vo;
 
+import br.com.ieptbto.cra.annotations.IAtributoArquivo;
+import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
+import org.apache.commons.lang.StringUtils;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.commons.lang.StringUtils;
-
-import br.com.ieptbto.cra.annotations.IAtributoArquivo;
-import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
 
 /**
  * 

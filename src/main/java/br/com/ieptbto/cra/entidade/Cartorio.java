@@ -1,11 +1,11 @@
 package br.com.ieptbto.cra.entidade;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-
-import org.apache.commons.lang.builder.EqualsBuilder;
 
 public class Cartorio extends Instituicao {
 

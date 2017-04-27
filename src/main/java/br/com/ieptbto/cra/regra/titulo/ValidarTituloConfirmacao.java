@@ -1,20 +1,15 @@
 package br.com.ieptbto.cra.regra.titulo;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.Confirmacao;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.Titulo;
-import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.entidade.*;
 import br.com.ieptbto.cra.enumeration.regra.CodigoIrregularidade;
 import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
 import br.com.ieptbto.cra.error.CodigoErro;
 import br.com.ieptbto.cra.exception.CabecalhoRodapeException;
 import br.com.ieptbto.cra.exception.TituloException;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Thasso Araújo
@@ -65,7 +60,7 @@ public class ValidarTituloConfirmacao extends RegraTitulo {
 
 		TipoOcorrencia tipoOcorrencia = null;
 		if (tituloConfirmacao.getTipoOcorrencia() != null) {
-			tipoOcorrencia = TipoOcorrencia.getTipoOcorrencia(tituloConfirmacao.getTipoOcorrencia());
+			tipoOcorrencia = TipoOcorrencia.get(tituloConfirmacao.getTipoOcorrencia());
 			if (numeroProtocoloCartorio.equals(ZERO)) {
 				if (tipoOcorrencia == null) {
 					this.erros.add(new TituloException(CodigoErro.CARTORIO_TIPO_OCORRENCIA_INVALIDO, tituloConfirmacao.getNossoNumero(), 

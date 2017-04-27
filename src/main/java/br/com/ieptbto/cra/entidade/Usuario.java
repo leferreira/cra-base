@@ -1,29 +1,14 @@
 package br.com.ieptbto.cra.entidade;
 
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
+import br.com.ieptbto.cra.security.IAuthModel;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.util.io.IClusterable;
 import org.apache.wicket.util.string.Strings;
 import org.hibernate.envers.Audited;
 
-import br.com.ieptbto.cra.security.IAuthModel;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

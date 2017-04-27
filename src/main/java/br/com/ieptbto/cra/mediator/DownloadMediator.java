@@ -1,39 +1,7 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.joda.time.LocalDateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import br.com.ieptbto.cra.dao.ArquivoDAO;
-import br.com.ieptbto.cra.dao.AutorizacaoCancelamentoDAO;
-import br.com.ieptbto.cra.dao.CancelamentoDAO;
-import br.com.ieptbto.cra.dao.DesistenciaDAO;
-import br.com.ieptbto.cra.dao.RemessaDAO;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.AutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.CancelamentoProtesto;
-import br.com.ieptbto.cra.entidade.DesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.LogCra;
-import br.com.ieptbto.cra.entidade.PedidoAutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.PedidoCancelamento;
-import br.com.ieptbto.cra.entidade.PedidoDesistencia;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.RemessaAutorizacaoCancelamento;
-import br.com.ieptbto.cra.entidade.RemessaCancelamentoProtesto;
-import br.com.ieptbto.cra.entidade.RemessaDesistenciaProtesto;
-import br.com.ieptbto.cra.entidade.SolicitacaoDesistenciaCancelamento;
-import br.com.ieptbto.cra.entidade.StatusArquivo;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
-import br.com.ieptbto.cra.entidade.Usuario;
+import br.com.ieptbto.cra.dao.*;
+import br.com.ieptbto.cra.entidade.*;
 import br.com.ieptbto.cra.enumeration.CraAcao;
 import br.com.ieptbto.cra.enumeration.StatusDownload;
 import br.com.ieptbto.cra.enumeration.TipoInstituicaoCRA;
@@ -43,6 +11,17 @@ import br.com.ieptbto.cra.enumeration.regra.TipoArquivoFebraban;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.processador.ProcessadorArquivo;
 import br.com.ieptbto.cra.util.DecoderString;
+import org.joda.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class DownloadMediator extends BaseMediator {
@@ -63,9 +42,9 @@ public class DownloadMediator extends BaseMediator {
 	/**
 	 * Download de arquivos TXT de Instituições e Convênios
 	 * 
-	 * @param instituicao
+	 * @param usuario
 	 * @param arquivo
-	 * @return
+	 * @return file
 	 */
 	public File baixarArquivoTXT(Usuario usuario, Arquivo arquivo) {
 		List<Remessa> remessas = null;
@@ -91,9 +70,9 @@ public class DownloadMediator extends BaseMediator {
 	/**
 	 * Download de arquivos TXT de Convênios no Layout CNAB240
 	 * 
-	 * @param instituicao
+	 * @param usuario
 	 * @param arquivo
-	 * @return
+	 * @return file
 	 */
 	public File baixarRetornoRecebimentoEmpresa(Usuario usuario, Arquivo arquivo) {
 		arquivo = arquivoDAO.buscarPorPK(arquivo.getId(), Arquivo.class);
@@ -113,9 +92,9 @@ public class DownloadMediator extends BaseMediator {
 	/**
 	 * Download de arquivos TXT de Instituições e Convênios
 	 * 
-	 * @param instituicao
+	 * @param usuario
 	 * @param arquivo
-	 * @return
+	 * @return file
 	 */
 	public File baixarDesistenciaCancelamentoTXT(Usuario usuario, Arquivo arquivo) {
 		if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
@@ -143,7 +122,7 @@ public class DownloadMediator extends BaseMediator {
 	 * 
 	 * @param usuario
 	 * @param remessa
-	 * @return
+	 * @return file
 	 */
 	public File baixarRemessaTXT(Usuario usuario, Remessa remessa) {
 		TipoInstituicaoCRA tipoInstituicaoUsuario = usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao();
@@ -174,14 +153,14 @@ public class DownloadMediator extends BaseMediator {
 	 * 
 	 * @param usuario
 	 * @param desistenciaProtesto
-	 * @return
+	 * @return file
 	 */
 	public File baixarDesistenciaTXT(Usuario usuario, DesistenciaProtesto desistenciaProtesto) {
 		File file = null;
 
 		try {
 			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
-					&& desistenciaProtesto.getDownload() == false) {
+					&& !desistenciaProtesto.getDownload()) {
 				desistenciaDAO.alterarSituacaoDesistenciaProtesto(desistenciaProtesto, true);
 			}
 			desistenciaProtesto = desistenciaDAO.buscarDesistenciaProtesto(desistenciaProtesto);
@@ -223,14 +202,14 @@ public class DownloadMediator extends BaseMediator {
 	 * 
 	 * @param usuario
 	 * @param cancelamentoProtesto
-	 * @return
+	 * @return file
 	 */
 	public File baixarCancelamentoTXT(Usuario usuario, CancelamentoProtesto cancelamentoProtesto) {
 		File file = null;
 
 		try {
 			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
-					&& cancelamentoProtesto.getDownload() == false) {
+					&& !cancelamentoProtesto.getDownload()) {
 				cancelamentoDAO.alterarSituacaoCancelamentoProtesto(cancelamentoProtesto, true);
 			}
 			cancelamentoProtesto = cancelamentoDAO.buscarRemessaCancelamentoProtesto(cancelamentoProtesto);
@@ -271,15 +250,15 @@ public class DownloadMediator extends BaseMediator {
 	 * Download de arquivos AC TXT de Cartórios
 	 * 
 	 * @param usuario
-	 * @param cancelamentoProtesto
-	 * @return
+	 * @param autorizacaoCancelamento
+	 * @return file
 	 */
 	public File baixarAutorizacaoTXT(Usuario usuario, AutorizacaoCancelamento autorizacaoCancelamento) {
 		File file = null;
 
 		try {
 			if (!usuario.getInstituicao().getTipoInstituicao().getTipoInstituicao().equals(TipoInstituicaoCRA.CRA)
-					&& autorizacaoCancelamento.getDownload() == false) {
+					&& !autorizacaoCancelamento.getDownload()) {
 				autorizacaoCancelamentoDAO.alterarSituacaoAutorizacaoCancelamento(autorizacaoCancelamento, true);
 			}
 			autorizacaoCancelamento = autorizacaoCancelamentoDAO.buscarRemessaAutorizacaoCancelamento(autorizacaoCancelamento);
@@ -321,8 +300,8 @@ public class DownloadMediator extends BaseMediator {
 	 * 
 	 * @param nossoNumero
 	 * @param tipoSolicitacao
-	 * @param numeroProtocolo
-	 * @return
+	 * @param irregularidade
+	 * @return file
 	 */
 	public File baixarOficioDesistenciaCancelamento(String nossoNumero, TipoSolicitacaoDesistenciaCancelamento tipoSolicitacao,
 			CodigoIrregularidade irregularidade) {
@@ -339,11 +318,7 @@ public class DownloadMediator extends BaseMediator {
 			decoderString.decode(solicitacao.getDocumentoAnexoAsString(), ConfiguracaoBase.DIRETORIO_TEMP_BASE, nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
 			return new File(ConfiguracaoBase.DIRETORIO_TEMP_BASE + ConfiguracaoBase.BARRA + 
 					nomeArquivoZip + ConfiguracaoBase.EXTENSAO_ARQUIVO_ZIP);
-
-		} catch (FileNotFoundException e) {
-			logger.info(e);
-			throw new InfraException("Não foi possível fazer o download do ofício! Por favor, entre em contato com a CRA...");
-		} catch (IOException e) {
+        } catch (IOException e) {
 			logger.info(e);
 			throw new InfraException("Não foi possível fazer o download do ofício! Por favor, entre em contato com a CRA...");
 		}
@@ -352,7 +327,7 @@ public class DownloadMediator extends BaseMediator {
 	/**
 	 * Download de relatório de resposta de ação na cra
 	 * @param logCra
-	 * @return
+	 * @return file
 	 */
 	public File downloadRelatorioLogCra(LogCra logCra) {
 		File diretorioTempReport = new File(ConfiguracaoBase.DIRETORIO_TEMP_REPORTS);
@@ -370,12 +345,7 @@ public class DownloadMediator extends BaseMediator {
 			bWrite.write(logCra.getRelatorio());
 			bWrite.flush();
 			bWrite.close();
-			
 			return file;
-		
-		} catch (FileNotFoundException e) {
-			logger.info(e);
-			throw new InfraException("Não foi possível fazer o download do relatorio de respota do log! Por favor, entre em contato com a CRA...");
 		} catch (IOException e) {
 			logger.info(e);
 			throw new InfraException("Não foi possível fazer o download do relatorio de respota do log! Por favor, entre em contato com a CRA...");

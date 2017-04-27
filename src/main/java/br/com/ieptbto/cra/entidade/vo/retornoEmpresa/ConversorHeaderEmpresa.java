@@ -1,12 +1,11 @@
 package br.com.ieptbto.cra.entidade.vo.retornoEmpresa;
 
-import org.joda.time.LocalDate;
-
 import br.com.ieptbto.cra.conversor.AbstractConversorArquivo;
 import br.com.ieptbto.cra.conversor.DateConversor;
 import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
 import br.com.ieptbto.cra.entidade.Instituicao;
 import br.com.ieptbto.cra.util.DataUtil;
+import org.joda.time.LocalDate;
 
 /**
  * @author Thasso Araujo

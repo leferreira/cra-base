@@ -1,10 +1,10 @@
 package br.com.ieptbto.cra.entidade.view;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+
+import java.io.Serializable;
+import java.util.Date;
 
 public class ViewArquivoPendente implements Serializable {
 

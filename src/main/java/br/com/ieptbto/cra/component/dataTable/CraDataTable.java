@@ -1,13 +1,12 @@
 package br.com.ieptbto.cra.component.dataTable;
 
-import java.util.List;
-
+import br.com.ieptbto.cra.dataProvider.DataProvider;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.panel.Panel;
 
-import br.com.ieptbto.cra.dataProvider.DataProvider;
+import java.util.List;
 
 /**
  * @author Thasso Araújo

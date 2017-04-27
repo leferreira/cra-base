@@ -1,11 +1,10 @@
 package br.com.ieptbto.cra.conversor;
 
-import java.lang.reflect.Field;
-
-import org.apache.commons.lang.reflect.FieldUtils;
-
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
 import br.com.ieptbto.cra.enumeration.PosicaoCampoVazio;
+import org.apache.commons.lang.reflect.FieldUtils;
+
+import java.lang.reflect.Field;
 
 /**
  * 

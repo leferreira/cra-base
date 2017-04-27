@@ -1,13 +1,12 @@
 package br.com.ieptbto.cra.mediator;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import br.com.ieptbto.cra.dao.CraServiceDAO;
 import br.com.ieptbto.cra.entidade.CraServiceConfig;
 import br.com.ieptbto.cra.enumeration.CraServices;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CraMediator extends BaseMediator {

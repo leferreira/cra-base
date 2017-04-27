@@ -1,9 +1,8 @@
 package br.com.ieptbto.cra.entidade.vo.retornoEmpresa;
 
-import org.apache.commons.lang.StringUtils;
-
 import br.com.ieptbto.cra.annotations.IAtributoArquivo;
 import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Thasso Araujo

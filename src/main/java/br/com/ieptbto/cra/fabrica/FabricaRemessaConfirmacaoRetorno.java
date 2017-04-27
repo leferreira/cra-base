@@ -1,32 +1,7 @@
 package br.com.ieptbto.cra.fabrica;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import br.com.ieptbto.cra.conversor.arquivo.ConversorCabecalho;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorConfirmacao;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorRetorno;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorRodape;
-import br.com.ieptbto.cra.conversor.arquivo.ConversorTitulo;
-import br.com.ieptbto.cra.entidade.Arquivo;
-import br.com.ieptbto.cra.entidade.CabecalhoRemessa;
-import br.com.ieptbto.cra.entidade.Confirmacao;
-import br.com.ieptbto.cra.entidade.Instituicao;
-import br.com.ieptbto.cra.entidade.Remessa;
-import br.com.ieptbto.cra.entidade.Retorno;
-import br.com.ieptbto.cra.entidade.Rodape;
-import br.com.ieptbto.cra.entidade.Titulo;
-import br.com.ieptbto.cra.entidade.TituloRemessa;
+import br.com.ieptbto.cra.conversor.arquivo.*;
+import br.com.ieptbto.cra.entidade.*;
 import br.com.ieptbto.cra.entidade.vo.AbstractArquivoVO;
 import br.com.ieptbto.cra.entidade.vo.CabecalhoVO;
 import br.com.ieptbto.cra.entidade.vo.RodapeVO;
@@ -36,6 +11,13 @@ import br.com.ieptbto.cra.enumeration.regra.TipoIdentificacaoRegistro;
 import br.com.ieptbto.cra.exception.InfraException;
 import br.com.ieptbto.cra.mediator.InstituicaoMediator;
 import br.com.ieptbto.cra.processador.FabricaRegistro;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Thasso Araújo
@@ -92,7 +74,7 @@ public class FabricaRemessaConfirmacaoRetorno {
 	private void setRegistro(String linha, Remessa remessa) {
 		AbstractArquivoVO registro = FabricaRegistro.getInstance(linha).criarRegistro();
 
-		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.getTipoArquivoFebraban(remessa.getArquivo());
+		TipoArquivoFebraban tipoArquivo = TipoArquivoFebraban.get(remessa.getArquivo());
 		if (TipoIdentificacaoRegistro.CABECALHO.getConstante().equals(registro.getIdentificacaoRegistro())) {
 			CabecalhoVO cabecalhoVO = CabecalhoVO.class.cast(registro);
 			CabecalhoRemessa cabecalho = new ConversorCabecalho().converter(CabecalhoRemessa.class, cabecalhoVO);
@@ -129,8 +111,8 @@ public class FabricaRemessaConfirmacaoRetorno {
 	}
 
 	private Instituicao getInstituicaoDeDestino(CabecalhoRemessa cabecalho) {
-		if (TipoArquivoFebraban.CONFIRMACAO.equals(TipoArquivoFebraban.getTipoArquivoFebraban(getArquivo().getNomeArquivo()))
-				|| TipoArquivoFebraban.RETORNO.equals(TipoArquivoFebraban.getTipoArquivoFebraban(getArquivo().getNomeArquivo()))) {
+		if (TipoArquivoFebraban.CONFIRMACAO.equals(TipoArquivoFebraban.get(getArquivo().getNomeArquivo()))
+				|| TipoArquivoFebraban.RETORNO.equals(TipoArquivoFebraban.get(getArquivo().getNomeArquivo()))) {
 			return instituicaoMediator.getInstituicaoPorCodigoPortador(cabecalho.getNumeroCodigoPortador());
 		} else {
 			return instituicaoMediator.getCartorioPorCodigoIBGE(cabecalho.getCodigoMunicipio());

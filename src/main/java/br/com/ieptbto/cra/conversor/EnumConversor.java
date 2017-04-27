@@ -1,12 +1,11 @@
 package br.com.ieptbto.cra.conversor;
 
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
-
 import br.com.ieptbto.cra.conversor.enumeration.ErroConversao;
 import br.com.ieptbto.cra.enumeration.AbstractCraEnum;
 import br.com.ieptbto.cra.exception.ConvertException;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 
 /**
  * 

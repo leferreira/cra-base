@@ -1,14 +1,13 @@
 package br.com.ieptbto.cra.dataProvider;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
 import br.com.ieptbto.cra.entidade.LogCra;
 import br.com.ieptbto.cra.util.DataUtil;
 import br.com.ieptbto.cra.util.RemoverAcentosUtil;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class LogCraProvider extends DataProvider<LogCra> {
 
