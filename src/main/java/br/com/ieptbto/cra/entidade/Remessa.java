@@ -247,7 +247,8 @@ public class Remessa extends AbstractRemessa<Remessa> implements FieldHandled {
      * Irá definir a situacao do arquivo de retorno com relação ao batimento
      */
 	public void setSituacaoBatimentoConfirmadoIfNull() {
-	    if (this.situacaoBatimentoRetorno == null) {
+        TipoArquivoFebraban tipoArquivo = this.getArquivo().getTipoArquivo().getTipoArquivo();
+	    if (this.situacaoBatimentoRetorno == null && tipoArquivo == TipoArquivoFebraban.RETORNO) {
             this.situacaoBatimentoRetorno = SituacaoBatimentoRetorno.CONFIRMADO;
         }
     }

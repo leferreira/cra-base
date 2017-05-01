@@ -599,9 +599,9 @@ public class TituloRemessa extends Titulo<TituloRemessa> implements FieldHandled
     @Transient
     public static String getTIpoIdentificacao(String documento) {
         if (documento.length() <= 11) {
-            return ConfiguracaoBase.TIPO_CNPJ;
+            return ConfiguracaoBase.TIPO_CPF;
         }
-        return ConfiguracaoBase.TIPO_CPF;
+        return ConfiguracaoBase.TIPO_CNPJ;
     }
 
     /**
