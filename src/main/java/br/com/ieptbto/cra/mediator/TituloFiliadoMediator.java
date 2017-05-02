@@ -1,5 +1,6 @@
 package br.com.ieptbto.cra.mediator;
 
+import br.com.ieptbto.cra.beans.TituloConvenioBean;
 import br.com.ieptbto.cra.dao.TituloFiliadoDAO;
 import br.com.ieptbto.cra.entidade.*;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
@@ -105,10 +106,6 @@ public class TituloFiliadoMediator extends BaseMediator {
 		}
 	}
 
-	public TituloFiliado buscarTituloFiliadoProcessadoNaCra(String nossoNumero, String numeroTitulo) {
-		return tituloFiliadoDAO.buscarTituloFiliadoProcessadoNaCra(nossoNumero, numeroTitulo);
-	}
-
 	public TituloRemessa buscarTituloDoConvenioNaCra(TituloFiliado tituloFiliado) {
 		return tituloFiliadoDAO.buscarTituloDoConvenioNaCra(tituloFiliado);
 	}
@@ -136,9 +133,8 @@ public class TituloFiliadoMediator extends BaseMediator {
 		return tituloFiliadoDAO.avalistasTituloFiliado(titulo);
 	}
 
-	public List<TituloRemessa> buscarListaTitulos(Usuario user, LocalDate dataInicio, LocalDate dataFim, Instituicao instiuicaoCartorio, String numeroTitulo, 
-			String nomeDevedor, String documentoDevedor, String nuumeroProtocolo, String codigoFiliado) {
-		return tituloFiliadoDAO.buscarListaTitulos(user, dataInicio, dataFim, instiuicaoCartorio, numeroTitulo, nomeDevedor, documentoDevedor, nuumeroProtocolo, codigoFiliado);
+	public List<TituloRemessa> buscarListaTitulos(Usuario user, Filiado filiado, TituloConvenioBean tituloBean) {
+		return tituloFiliadoDAO.buscarListaTitulos(user, filiado, tituloBean);
 	}
 
 	public List<TituloFiliado> buscarTitulosParaRelatorioFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim,

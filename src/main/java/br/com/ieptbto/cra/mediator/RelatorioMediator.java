@@ -33,9 +33,9 @@ import java.util.List;
 public class RelatorioMediator extends BaseMediator {
 
 	@Autowired
-	RelatorioDAO relatorioDAO;
+	private RelatorioDAO relatorioDAO;
 	@Autowired
-	TaxaCraDAO taxaCraDAO;
+    private TaxaCraDAO taxaCraDAO;
 
 	private File arquivoFisico;
 	private FileUpload file;

@@ -20,27 +20,23 @@ import java.util.List;
 public class HistoricoMediator extends BaseMediator {
 
 	@Autowired
-	TituloFiliadoMediator tituloFiliadoMediator;
+    private RemessaMediator remessaMediator;
 	@Autowired
-	RemessaMediator remessaMediator;
+    private ConfirmacaoMediator confirmacaoMediator;
 	@Autowired
-	TituloMediator tituloMediator;
+    private RetornoMediator retornoMediator;
 	@Autowired
-	ConfirmacaoMediator confirmacaoMediator;
+    private DesistenciaProtestoMediator desistenciaMediator;
 	@Autowired
-	RetornoMediator retornoMediator;
+    private CancelamentoProtestoMediator cancelamentoProtestoMediator;
 	@Autowired
-	DesistenciaProtestoMediator desistenciaMediator;
+    private AutorizacaoCancelamentoMediator autorizacaoCancelamentoMediator;
 	@Autowired
-	CancelamentoProtestoMediator cancelamentoProtestoMediator;
+    private SolicitacaoDesistenciaCancelamentoMediator solicitacaoMediator;
 	@Autowired
-	AutorizacaoCancelamentoMediator autorizacaoCancelamentoMediator;
+    private BatimentoMediator batimentoMediator;
 	@Autowired
-	SolicitacaoDesistenciaCancelamentoMediator solicitacaoMediator;
-	@Autowired
-	BatimentoMediator batimentoMediator;
-	@Autowired
-	InstrumentoProtestoMediator instrumentoMediator;
+    private InstrumentoProtestoMediator instrumentoMediator;
 
 	private List<TituloOcorrenciaBean> ocorrenciasTitulo;
 
@@ -55,7 +51,6 @@ public class HistoricoMediator extends BaseMediator {
 	public List<TituloOcorrenciaBean> carregarOrrenciasTitulo(TituloRemessa titulo) {
 		this.ocorrenciasTitulo = new ArrayList<TituloOcorrenciaBean>();
 
-		ocorrenciaTituloFiliado(titulo);
 		ocorrenciaRemessa(titulo);
 		ocorrenciaConfirmacao(titulo);
 		ocorrenciaRetornoBatimentoDepositosSlips(titulo);
@@ -152,15 +147,6 @@ public class HistoricoMediator extends BaseMediator {
 			List<PedidoCancelamento> pedidoCancelamento = cancelamentoProtestoMediator.buscarPedidosCancelamentoProtestoPorTitulo(titulo);
 			for (PedidoCancelamento pedido : pedidoCancelamento) {
 				addOcorrencia(TituloOcorrenciaBean.getOcorrenciaToCancelamentoProtesto(pedido.getCancelamentoProtesto()));
-			}
-		}
-	}
-
-	private void ocorrenciaTituloFiliado(TituloRemessa titulo) {
-		if (new Integer(titulo.getCodigoPortador()) > 799) {
-			TituloFiliado tituloFiliado = tituloFiliadoMediator.buscarTituloFiliadoProcessadoNaCra(titulo.getNossoNumero(), titulo.getNumeroTitulo());
-			if (tituloFiliado != null) {
-				addOcorrencia(TituloOcorrenciaBean.getOcorrenciaToTituloFiliado(tituloFiliado));
 			}
 		}
 	}

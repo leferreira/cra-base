@@ -11,7 +11,7 @@ public enum TipoRegistroCnp {
 
 	private String codigoOperacao;
 
-	private TipoRegistroCnp(String codigoOperacao) {
+	TipoRegistroCnp(String codigoOperacao) {
 		this.codigoOperacao = codigoOperacao;
 	}
 

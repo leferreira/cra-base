@@ -1,12 +1,12 @@
 package br.com.ieptbto.cra.dao;
 
+import br.com.ieptbto.cra.beans.TituloConvenioBean;
 import br.com.ieptbto.cra.entidade.*;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloConvenio;
 import br.com.ieptbto.cra.enumeration.SituacaoTituloRelatorio;
 import br.com.ieptbto.cra.exception.InfraException;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -15,13 +15,13 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * @author Thasso Araújo
  *
  */
+@SuppressWarnings("unchecked")
 @Repository
 public class TituloFiliadoDAO extends AbstractBaseDAO {
 
@@ -76,7 +76,6 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<TituloFiliado> buscarTitulosParaEnvio(Filiado empresaFiliada, SetorFiliado setorFiliado) {
 		Criteria criteria = getCriteria(TituloFiliado.class);
 		criteria.createAlias("filiado", "filiado");
@@ -107,7 +106,6 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<TituloFiliado> buscarTitulosConvenios() {
 		Criteria criteria = getCriteria(TituloFiliado.class);
 		criteria.createAlias("pracaProtesto", "p");
@@ -116,7 +114,6 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Avalista> avalistasTituloFiliado(TituloFiliado titulo) {
 		Criteria criteriaAvalistas = getCriteria(Avalista.class);
 		criteriaAvalistas.add(Restrictions.eq("tituloFiliado", titulo));
@@ -130,7 +127,6 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		return criteria.list().size();
 	}
 
-	@SuppressWarnings("unchecked")
 	public TituloRemessa buscarTituloDoConvenioNaCra(TituloFiliado tituloFiliado) {
 		String nossoNumero = tituloFiliado.getFiliado().getInstituicaoConvenio().getCodigoCompensacao() + tituloFiliado.getId();
 
@@ -145,7 +141,6 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<TituloFiliado> consultarTitulosFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim, Municipio pracaProtesto,
 			TituloFiliado tituloFiliado, SituacaoTituloConvenio situacaoTituloAguardando) {
 		Criteria criteria = getCriteria(TituloFiliado.class);
@@ -174,7 +169,6 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<TituloFiliado> consultarTitulosConvenio(Instituicao instituicao, LocalDate dataInicio, LocalDate dataFim, Filiado filiado,
 			Municipio pracaProtesto, TituloFiliado tituloFiliado) {
 		Criteria criteria = getCriteria(TituloFiliado.class);
@@ -205,7 +199,6 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<TituloFiliado> buscarTitulosParaRelatorioFiliado(Filiado filiado, LocalDate dataInicio, LocalDate dataFim,
 			SituacaoTituloRelatorio tipoRelatorio, Municipio pracaProtesto) {
 		Criteria criteria = getCriteria(TituloFiliado.class);
@@ -223,7 +216,6 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<TituloFiliado> buscarTitulosParaRelatorioConvenio(Instituicao convenio, Filiado filiado, LocalDate dataInicio, LocalDate dataFim,
 			Municipio pracaProtesto) {
 		Criteria criteria = getCriteria(TituloFiliado.class);
@@ -286,61 +278,35 @@ public class TituloFiliadoDAO extends AbstractBaseDAO {
 		return criteria.list().size();
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<TituloRemessa> buscarListaTitulos(Usuario user, LocalDate dataInicio, LocalDate dataFim, Instituicao instiuicaoCartorio, String numeroTitulo, 
-			String nomeDevedor, String documentoDevedor, String nuumeroProtocolo, String codigoFiliado) {
+	public List<TituloRemessa> buscarListaTitulos(Usuario user, Filiado filiado, TituloConvenioBean tituloBean) {
 		Criteria criteria = getCriteria(TituloRemessa.class);
 		criteria.createAlias("remessa", "remessa");
 		criteria.add(Restrictions.eq("remessa.instituicaoOrigem", user.getInstituicao()));
 
-		if (codigoFiliado != null && !codigoFiliado.trim().isEmpty()) {
-			criteria.add(Restrictions.ilike("agenciaCodigoCedente", codigoFiliado, MatchMode.EXACT));
+		if (filiado != null && filiado.getInstituicaoConvenio().getAdministrarEmpresasFiliadas()) {
+			criteria.add(Restrictions.ilike("agenciaCodigoCedente", filiado.getCodigoFiliado(), MatchMode.EXACT));
 		}
-		if (numeroTitulo != null && numeroTitulo.trim() != StringUtils.EMPTY) {
-			criteria.add(Restrictions.ilike("numeroTitulo", numeroTitulo.trim(), MatchMode.EXACT));
+		if (StringUtils.isNotBlank(tituloBean.getNumeroTitulo())) {
+			criteria.add(Restrictions.ilike("numeroTitulo", tituloBean.getNumeroTitulo().trim(), MatchMode.ANYWHERE));
 		}
-		if (nomeDevedor != null && nomeDevedor.trim() != StringUtils.EMPTY) {
-			criteria.add(Restrictions.ilike("nomeDevedor", nomeDevedor.trim(), MatchMode.ANYWHERE));
+		if (StringUtils.isNotBlank(tituloBean.getNomeDevedor())) {
+			criteria.add(Restrictions.ilike("nomeDevedor", tituloBean.getNomeDevedor().trim(), MatchMode.ANYWHERE));
 		}
-		if (documentoDevedor != null && documentoDevedor.trim() != StringUtils.EMPTY) {
-			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", documentoDevedor.trim(), MatchMode.ANYWHERE));
+		if (StringUtils.isNotBlank(tituloBean.getDocumentoDevedor())) {
+			criteria.add(Restrictions.ilike("numeroIdentificacaoDevedor", tituloBean.getDocumentoDevedor().trim(), MatchMode.ANYWHERE));
 		}
-		if (nuumeroProtocolo != null && StringUtils.isNotBlank(nuumeroProtocolo)) {
+		if (StringUtils.isNotBlank(tituloBean.getNumeroProtocoloCartorio())) {
 			criteria.createAlias("confirmacao", "confirmacao");
-			criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", nuumeroProtocolo, MatchMode.EXACT));
+			criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", tituloBean.getNumeroProtocoloCartorio(), MatchMode.EXACT));
 		}
-		if (dataInicio != null) {
-			criteria.add(Restrictions.between("remessa.dataRecebimento", dataInicio, dataFim));
+		if (tituloBean.getDataInicio() != null) {
+			criteria.add(Restrictions.between("remessa.dataRecebimento", new LocalDate(tituloBean.getDataInicio()), new LocalDate(tituloBean.getDataFim())));
 		}
-		if (instiuicaoCartorio != null) {
+		if (tituloBean.getCartorio() != null) {
 			criteria.createAlias("remessa.cabecalho", "cabecalho");
-			criteria.add(Restrictions.ilike("cabecalho.codigoMunicipio", instiuicaoCartorio.getMunicipio().getCodigoIBGE()));
+			criteria.add(Restrictions.ilike("cabecalho.codigoMunicipio", tituloBean.getCartorio().getMunicipio().getCodigoIBGE()));
 		}
 		criteria.addOrder(Order.asc("nomeDevedor"));
 		return criteria.list();
-	}
-
-	@SuppressWarnings("rawtypes")
-	public TituloFiliado buscarTituloFiliadoProcessadoNaCra(String nossoNumero, String numeroDoTitulo) {
-		Query query = getSession()
-				.createSQLQuery("SELECT tit.id_titulo_filiado FROM tb_titulo_filiado AS tit " + "INNER JOIN tb_filiado AS fil ON tit.filiado_id=fil.id_filiado "
-						+ "INNER JOIN tb_instituicao AS ins ON fil.instituicao_id=ins.id_instituicao "
-						+ "WHERE rpad(concat(ins.codigo_compensacao,tit.id_titulo_filiado,null, null),15,'0' )='" + nossoNumero + "' "
-						+ "AND tit.numero_titulo='" + numeroDoTitulo.trim() + "';");
-
-		List resultQuery = query.list();
-		if (resultQuery.size() > 1) {
-			return null;
-		}
-		int id = 0;
-		Iterator iterator = resultQuery.iterator();
-		while (iterator.hasNext()) {
-			id = (Integer) iterator.next();
-		}
-
-		Criteria criteria = getCriteria(TituloFiliado.class);
-		criteria.createAlias("usuarioEntradaManual", "usuarioEntradaManual");
-		criteria.add(Restrictions.eq("id", id));
-		return TituloFiliado.class.cast(criteria.uniqueResult());
 	}
 }
