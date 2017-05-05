@@ -27,10 +27,8 @@ public class FabricaRegraValidacaoCNP {
 		String numeroDocumentoDevedor = registro.getNumeroDocumentoDevedor().trim() + registro.getComplementoDocumentoDevedor().trim()
 				+ registro.getDigitoControleDocumentoDevedor().trim();
 		if (!registro.getDocumentoDevedorCompleto().equals(numeroDocumentoDevedor)) {
-            System.out.println("Documento Inválido = " + registro.getDocumentoDevedorCompleto() + " Protocolo = " + registro.getNumeroProtocoloCartorio());
 		    return false;
         } else if (!CpfCnpjUtil.isValidCNPJ(numeroDocumentoDevedor) && !CpfCnpjUtil.isValidCPF(numeroDocumentoDevedor)) {
-            System.out.println("Documento Inválido = " + registro.getDocumentoDevedorCompleto() + " Protocolo = " + registro.getNumeroProtocoloCartorio());
 			return false;
 		}
 		if (registro.getDataProtesto() == null) {
@@ -64,10 +62,8 @@ public class FabricaRegraValidacaoCNP {
         String numeroDocumentoDevedor = registro.getNumeroDocumentoDevedor().trim() + registro.getComplementoDocumentoDevedor().trim()
                 + registro.getDigitoControleDocumentoDevedor().trim();
         if (!registro.getDocumentoDevedorCompleto().equals(numeroDocumentoDevedor)) {
-            System.out.println("Documento Inválido = " + registro.getDocumentoDevedorCompleto() + " Protocolo = " + registro.getNumeroProtocoloCartorio());
             return false;
         } else if (!CpfCnpjUtil.isValidCNPJ(numeroDocumentoDevedor) && !CpfCnpjUtil.isValidCPF(numeroDocumentoDevedor)) {
-			System.out.println("Documento Inválido = " + registro.getDocumentoDevedorCompleto() + " Protocolo = " + registro.getNumeroProtocoloCartorio());
 			return false;
 		}
 		if (Integer.valueOf(registro.getNumeroDocumentoDevedor()) == 0) {
