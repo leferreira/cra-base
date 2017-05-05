@@ -48,7 +48,7 @@ public class CentralNacionalProtestoMediator extends BaseMediator {
 
 	/**
 	 * @param instituicao
-	 * @param arquivoCnpVO
+	 * @param arquivoCnp5Anos
 	 * @return
 	 */
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)

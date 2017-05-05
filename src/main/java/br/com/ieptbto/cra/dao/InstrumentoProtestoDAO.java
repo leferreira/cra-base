@@ -14,6 +14,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -112,6 +113,7 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 		return Retorno.class.cast(criteria.uniqueResult());
 	}
 
+    @Transactional
 	public InstrumentoProtesto isTituloJaFoiGeradoInstrumento(Retorno tituloRetorno) {
 		Criteria criteria = getCriteria(InstrumentoProtesto.class);
 		criteria.add(Restrictions.eq("tituloRetorno", tituloRetorno));

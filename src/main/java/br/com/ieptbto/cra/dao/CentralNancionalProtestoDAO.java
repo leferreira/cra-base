@@ -49,28 +49,30 @@ public class CentralNancionalProtestoDAO extends AbstractBaseDAO {
 		}
 	}
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+    @Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = false)
 	public LoteCnp salvarLote5Anos(LoteCnp loteCnp) {
-		Transaction transaction = getBeginTransation();
+        Transaction transaction = getBeginTransation();
 
-		try {
-			loteCnp = save(loteCnp);
+        try {
+            loteCnp = save(loteCnp);
 
-			for (RegistroCnp registroCnp : loteCnp.getRegistrosCnp()) {
-				if (registroCnp.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
-					if (validarRegistroCnp.validarProtesto(registroCnp)) {
-						registroCnp.setLoteCnp(loteCnp);
-						save(registroCnp);
-					}
-				}
-			}
-			transaction.commit();
-		} catch (Exception ex) {
-			transaction.rollback();
-			logger.error(ex.getMessage(), ex);
-		}
-		return loteCnp;
-	}
+            for (RegistroCnp registro : loteCnp.getRegistrosCnp()) {
+                if (registro.getTipoRegistroCnp().equals(TipoRegistroCnp.PROTESTO)) {
+                    if (validarRegistroCnp.validarProtesto(registro)) {
+                        registro.setLoteCnp(loteCnp);
+                        registro = save(registro);
+                    }
+                }
+            }
+            transaction.commit();
+
+        } catch (Exception ex) {
+            transaction.rollback();
+            logger.error(ex.getMessage(), ex);
+            return null;
+        }
+        return loteCnp;
+    }
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = false)
 	public LoteCnp salvarLoteRegistrosCnp(Usuario user, LoteCnp lote) {

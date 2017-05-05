@@ -10,6 +10,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -176,18 +177,15 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 		if (titulosProtestados == null) {
 			titulosProtestados = new ArrayList<Retorno>();
 		}
-
 		return titulosProtestados;
 	}
 
+    @Transactional
 	public Retorno buscarTituloProtestado(String numeroProtocolo, String codigoIBGE) {
 		return tituloDao.buscarTituloProtestado(numeroProtocolo, codigoIBGE);
 	}
 
-	public List<EnvelopeSLIP> buscarEnvelopesPendetesLiberacao() {
-		return instrumentoDao.buscarEnvelopesPendetesLiberacao();
-	}
-
+    @Transactional
 	public InstrumentoProtesto isTituloJaFoiGeradoInstrumento(Retorno tituloProtestado) {
 		return instrumentoDao.isTituloJaFoiGeradoInstrumento(tituloProtestado);
 	}

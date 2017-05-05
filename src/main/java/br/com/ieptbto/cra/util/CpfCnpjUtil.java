@@ -50,7 +50,27 @@ public class CpfCnpjUtil {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(CpfCnpjUtil.isValidCPF("04789764109"));
+        System.out.println("CNPJ :" + CpfCnpjUtil.isValidCNPJ("09104066000104"));
+        System.out.println("RETORNO :"
+                + CpfCnpjUtil.buscarNumeroDocumento("09104066000104")
+                + CpfCnpjUtil.buscarComplementoDocumento("09104066000104")
+                + CpfCnpjUtil.calcularDigitoControle("09104066000104")
+        );
+        System.out.println("CPF :" + CpfCnpjUtil.isValidCPF("00000000964"));
+        System.out.println("RETORNO :"
+                + CpfCnpjUtil.buscarNumeroDocumento("00000000964")
+                + CpfCnpjUtil.buscarComplementoDocumento("00000000964")
+                + CpfCnpjUtil.calcularDigitoControle("00000000964")
+        );
+
+        String original = "00000000964";
+        String numeroDocumentoDevedor = CpfCnpjUtil.buscarNumeroDocumento("00000000964") + CpfCnpjUtil.buscarComplementoDocumento("00000000964")
+                + CpfCnpjUtil.calcularDigitoControle("00000000964");
+        if (!original.equals(numeroDocumentoDevedor)) {
+            System.out.println("Documento Diferente = " + numeroDocumentoDevedor +  " | Original = " + original);
+        } else if (!CpfCnpjUtil.isValidCNPJ(numeroDocumentoDevedor) && !CpfCnpjUtil.isValidCPF(numeroDocumentoDevedor)) {
+            System.out.println("Documento Inválido = " + numeroDocumentoDevedor);
+        }
 	}
 
 	public static String buscarComplementoDocumento(String numeroDocumento) {
@@ -114,9 +134,9 @@ public class CpfCnpjUtil {
 				if (numeroDocumento.length() < 9) {
 					numeroDocumento = StringUtils.leftPad(numeroDocumento, 9, "0");
 				}
-				digito1 = calcularDigito(numeroDocumento.substring(0, 9), pesoCPF);
-				digito2 = calcularDigito(numeroDocumento.substring(0, 9) + digito1, pesoCPF);
-				digitoControle = digito1.toString();
+                digito1 = calcularDigito(numeroDocumento.substring(0, 9), pesoCPF);
+                digito2 = calcularDigito(numeroDocumento.substring(0, 9) + digito1, pesoCPF);
+                digitoControle = digito1.toString();
 				digitoControle = digitoControle.concat(digito2.toString());
 			}
 		}

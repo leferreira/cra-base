@@ -15,8 +15,8 @@ import java.util.Date;
 @Entity
 @Audited
 @Table(name = "TB_REGISTRO_CNP", uniqueConstraints=
-	@UniqueConstraint(columnNames={"tipo_registro_cnp", "cidade_devedor", "numero_protocolo_cartorio", 
-		"numero_documento_devedor", "digito_controle_documento_devedor"}))
+	@UniqueConstraint(columnNames={"tipo_registro_cnp", "cidade_devedor", "numero_protocolo_cartorio",
+		"numero_documento_devedor", "complemento_documento_devedor", "digito_controle_documento_devedor"}))
 @org.hibernate.annotations.Table(appliesTo = "TB_REGISTRO_CNP")
 public class RegistroCnp extends AbstractEntidade<RegistroCnp> {
 
@@ -50,6 +50,7 @@ public class RegistroCnp extends AbstractEntidade<RegistroCnp> {
 	private String numeroDocumentoDevedor;
 	private String complementoDocumentoDevedor;
 	private String digitoControleDocumentoDevedor;
+	private String documentoDevedorCompleto;
 	private String enderecoDevedor;
 	private String cepDevedor;
 	private String cidadeDevedor;
@@ -258,6 +259,11 @@ public class RegistroCnp extends AbstractEntidade<RegistroCnp> {
 		return sequenciaRegistro;
 	}
 
+	@Transient
+    public String getDocumentoDevedorCompleto() {
+	    return documentoDevedorCompleto;
+    }
+
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -410,7 +416,11 @@ public class RegistroCnp extends AbstractEntidade<RegistroCnp> {
 		this.sequenciaRegistro = sequenciaRegistro;
 	}
 
-	@Override
+    public void setDocumentoDevedorCompleto(String documentoDevedorCompleto) {
+        this.documentoDevedorCompleto = documentoDevedorCompleto;
+    }
+
+    @Override
 	public int compareTo(RegistroCnp entidade) {
 		return 0;
 	}	
