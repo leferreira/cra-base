@@ -18,7 +18,7 @@ public enum RegraAgenciaCentralizadoraCodigoCartorio {
 	private String agenciaCentralizadora;
 	private Integer codigoCartorio;
 
-	private RegraAgenciaCentralizadoraCodigoCartorio(String codigoPortador, String agenciaCentralizadora, Integer codigoCartorio) {
+	RegraAgenciaCentralizadoraCodigoCartorio(String codigoPortador, String agenciaCentralizadora, Integer codigoCartorio) {
 		this.codigoPortador = codigoPortador;
 		this.agenciaCentralizadora = agenciaCentralizadora;
 		this.codigoCartorio = codigoCartorio;

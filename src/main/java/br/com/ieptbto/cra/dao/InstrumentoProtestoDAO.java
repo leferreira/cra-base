@@ -4,9 +4,10 @@ import br.com.ieptbto.cra.entidade.EnvelopeSLIP;
 import br.com.ieptbto.cra.entidade.EtiquetaSLIP;
 import br.com.ieptbto.cra.entidade.InstrumentoProtesto;
 import br.com.ieptbto.cra.entidade.Retorno;
-import br.com.ieptbto.cra.enumeration.regra.TipoOcorrencia;
+import br.com.ieptbto.cra.exception.InfraException;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -22,63 +23,97 @@ import java.util.List;
  * @author Thasso Araújo
  *
  */
-
+@SuppressWarnings("unchecked")
 @Repository
 public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 
-	public void salvarInstrumentoProtesto(InstrumentoProtesto instrumento) {
+    /**
+     * Salvar entrada de instrumento de protesto na CRA
+     *
+     * @param instrumento
+     * @return
+     */
+    public InstrumentoProtesto salvarInstrumentoProtesto(InstrumentoProtesto instrumento) {
+        Session session = getSession();
+        Transaction transaction = session.beginTransaction();
+
+		try {
+			instrumento = save(instrumento);
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			logger.info(ex.getMessage(), ex);
+			throw new InfraException("Não foi possível salvar o registro do instrumento de protesto! Favor entrar em contato com a CRA...");
+		}
+		return instrumento;
+	}
+
+    /**
+     * Atualizar os dados do instrumento de protesto
+     *
+     * @param instrumentosProtesto
+     */
+    public InstrumentoProtesto atualizarInstrumentoProtesto(InstrumentoProtesto instrumentosProtesto) {
 		Transaction transaction = getBeginTransation();
 
 		try {
-			save(instrumento);
+			update(instrumentosProtesto);
 
 			transaction.commit();
 		} catch (Exception ex) {
 			transaction.rollback();
 			logger.info(ex.getMessage());
 		}
+		return instrumentosProtesto;
 	}
 
-	public void salvarEnvelopesEtiquetas(List<EnvelopeSLIP> envelopes) {
-		EnvelopeSLIP envelopeSalvo = new EnvelopeSLIP();
-		Transaction transaction = getBeginTransation();
+    /**
+     * Remove o registro da entrada do instrumento de protesto na CRA
+     *
+     * @param instrumentoProtesto
+     */
+    public void removerInstrumento(InstrumentoProtesto instrumentoProtesto) {
 
-		try {
-			for (EnvelopeSLIP envelope : envelopes) {
-				envelope.setDataGeracao(new LocalDate());
-				envelope.setLiberado(false);
-				envelopeSalvo = save(envelope);
+        try {
+            Query query = createSQLQuery("DELETE FROM tb_instrumento_protesto WHERE " +
+                    "id_instrumento_protesto=" + instrumentoProtesto.getId());
+            query.executeUpdate();
 
-				for (EtiquetaSLIP etiqueta : envelope.getEtiquetas()) {
-					etiqueta.setEnvelope(envelopeSalvo);
-					save(etiqueta);
-				}
-			}
+        } catch (Exception ex) {
+            logger.info(ex.getMessage());
+            throw new InfraException("Não foi possível remover o registro do instrumento de protesto do banco de dados!");
+        }
+    }
 
-			transaction.commit();
-		} catch (Exception ex) {
-			transaction.rollback();
-			logger.info(ex.getMessage());
-		}
-	}
+    /**
+     * Salvar os envelopes gerados com as slips
+     *
+     * @param envelopes
+     */
+    public void salvarEnvelopesEtiquetas(List<EnvelopeSLIP> envelopes) {
+        EnvelopeSLIP envelopeSalvo = new EnvelopeSLIP();
+        Transaction transaction = getBeginTransation();
 
-	public void alterarParaInstrumentosGerados(List<InstrumentoProtesto> instrumentosProtesto) {
-		Transaction transaction = getBeginTransation();
+        try {
+            for (EnvelopeSLIP envelope : envelopes) {
+                envelope.setDataGeracao(new LocalDate());
+                envelope.setLiberado(false);
+                envelopeSalvo = save(envelope);
 
-		try {
-			for (InstrumentoProtesto instrumento : instrumentosProtesto) {
-				instrumento.setGerado(true);
-				update(instrumento);
-			}
+                for (EtiquetaSLIP etiqueta : envelope.getEtiquetas()) {
+                    etiqueta.setEnvelope(envelopeSalvo);
+                    save(etiqueta);
+                }
+            }
 
-			transaction.commit();
-		} catch (Exception ex) {
-			transaction.rollback();
-			logger.info(ex.getMessage());
-		}
-	}
+            transaction.commit();
+        } catch (Exception ex) {
+            transaction.rollback();
+            logger.info(ex.getMessage());
+        }
+    }
 
-	@SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
 	public List<InstrumentoProtesto> buscarInstrumentosParaSlip() {
 		Criteria criteria = getCriteria(InstrumentoProtesto.class);
 		criteria.createAlias("tituloRetorno", "tituloRetorno");
@@ -89,61 +124,35 @@ public class InstrumentoProtestoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	public InstrumentoProtesto carregarTituloInstrumento(InstrumentoProtesto instrumento) {
-		Criteria criteria = getCriteria(InstrumentoProtesto.class);
-		criteria.add(Restrictions.eq("id", instrumento.getId()));
-		criteria.createAlias("titulo", "titulo");
-		return InstrumentoProtesto.class.cast(criteria.uniqueResult());
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<EnvelopeSLIP> buscarEnvelopesPendetesLiberacao() {
-		Criteria criteria = getCriteria(EnvelopeSLIP.class);
-		criteria.add(Restrictions.eq("liberado", false));
-		return criteria.list();
-	}
-
-	public Retorno carregarRetorno(Retorno retorno) {
-		Criteria criteria = getCriteria(Retorno.class);
-		criteria.createAlias("cabecalho", "cabecalho");
-		criteria.add(Restrictions.eq("numeroProtocoloCartorio", retorno.getNumeroProtocoloCartorio()));
-		criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", retorno.getCabecalho().getCodigoMunicipio()));
-		criteria.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PROTESTADO.getConstante()));
-		criteria.setMaxResults(1);
-		return Retorno.class.cast(criteria.uniqueResult());
-	}
-
-    @Transactional
-	public InstrumentoProtesto isTituloJaFoiGeradoInstrumento(Retorno tituloRetorno) {
+	public InstrumentoProtesto buscarInstrumentoProtesto(Retorno tituloRetorno) {
 		Criteria criteria = getCriteria(InstrumentoProtesto.class);
 		criteria.add(Restrictions.eq("tituloRetorno", tituloRetorno));
 		return InstrumentoProtesto.class.cast(criteria.uniqueResult());
 	}
 
-	public void removerInstrumento(InstrumentoProtesto instrumentoProtesto) {
-
-		try {
-			Query query = createSQLQuery(
-					"DELETE FROM tb_instrumento_protesto WHERE id_instrumento_protesto=" + instrumentoProtesto.getId());
-			query.executeUpdate();
-		} catch (Exception ex) {
-			logger.info(ex.getMessage());
-		}
-	}
-
-	public Long buscarSequencialDiarioEnvelopes() {
+    /**
+     * Gerador de sequencia diario de código de envelopes seguindo o padrão de
+     * etiquetas
+     *
+     * @return
+     */
+    public Long buscarSequencialDiarioEnvelopes() {
 		Criteria criteria = getCriteria(EnvelopeSLIP.class);
 		criteria.add(Restrictions.eq("dataGeracao", new LocalDate()));
 		criteria.setProjection(Projections.count("id"));
 		Long total = Long.class.cast(criteria.uniqueResult());
-
 		if (total == null) {
 			total = new Long(0);
 		}
 		return total;
 	}
 
-	public boolean verificarEtiquetasGeradasNaoConfimadas() {
+    /**
+     * Verifica se contém instrumentos que tiveram Slips geradas e não forma confirmadas pelo usuário
+     *
+     * @return
+     */
+    public boolean verificarEtiquetasGeradasNaoConfimadas() {
 		Criteria criteria = getCriteria(EtiquetaSLIP.class);
 		criteria.createAlias("instrumentoProtesto", "instrumentoProtesto", JoinType.INNER_JOIN);
 		criteria.add(Restrictions.eq("instrumentoProtesto.gerado", false));

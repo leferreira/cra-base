@@ -26,11 +26,12 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 	private static final String UF_CRA = "TO";
 
 	@Autowired
-	TituloDAO tituloDao;
+	private TituloDAO tituloDao;
 	@Autowired
-	InstrumentoProtestoDAO instrumentoDao;
+    private InstrumentoProtestoDAO instrumentoDao;
 	@Autowired
-	RegraAgenciaDestino regraAgenciaDestino;
+    private RegraAgenciaDestino regraAgenciaDestino;
+
 	private List<Retorno> titulosProtestados;
 	private List<EtiquetaSLIP> etiquetas;
 	private List<EnvelopeSLIP> envelopes;
@@ -40,28 +41,78 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 	/**
 	 * Salvar entrada de instrumento de protesto na CRA
 	 * 
-	 * @param titulosProtestados
 	 * @param usuario
+     * @param numeroProtocolo
+     * @param codigoIbge
 	 */
-	public void salvarInstrumentoProtesto(List<Retorno> titulosProtestados, Usuario usuario) {
+	public InstrumentoProtesto salvarInstrumentoProtesto(Usuario usuario, String numeroProtocolo, String codigoIbge) {
+        Retorno retorno = tituloDao.buscarTituloProtestado(numeroProtocolo, codigoIbge);
+        if (retorno == null) {
+            throw new InfraException("O título não foi encontrado ou não foi protestado pelo cartório!");
+        }
 
-		for (Retorno retorno : titulosProtestados) {
-			InstrumentoProtesto instrumentoBuscado = instrumentoDao.isTituloJaFoiGeradoInstrumento(retorno);
-
-			if (instrumentoBuscado == null) {
-				InstrumentoProtesto instrumento = new InstrumentoProtesto();
-				instrumento.setDataDeEntrada(new LocalDate());
-				instrumento.setHoraEntrada(new LocalTime());
-				instrumento.setTituloRetorno(retorno);
-				instrumento.setGerado(false);
-				instrumento.setUsuario(usuario);
-
-				instrumentoDao.salvarInstrumentoProtesto(instrumento);
-			}
-		}
+        InstrumentoProtesto instrumento = instrumentoDao.buscarInstrumentoProtesto(retorno);
+        if (instrumento == null) {
+            instrumento = new InstrumentoProtesto();
+            instrumento.setDataDeEntrada(new LocalDate());
+            instrumento.setHoraEntrada(new LocalTime());
+            instrumento.setTituloRetorno(retorno);
+            instrumento.setGerado(false);
+            instrumento.setUsuario(usuario);
+            return instrumentoDao.salvarInstrumentoProtesto(instrumento);
+        }
+        throw new InfraException("Este instrumento já foi processado anteriormente!");
 	}
 
-	public InstrumentoProtestoMediator processarInstrumentos(List<InstrumentoProtesto> instrumentos, List<Retorno> listaRetorno) {
+    /**
+     * Marcar instrumentos como etiquetas Slips, Envelopes e Listagem geradas
+     *
+     * @param instrumentosProtesto
+     */
+    public void alterarInstrumentosParaGerado(List<InstrumentoProtesto> instrumentosProtesto) {
+
+        for (InstrumentoProtesto instrumento : instrumentosProtesto) {
+            instrumento.setGerado(true);
+            instrumentoDao.atualizarInstrumentoProtesto(instrumento);
+        }
+    }
+
+    /**
+     * Remover registro da entrada do instrumento de protesto na CRA
+     *
+     * @param instrumentoProtesto
+     */
+    public void removerInstrumento(InstrumentoProtesto instrumentoProtesto) {
+        instrumentoDao.removerInstrumento(instrumentoProtesto);
+    }
+
+    /**
+     * Verifica se há Slips geradas e não confirmadas pelo usuário
+     *
+     * @return
+     */
+    public boolean verificarEtiquetasGeradasNaoConfimadas() {
+        return instrumentoDao.verificarEtiquetasGeradasNaoConfimadas();
+    }
+
+    /**
+     * Buscar instrumento de protesto para retorno de protestado
+
+     * @param retorno
+     * @return
+     */
+    public InstrumentoProtesto buscarInstrumentoProtesto(Retorno retorno) {
+        return instrumentoDao.buscarInstrumentoProtesto(retorno);
+    }
+
+    /**
+     * Processador de instrumentos de protesto e gerador de Slips, Envelpoes e listagem
+     *
+     * @param instrumentos
+     * @param listaRetorno
+     * @return
+     */
+    public InstrumentoProtestoMediator processarInstrumentos(List<InstrumentoProtesto> instrumentos, List<Retorno> listaRetorno) {
 		this.instrumentosProtesto = instrumentos;
 		this.titulosProtestados = listaRetorno;
 		this.etiquetas = null;
@@ -79,12 +130,10 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 
 		for (InstrumentoProtesto instrumento : instrumentos) {
 			if (instrumento.getEtiquetaSlip() != null) {
-				throw new InfraException(
-						"Os instrumentos de protestos já tiveram as Slips geradas. Por favor clique em confirmar para marca-los como gerados!");
+				throw new InfraException("Os instrumentos de protestos já tiveram as Slips geradas. Por favor clique em confirmar para marca-los como gerados!");
 			}
 			RegraAgenciaDestino regraAgencia = regraAgenciaDestino.regraAgenciaDestino(instrumento.getTituloRetorno().getTitulo());
-			instrumento.getTituloRetorno()
-					.setRemessa(instrumentoDao.buscarPorPK(instrumento.getTituloRetorno().getRemessa(), Remessa.class));
+			instrumento.getTituloRetorno().setRemessa(instrumentoDao.buscarPorPK(instrumento.getTituloRetorno().getRemessa(), Remessa.class));
 
 			if (StringUtils.isNotEmpty(regraAgencia.getAgenciaDestino().trim())) {
 				EtiquetaSLIP novaEtiqueta = new EtiquetaSLIP();
@@ -102,12 +151,11 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 		HashMap<Integer, EnvelopeSLIP> mapaEnvelopes = new HashMap<Integer, EnvelopeSLIP>();
 
 		for (EtiquetaSLIP etiqueta : getEtiquetas()) {
-			if (mapaEnvelopes.containsKey(
-					Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(),
-							etiqueta.getAgenciaDestino()).toString()))) {
-				EnvelopeSLIP envelope = mapaEnvelopes
-						.get(Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(),
-								etiqueta.getAgenciaDestino()).toString()));
+		    String codigoPortador = etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador();
+            chaveEnvelope chavaEnvelope = new chaveEnvelope(codigoPortador, etiqueta.getAgenciaDestino());
+
+			if (mapaEnvelopes.containsKey(Integer.parseInt(chavaEnvelope.toString()))) {
+				EnvelopeSLIP envelope = mapaEnvelopes.get(Integer.parseInt(chavaEnvelope.toString()));
 				envelope.setQuantidadeInstrumentos(envelope.getQuantidadeInstrumentos() + 1);
 				envelope.getEtiquetas().add(etiqueta);
 			} else {
@@ -122,10 +170,7 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 				envelope.setCodeBar(codeBar);
 				envelope.setEtiquetas(new ArrayList<EtiquetaSLIP>());
 				envelope.getEtiquetas().add(etiqueta);
-
-				mapaEnvelopes
-						.put(Integer.parseInt(new chaveEnvelope(etiqueta.getInstrumentoProtesto().getTituloRetorno().getCodigoPortador(),
-								etiqueta.getAgenciaDestino()).toString()), envelope);
+				mapaEnvelopes.put(Integer.parseInt(chavaEnvelope.toString()), envelope);
 				getEnvelopes().add(envelope);
 			}
 		}
@@ -133,12 +178,11 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 
 	private String gerarCodigoBarraEnvelope(EnvelopeSLIP envelope) {
 		SimpleDateFormat dataPadraEnvelope = new SimpleDateFormat("ddMMyy");
-
 		String codeBar = SIGLA_ENVELOPE_PT;
 		codeBar = codeBar.concat(envelope.getAgenciaDestino());
 		codeBar = codeBar.concat(incrementarSequencialEnvelope());
 		codeBar = codeBar.concat(UF_CRA);
-		codeBar = codeBar.concat(dataPadraEnvelope.format(new Date()).toString());
+		codeBar = codeBar.concat(dataPadraEnvelope.format(new Date()));
 		return codeBar;
 	}
 
@@ -146,7 +190,6 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 		if (sequencialDiarioEnvelopes == null) {
 			this.sequencialDiarioEnvelopes = instrumentoDao.buscarSequencialDiarioEnvelopes();
 		}
-
 		this.sequencialDiarioEnvelopes = sequencialDiarioEnvelopes + 1;
 		return StringUtils.leftPad(Long.toString(sequencialDiarioEnvelopes), 4, "0");
 	}
@@ -155,7 +198,7 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 		Collections.sort(getEtiquetas());
 	}
 
-	private void salvarEnvelopesEtiquetas() {
+    private void salvarEnvelopesEtiquetas() {
 		instrumentoDao.salvarEnvelopesEtiquetas(getEnvelopes());
 	}
 
@@ -180,34 +223,18 @@ public class InstrumentoProtestoMediator extends BaseMediator {
 		return titulosProtestados;
 	}
 
-    @Transactional
-	public Retorno buscarTituloProtestado(String numeroProtocolo, String codigoIBGE) {
-		return tituloDao.buscarTituloProtestado(numeroProtocolo, codigoIBGE);
-	}
-
-    @Transactional
-	public InstrumentoProtesto isTituloJaFoiGeradoInstrumento(Retorno tituloProtestado) {
-		return instrumentoDao.isTituloJaFoiGeradoInstrumento(tituloProtestado);
-	}
-
-	public List<InstrumentoProtesto> buscarInstrumentosParaSlip() {
+    /**
+     * Busca os instrumentos de protesto marcados como não gerados para que
+     * seja  gerada a Slip e os Envelopes.
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<InstrumentoProtesto> buscarInstrumentosParaSlip() {
 		return instrumentoDao.buscarInstrumentosParaSlip();
 	}
 
 	public List<InstrumentoProtesto> getInstrumentosProtesto() {
 		return instrumentosProtesto;
-	}
-
-	public void alterarInstrumentosParaGerado(List<InstrumentoProtesto> instrumentosProtesto) {
-		instrumentoDao.alterarParaInstrumentosGerados(instrumentosProtesto);
-	}
-
-	public void removerInstrumento(InstrumentoProtesto instrumentoProtesto) {
-		instrumentoDao.removerInstrumento(instrumentoProtesto);
-	}
-
-	public boolean verificarEtiquetasGeradasNaoConfimadas() {
-		return instrumentoDao.verificarEtiquetasGeradasNaoConfimadas();
 	}
 }
 

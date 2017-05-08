@@ -1,5 +1,6 @@
 package br.com.ieptbto.cra.util;
 
+import br.com.ieptbto.cra.exception.InfraException;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.*;
 import org.joda.time.format.DateTimeFormat;
@@ -240,6 +241,23 @@ public class DataUtil implements Serializable {
 		Interval periodo = new Interval(dataInicio.toDateTimeAtStartOfDay(), dataFim.plusDays(1).toDateTimeAtStartOfDay());
 		return periodo.contains(data.toDateTimeAtStartOfDay());
 	}
+
+    /**
+     * Verifica se a data inicial é menor ou igual a data final
+     *
+     * @param dataInicio
+     * @param dataFim
+     * @return
+     */
+    public static boolean validarPeriodoDataInicialFinal(Date dataInicio, Date dataFim) {
+        if (dataInicio != null && dataFim != null) {
+            if (!dataInicio.before(dataFim) && !dataInicio.equals(dataFim)) {
+                throw new InfraException("A data de início deve ser anterior ou igual a data fim do período");
+            }
+            return true;
+        }
+        throw new InfraException("Os campos do período de datas devem ser preencidos...");
+    }
 
 	private static DateTimeFormatter getDateTimeFormatter(String formato) {
 		return DateTimeFormat.forPattern(formato).withZone(ZONE).withLocale(LOCALE);

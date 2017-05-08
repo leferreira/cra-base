@@ -101,7 +101,7 @@ public class HistoricoMediator extends BaseMediator {
 			}
 
 			if (retorno.getTipoOcorrencia().equals(TipoOcorrencia.PROTESTADO.getConstante())) {
-				InstrumentoProtesto instrumentoProtesto = instrumentoMediator.isTituloJaFoiGeradoInstrumento(retorno);
+				InstrumentoProtesto instrumentoProtesto = instrumentoMediator.buscarInstrumentoProtesto(retorno);
 				if (instrumentoProtesto != null) {
 					addOcorrencia(TituloOcorrenciaBean.getOcorrenciaToInstrumentoProtesto(instrumentoProtesto));
 				}

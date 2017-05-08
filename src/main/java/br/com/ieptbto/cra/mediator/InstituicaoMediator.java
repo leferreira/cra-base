@@ -87,7 +87,7 @@ public class InstituicaoMediator {
 		return instituicao;
 	}
 
-	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = false)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public Instituicao buscarApresentantePorCodigoPortador(String codigoPortador) {
 		Instituicao instituicao = instituicaoDAO.getInstituicaoPorCodigo(codigoPortador);
 		if (instituicao == null) {

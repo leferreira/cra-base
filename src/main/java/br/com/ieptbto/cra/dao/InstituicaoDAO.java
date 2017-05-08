@@ -23,6 +23,7 @@ import java.util.List;
  * @author Thasso Araújo
  *
  */
+@SuppressWarnings("unchecked")
 @Repository
 public class InstituicaoDAO extends AbstractBaseDAO {
 
@@ -117,7 +118,6 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		return Instituicao.class.cast(criteria.uniqueResult());
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Instituicao> buscarListaInstituicao() {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
@@ -127,7 +127,6 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Instituicao> buscarListaInstituicaoAtivas() {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
@@ -137,7 +136,6 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Instituicao> listarTodas() {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.addOrder(Order.asc("nomeFantasia"));
@@ -149,7 +147,6 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	 * 
 	 * @return List<Instituicao>
 	 */
-	@SuppressWarnings({ "unchecked" })
 	@Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public List<Instituicao> getCartorios() {
 		Criteria criteria = getCriteria(Instituicao.class);
@@ -165,7 +162,6 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 	 * 
 	 * @return List<Instituicao>
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Instituicao> getInstituicoesFinanceiras() {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.addOrder(Order.asc("nomeFantasia"));
@@ -190,6 +186,7 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		return Instituicao.class.cast(criteria.uniqueResult());
 	}
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
 	public Instituicao getInstituicaoPorCodigo(String codigoCompensacao) {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.add(Restrictions.eq("codigoCompensacao", codigoCompensacao));
@@ -197,7 +194,6 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		return Instituicao.class.cast(criteria.uniqueResult());
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Instituicao> getConvenios() {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
@@ -206,7 +202,6 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Instituicao> getInstituicoesFinanceirasEConvenios() {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");
@@ -216,7 +211,6 @@ public class InstituicaoDAO extends AbstractBaseDAO {
 		return criteria.list();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<Instituicao> getInstituicoesLayoutPersonalizado() {
 		Criteria criteria = getCriteria(Instituicao.class);
 		criteria.createAlias("tipoInstituicao", "tipoInstituicao");

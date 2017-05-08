@@ -39,7 +39,7 @@ public class InstrumentoProtesto extends AbstractEntidade<InstrumentoProtesto> {
 		this.id = id;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@OneToOne(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "RETORNO_ID")
 	public Retorno getTituloRetorno() {
 		return tituloRetorno;

@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -70,7 +69,6 @@ public class TituloDAO extends AbstractBaseDAO {
      */
     public Retorno buscarRetornoTituloDevedorPrincipal(Confirmacao confirmacao) {
         Integer numeroProtocolo = Integer.parseInt(confirmacao.getNumeroProtocoloCartorio().trim());
-
         Criteria criteria = getCriteria(Retorno.class);
         criteria.createAlias("remessa", "remessa");
         criteria.createAlias("remessa.cabecalho", "cabecalho");
@@ -160,26 +158,13 @@ public class TituloDAO extends AbstractBaseDAO {
         return query.list();
     }
 
-    public List<Titulo> carregarTitulosGenerico(Arquivo arquivo) {
-        Criteria criteria = getCriteria(Remessa.class);
-        criteria.add(Restrictions.eq("arquivo", arquivo));
-        List<Remessa> remessas = criteria.list();
-
-        List<Titulo> titulos = new ArrayList<Titulo>();
-        for (Remessa remessa : remessas) {
-            Criteria criteriaTitulo = getCriteria(Titulo.class);
-            criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-            titulos.addAll(criteriaTitulo.list());
-        }
-        return titulos;
-    }
-
-    public List<Titulo> carregarTitulosGenerico(Remessa remessa) {
-        Criteria criteriaTitulo = getCriteria(Titulo.class);
-        criteriaTitulo.add(Restrictions.eq("remessa", remessa));
-        return criteriaTitulo.list();
-    }
-
+    /**
+     * @param instituicao
+     * @param titulo
+     * @param erros
+     * @param transaction
+     * @return
+     */
     public TituloRemessa salvar(Instituicao instituicao, Titulo titulo, List<Exception> erros, Transaction transaction) {
         if (TituloRemessa.class.isInstance(titulo)) {
             TituloRemessa tituloRemessa = TituloRemessa.class.cast(titulo);
@@ -467,7 +452,7 @@ public class TituloDAO extends AbstractBaseDAO {
         criteria.createAlias("titulo", "titulo");
         criteria.createAlias("cabecalho", "cabecalho");
         criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", codigoIBGE));
-        criteria.add(Restrictions.ilike("numeroProtocoloCartorio", numProtocolo.toString(), MatchMode.EXACT));
+        criteria.add(Restrictions.ilike("numeroProtocoloCartorio", Integer.toString(numProtocolo), MatchMode.EXACT));
         criteria.add(Restrictions.eq("tipoOcorrencia", TipoOcorrencia.PROTESTADO.getConstante()));
         List<Retorno> retornos = criteria.list();
         for (Retorno retorno : retornos) {
@@ -545,19 +530,6 @@ public class TituloDAO extends AbstractBaseDAO {
             criteria.add(Restrictions.eq("retorno.remessa", remessa));
         }
         return criteria.list();
-    }
-
-    public TituloRemessa buscarTituloRemessaPorDadosRetorno(Retorno tituloRetorno) {
-        Integer numeroProtocolo = Integer.parseInt(tituloRetorno.getNumeroProtocoloCartorio().trim());
-        Criteria criteria = getCriteria(TituloRemessa.class);
-        criteria.createAlias("remessa", "remessa");
-        criteria.createAlias("remessa.cabecalho", "cabecalho");
-        criteria.add(Restrictions.eq("cabecalho.codigoMunicipio", tituloRetorno.getRemessa().getCabecalho().getCodigoMunicipio()));
-        criteria.add(Restrictions.ilike("codigoPortador", tituloRetorno.getCodigoPortador(), MatchMode.EXACT));
-        criteria.add(Restrictions.like("nossoNumero", tituloRetorno.getNossoNumero().trim(), MatchMode.EXACT));
-        criteria.createAlias("confirmacao", "confirmacao");
-        criteria.add(Restrictions.like("confirmacao.numeroProtocoloCartorio", numeroProtocolo.toString(), MatchMode.EXACT));
-        return TituloRemessa.class.cast(criteria.uniqueResult());
     }
 
     public Anexo buscarAnexo(TituloRemessa tituloRemessa) {
